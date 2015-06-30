@@ -9,11 +9,11 @@ module Concerns
       end
 
       def favor_by(user)
-        users_who_favored << user unless users_who_favored.exists?(user)
+        users_who_favored << user unless users_who_favored.exists?(user.try(:id))
       end
 
       def disfavor_by(user)
-        users_who_favored.delete(user) if users_who_favored.exists?(user)
+        users_who_favored.delete(user) if users_who_favored.exists?(user.try(:id))
       end
 
       included do

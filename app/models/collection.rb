@@ -53,4 +53,10 @@ class Collection < ActiveRecord::Base
   }
 
   default_scope { reorder(:created_at, :id) }
+
+  def media_resources
+    MediaResource.unified_scope(media_entries,
+                                collections,
+                                filter_sets)
+  end
 end

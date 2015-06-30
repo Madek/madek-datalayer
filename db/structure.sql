@@ -1115,6 +1115,39 @@ CREATE TABLE vocabulary_user_permissions (
 
 
 --
+-- Name: vw_media_resources; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW vw_media_resources AS
+ SELECT media_entries.id,
+    media_entries.get_metadata_and_previews,
+    media_entries.responsible_user_id,
+    media_entries.creator_id,
+    media_entries.created_at,
+    media_entries.updated_at,
+    'MediaEntry'::text AS type
+   FROM media_entries
+UNION
+ SELECT collections.id,
+    collections.get_metadata_and_previews,
+    collections.responsible_user_id,
+    collections.creator_id,
+    collections.created_at,
+    collections.updated_at,
+    'Collection'::text AS type
+   FROM collections
+UNION
+ SELECT filter_sets.id,
+    filter_sets.get_metadata_and_previews,
+    filter_sets.responsible_user_id,
+    filter_sets.creator_id,
+    filter_sets.created_at,
+    filter_sets.updated_at,
+    'FilterSet'::text AS type
+   FROM filter_sets;
+
+
+--
 -- Name: zencoder_jobs; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3765,6 +3798,8 @@ INSERT INTO schema_migrations (version) VALUES ('18');
 INSERT INTO schema_migrations (version) VALUES ('180');
 
 INSERT INTO schema_migrations (version) VALUES ('181');
+
+INSERT INTO schema_migrations (version) VALUES ('182');
 
 INSERT INTO schema_migrations (version) VALUES ('19');
 
