@@ -1,9 +1,7 @@
-require Rails.root.join 'db', 'migrate', 'media_resource_migration_models'
-
 class MigrateUserCollectionPermissionsData < ActiveRecord::Migration
 
   include Madek::MigrationHelper
-  include MediaResourceMigrationModels
+  include Madek::MediaResourceMigrationModels
 
   class ::MigrationCollectionUserPermission < ActiveRecord::Base
     self.table_name = :collection_user_permissions

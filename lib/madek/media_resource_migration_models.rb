@@ -1,3 +1,4 @@
+module Madek
 module MediaResourceMigrationModels
 
   class ::MigrationMediaResource < ActiveRecord::Base
@@ -66,4 +67,5 @@ module MediaResourceMigrationModels
   class ::MigrationMetaDataLicenses < ActiveRecord::Base
     self.table_name = 'meta_data_licenses'
   end
+end
 end

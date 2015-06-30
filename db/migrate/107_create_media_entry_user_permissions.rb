@@ -1,8 +1,6 @@
-require Rails.root.join 'db', 'migrate', 'media_resource_migration_models'
-
 class CreateMediaEntryUserPermissions < ActiveRecord::Migration
   include Madek::MigrationHelper
-  include MediaResourceMigrationModels
+  include Madek::MediaResourceMigrationModels
 
   class ::MigrationMediaEntryUserPermission < ActiveRecord::Base
     self.table_name = :media_entry_user_permissions

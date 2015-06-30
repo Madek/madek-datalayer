@@ -1,8 +1,6 @@
-require Rails.root.join 'db', 'migrate', 'media_resource_migration_models'
-
 class SplitMediaResourcesTable < ActiveRecord::Migration
   include Madek::MigrationHelper
-  include MediaResourceMigrationModels
+  include Madek::MediaResourceMigrationModels
 
   def change
     ###########################################################################

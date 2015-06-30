@@ -6,6 +6,7 @@ AllCops:
     - 'config/**/*'
     - 'db/**/*'
     - 'lib/madek/migration_helper.rb'
+    - 'lib/madek/media_resource_migration_models.rb'
     - 'tmp/**/*'
   RunRailsCops: true
 

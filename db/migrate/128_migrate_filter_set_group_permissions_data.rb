@@ -1,9 +1,7 @@
-require Rails.root.join 'db', 'migrate', 'media_resource_migration_models'
-
 class MigrateFilterSetGroupPermissionsData < ActiveRecord::Migration
 
   include Madek::MigrationHelper
-  include MediaResourceMigrationModels
+  include Madek::MediaResourceMigrationModels
 
   class ::MigrationFilterSetGroupPermission < ActiveRecord::Base
     self.table_name = :filter_set_group_permissions
