@@ -1,0 +1,29 @@
+jobs:
+
+  tests-mri:
+
+    name: Tests MRI-2.1
+
+    description: |
+      Run all specs under MRI 2.1.
+
+    priority: 1
+
+    run-on:
+    - type: branch
+      include-match: ^.*$
+
+    context:
+      _cider-ci_include:
+        - .cider-ci/shared/tests-context.yml
+
+      task-defaults:
+        environment-variables:
+          RBENV_VERSION: 2.1
+
+        scripts:
+          test:
+            environment-variables:
+              RBENV_VERSION: 2.1
+
+
