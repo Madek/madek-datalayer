@@ -2,25 +2,12 @@ class MediaResource < ActiveRecord::Base
   self.table_name = :vw_media_resources
   self.primary_key = :id
 
-  # TODO: still needed?
-  def self.viewable_by_user(user)
-    scope_helper(:viewable_by_user, user)
-  end
-
   def self.viewable_by_user_or_public(user)
     scope_helper(:viewable_by_user_or_public, user)
   end
 
   def self.filter(filter_opts)
     scope_helper(:filter, filter_opts)
-  end
-
-  def self.entrusted_to_user(user)
-    scope_helper(:entrusted_to_user, user)
-  end
-
-  def self.entrusted_to_group(group)
-    scope_helper(:entrusted_to_group, group)
   end
 
   def self.unified_scope(scope1, scope2, scope3)

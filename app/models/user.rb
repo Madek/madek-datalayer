@@ -20,7 +20,6 @@ class User < ActiveRecord::Base
   has_many :collections, foreign_key: :responsible_user_id
   has_many :media_entries, foreign_key: :responsible_user_id
   has_many :filter_sets, foreign_key: :responsible_user_id
-  has_many :media_resources, foreign_key: :responsible_user_id
 
   has_many :incomplete_media_entries,
            -> { where(is_published: false) },
@@ -41,8 +40,6 @@ class User < ActiveRecord::Base
   has_many :created_custom_urls, class_name: 'CustomUrl', foreign_key: :creator_id
   has_many :updated_custom_urls, class_name: 'CustomUrl', foreign_key: :updator_id
 
-  #############################################################
-
   has_and_belongs_to_many :favorite_media_entries,
                           join_table: 'favorite_media_entries',
                           class_name: 'MediaEntry'
@@ -52,14 +49,6 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :favorite_filter_sets,
                           join_table: 'favorite_filter_sets',
                           class_name: 'FilterSet'
-
-  def favorite_media_resources
-    MediaResource.unified_scope(favorite_media_entries,
-                                favorite_collections,
-                                favorite_filter_sets)
-  end
-
-  #############################################################
 
   has_and_belongs_to_many :groups
   has_one :admin, dependent: :destroy
