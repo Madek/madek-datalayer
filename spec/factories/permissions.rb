@@ -120,17 +120,17 @@ FactoryGirl.define do
 
     factory :vocabulary_api_client_permission,
             class: Permissions::VocabularyApiClientPermission do
-      api_client { ApiClient.find_random || (FactoryGirl.create :api_client) }
+      api_client { FactoryGirl.create :api_client }
     end
 
     factory :vocabulary_group_permission,
             class: Permissions::VocabularyGroupPermission do
-      group { Group.find_random || (FactoryGirl.create :group) }
+      group { FactoryGirl.create :group }
     end
 
     factory :vocabulary_user_permission,
             class: Permissions::VocabularyUserPermission do
-      user { User.find_random || (FactoryGirl.create :user) }
+      user { FactoryGirl.create :user }
     end
 
   end
