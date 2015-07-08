@@ -21,13 +21,13 @@ class User < ActiveRecord::Base
   has_many :media_entries, foreign_key: :responsible_user_id
   has_many :filter_sets, foreign_key: :responsible_user_id
 
-  has_many :incomplete_media_entries,
+  has_many :unpublished_media_entries,
            -> { where(is_published: false) },
            foreign_key: :creator_id,
            class_name: 'MediaEntry',
            dependent: :destroy
 
-  has_many :created_media_entries,
+  has_many :published_media_entries,
            class_name: 'MediaEntry',
            foreign_key: :creator_id
 
