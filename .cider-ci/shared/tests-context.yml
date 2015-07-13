@@ -81,12 +81,6 @@ task-defaults:
       - script: bundle-mri
       - script: configure-database
 
-    setup-madek:
-      order: 4
-      body: bundle exec rake madek:setup:dirs
-      start-when:
-      - script: bundle-mri
-
     start-vnc:
       body: tightvncserver ":$XVNC_PORT"  -geometry 1024x768 -rfbport "$XVNC_PORT"  -interface '127.0.0.1'
 
@@ -99,7 +93,6 @@ task-defaults:
       start-when:
       - script: start-vnc
       - script: create-database
-      - script: setup-madek
       - script: bundle-jruby
 
     delete-database:

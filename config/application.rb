@@ -25,11 +25,13 @@ module MadekDatalayer
 
     config.active_record.schema_format = :sql
 
+    config.paths["config/initializers"] <<  \
+      Rails.root.join('engines', 'datalayer', 'initializers')
+
     config.autoload_paths += [
       Rails.root.join('app', 'lib'),
       Rails.root.join('lib')
     ]
-
 
   end
 end
