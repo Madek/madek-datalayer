@@ -42,8 +42,8 @@ class CreateVocabularyAndAddOtherMetaDataFields < ActiveRecord::Migration
 #      t.index [:vocable_id, :meta_datum_id]
 #    end
  
-    add_column :keyword_terms, :meta_key_id, :string
-    add_index :keyword_terms, :meta_key_id
+    add_column :keywords, :meta_key_id, :string
+    add_index :keywords, :meta_key_id
 
     add_column :meta_keys, :is_extensible, :bool, default: false
   end

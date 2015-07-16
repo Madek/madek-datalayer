@@ -1,7 +1,9 @@
 FactoryGirl.define do
   factory :keyword do
-    user { FactoryGirl.create :user }
-    keyword_term { FactoryGirl.create :keyword_term }
-    meta_datum { FactoryGirl.create :meta_datum_keywords }
+    term { Faker::Lorem.words.join(' ') }
+    meta_key do
+      MetaKey.find_by(id: 'test:keywords') \
+               ||  FactoryGirl.create(:meta_key_keywords)
+    end
   end
 end

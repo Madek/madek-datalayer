@@ -32,14 +32,21 @@ FactoryGirl.define do
   factory :meta_datum_keywords, class: MetaDatum::Keywords do
     meta_key do
       MetaKey.find_by(id: 'test:keywords') \
-               || FactoryGirl.create(:meta_key_keywords)
+        || FactoryGirl.create(:meta_key_text)
     end
+    keywords { (1..3).map { FactoryGirl.create :keyword } }
 
     after :build do |mdt|
       unless mdt.media_entry or mdt.collection or mdt.filter_set
         mdt.media_entry = FactoryGirl.create :media_entry
       end
     end
+  end
+
+  factory :meta_datum_keyword, class: MetaDatum::Keyword do
+    user { create(:user) }
+    keyword { create(:keyword) }
+    meta_datum { create(:meta_datum_keywords) }
   end
 
   factory :meta_datum_licenses, class: MetaDatum::Licenses do

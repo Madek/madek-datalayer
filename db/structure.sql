@@ -140,44 +140,6 @@ CREATE FUNCTION check_users_apiclients_login_uniqueness() RETURNS trigger
 
 
 --
--- Name: delete_empty_keywords_after_delete_join(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION delete_empty_keywords_after_delete_join() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-                    BEGIN
-                      IF (EXISTS (SELECT 1 FROM meta_data WHERE meta_data.id = OLD.meta_datum_id)
-                          AND NOT EXISTS ( SELECT 1 FROM meta_data
-                                            JOIN  keywords ON meta_data.id = keywords.meta_datum_id
-                                            WHERE meta_data.id = OLD.meta_datum_id)
-                            ) THEN
-                        DELETE FROM meta_data WHERE meta_data.id = OLD.meta_datum_id;
-                      END IF;
-                      RETURN NEW;
-                    END;
-                    $$;
-
-
---
--- Name: delete_empty_keywords_after_insert(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION delete_empty_keywords_after_insert() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-                    BEGIN
-                      IF ( NOT EXISTS ( SELECT 1 FROM meta_data
-                                            JOIN keywords ON meta_data.id = keywords.meta_datum_id
-                                            WHERE meta_data.id = NEW.id)) THEN
-                        DELETE FROM meta_data WHERE meta_data.id = NEW.id;
-                      END IF;
-                      RETURN NEW;
-                    END;
-                    $$;
-
-
---
 -- Name: delete_empty_meta_data_groups_after_delete_join(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -207,6 +169,44 @@ CREATE FUNCTION delete_empty_meta_data_groups_after_insert() RETURNS trigger
                     BEGIN
                       IF ( NOT EXISTS ( SELECT 1 FROM meta_data
                                             JOIN meta_data_groups ON meta_data.id = meta_data_groups.meta_datum_id
+                                            WHERE meta_data.id = NEW.id)) THEN
+                        DELETE FROM meta_data WHERE meta_data.id = NEW.id;
+                      END IF;
+                      RETURN NEW;
+                    END;
+                    $$;
+
+
+--
+-- Name: delete_empty_meta_data_keywords_after_delete_join(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION delete_empty_meta_data_keywords_after_delete_join() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+                    BEGIN
+                      IF (EXISTS (SELECT 1 FROM meta_data WHERE meta_data.id = OLD.meta_datum_id)
+                          AND NOT EXISTS ( SELECT 1 FROM meta_data
+                                            JOIN  meta_data_keywords ON meta_data.id = meta_data_keywords.meta_datum_id
+                                            WHERE meta_data.id = OLD.meta_datum_id)
+                            ) THEN
+                        DELETE FROM meta_data WHERE meta_data.id = OLD.meta_datum_id;
+                      END IF;
+                      RETURN NEW;
+                    END;
+                    $$;
+
+
+--
+-- Name: delete_empty_meta_data_keywords_after_insert(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION delete_empty_meta_data_keywords_after_insert() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+                    BEGIN
+                      IF ( NOT EXISTS ( SELECT 1 FROM meta_data
+                                            JOIN meta_data_keywords ON meta_data.id = meta_data_keywords.meta_datum_id
                                             WHERE meta_data.id = NEW.id)) THEN
                         DELETE FROM meta_data WHERE meta_data.id = NEW.id;
                       END IF;
@@ -691,30 +691,16 @@ CREATE TABLE io_mappings (
 
 
 --
--- Name: keyword_terms; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: keywords; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE TABLE keyword_terms (
+CREATE TABLE keywords (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     term character varying DEFAULT ''::character varying NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     creator_id uuid,
     meta_key_id character varying NOT NULL
-);
-
-
---
--- Name: keywords; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE keywords (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    user_id uuid,
-    meta_datum_id uuid NOT NULL,
-    keyword_term_id uuid NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -893,6 +879,20 @@ CREATE TABLE meta_data (
 CREATE TABLE meta_data_groups (
     meta_datum_id uuid NOT NULL,
     group_id uuid NOT NULL
+);
+
+
+--
+-- Name: meta_data_keywords; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE meta_data_keywords (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    user_id uuid,
+    meta_datum_id uuid NOT NULL,
+    keyword_id uuid NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -1338,7 +1338,7 @@ ALTER TABLE ONLY io_mappings
 -- Name: keyword_terms_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
-ALTER TABLE ONLY keyword_terms
+ALTER TABLE ONLY keywords
     ADD CONSTRAINT keyword_terms_pkey PRIMARY KEY (id);
 
 
@@ -1346,7 +1346,7 @@ ALTER TABLE ONLY keyword_terms
 -- Name: keywords_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
-ALTER TABLE ONLY keywords
+ALTER TABLE ONLY meta_data_keywords
     ADD CONSTRAINT keywords_pkey PRIMARY KEY (id);
 
 
@@ -2112,38 +2112,10 @@ CREATE UNIQUE INDEX index_groups_users_on_user_id_and_group_id ON groups_users U
 
 
 --
--- Name: index_keyword_terms_on_meta_key_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_keywords_on_meta_key_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX index_keyword_terms_on_meta_key_id ON keyword_terms USING btree (meta_key_id);
-
-
---
--- Name: index_keywords_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_keywords_on_created_at ON keywords USING btree (created_at);
-
-
---
--- Name: index_keywords_on_keyword_term_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_keywords_on_keyword_term_id ON keywords USING btree (keyword_term_id);
-
-
---
--- Name: index_keywords_on_meta_datum_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_keywords_on_meta_datum_id ON keywords USING btree (meta_datum_id);
-
-
---
--- Name: index_keywords_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_keywords_on_user_id ON keywords USING btree (user_id);
+CREATE INDEX index_keywords_on_meta_key_id ON keywords USING btree (meta_key_id);
 
 
 --
@@ -2336,6 +2308,34 @@ CREATE UNIQUE INDEX index_meta_data_institutional_groups ON meta_data_groups USI
 
 
 --
+-- Name: index_meta_data_keywords_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_meta_data_keywords_on_created_at ON meta_data_keywords USING btree (created_at);
+
+
+--
+-- Name: index_meta_data_keywords_on_keyword_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_meta_data_keywords_on_keyword_id ON meta_data_keywords USING btree (keyword_id);
+
+
+--
+-- Name: index_meta_data_keywords_on_meta_datum_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_meta_data_keywords_on_meta_datum_id ON meta_data_keywords USING btree (meta_datum_id);
+
+
+--
+-- Name: index_meta_data_keywords_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_meta_data_keywords_on_user_id ON meta_data_keywords USING btree (user_id);
+
+
+--
 -- Name: index_meta_data_licenses_on_meta_datum_id_and_license_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2500,14 +2500,14 @@ CREATE INDEX index_zencoder_jobs_on_media_file_id ON zencoder_jobs USING btree (
 -- Name: keyword_terms_term_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX keyword_terms_term_idx ON keyword_terms USING gin (term gin_trgm_ops);
+CREATE INDEX keyword_terms_term_idx ON keywords USING gin (term gin_trgm_ops);
 
 
 --
 -- Name: keyword_terms_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX keyword_terms_to_tsvector_idx ON keyword_terms USING gin (to_tsvector('english'::regconfig, (term)::text));
+CREATE INDEX keyword_terms_to_tsvector_idx ON keywords USING gin (to_tsvector('english'::regconfig, (term)::text));
 
 
 --
@@ -2560,20 +2560,6 @@ CREATE CONSTRAINT TRIGGER trigger_check_users_apiclients_login_uniqueness_on_use
 
 
 --
--- Name: trigger_delete_empty_keywords_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE CONSTRAINT TRIGGER trigger_delete_empty_keywords_after_delete_join AFTER DELETE ON keywords DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_empty_keywords_after_delete_join();
-
-
---
--- Name: trigger_delete_empty_keywords_after_insert; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE CONSTRAINT TRIGGER trigger_delete_empty_keywords_after_insert AFTER INSERT ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::Keywords'::text)) EXECUTE PROCEDURE delete_empty_keywords_after_insert();
-
-
---
 -- Name: trigger_delete_empty_meta_data_groups_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -2585,6 +2571,20 @@ CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_groups_after_delete_joi
 --
 
 CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_groups_after_insert AFTER INSERT ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::Groups'::text)) EXECUTE PROCEDURE delete_empty_meta_data_groups_after_insert();
+
+
+--
+-- Name: trigger_delete_empty_meta_data_keywords_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_keywords_after_delete_join AFTER DELETE ON meta_data_keywords DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_empty_meta_data_keywords_after_delete_join();
+
+
+--
+-- Name: trigger_delete_empty_meta_data_keywords_after_insert; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_keywords_after_insert AFTER INSERT ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::Keywords'::text)) EXECUTE PROCEDURE delete_empty_meta_data_keywords_after_insert();
 
 
 --
@@ -2777,13 +2777,6 @@ CREATE TRIGGER update_updated_at_column_of_io_mappings BEFORE UPDATE ON io_mappi
 
 
 --
--- Name: update_updated_at_column_of_keyword_terms; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_keyword_terms BEFORE UPDATE ON keyword_terms FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
-
-
---
 -- Name: update_updated_at_column_of_keywords; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -2844,6 +2837,13 @@ CREATE TRIGGER update_updated_at_column_of_media_files BEFORE UPDATE ON media_fi
 --
 
 CREATE TRIGGER update_updated_at_column_of_media_resources BEFORE UPDATE ON media_resources FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+
+
+--
+-- Name: update_updated_at_column_of_meta_data_keywords; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_meta_data_keywords BEFORE UPDATE ON meta_data_keywords FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
@@ -3306,35 +3306,11 @@ ALTER TABLE ONLY io_mappings
 
 
 --
--- Name: keyword-terms_meta-keys_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY keyword_terms
-    ADD CONSTRAINT "keyword-terms_meta-keys_fkey" FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON DELETE CASCADE;
-
-
---
--- Name: keywords_keyword-terms_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: keywords_meta-keys_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY keywords
-    ADD CONSTRAINT "keywords_keyword-terms_fkey" FOREIGN KEY (keyword_term_id) REFERENCES keyword_terms(id) ON DELETE CASCADE;
-
-
---
--- Name: keywords_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY keywords
-    ADD CONSTRAINT "keywords_meta-data_fkey" FOREIGN KEY (meta_datum_id) REFERENCES meta_data(id) ON DELETE CASCADE;
-
-
---
--- Name: keywords_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY keywords
-    ADD CONSTRAINT keywords_users_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+    ADD CONSTRAINT "keywords_meta-keys_fkey" FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON DELETE CASCADE;
 
 
 --
@@ -3474,6 +3450,22 @@ ALTER TABLE ONLY meta_data_groups
 
 
 --
+-- Name: meta-data-keywords_keywords_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY meta_data_keywords
+    ADD CONSTRAINT "meta-data-keywords_keywords_fkey" FOREIGN KEY (keyword_id) REFERENCES keywords(id) ON DELETE CASCADE;
+
+
+--
+-- Name: meta-data-keywords_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY meta_data_keywords
+    ADD CONSTRAINT "meta-data-keywords_users_fkey" FOREIGN KEY (user_id) REFERENCES users(id);
+
+
+--
 -- Name: meta-data-meta-terms_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3551,6 +3543,14 @@ ALTER TABLE ONLY meta_data
 
 ALTER TABLE ONLY meta_keys
     ADD CONSTRAINT "meta-keys_vocabularies_fkey" FOREIGN KEY (vocabulary_id) REFERENCES vocabularies(id) ON DELETE CASCADE;
+
+
+--
+-- Name: meta_data_keywords_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY meta_data_keywords
+    ADD CONSTRAINT "meta_data_keywords_meta-data_fkey" FOREIGN KEY (meta_datum_id) REFERENCES meta_data(id) ON DELETE CASCADE;
 
 
 --

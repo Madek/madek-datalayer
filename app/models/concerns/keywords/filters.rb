@@ -1,5 +1,5 @@
 module Concerns
-  module KeywordTerms
+  module Keywords
     module Filters
       extend ActiveSupport::Concern
 
@@ -10,7 +10,7 @@ module Concerns
           else
             joins(:meta_key)
               .where(
-                'keyword_terms.term ILIKE :t OR meta_keys.id ILIKE :t',
+                'keywords.term ILIKE :t OR meta_keys.id ILIKE :t',
                 t: "%#{term}%"
               )
           end

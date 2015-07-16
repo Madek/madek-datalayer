@@ -9,7 +9,7 @@ class Vocabulary < ActiveRecord::Base
   include Concerns::Vocabularies::Filters
 
   has_many :meta_keys, -> { order(:id) }
-  has_many :keyword_terms,
+  has_many :keywords,
            through: :meta_keys
 
   scope :sorted, -> { order(:id) }

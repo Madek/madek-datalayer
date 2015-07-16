@@ -53,6 +53,11 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :groups
   has_one :admin, dependent: :destroy
 
+  has_and_belongs_to_many :used_keywords,
+                          join_table: 'meta_data_keywords',
+                          association_foreign_key: :keyword_id,
+                          class_name: 'Keyword'
+
   #############################################################
 
   validates_format_of :email, with: /@/, message: "Email must contain a '@' sign."

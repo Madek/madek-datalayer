@@ -4,7 +4,7 @@ class MigrateCoreKeys < ActiveRecord::Migration
   class IoMapping < ActiveRecord::Base ; end
   class MetaData < ActiveRecord::Base ; end
   class MetaKeyDefinitions < ActiveRecord::Base ; end
-  class KeywordTerm < ActiveRecord::Base ; end
+  class Keyword < ActiveRecord::Base ; end
   class Vocabulary < ActiveRecord::Base; end
 
 
@@ -82,7 +82,7 @@ class MigrateCoreKeys < ActiveRecord::Migration
       MetaKey.find_or_create_by(id: update_data[:id]) \
         .update_columns update_data[:attributes]
 
-      [IoMapping,MetaData,MetaKeyDefinitions,KeywordTerm].each do |klass|
+      [IoMapping,MetaData,MetaKeyDefinitions,Keyword].each do |klass|
         klass.where(meta_key_id: update_data[:id]).find_each do |model|
           model.update_columns(meta_key_id: update_data[:attributes][:id])
           puts "* #{klass} * #{model.reload.meta_key_id}"

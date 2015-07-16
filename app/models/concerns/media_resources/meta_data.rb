@@ -17,7 +17,7 @@ module Concerns
 
       def keywords
         Keyword
-          .joins(:meta_datum)
+          .joins(:meta_data)
           .where(meta_data: Hash[
         :meta_key_id, 'madek_core:keywords',
         "#{self.class.model_name.singular}_id".to_sym, id])

@@ -5,7 +5,6 @@ module Concerns
         extend ActiveSupport::Concern
 
         include Concerns::MediaResources::Filters::MetaData::Actors
-        include Concerns::MediaResources::Filters::MetaData::Keywords
         include Concerns::MediaResources::Filters::MetaData::Primitive
 
         included do

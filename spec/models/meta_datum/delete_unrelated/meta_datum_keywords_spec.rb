@@ -17,10 +17,9 @@ describe MetaDatum::Keywords do
         @meta_datum = FactoryGirl.create :meta_datum_keywords,
                                          collection: @collection,
                                          meta_key: @meta_key_keywords
-        keyword_term = FactoryGirl.create :keyword_term,
-                                          meta_key: @meta_key_keywords
-        FactoryGirl.create :keyword, keyword_term: keyword_term,
-                                     meta_datum: @meta_datum
+        keyword = FactoryGirl.create :keyword,
+                                     meta_key: @meta_key_keywords
+        @meta_datum.keywords << keyword
       end
     end
 

@@ -1,16 +1,13 @@
-# -*- encoding : utf-8 -*-
 class Keyword < ActiveRecord::Base
 
-  belongs_to :user
-  belongs_to :meta_datum
-  belongs_to :keyword_term
+  include Concerns::Keywords::Filters
 
-  before_create do
-    keyword_term.update!(creator: user) unless keyword_term.creator.present?
-  end
+  belongs_to :meta_key
+  belongs_to :creator, class_name: User
+  has_and_belongs_to_many :meta_data, join_table: :meta_data_keywords
 
   def to_s
-    "#{keyword_term}"
+    term
   end
 
 end

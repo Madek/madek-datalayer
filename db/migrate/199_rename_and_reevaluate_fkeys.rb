@@ -20,13 +20,13 @@ class RenameAndReevaluateFkeys < ActiveRecord::Migration
     remove_foreign_key :meta_data, :meta_keys
     add_foreign_key :meta_data, :meta_keys, on_delete: :cascade, name: 'meta-data_meta-keys_fkey'
 
-    remove_foreign_key :keywords, :keyword_terms
-    add_foreign_key :keywords, :keyword_terms, on_delete: :cascade,
-      name: 'keywords_keyword-terms_fkey'
-    remove_foreign_key :keywords, :users
-    add_foreign_key :keywords, :users, name: :keywords_users_fkey
-    remove_foreign_key :keywords, :meta_data
-    add_foreign_key :keywords, :meta_data, on_delete: :cascade, name: 'keywords_meta-data_fkey'
+    remove_foreign_key :meta_data_keywords, :keywords
+    add_foreign_key :meta_data_keywords, :keywords, on_delete: :cascade,
+      name: 'meta-data-keywords_keywords_fkey'
+    remove_foreign_key :meta_data_keywords, :users
+    add_foreign_key :meta_data_keywords, :users, name: 'meta-data-keywords_users_fkey'
+    remove_foreign_key :meta_data_keywords, :meta_data
+    add_foreign_key :meta_data_keywords, :meta_data, on_delete: :cascade, name: 'meta_data_keywords_meta-data_fkey'
 
     remove_foreign_key :meta_data_meta_terms, :meta_data
     add_foreign_key :meta_data_meta_terms, :meta_data, on_delete: :cascade, name: 'meta-data-meta-terms_meta-data_fkey'
@@ -257,9 +257,9 @@ class RenameAndReevaluateFkeys < ActiveRecord::Migration
     remove_foreign_key :meta_keys, :vocabularies
     add_foreign_key :meta_keys, :vocabularies, on_delete: :cascade,
       name: 'meta-keys_vocabularies_fkey'
-    remove_foreign_key :keyword_terms, :meta_keys
-    add_foreign_key :keyword_terms, :meta_keys, on_delete: :cascade,
-      name: 'keyword-terms_meta-keys_fkey'
+    remove_foreign_key :keywords, :meta_keys
+    add_foreign_key :keywords, :meta_keys, on_delete: :cascade,
+      name: 'keywords_meta-keys_fkey'
 
     %w(user api_client group).each do |entity|
       remove_foreign_key "vocabulary_#{entity}_permissions", "#{entity.pluralize}"

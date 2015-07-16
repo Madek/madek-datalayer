@@ -49,9 +49,16 @@ class MigrateMetaDataToVocabulary < ActiveRecord::Migration
       foreign_key: :meta_datum_id,
       association_foreign_key: :group_id
 
-    has_many :keywords
+    has_and_belongs_to_many :keywords,
+      join_table: :meta_data_keywords,
+      foreign_key: :meta_datum_id,
+      association_foreign_key: :keyword_id
 
     belongs_to :meta_key
+  end
+
+  class MetaDatum::Keywords < ActiveRecord::Base
+    self.table_name = :meta_data_keywords
   end
 
   class Person < ActiveRecord::Base
@@ -63,19 +70,12 @@ class MigrateMetaDataToVocabulary < ActiveRecord::Migration
   end
 
   class Keyword < ActiveRecord::Base
-    belongs_to :keyword_term
-    belongs_to :meta_datum_keywords
   end
-
-  class KeywordTerm < ActiveRecord::Base
-    has_many :keyword_terms
-  end
-
 
   def change
     @meta_data_count = 0
     begin 
-      KeywordTerm.reset_column_information
+      Keyword.reset_column_information
       Vocabulary.reset_column_information
       MetaKey.reset_column_information
       MetaDatum.reset_column_information
@@ -182,8 +182,8 @@ class MigrateMetaDataToVocabulary < ActiveRecord::Migration
 
       when 'MetaDatum::Vocables'
         meta_datum.meta_terms.each do |meta_term|
-          keyword_term = KeywordTerm.find_or_create_by(term: meta_term.term, meta_key_id: new_meta_key.id)
-          Keyword.find_or_create_by meta_datum_id: new_meta_datum.id, keyword_term_id: keyword_term.id
+          keyword = Keyword.find_or_create_by(term: meta_term.term, meta_key_id: new_meta_key.id)
+          MetaDatum::Keywords.find_or_create_by(meta_datum_id: new_meta_datum.id, keyword_id: keyword.id)
         end
         meta_datum.meta_terms.reset 
         new_meta_datum.keywords.reset

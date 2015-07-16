@@ -4,7 +4,7 @@ class DeleteUnrelatedMetaData < ActiveRecord::Migration
     [ 
       {join_table: 'meta_data_groups',
         type: 'MetaDatum::Groups'},
-      {join_table: 'keywords',
+      {join_table: 'meta_data_keywords',
         type: 'MetaDatum::Keywords'},
       {join_table: 'meta_data_licenses',
         type: 'MetaDatum::Licenses'},
