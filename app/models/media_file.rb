@@ -27,9 +27,9 @@ class MediaFile < ActiveRecord::Base
 
   def delete_files
     begin
-      File.delete(file_storage_location)
-    rescue Exception => e
-      Rails.logger.warn Formatter.exception_to_log_s(e)
+      File.delete(store_location)
+    rescue Exception => error # ignore errors on FILE deletion, but do log them:
+      Rails.logger.warn(error)
     end
   end
 
