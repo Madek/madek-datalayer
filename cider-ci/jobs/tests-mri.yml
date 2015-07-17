@@ -15,7 +15,7 @@ jobs:
 
     context:
       _cider-ci_include:
-        - .cider-ci/shared/tests-context.yml
+        - cider-ci/shared/tests-context.yml
 
       task-defaults:
         environment-variables:
