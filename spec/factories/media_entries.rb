@@ -3,10 +3,11 @@ FactoryGirl.define do
   factory :media_entry do
     created_at { Time.now }
 
-    before(:create)do |me|
-      me.responsible_user_id ||= (User.find_random || FactoryGirl.create(:user)).id
-      me.creator_id ||= (User.find_random || FactoryGirl.create(:user)).id
-    end
+    # factory "publishes" by default, set to false to test publishing itself
+    is_published true
+
+    association :responsible_user, factory: :user
+    association :creator, factory: :user
 
     factory :media_entry_with_title do
       transient do
