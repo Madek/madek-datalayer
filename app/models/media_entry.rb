@@ -15,5 +15,7 @@ class MediaEntry < ActiveRecord::Base
            through: :collection_media_entry_arcs,
            source: :collection
 
+  default_scope { where(is_published: true) }
   default_scope { reorder(:created_at, :id) }
+
 end
