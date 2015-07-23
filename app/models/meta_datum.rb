@@ -12,7 +12,6 @@ class MetaDatum < ActiveRecord::Base
       end
     end
     alias_method_chain :new, :cast
-
   end
 
   ########################################
@@ -23,9 +22,23 @@ class MetaDatum < ActiveRecord::Base
   belongs_to :media_entry
   belongs_to :collection
   belongs_to :filter_set
+  belongs_to :created_by, class_name: 'User'
+
+  # TODO: create DB constraint for this
+  validates_presence_of :created_by, on: :create
 
   # needed for Pundit#authorize in controllers
   def self.policy_class
     MetaDatumPolicy
+  end
+
+  # we need to hook in the create in order to set the join
+  # table values with the created_by user (#set_value!)
+  def self.create_with_user!(user, attrs)
+    value = attrs.delete(:value)
+    meta_datum = new(attrs)
+    meta_datum.set_value!(value, user)
+    meta_datum.save!
+    meta_datum
   end
 end

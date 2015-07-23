@@ -6,10 +6,10 @@ describe 'relations between meta_data and meta_keys' do
   before :all do
     @collection = FactoryGirl.create :collection
     FactoryGirl.create :meta_key_title
-    MetaDatum::Text.create \
-      collection: @collection,
-      value: 'Blah',
-      meta_key_id: 'test:title'
+    FactoryGirl.create(:meta_datum_text,
+                       collection: @collection,
+                       value: 'Blah',
+                       meta_key_id: 'test:title')
   end
 
   describe MetaDatum do

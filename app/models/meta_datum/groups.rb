@@ -1,16 +1,16 @@
 class MetaDatum::Groups < MetaDatum
-  has_and_belongs_to_many :groups,
-                          join_table: :meta_data_groups,
-                          foreign_key: :meta_datum_id,
-                          association_foreign_key: :group_id
+
+  has_many :meta_data_groups,
+           class_name: 'MetaDatum::Group',
+           foreign_key: :meta_datum_id
+
+  has_many :groups,
+           through: :meta_data_groups
 
   alias_method :value, :groups
 
-  def value=(groups)
-    with_sanitized groups do |groups|
-      self.groups.clear
-      self.groups = groups
-    end
+  def set_value!(groups, created_by_user)
+    reset_with_sanitized_value!(groups, 'group', created_by_user)
   end
 
 end

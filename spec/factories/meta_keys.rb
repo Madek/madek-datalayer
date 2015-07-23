@@ -24,7 +24,7 @@ FactoryGirl.define do
     end
 
     factory :meta_key_licenses, class: MetaKey do
-      id 'test:license'
+      id 'test:licenses'
       meta_datum_object_type 'MetaDatum::Licenses'
     end
 

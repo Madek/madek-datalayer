@@ -23,8 +23,8 @@ class RenameAndReevaluateFkeys < ActiveRecord::Migration
     remove_foreign_key :meta_data_keywords, :keywords
     add_foreign_key :meta_data_keywords, :keywords, on_delete: :cascade,
       name: 'meta-data-keywords_keywords_fkey'
-    remove_foreign_key :meta_data_keywords, :users
-    add_foreign_key :meta_data_keywords, :users, name: 'meta-data-keywords_users_fkey'
+    remove_foreign_key :meta_data_keywords, column: :created_by_id
+    add_foreign_key :meta_data_keywords, :users, column: :created_by_id, name: 'meta-data-keywords_users_fkey'
     remove_foreign_key :meta_data_keywords, :meta_data
     add_foreign_key :meta_data_keywords, :meta_data, on_delete: :cascade, name: 'meta_data_keywords_meta-data_fkey'
 

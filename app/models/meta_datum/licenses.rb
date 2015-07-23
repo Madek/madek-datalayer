@@ -1,16 +1,16 @@
 class MetaDatum::Licenses < MetaDatum
-  has_and_belongs_to_many :licenses,
-                          join_table: :meta_data_licenses,
-                          foreign_key: :meta_datum_id,
-                          association_foreign_key: :license_id
+
+  has_many :meta_data_licenses,
+           class_name: 'MetaDatum::License',
+           foreign_key: :meta_datum_id
+
+  has_many :licenses,
+           through: :meta_data_licenses
 
   alias_method :value, :licenses
 
-  def value=(licenses)
-    with_sanitized licenses do |licenses|
-      self.licenses.clear
-      self.licenses = licenses
-    end
+  def set_value!(licenses, created_by_user)
+    reset_with_sanitized_value!(licenses, 'license', created_by_user)
   end
 
 end

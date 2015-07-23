@@ -74,7 +74,8 @@ RSpec.shared_examples 'keywords' do
                          Hash[:meta_key, meta_key,
                               model_name_singular, resource]
 
-    meta_datum.keywords << FactoryGirl.create(:keyword)
+    mdk = create(:meta_datum_keyword, meta_datum: meta_datum)
+    meta_datum.meta_data_keywords << mdk
 
     expect(resource.keywords).not_to be_empty
   end

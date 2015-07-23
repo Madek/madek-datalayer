@@ -16,6 +16,11 @@ describe MetaDatum::Text do
       expect(FactoryGirl.create :meta_datum_text).to be_persisted
     end
 
+    it 'should raise an error for empty created_by' do
+      expect { FactoryGirl.create :meta_datum_text, created_by: nil }
+        .to raise_error
+    end
+
   end
 
   context 'an existing MetaDatumString instance ' do

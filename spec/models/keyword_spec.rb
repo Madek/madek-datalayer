@@ -8,10 +8,10 @@ describe Keyword do
       common_user  = FactoryGirl.create :user
 
       FactoryGirl.create(:meta_datum_keyword,
-                         user: creator_user,
+                         created_by: creator_user,
                          keyword: keyword)
       FactoryGirl.create(:meta_datum_keyword,
-                         user: common_user,
+                         created_by: common_user,
                          keyword: keyword)
 
       expect(keyword.reload.creator).to eq(creator_user)

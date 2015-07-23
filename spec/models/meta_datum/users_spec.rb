@@ -54,9 +54,9 @@ describe MetaDatum::Users do
           it 'resets the associated users' do
             expect(@meta_datum_users.users).not_to be == [@user1, @user2]
             expect do
-              @meta_datum_users.value = [@user1, @user2]
+              @meta_datum_users.set_value!([@user1, @user2], create(:user))
             end.not_to raise_error
-            expect(@meta_datum_users.users).to be == [@user1, @user2]
+            expect(@meta_datum_users.reload.users).to be == [@user1, @user2]
           end
 
         end

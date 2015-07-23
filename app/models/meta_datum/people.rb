@@ -1,8 +1,11 @@
 class MetaDatum::People < MetaDatum
-  has_and_belongs_to_many :people,
-                          join_table: :meta_data_people,
-                          foreign_key: :meta_datum_id,
-                          association_foreign_key: :person_id
+
+  has_many :meta_data_people,
+           class_name: 'MetaDatum::Person',
+           foreign_key: :meta_datum_id
+
+  has_many :people,
+           through: :meta_data_people
 
   def to_s
     value.map(&:to_s).join('; ')
@@ -10,11 +13,8 @@ class MetaDatum::People < MetaDatum
 
   alias_method :value, :people
 
-  def value=(people)
-    with_sanitized people do |people|
-      self.people.clear
-      self.people = people
-    end
+  def set_value!(people, created_by_user)
+    reset_with_sanitized_value!(people, 'person', created_by_user)
   end
 
 end

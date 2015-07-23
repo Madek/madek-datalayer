@@ -1,6 +1,13 @@
 module Concerns
   module MetaData
     module SanitizeValue
+
+      def reset_with_sanitized_value!(resources, type, created_by_user)
+        with_sanitized(resources) do |resources|
+          reset_resources!(resources, type, created_by_user)
+        end
+      end
+
       # val can be a string (text or uuid) or an array of strings (uuids).
       # In the case of uuids, the corresponding models have to be initialized.
       def with_sanitized(val)
@@ -14,6 +21,22 @@ module Concerns
       end
 
       private
+
+      def reset_resources!(resources, type, created_by_user)
+        assoc = self.send("meta_data_#{type.pluralize}")
+        resources_to_remove = self.send(type.pluralize) - resources
+        resources_to_add = resources - self.send(type.pluralize)
+
+        assoc.where(Hash[type, resources_to_remove]).delete_all
+
+        resources_to_add.each do |resource|
+          assoc << assoc.name.constantize.new(Hash[type,
+                                                   resource,
+                                                   :created_by,
+                                                   created_by_user])
+        end
+        assoc
+      end
 
       def reject_blanks_and_modelify_if_necessary(vals)
         vals

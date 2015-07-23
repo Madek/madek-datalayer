@@ -3,7 +3,7 @@ FactoryGirl.define do
   factory :media_entry do
     created_at { Time.now }
 
-    before(:create) do |me|
+    before(:create)do |me|
       me.responsible_user_id ||= (User.find_random || FactoryGirl.create(:user)).id
       me.creator_id ||= (User.find_random || FactoryGirl.create(:user)).id
     end

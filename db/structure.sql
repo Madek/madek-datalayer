@@ -867,6 +867,7 @@ CREATE TABLE meta_data (
     media_entry_id uuid,
     collection_id uuid,
     filter_set_id uuid,
+    created_by_id uuid,
     CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['MetaDatum::Licenses'::character varying, 'MetaDatum::Text'::character varying, 'MetaDatum::TextDate'::character varying, 'MetaDatum::Groups'::character varying, 'MetaDatum::Keywords'::character varying, 'MetaDatum::Vocables'::character varying, 'MetaDatum::People'::character varying, 'MetaDatum::Users'::character varying])::text[]))),
     CONSTRAINT meta_data_is_related CHECK ((((((media_entry_id IS NULL) AND (collection_id IS NULL)) AND (filter_set_id IS NOT NULL)) OR (((media_entry_id IS NULL) AND (collection_id IS NOT NULL)) AND (filter_set_id IS NULL))) OR (((media_entry_id IS NOT NULL) AND (collection_id IS NULL)) AND (filter_set_id IS NULL))))
 );
@@ -878,7 +879,8 @@ CREATE TABLE meta_data (
 
 CREATE TABLE meta_data_groups (
     meta_datum_id uuid NOT NULL,
-    group_id uuid NOT NULL
+    group_id uuid NOT NULL,
+    created_by_id uuid
 );
 
 
@@ -888,7 +890,7 @@ CREATE TABLE meta_data_groups (
 
 CREATE TABLE meta_data_keywords (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    user_id uuid,
+    created_by_id uuid,
     meta_datum_id uuid NOT NULL,
     keyword_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
@@ -902,7 +904,8 @@ CREATE TABLE meta_data_keywords (
 
 CREATE TABLE meta_data_licenses (
     meta_datum_id uuid NOT NULL,
-    license_id uuid NOT NULL
+    license_id uuid NOT NULL,
+    created_by_id uuid
 );
 
 
@@ -922,7 +925,8 @@ CREATE TABLE meta_data_meta_terms (
 
 CREATE TABLE meta_data_people (
     meta_datum_id uuid NOT NULL,
-    person_id uuid NOT NULL
+    person_id uuid NOT NULL,
+    created_by_id uuid
 );
 
 
@@ -932,7 +936,8 @@ CREATE TABLE meta_data_people (
 
 CREATE TABLE meta_data_users (
     meta_datum_id uuid NOT NULL,
-    user_id uuid NOT NULL
+    user_id uuid NOT NULL,
+    created_by_id uuid
 );
 
 
@@ -2126,6 +2131,34 @@ CREATE UNIQUE INDEX index_licenses_on_label ON licenses USING btree (label);
 
 
 --
+-- Name: index_md_groups_on_md_id_and_group_id_and_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_md_groups_on_md_id_and_group_id_and_created_by_id ON meta_data_groups USING btree (meta_datum_id, group_id, created_by_id);
+
+
+--
+-- Name: index_md_licenses_on_md_id_and_license_id_and_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_md_licenses_on_md_id_and_license_id_and_created_by_id ON meta_data_licenses USING btree (meta_datum_id, license_id, created_by_id);
+
+
+--
+-- Name: index_md_people_on_md_id_and_person_id_and_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_md_people_on_md_id_and_person_id_and_created_by_id ON meta_data_people USING btree (meta_datum_id, person_id, created_by_id);
+
+
+--
+-- Name: index_md_users_on_md_id_and_user_id_and_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_md_users_on_md_id_and_user_id_and_created_by_id ON meta_data_users USING btree (meta_datum_id, user_id, created_by_id);
+
+
+--
 -- Name: index_media_entries_on_creator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2301,17 +2334,17 @@ CREATE INDEX index_media_resources_on_updated_at ON media_resources USING btree 
 
 
 --
--- Name: index_meta_data_institutional_groups; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE UNIQUE INDEX index_meta_data_institutional_groups ON meta_data_groups USING btree (meta_datum_id, group_id);
-
-
---
 -- Name: index_meta_data_keywords_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_meta_data_keywords_on_created_at ON meta_data_keywords USING btree (created_at);
+
+
+--
+-- Name: index_meta_data_keywords_on_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_meta_data_keywords_on_created_by_id ON meta_data_keywords USING btree (created_by_id);
 
 
 --
@@ -2326,20 +2359,6 @@ CREATE INDEX index_meta_data_keywords_on_keyword_id ON meta_data_keywords USING 
 --
 
 CREATE INDEX index_meta_data_keywords_on_meta_datum_id ON meta_data_keywords USING btree (meta_datum_id);
-
-
---
--- Name: index_meta_data_keywords_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_meta_data_keywords_on_user_id ON meta_data_keywords USING btree (user_id);
-
-
---
--- Name: index_meta_data_licenses_on_meta_datum_id_and_license_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE UNIQUE INDEX index_meta_data_licenses_on_meta_datum_id_and_license_id ON meta_data_licenses USING btree (meta_datum_id, license_id);
 
 
 --
@@ -2403,20 +2422,6 @@ CREATE INDEX index_meta_data_on_meta_key_id ON meta_data USING btree (meta_key_i
 --
 
 CREATE INDEX index_meta_data_on_type ON meta_data USING btree (type);
-
-
---
--- Name: index_meta_data_people_on_meta_datum_id_and_person_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE UNIQUE INDEX index_meta_data_people_on_meta_datum_id_and_person_id ON meta_data_people USING btree (meta_datum_id, person_id);
-
-
---
--- Name: index_meta_data_users_on_meta_datum_id_and_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE UNIQUE INDEX index_meta_data_users_on_meta_datum_id_and_user_id ON meta_data_users USING btree (meta_datum_id, user_id);
 
 
 --
@@ -3450,6 +3455,14 @@ ALTER TABLE ONLY meta_data_groups
 
 
 --
+-- Name: meta-data-groups_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY meta_data_groups
+    ADD CONSTRAINT "meta-data-groups_users_fkey" FOREIGN KEY (created_by_id) REFERENCES users(id);
+
+
+--
 -- Name: meta-data-keywords_keywords_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3462,7 +3475,15 @@ ALTER TABLE ONLY meta_data_keywords
 --
 
 ALTER TABLE ONLY meta_data_keywords
-    ADD CONSTRAINT "meta-data-keywords_users_fkey" FOREIGN KEY (user_id) REFERENCES users(id);
+    ADD CONSTRAINT "meta-data-keywords_users_fkey" FOREIGN KEY (created_by_id) REFERENCES users(id);
+
+
+--
+-- Name: meta-data-licenses_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY meta_data_licenses
+    ADD CONSTRAINT "meta-data-licenses_users_fkey" FOREIGN KEY (created_by_id) REFERENCES users(id);
 
 
 --
@@ -3490,6 +3511,14 @@ ALTER TABLE ONLY meta_data_people
 
 
 --
+-- Name: meta-data-people_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY meta_data_people
+    ADD CONSTRAINT "meta-data-people_users_fkey" FOREIGN KEY (created_by_id) REFERENCES users(id);
+
+
+--
 -- Name: meta-data-users_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3503,6 +3532,14 @@ ALTER TABLE ONLY meta_data_users
 
 ALTER TABLE ONLY meta_data_users
     ADD CONSTRAINT "meta-data-users_users_fkey" FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: meta-data-users_users_fkey2; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY meta_data_users
+    ADD CONSTRAINT "meta-data-users_users_fkey2" FOREIGN KEY (created_by_id) REFERENCES users(id);
 
 
 --
@@ -3535,6 +3572,14 @@ ALTER TABLE ONLY meta_data
 
 ALTER TABLE ONLY meta_data
     ADD CONSTRAINT "meta-data_meta-keys_fkey" FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON DELETE CASCADE;
+
+
+--
+-- Name: meta-data_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY meta_data
+    ADD CONSTRAINT "meta-data_users_fkey" FOREIGN KEY (created_by_id) REFERENCES users(id);
 
 
 --
@@ -3800,6 +3845,8 @@ INSERT INTO schema_migrations (version) VALUES ('180');
 INSERT INTO schema_migrations (version) VALUES ('181');
 
 INSERT INTO schema_migrations (version) VALUES ('182');
+
+INSERT INTO schema_migrations (version) VALUES ('183');
 
 INSERT INTO schema_migrations (version) VALUES ('19');
 
