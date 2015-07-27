@@ -1,0 +1,24 @@
+pg: &default
+  adapter: postgresql
+  host: localhost
+  port: 5432
+  pool: 5
+  encoding: unicode
+  username: postgres
+  password:
+
+development:
+  <<: *default
+  database: madek-v3_development
+
+test:
+  <<: *default
+  database: madek-v3_test
+
+personas:
+  <<: *default
+  database: madek-v3_personas
+
+production:
+  <<: *default
+  database: madek-v3_production

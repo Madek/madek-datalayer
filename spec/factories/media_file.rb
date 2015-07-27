@@ -13,14 +13,15 @@ FactoryGirl.define do
   factory :media_file_for_image, class: MediaFile do
 
     before :create do
-      unless File.exist? \
-        (Rails.root.join('db/media_files',
-                         Rails.env,
-                         'attachments/b/b8bf2eb322e04a29a52fbb06d4866af8'))
-        Madek::System.execute_cmd! \
-          %(tar xf #{Rails.root.join 'spec/data/grumpy-cat_files.tar.gz'} \
-            -C #{Rails.root.join 'db/media_files/', Rails.env})
-      end
+      Madek::System.execute_cmd! \
+        "cp -r #{Madek::Constants::DATALAYER_ROOT_DIR.join(
+          'spec', 'data', 'grumpy-cat_files', 'originals', '*')} " \
+        " #{Madek::Constants::FILE_STORAGE_DIR} "
+
+      Madek::System.execute_cmd! \
+        "cp -r #{Madek::Constants::DATALAYER_ROOT_DIR.join(
+          'spec', 'data', 'grumpy-cat_files', 'thumbnails', '*')} " \
+        " #{Madek::Constants::THUMBNAIL_STORAGE_DIR} "
     end
 
     extension 'jpg'

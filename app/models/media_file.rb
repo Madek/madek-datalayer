@@ -27,7 +27,7 @@ class MediaFile < ActiveRecord::Base
 
   def delete_files
     begin
-      File.delete(store_location)
+      File.delete(original_store_location)
     rescue Exception => error # ignore errors on FILE deletion, but do log them:
       Rails.logger.warn(error)
     end
@@ -45,16 +45,17 @@ class MediaFile < ActiveRecord::Base
   ################################################################################
 
   def create_previews!
-    raise "Input file doesn't exist!" unless File.exist?(store_location)
+    raise "Input file doesn't exist!" unless File.exist?(original_store_location)
 
     THUMBNAILS.each do |thumb_size, dimensions|
       # TODO: more exception handling for the cases where
       # some thumbnails and/or previews potentially already exist ?
-      store_location_new_file = "#{store_location}_#{thumb_size}.jpg"
+      store_location_new_file = "#{thumbnail_store_location}_#{thumb_size}.jpg"
       w = (dimensions ? dimensions[:width] : width)
       h = (dimensions ? dimensions[:height] : height)
 
-      FileConversion.convert(store_location, store_location_new_file, w, h)
+      FileConversion.convert(original_store_location,
+                             store_location_new_file, w, h)
 
       previews.create!(content_type: 'image/jpeg',
                        filename: store_location_new_file.split('/').last,
@@ -88,7 +89,11 @@ class MediaFile < ActiveRecord::Base
     media_type =~ /video|audio/
   end
 
-  def store_location
-    File.join(FILE_STORAGE_DIR, guid.first, guid)
+  def original_store_location
+    File.join(Madek::Constants::FILE_STORAGE_DIR, guid.first, guid)
+  end
+
+  def thumbnail_store_location
+    File.join(Madek::Constants::THUMBNAIL_STORAGE_DIR, guid.first, guid)
   end
 end
