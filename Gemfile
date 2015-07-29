@@ -10,6 +10,7 @@ gem 'pg_tasks', '>= 1.3.1', '< 2.0.0'
 gem 'rspec-rails', '~> 3.1', group: [:test, :development]
 gem 'rubocop', '= 0.29.1', require: false
 gem 'textacular', git: 'https://github.com/DrTom/textacular.git'
+gem 'rails_config', git: 'https://github.com/DrTom/rails_config.git', ref: 'master'
 gem 'bcrypt-ruby'
 gem 'uuidtools'
 

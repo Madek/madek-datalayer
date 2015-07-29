@@ -8,37 +8,54 @@ module Madek
       ENV[env_var].present? && Pathname(ENV[env_var]).realpath
     end
 
-    def self.guess_datalayer_root_dir
-      project = YAML.load_file 'project.yml'
-      case project['name']
-      when 'madek-datalayer'
-        Pathname('.').realpath
-      when 'madek-webapp'
-        Pathname('.').join('engines', 'datalayer').realpath
-      else
-        raise 'unknown location'
-      end
+    case
+    when File.exists?('.madek-datalayer')
+      DATALAYER_ROOT_DIR = Pathname('.').realpath
+
+      MADEK_ROOT_DIR =
+        if File.exists?(DATALAYER_ROOT_DIR.join('..', '..', '..', '.madek'))
+          DATALAYER_ROOT_DIR.join('..', '..', '..').realpath
+        end
+
+      WEBAPP_ROOT_DIR =
+        if File.exists?(DATALAYER_ROOT_DIR.join('..', '..', '.madek-webapp'))
+          DATALAYER_ROOT_DIR.join('..', '..').realpath
+        end
+
+    when File.exists?('.madek-webapp')
+      WEBAPP_ROOT_DIR = Pathname('.').realpath
+
+      DATALAYER_ROOT_DIR =
+        if File.exists?(WEBAPP_ROOT_DIR.join('engines', 'datalayer',
+                                             '.madek-datalayer'))
+          WEBAPP_ROOT_DIR.join('engines', 'datalayer').realpath
+        end
+
+      MADEK_ROOT_DIR =
+        if File.exists?(WEBAPP_ROOT_DIR.join('..', '.madek'))
+          WEBAPP_ROOT_DIR.join('..').realpath
+        end
+
+    else
+      raise 'unknown starting location'
     end
 
-    DATALAYER_ROOT_DIR = guess_datalayer_root_dir
-
-    MADEK_ROOT_DIR = env_path_or_nil('MADEK_ROOT_DIR') \
-      || Rails.root
-
-    STORAGE_DIR = env_path_or_nil('MADEK_STORAGE_DIR') \
-      || MADEK_ROOT_DIR.join('tmp', Rails.env)
+    DEFAULT_STORAGE_DIR = env_path_or_nil('MADEK_STORAGE_DIR') \
+      || (MADEK_ROOT_DIR && MADEK_ROOT_DIR.join('tmp', Rails.env)) \
+      || (WEBAPP_ROOT_DIR && WEBAPP_ROOT_DIR.join('tmp', Rails.env)) \
+      || (DATALAYER_ROOT_DIR && DATALAYER_ROOT_DIR.join('tmp', Rails.env))
 
     ZIP_STORAGE_DIR  = env_path_or_nil('MADEK_ZIP_STORAGE_DIR') \
-      || STORAGE_DIR.join('zipfiles')
+      || DEFAULT_STORAGE_DIR.join('zipfiles')
 
     DOWNLOAD_STORAGE_DIR = env_path_or_nil('MADEK_DOWNLOAD_STORAGE_DIR') \
-      || STORAGE_DIR.join('downloads')
+      || DEFAULT_STORAGE_DIR.join('downloads')
 
     FILE_STORAGE_DIR = env_path_or_nil('MADEK_FILE_STORAGE_DIR') \
-      || STORAGE_DIR.join('originals')
+      || DEFAULT_STORAGE_DIR.join('originals')
 
     THUMBNAIL_STORAGE_DIR = env_path_or_nil('MADEK_THUMBNAIL_STORAGE_DIR') \
-      || STORAGE_DIR.join('thumbnails')
+      || DEFAULT_STORAGE_DIR.join('thumbnails')
 
     MADEK_V2_PERMISSION_ACTIONS = [:download, :edit, :manage, :view]
 
