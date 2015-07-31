@@ -7,7 +7,7 @@ class Preview < ActiveRecord::Base
   before_create :set_media_type
 
   def file_path
-    "#{::THUMBNAIL_STORAGE_DIR}/#{filename.first}/#{filename}"
+    "#{Madek::Constants::THUMBNAIL_STORAGE_DIR}/#{filename.first}/#{filename}"
   end
 
   after_destroy do
