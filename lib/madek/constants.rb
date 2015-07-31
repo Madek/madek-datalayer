@@ -4,6 +4,9 @@ module Madek
 
   module Constants
 
+    # set also initializers/015_constants.rb for more constants definitions
+    # like DEFAULT_STORAGE_DIR, FILE_STORAGE_DIR, etc
+
     def self.env_path_or_nil(env_var)
       ENV[env_var].present? && Pathname(ENV[env_var]).realpath
     end
@@ -39,23 +42,6 @@ module Madek
     else
       raise 'unknown starting location'
     end
-
-    DEFAULT_STORAGE_DIR = env_path_or_nil('MADEK_STORAGE_DIR') \
-      || (MADEK_ROOT_DIR && MADEK_ROOT_DIR.join('tmp', Rails.env)) \
-      || (WEBAPP_ROOT_DIR && WEBAPP_ROOT_DIR.join('tmp', Rails.env)) \
-      || (DATALAYER_ROOT_DIR && DATALAYER_ROOT_DIR.join('tmp', Rails.env))
-
-    ZIP_STORAGE_DIR  = env_path_or_nil('MADEK_ZIP_STORAGE_DIR') \
-      || DEFAULT_STORAGE_DIR.join('zipfiles')
-
-    DOWNLOAD_STORAGE_DIR = env_path_or_nil('MADEK_DOWNLOAD_STORAGE_DIR') \
-      || DEFAULT_STORAGE_DIR.join('downloads')
-
-    FILE_STORAGE_DIR = env_path_or_nil('MADEK_FILE_STORAGE_DIR') \
-      || DEFAULT_STORAGE_DIR.join('originals')
-
-    THUMBNAIL_STORAGE_DIR = env_path_or_nil('MADEK_THUMBNAIL_STORAGE_DIR') \
-      || DEFAULT_STORAGE_DIR.join('thumbnails')
 
     MADEK_V2_PERMISSION_ACTIONS = [:download, :edit, :manage, :view]
 

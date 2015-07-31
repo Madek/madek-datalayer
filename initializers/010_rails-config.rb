@@ -3,7 +3,7 @@ RailsConfig.setup do |config|
   config.const_name = 'Settings'
 end
 
-%w(setting.yml settings.local.yml).each do |settings_file_name|
+%w(settings.yml settings.local.yml).each do |settings_file_name|
   [Madek::Constants::DATALAYER_ROOT_DIR,
    Madek::Constants::WEBAPP_ROOT_DIR,
    Madek::Constants::MADEK_ROOT_DIR].each do |location|
