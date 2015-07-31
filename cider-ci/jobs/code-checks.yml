@@ -2,14 +2,16 @@ jobs:
 
   code-checks:
 
-    name: Code Checks
+    name: Code-Checks
 
     description: |
       Run static checks and metrics: complexity, duplicaiont, code format.
 
+    priority: 2
+
     run-on:
     - type: branch
-      include-match: ^.*$
+      include-match: ^.+$
 
     context:
 
@@ -25,11 +27,10 @@ jobs:
         environment_variables:
           RAILS_ENV: test
           LANG: "en_US.UTF-8"
-          RBENV_VERSION: 2.2
 
         scripts:
           bundle-mri:
-            exclusive-executor-resource: bundler_2.2
+            exclusive-executor-resource: bundler
             body: bundle
           test:
             start-when:
