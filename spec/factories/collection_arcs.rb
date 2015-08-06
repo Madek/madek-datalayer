@@ -1,5 +1,7 @@
 FactoryGirl.define do
   factory :collection_media_entry_arc, class: Arcs::CollectionMediaEntryArc do
+    collection
+    media_entry
   end
 
   factory :collection_collection_arc, class: Arcs::CollectionCollectionArc do

@@ -54,6 +54,28 @@ COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UU
 SET search_path = public, pg_catalog;
 
 --
+-- Name: check_collection_cover_uniqueness(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION check_collection_cover_uniqueness() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+          BEGIN
+            IF
+              (SELECT
+                (SELECT COUNT(1)
+                 FROM collection_media_entry_arcs
+                 WHERE collection_media_entry_arcs.cover IS true
+                 AND collection_media_entry_arcs.collection_id = NEW.collection_id)
+              > 1)
+              THEN RAISE EXCEPTION 'There exists already a cover for collection %.', NEW.collection_id;
+            END IF;
+            RETURN NEW;
+          END;
+          $$;
+
+
+--
 -- Name: check_madek_core_meta_key_immutability(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -2551,6 +2573,13 @@ CREATE INDEX users_trgm_searchable_idx ON users USING gin (trgm_searchable gin_t
 
 
 --
+-- Name: trigger_check_collection_cover_uniqueness; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER trigger_check_collection_cover_uniqueness AFTER INSERT OR UPDATE ON collection_media_entry_arcs DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_collection_cover_uniqueness();
+
+
+--
 -- Name: trigger_check_users_apiclients_login_uniqueness_on_apiclients; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -3849,6 +3878,8 @@ INSERT INTO schema_migrations (version) VALUES ('181');
 INSERT INTO schema_migrations (version) VALUES ('182');
 
 INSERT INTO schema_migrations (version) VALUES ('183');
+
+INSERT INTO schema_migrations (version) VALUES ('184');
 
 INSERT INTO schema_migrations (version) VALUES ('19');
 
