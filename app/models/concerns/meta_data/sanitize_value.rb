@@ -23,17 +23,20 @@ module Concerns
       private
 
       def reset_resources!(resources, type, created_by_user)
-        assoc = self.send("meta_data_#{type.pluralize}")
-        resources_to_remove = self.send(type.pluralize) - resources
-        resources_to_add = resources - self.send(type.pluralize)
+        type_plural = type.pluralize
+        assoc = self.send("meta_data_#{type_plural}")
+        resources_to_remove = self.send(type_plural) - resources
+        resources_to_add = resources - self.send(type_plural)
 
-        assoc.where(Hash[type, resources_to_remove]).delete_all
+        # NOTE: Must do this inside a transaction, otherwise the MetaDatum (`self`)
+        # will get cascade-deleted if all current resources are removed…
+        ActiveRecord::Base.transaction do
+          assoc.where(Hash[type, resources_to_remove]).delete_all
+          resources_to_add.each do |resource|
 
-        resources_to_add.each do |resource|
-          assoc << assoc.name.constantize.new(Hash[type,
-                                                   resource,
-                                                   :created_by,
-                                                   created_by_user])
+            assoc << assoc.name.constantize.new(Hash[type, resource,
+                                                     :created_by, created_by_user])
+          end
         end
         assoc
       end
