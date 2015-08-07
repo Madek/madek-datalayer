@@ -14,11 +14,19 @@ FactoryGirl.define do
       end
     end
 
+    factory :meta_datum_text_date, class: MetaDatum::TextDate do
+      string { Faker::Lorem.words.join(' ') }
+      meta_key do
+        MetaKey.find_by(id: 'test:textdate') \
+          || FactoryGirl.create(:meta_key_text_date)
+      end
+    end
+
     factory :meta_datum_text, class: MetaDatum::Text do
       string { Faker::Lorem.words.join(' ') }
       meta_key do
         MetaKey.find_by(id: 'test:text') \
-                 || FactoryGirl.create(:meta_key_text)
+          || FactoryGirl.create(:meta_key_text)
       end
 
       factory :meta_datum_title do
@@ -102,12 +110,5 @@ FactoryGirl.define do
       end
     end
 
-    factory :meta_datum_text_date, class: MetaDatum::TextDate do
-      value { Faker::Lorem.words.join(' ') }
-      meta_key do
-        MetaKey.find_by(id: 'test:textdate') \
-          || FactoryGirl.create(:meta_key_text_date)
-      end
-    end
   end
 end

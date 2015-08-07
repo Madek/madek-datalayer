@@ -14,7 +14,7 @@ FactoryGirl.define do
     end
 
     factory :meta_key_text_date, class: MetaKey do
-      id 'test:string'
+      id 'test:datestring'
       meta_datum_object_type 'MetaDatum::TextDate'
     end
 
