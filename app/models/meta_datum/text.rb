@@ -16,6 +16,7 @@ class MetaDatum::Text < MetaDatum
 
   def set_value!(new_value, _created_by_user = nil)
     self.value = new_value
+    self.save!
   end
 
 end
