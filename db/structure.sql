@@ -443,7 +443,8 @@ CREATE TABLE collection_api_client_permissions (
 CREATE TABLE collection_collection_arcs (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     child_id uuid NOT NULL,
-    parent_id uuid NOT NULL
+    parent_id uuid NOT NULL,
+    highlight boolean DEFAULT false
 );
 
 
@@ -454,7 +455,8 @@ CREATE TABLE collection_collection_arcs (
 CREATE TABLE collection_filter_set_arcs (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     filter_set_id uuid NOT NULL,
-    collection_id uuid NOT NULL
+    collection_id uuid NOT NULL,
+    highlight boolean DEFAULT false
 );
 
 

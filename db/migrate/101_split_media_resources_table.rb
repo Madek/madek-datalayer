@@ -135,6 +135,8 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
 
       t.index [:collection_id, :filter_set_id], unique: true, name: 'index_collection_filter_set_arcs_on_collection_id_and_filter_set_id'[0..62]
       t.index [:filter_set_id, :collection_id], name: 'index_collection_filter_set_arcs_on_filter_set_id_and_collection_id'[0..62]
+
+      t.boolean :highlight, default: false
     end
 
     add_foreign_key :collection_filter_set_arcs, :filter_sets, on_delete: :cascade
@@ -153,6 +155,8 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
 
       t.index [:parent_id, :child_id], unique: true
       t.index [:child_id, :parent_id]
+
+      t.boolean :highlight, default: false
     end
 
     add_foreign_key :collection_collection_arcs, :collections, column: 'child_id', on_delete: :cascade
@@ -167,9 +171,9 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
                                          highlight: arc.highlight,
                                          cover: arc.cover
           elsif arc.child.type == 'MediaSet' and arc.parent.type == 'MediaSet'
-            MigrationSetSetArc.create! parent_id: arc.parent_id, child_id: arc.child_id
+            MigrationSetSetArc.create! parent_id: arc.parent_id, child_id: arc.child_id, highlight: arc.highlight
           elsif arc.child.type == 'FilterSet' and arc.parent.type == 'MediaSet'
-            MigrationFilterSetSetArc.create! collection_id: arc.parent_id, filter_set_id: arc.child_id
+            MigrationFilterSetSetArc.create! collection_id: arc.parent_id, filter_set_id: arc.child_id, highlight: arc.highlight
           else
             raise ['Unknown Arc Type', arc.attributes]
           end
