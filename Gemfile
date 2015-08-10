@@ -16,7 +16,6 @@ gem 'uuidtools'
 
 gem 'cider_ci-support', '= 2.0.0.pre.beta.2', group: [:development, :test]
 gem 'factory_girl', group: [:test, :development]
-gem 'factory_girl_rails', group: [:test, :development]
 gem 'faker', group: [:test, :development]
 gem 'pry', group: [:test, :development]
 gem 'pry-nav', group: [:test, :development]
