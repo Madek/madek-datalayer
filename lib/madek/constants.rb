@@ -39,6 +39,24 @@ module Madek
           WEBAPP_ROOT_DIR.join('..').realpath
         end
 
+    when File.exists?('.madek-api')
+      API_ROOT_DIR = Pathname('.').realpath
+
+      WEBAPP_ROOT_DIR =
+        if File.exists?(API_ROOT_DIR.join('..', 'webapp', '.madek-webapp'))
+          API_ROOT_DIR.join('..', 'webapp').realpath
+        end
+
+      DATALAYER_ROOT_DIR =
+        if File.exists?(API_ROOT_DIR.join('datalayer', '.madek-datalayer'))
+          API_ROOT_DIR.join('datalayer').realpath
+        end
+
+      MADEK_ROOT_DIR =
+        if File.exists?(API_ROOT_DIR.join('..', '.madek'))
+          API_ROOT_DIR.join('..').realpath
+        end
+
     else
       raise 'unknown starting location'
     end
