@@ -7,6 +7,7 @@ class MediaEntry < ActiveRecord::Base
   include Concerns::MediaEntries::Filters
   include Concerns::MediaResources
   include Concerns::MediaResources::Editability
+  include Concerns::MediaResources::Highlight
 
   has_one :media_file, dependent: :destroy
 

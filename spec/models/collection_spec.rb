@@ -64,18 +64,38 @@ describe Collection do
         media_entry: @media_entry,
         highlight: true
 
-      expect(@collection.media_entries.highlights.count).to be == 1
-      expect(@collection.media_entries.highlights).to include @media_entry
+      child_coll = create(:collection)
+      FactoryGirl.create \
+        :collection_collection_arc,
+        parent: @collection,
+        child: child_coll,
+        highlight: true
+
+      filter_set = create(:filter_set)
+      FactoryGirl.create \
+        :collection_filter_set_arc,
+        collection: @collection,
+        filter_set: filter_set,
+        highlight: true
+
+      expect(@collection.highlighted_media_entries.count).to be == 1
+      expect(@collection.highlighted_media_entries).to include @media_entry
+      expect(@collection.highlighted_collections.count).to be == 1
+      expect(@collection.highlighted_collections).to include child_coll
+      expect(@collection.highlighted_filter_sets.count).to be == 1
+      expect(@collection.highlighted_filter_sets).to include filter_set
     end
 
     it 'cover' do
-      FactoryGirl.create \
-        :collection_media_entry_arc,
-        collection: @collection,
-        media_entry: @media_entry,
-        cover: true
+      coll = create(:collection)
+      me1 = create(:media_entry)
+      me2 = create(:media_entry)
+      coll.media_entries << me1
+      coll.media_entries << me2
 
-      expect(@collection.media_entries.cover).to be == @media_entry
+      coll.cover = me1
+      coll.cover = me2
+      expect(coll.cover).to be == me2
     end
   end
 
