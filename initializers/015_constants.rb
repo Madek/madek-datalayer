@@ -34,5 +34,15 @@ module Madek
       || pathname_or_nil(Settings.thumbnail_storage_dir) \
       || DEFAULT_STORAGE_DIR.join('thumbnails')
 
+    SPECIAL_WHITESPACE_CHARS = ["\u180E",
+                                "\uFEFF",
+                                "\u200B",
+                                "\u200C",
+                                "\u200D",
+                                "\u200E",
+                                "\u200F"]
+    WHITESPACE_REGEXP = \
+      Regexp.new \
+        "^([[:space:]]|#{Madek::Constants::SPECIAL_WHITESPACE_CHARS.join('|')})$"
   end
 end

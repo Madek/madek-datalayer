@@ -42,8 +42,12 @@ module Concerns
       end
 
       def reject_blanks_and_modelify_if_necessary(vals)
+        # we are using unicode [[:word]] matcher to exclude strings consisting only
+        # of unicode whitespace characters (eg. \u8203). Such strings are whether
+        # recognized by #blank? nor by [[:space:]] regex matcher.
         vals
           .reject(&:blank?)
+          .reject { |v| v.match Madek::Constants::WHITESPACE_REGEXP }
           .map { |v| modelify_if_necessary(v) }
       end
 
