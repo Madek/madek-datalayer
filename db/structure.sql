@@ -123,6 +123,23 @@ CREATE FUNCTION check_meta_data_meta_key_type_consistency() RETURNS trigger
 
 
 --
+-- Name: check_meta_datum_text_string_not_null(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION check_meta_datum_text_string_not_null() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+          BEGIN
+            IF ((NEW.type = 'MetaDatum::Text' OR NEW.type = 'MetaDatum::TextDate')
+                AND NEW.string IS NULL) THEN
+              RAISE EXCEPTION 'String can not be NULL for type MetaDatum::Text or MetaDatum::TextDate';
+            END IF;
+            RETURN NEW;
+          END;
+          $$;
+
+
+--
 -- Name: check_meta_key_meta_data_type_consistency(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -2582,6 +2599,13 @@ CREATE CONSTRAINT TRIGGER trigger_check_collection_cover_uniqueness AFTER INSERT
 
 
 --
+-- Name: trigger_check_meta_datum_text_string_not_null; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER trigger_check_meta_datum_text_string_not_null AFTER INSERT OR UPDATE ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_meta_datum_text_string_not_null();
+
+
+--
 -- Name: trigger_check_users_apiclients_login_uniqueness_on_apiclients; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -3882,6 +3906,8 @@ INSERT INTO schema_migrations (version) VALUES ('182');
 INSERT INTO schema_migrations (version) VALUES ('183');
 
 INSERT INTO schema_migrations (version) VALUES ('184');
+
+INSERT INTO schema_migrations (version) VALUES ('185');
 
 INSERT INTO schema_migrations (version) VALUES ('19');
 

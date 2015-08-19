@@ -1,6 +1,10 @@
 require 'spec_helper'
+require 'spec_helper_no_tx'
 
 describe MetaDatum::Text do
+  before :example do
+    PgTasks.truncate_tables
+  end
 
   describe 'Creation' do
 
@@ -21,6 +25,10 @@ describe MetaDatum::Text do
         .to raise_error
     end
 
+    it 'should raise an error for empty string' do
+      expect { FactoryGirl.create :meta_datum_text, string: nil }
+        .to raise_error
+    end
   end
 
   context 'an existing MetaDatumString instance ' do

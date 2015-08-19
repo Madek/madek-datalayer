@@ -36,8 +36,11 @@ describe 'relations between meta_data and meta_keys' do
         expect do
           MetaDatum::TextDate.transaction do
             ActiveRecord::Base.connection.execute \
-              "INSERT INTO meta_data (type,meta_key_id,collection_id)
-               VALUES ('MetaDatum::TextDate','#{meta_key.id}','#{@collection.id}')"
+              "INSERT INTO meta_data (type,meta_key_id,collection_id,string)
+               VALUES ('MetaDatum::TextDate'," \
+                      "'#{meta_key.id}'," \
+                      "'#{@collection.id}'," \
+                      "'bla')"
           end
         end.to raise_error \
           /types of related meta_data and meta_keys must be identical/
@@ -53,8 +56,8 @@ describe 'relations between meta_data and meta_keys' do
                              meta_datum_object_type: 'MetaDatum::Text')
         MetaDatum::Text.transaction do
           ActiveRecord::Base.connection.execute \
-            "INSERT INTO meta_data (type,meta_key_id,collection_id)
-             VALUES ('MetaDatum::Text','#{meta_key.id}','#{@collection.id}')"
+            "INSERT INTO meta_data (type,meta_key_id,collection_id,string)
+             VALUES ('MetaDatum::Text','#{meta_key.id}','#{@collection.id}','bla')"
         end
 
         expect do
