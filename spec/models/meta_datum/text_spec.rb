@@ -29,6 +29,13 @@ describe MetaDatum::Text do
       expect { FactoryGirl.create :meta_datum_text, string: nil }
         .to raise_error
     end
+
+    it 'should sanitize special whitespace char and raise error' do
+      string = Madek::Constants::SPECIAL_WHITESPACE_CHARS.sample
+      # using value= because of sanitization
+      expect { FactoryGirl.create :meta_datum_text, value: string }
+        .to raise_error
+    end
   end
 
   context 'an existing MetaDatumString instance ' do

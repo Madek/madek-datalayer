@@ -31,7 +31,7 @@ describe 'relations between meta_data and meta_keys' do
       it 'raises an error' do
         meta_key = \
           FactoryGirl.create(:meta_key,
-                             id: "test:#{Faker::Lorem.word}",
+                             id: "test:#{Faker::Lorem.characters(10)}",
                              meta_datum_object_type: 'MetaDatum::Text')
         expect do
           MetaDatum::TextDate.transaction do
@@ -52,7 +52,7 @@ describe 'relations between meta_data and meta_keys' do
       it 'raises an error' do
         meta_key = \
           FactoryGirl.create(:meta_key,
-                             id: "test:#{Faker::Lorem.word}",
+                             id: "test:#{Faker::Lorem.characters(10)}",
                              meta_datum_object_type: 'MetaDatum::Text')
         MetaDatum::Text.transaction do
           ActiveRecord::Base.connection.execute \
