@@ -140,4 +140,11 @@ class User < ActiveRecord::Base
           get_metadata_and_previews: true })
       .exists?
   end
+
+  def can_edit_permissions_for?(resource)
+    resource.responsible_user == self or
+      resource
+        .user_permissions
+        .where(user_id: id, edit_permissions: true).exists?
+  end
 end
