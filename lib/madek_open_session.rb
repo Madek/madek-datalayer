@@ -2,6 +2,8 @@ require 'cider_ci/open_session/encryptor'
 require 'cider_ci/open_session/signature'
 
 module MadekOpenSession
+  module_function
+
   extend ActiveSupport::Concern
 
   def build_session_value(user)

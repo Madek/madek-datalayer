@@ -4,6 +4,8 @@ module Madek
 
   module Constants
 
+    MADEK_SESSION_COOKIE_NAME = Settings.madek_session_cookie_name.presence
+
     def self.pathname_or_nil(path)
       if path.present?
         pathname = Pathname(path)
