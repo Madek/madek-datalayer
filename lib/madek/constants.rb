@@ -1,15 +1,12 @@
+require 'fileutils'
 require 'yaml'
+
+require 'chronic_duration'
+ChronicDuration.raise_exceptions = true
 
 module Madek
 
   module Constants
-
-    # set also initializers/015_constants.rb for more constants definitions
-    # like DEFAULT_STORAGE_DIR, FILE_STORAGE_DIR, etc
-
-    def self.env_path_or_nil(env_var)
-      ENV[env_var].present? && Pathname(ENV[env_var]).realpath
-    end
 
     case
     when File.exists?('.madek-datalayer')
@@ -60,6 +57,17 @@ module Madek
     else
       raise 'unknown starting location'
     end
+
+    SPECIAL_WHITESPACE_CHARS = ["\u180E",
+                                "\uFEFF",
+                                "\u200B",
+                                "\u200C",
+                                "\u200D",
+                                "\u200E",
+                                "\u200F"]
+    WHITESPACE_REGEXP = \
+      Regexp.new \
+        "^([[:space:]]|#{Madek::Constants::SPECIAL_WHITESPACE_CHARS.join('|')})$"
 
     MADEK_V2_PERMISSION_ACTIONS = [:download, :edit, :manage, :view]
 
