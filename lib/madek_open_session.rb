@@ -14,9 +14,9 @@ module MadekOpenSession
 
   def validate_not_expired!(session_object)
     issued_at = Time.parse(session_object[:issued_at]) || \
-      raise(StandardError, 'Issued_at could not be determined!')
-    unless issued_at + 1.weeks > Time.now
-      raise(StandardError, 'Session object is expired!')
+      raise(StandardError, 'Session issued_at could not be determined!')
+    if issued_at + Madek::Constants::MADEK_SESSION_VALIDITY_DURATION < Time.now
+      raise(StandardError, 'Session is expired!')
     end
   end
 

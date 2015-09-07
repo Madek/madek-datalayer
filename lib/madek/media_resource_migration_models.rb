@@ -15,8 +15,8 @@ module MediaResourceMigrationModels
 
   class ::MigrationMediaResourceArc < ActiveRecord::Base
     self.table_name = 'media_resource_arcs'
-    belongs_to :child, class_name: 'MigrationMediaResource',  foreign_key: :child_id
-    belongs_to :parent, class_name: 'MigrationMediaResource',  foreign_key: :parent_id
+    belongs_to :child, class_name: 'MigrationMediaResource', foreign_key: :child_id
+    belongs_to :parent, class_name: 'MigrationMediaResource', foreign_key: :parent_id
   end
 
   class ::MigrationMediaEntry < ActiveRecord::Base

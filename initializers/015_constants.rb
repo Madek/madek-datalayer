@@ -1,10 +1,15 @@
 require 'fileutils'
+require 'chronic_duration'
+ChronicDuration.raise_exceptions = true
 
 module Madek
 
   module Constants
 
     MADEK_SESSION_COOKIE_NAME = Settings.madek_session_cookie_name.presence
+
+    MADEK_SESSION_VALIDITY_DURATION =
+      ChronicDuration.parse(Settings.madek_session_validity_duration).seconds
 
     def self.pathname_or_nil(path)
       if path.present?
