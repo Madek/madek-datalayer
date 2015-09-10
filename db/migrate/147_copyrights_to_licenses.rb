@@ -45,6 +45,10 @@ class CopyrightsToLicenses < ActiveRecord::Migration
     ActiveRecord::Base.transaction do
       execute "SET session_replication_role = REPLICA"
 
+      execute "UPDATE io_mappings" \
+        " SET meta_key_id = 'license'" \
+        " WHERE meta_key_id = 'copyright status'"
+
       execute "UPDATE meta_data" \
         " SET meta_key_id = 'license', type = 'MetaDatum::License'" \
         " WHERE meta_key_id = 'copyright status'"

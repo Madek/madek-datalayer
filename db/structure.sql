@@ -3885,8 +3885,6 @@ INSERT INTO schema_migrations (version) VALUES ('17');
 
 INSERT INTO schema_migrations (version) VALUES ('171');
 
-INSERT INTO schema_migrations (version) VALUES ('173');
-
 INSERT INTO schema_migrations (version) VALUES ('175');
 
 INSERT INTO schema_migrations (version) VALUES ('176');

@@ -1,5 +1,9 @@
 class MigrateMetaDataToVocabulary < ActiveRecord::Migration
 
+  class IoMapping < ActiveRecord::Base
+    belongs_to :meta_key
+  end
+
   class MetaTerm < ActiveRecord::Base
     has_and_belongs_to_many :meta_keys
   end
@@ -10,6 +14,7 @@ class MigrateMetaDataToVocabulary < ActiveRecord::Migration
     belongs_to :vocabulary
     has_many :meta_key_definitions
     has_many :contexts, through: :meta_key_definitions
+    has_many :io_mappings, dependent: :destroy
   end
 
   class MetaKeyDefinition < ActiveRecord::Base
@@ -100,6 +105,7 @@ class MigrateMetaDataToVocabulary < ActiveRecord::Migration
           Rails.logger.info "CREATED NEW META_KEY: #{new_meta_key.attributes}"
 
           clone_meta_key_data(meta_key, new_meta_key)
+          create_io_mapping meta_key, new_meta_key
 
           new_meta_key.meta_data.reset
 
@@ -135,18 +141,29 @@ class MigrateMetaDataToVocabulary < ActiveRecord::Migration
             new_meta_key = MetaKey.find_or_create_by(new_meta_key_attributes)
 
             clone_meta_key_data meta_key, new_meta_key
+            create_io_mapping meta_key, new_meta_key
 
             meta_key_definition.destroy
             new_meta_key.meta_data.reset
 
           end
         end
+        meta_key.io_mappings.delete_all
         meta_key.meta_data.reset
         meta_key.delete
       end
     rescue Exception => e
       Rails.logger.warn "#{e.class} #{e.message} #{e.backtrace.join(', ')}"
       raise e
+    end
+  end
+
+  def create_io_mapping(meta_key, new_meta_key)
+    if io_mapping = IoMapping.find_by_meta_key_id(meta_key.id)
+      attrs = io_mapping.attributes
+      attrs["meta_key_id"] = new_meta_key.id
+      attrs.delete("id")
+      IoMapping.create(attrs)
     end
   end
 
