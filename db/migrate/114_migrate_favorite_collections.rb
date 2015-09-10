@@ -1,21 +1,15 @@
 class MigrateFavoriteCollections < ActiveRecord::Migration
+  include Madek::MediaResourceMigrationModels
 
   def change
-    reversible do |dir|
-      dir.up do
-
-        execute %{
-
-          INSERT INTO favorite_collections (user_id, collection_id)
-          SELECT favorites.user_id, favorites.media_resource_id
-          FROM favorites
-          INNER JOIN media_resources
-          ON favorites.media_resource_id = media_resources.id
-          WHERE media_resources.type = 'MediaSet';
-
-        }
-
-      end
+    MigrationFavorite
+      .joins('INNER JOIN media_resources ON favorites.media_resource_id = media_resources.id')
+      .where(media_resources: { type: 'MediaSet' })
+      .each do |f|
+      next if MigrationFavoriteCollection.find_by(user_id: f.user_id,
+                                                  collection_id: f.media_resource_id)
+      MigrationFavoriteCollection.create!(user_id: f.user_id,
+                                          collection_id: f.media_resource_id)
     end
   end
 
