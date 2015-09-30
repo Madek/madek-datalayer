@@ -1,5 +1,9 @@
 class Person < ActiveRecord::Base
+
+  # include PersonModules::TextSearch
   include Concerns::People::Filters
+
+  default_scope { reorder(:last_name) }
 
   has_one :user
 
