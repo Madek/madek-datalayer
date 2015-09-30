@@ -1,4 +1,6 @@
 class ApiClient < ActiveRecord::Base
+  include Concerns::ApiClients::Filters
+
   belongs_to :user
 
   attr_accessor :authorization_header
