@@ -12,5 +12,4 @@ class MetaDatum::Licenses < MetaDatum
   def set_value!(licenses, created_by_user)
     reset_with_sanitized_value!(licenses, 'license', created_by_user)
   end
-
 end

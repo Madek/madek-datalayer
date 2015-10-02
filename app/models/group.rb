@@ -1,4 +1,5 @@
 class Group < ActiveRecord::Base
+  include Concerns::FindResource
   include Concerns::Groups::Filters
   include Concerns::Groups::Searches
 

@@ -1,6 +1,5 @@
 class Person < ActiveRecord::Base
-
-  # include PersonModules::TextSearch
+  include Concerns::FindResource
   include Concerns::People::Filters
 
   default_scope { reorder(:last_name) }

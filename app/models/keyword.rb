@@ -1,5 +1,6 @@
 class Keyword < ActiveRecord::Base
 
+  include Concerns::FindResource
   include Concerns::Keywords::Filters
 
   belongs_to :meta_key

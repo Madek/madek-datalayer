@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
   # include UserModules::Dropbox
   # include UserModules::TextSearch
   # include UserModules::AutoCompletion
+  include Concerns::FindResource
   include Concerns::Users::Filters
 
   has_secure_password validations: false
