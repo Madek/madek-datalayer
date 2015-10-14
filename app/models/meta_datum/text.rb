@@ -26,7 +26,7 @@ class MetaDatum::Text < MetaDatum
     # of unicode whitespace characters (eg. \u8203). Such strings are whether
     # recognized by #blank? nor by [[:space:]] regex matcher.
     super(new_value) do |new_value|
-      yield whitespace_sanitized new_value
+      yield whitespace_sanitized new_value if new_value
     end
   end
 
