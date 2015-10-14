@@ -33,20 +33,12 @@ task-defaults:
   traits:
     firefox-esr: true
     imagemagick: true
-    jruby-9000: true
     linux: true
     nodejs: true
     postgresql: true
     rbenv: true
     ruby-2.2: true
     ruby: true
-    tightvnc: true
-
-  ports:
-    XVNC_PORT:
-      inet_address: "localhost"
-      min: 5900
-      max: 5999
 
   scripts:
 
@@ -69,31 +61,16 @@ task-defaults:
       exclusive-executor-resource: bundler_2.2
       body: bundle
 
-    bundle-jruby:
-      environment-variables:
-        RBENV_VERSION: jruby-9000
-      exclusive-executor-resource: bundler_jruby-9000
-      body: bundle
-
     create-database:
       body: bundle exec rake db:reset
       start-when:
       - script: bundle-mri
       - script: configure-database
 
-    start-vnc:
-      body: tightvncserver ":$XVNC_PORT"  -geometry 1024x768 -rfbport "$XVNC_PORT"  -interface '127.0.0.1'
-
     test:
-      body: |
-        export DISPLAY=":$XVNC_PORT" \
-        && rm -rf coverage \
-        && ruby -v \
-        && bundle exec rspec $CIDER_CI_TASK_FILE
+      body: bundle exec rspec $CIDER_CI_TASK_FILE
       start-when:
-      - script: start-vnc
       - script: create-database
-      - script: bundle-jruby
 
     delete-database:
       body:  bundle exec rake db:pg:terminate_connections db:drop
@@ -101,14 +78,6 @@ task-defaults:
       start-when:
       - script: test
         states: [aborted, passed, failed, skipped]
-
-    stop-vnc:
-      body: tightvncserver -kill ":$XVNC_PORT" -clean
-      ignore-state: true
-      start-when:
-      - script: test
-        states: [aborted, passed, failed, skipped]
-
 
 subcontexts:
 
