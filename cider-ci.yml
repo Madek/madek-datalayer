@@ -6,7 +6,7 @@ jobs:
       and it will pass if and only if all dependencies have passed.
     depends-on:
     - type: job
-      job: tests_mri
+      job: tests
       states: [passed]
     - type: job
       job: code-checks
@@ -22,4 +22,4 @@ jobs:
 
 _cider-ci_include:
   - cider-ci/jobs/code-checks.yml
-  - cider-ci/jobs/tests_mri.yml
+  - cider-ci/jobs/tests.yml
