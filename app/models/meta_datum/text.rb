@@ -16,21 +16,29 @@ class MetaDatum::Text < MetaDatum
 
   def set_value!(new_value, _created_by_user = nil)
     self.value = new_value
-    self.save!
+    unless value.blank?
+      self.save!
+    else
+      # FIXME: handle this in the db (constraint/trigger auto-delete…)
+      self.destroy!
+    end
   end
 
-  private
-
+  # can't be private because it's used from elsewhere
   def with_sanitized(new_value)
     # we are using unicode [[:word]] matcher to exclude strings consisting only
     # of unicode whitespace characters (eg. \u8203). Such strings are whether
     # recognized by #blank? nor by [[:space:]] regex matcher.
     super(new_value) do |new_value|
-      yield whitespace_sanitized new_value if new_value
+      yield whitespace_sanitized new_value
     end
   end
 
+  private
+
   def whitespace_sanitized(value)
-    value.match(Madek::Constants::WHITESPACE_REGEXP) ? nil : value
+    if value
+      value.match(Madek::Constants::WHITESPACE_REGEXP) ? nil : value
+    end
   end
 end

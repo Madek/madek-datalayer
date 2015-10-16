@@ -38,7 +38,7 @@ module Concerns
                                                      :created_by, created_by_user])
           end
         end
-        assoc
+        save!
       end
 
       def reject_blanks_and_modelify_if_necessary(vals)
