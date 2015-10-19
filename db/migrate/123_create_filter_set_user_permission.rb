@@ -41,23 +41,6 @@ class CreateFilterSetUserPermission < ActiveRecord::Migration
     add_foreign_key :filter_set_user_permissions, :filter_sets, on_delete: :cascade
     add_foreign_key :filter_set_user_permissions, :users, column: 'updator_id'
 
-    reversible do |dir|
-      dir.up do
-
-        set_timestamps_defaults :filter_set_user_permissions
-
-        ::MigrationUserPermission \
-          .joins("JOIN filter_sets ON filter_sets.id = #{MigrationUserPermission.table_name}.media_resource_id")\
-          .find_each do |user_permission|
-            attributes = user_permission.attributes \
-              .map { |k, v| k == 'media_resource_id' ? ['filter_set_id', v] : [k, v] } \
-              .reject { |k, v| %w(download).include? k } \
-              .map { |k, v| [(USER_PERMISSION_KEYS_MAP[k] || k), v] } \
-              .instance_eval { Hash[self] }
-            ::MigrationFilterSetUserPermission.create! attributes
-        end
-      end
-    end
   end
 
 end
