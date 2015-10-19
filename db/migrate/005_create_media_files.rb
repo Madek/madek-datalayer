@@ -3,7 +3,8 @@ class CreateMediaFiles < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :media_files, id: :uuid do |t|
+    create_table :media_files, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.integer :height
       t.integer :size
       t.integer :width

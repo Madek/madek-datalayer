@@ -3,7 +3,8 @@ class CreateCopyrights < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :copyrights, id: :uuid  do |t|
+    create_table :copyrights, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.boolean :is_default, default: false
       t.boolean :is_custom, default: false

@@ -6,7 +6,7 @@ class CreateApplications < ActiveRecord::Migration
       t.uuid :user_id, null: false
       t.string :id, null: false, primary_key: true
       t.text :description
-      t.uuid :secret, default: 'uuid_generate_v4()', null: false
+      t.uuid :secret, default: 'gen_random_uuid()', null: false
       t.timestamps null: false
     end
 

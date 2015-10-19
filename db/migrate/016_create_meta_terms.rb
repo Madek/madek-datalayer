@@ -2,7 +2,8 @@ class CreateMetaTerms < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :meta_terms, id: :uuid do |t|
+    create_table :meta_terms, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.text :term, null: false, default: ''
       t.index :term, unique: true
     end

@@ -2,7 +2,8 @@ class CreateMetaKeyDefinitions < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :meta_key_definitions, id: :uuid do |t|
+    create_table :meta_key_definitions, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.text :description, null: false, default: ''
       t.text :hint, null: false, default: ''

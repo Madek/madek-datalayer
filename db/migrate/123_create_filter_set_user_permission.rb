@@ -16,7 +16,8 @@ class CreateFilterSetUserPermission < ActiveRecord::Migration
     'manage' => 'edit_permissions' }
 
   def change
-    create_table :filter_set_user_permissions, id: :uuid do |t|
+    create_table :filter_set_user_permissions, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.boolean :get_metadata_and_previews, null: false, default: false, index: true
       t.boolean :edit_metadata_and_filter, null: false, default: false, index: true

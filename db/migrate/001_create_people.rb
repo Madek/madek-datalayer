@@ -2,7 +2,8 @@ class CreatePeople < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :people, id: :uuid  do |t|
+    create_table :people, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.boolean :is_group, default: false
       t.date :date_of_birth
       t.date :date_of_death

@@ -15,7 +15,8 @@ class CreateCollectionGroupPermission < ActiveRecord::Migration
     'edit' => 'edit_metadata_and_relations' }
 
   def change
-    create_table :collection_group_permissions, id: :uuid do |t|
+    create_table :collection_group_permissions, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.boolean :get_metadata_and_previews, null: false, default: false
       t.index :get_metadata_and_previews, name: 'idx_colgrpp_get_mdata_and_previews'

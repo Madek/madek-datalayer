@@ -2,7 +2,8 @@ class CreateAdminUsers < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :admin_users, id: :uuid do |t|
+    create_table :admin_users, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.uuid :user_id, null: false
       t.index :user_id, unique: true

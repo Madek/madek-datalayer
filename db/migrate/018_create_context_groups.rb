@@ -1,7 +1,8 @@
 class CreateContextGroups < ActiveRecord::Migration
 
   def change
-    create_table :context_groups, id: :uuid  do |t|
+    create_table :context_groups, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.string :name
       t.index :name, unique: true
 

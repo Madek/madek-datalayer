@@ -2,7 +2,8 @@
 class CreateMetaKeysMetaTerms < ActiveRecord::Migration
 
   def change
-    create_table :meta_keys_meta_terms, id: :uuid  do |t|
+    create_table :meta_keys_meta_terms, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.string :meta_key_id, null: false
       t.index :meta_key_id
 

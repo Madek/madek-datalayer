@@ -2,7 +2,8 @@ class CreateUserpermissions < ActiveRecord::Migration
   include Madek::Constants
 
   def change
-    create_table :userpermissions, id: :uuid do |t|
+    create_table :userpermissions, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       MADEK_V2_PERMISSION_ACTIONS.each do |action|
         t.boolean action, null: false, default: false, index: true

@@ -2,7 +2,8 @@
 class CreateMediaResourceArcs < ActiveRecord::Migration
 
   def change
-    create_table :media_resource_arcs, id: :uuid do |t|
+    create_table :media_resource_arcs, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.uuid :parent_id, null: false
       t.uuid :child_id, null: false

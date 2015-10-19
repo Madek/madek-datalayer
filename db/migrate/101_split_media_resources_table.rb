@@ -7,7 +7,8 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
     ### media_entries #########################################################
     ###########################################################################
 
-    create_table :media_entries, id: :uuid do |t|
+    create_table :media_entries, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.timestamps null: false
       t.boolean :get_metadata_and_previews, null: false, default: false
       t.boolean :get_full_size, null: false, default: false
@@ -57,7 +58,8 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
     ### collections ## #########################################################
     ###########################################################################
 
-    create_table :collections, id: :uuid do |t|
+    create_table :collections, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.boolean :get_metadata_and_previews, null: false, default: false
       t.timestamps null: false
     end
@@ -78,7 +80,8 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
     ### filter_sets ###########################################################
     ###########################################################################
 
-    create_table :filter_sets, id: :uuid do |t|
+    create_table :filter_sets, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.boolean :get_metadata_and_previews, null: false, default: false
       t.timestamps null: false
       t.column :filter, :jsonb, null: false, default: '{}'
@@ -105,7 +108,8 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
     ### collection_media_entry_arcs ###########################################
     ###########################################################################
 
-    create_table :collection_media_entry_arcs, id: :uuid do |t|
+    create_table :collection_media_entry_arcs, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.uuid :media_entry_id, null: false
       t.index :media_entry_id
 
@@ -126,7 +130,8 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
     ### collection_filter_set_arcs ############################################
     ###########################################################################
 
-    create_table :collection_filter_set_arcs, id: :uuid do |t|
+    create_table :collection_filter_set_arcs, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.uuid :filter_set_id, null: false
       t.index :filter_set_id
 
@@ -146,7 +151,8 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
     ### collection_collection_arcs ############################################
     ###########################################################################
 
-    create_table :collection_collection_arcs, id: :uuid do |t|
+    create_table :collection_collection_arcs, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.uuid :child_id, null: false
       t.index :child_id
 
@@ -186,7 +192,8 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
         drop_table :media_resource_arcs
       end
       dir.down do
-        create_table :media_resource_arcs, id: :uuid do |t|
+        create_table :media_resource_arcs, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
           t.uuid :parent_id, null: false
           t.uuid :child_id, null: false
           t.boolean :highlight, default: false

@@ -1,7 +1,8 @@
 class CreateMetaData < ActiveRecord::Migration
 
   def change
-    create_table :meta_data, id: :uuid do |t|
+    create_table :meta_data, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.uuid :media_resource_id, null: false
       t.index :media_resource_id

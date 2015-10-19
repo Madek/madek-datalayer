@@ -16,7 +16,8 @@ class CreateMediaEntryUserPermissions < ActiveRecord::Migration
   }
 
   def change
-    create_table :media_entry_user_permissions, id: :uuid do |t|
+    create_table :media_entry_user_permissions, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.boolean :get_metadata_and_previews, null: false, default: false, index: true
       t.boolean :get_full_size, null: false, default: false, index: true

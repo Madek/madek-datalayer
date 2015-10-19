@@ -1,7 +1,8 @@
 class CreateVisualization < ActiveRecord::Migration
 
   def change
-    create_table :visualizations, id: :uuid do |t|
+    create_table :visualizations, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.uuid :user_id, null: false
       t.string :resource_identifier, null: false
       t.text :control_settings

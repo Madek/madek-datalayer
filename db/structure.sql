@@ -38,6 +38,20 @@ COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching
 
 
 --
+-- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
+
+
+--
 -- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -391,7 +405,7 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE admins (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL
@@ -403,7 +417,7 @@ CREATE TABLE admins (
 --
 
 CREATE TABLE api_clients (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
     login character varying NOT NULL,
     description text,
@@ -442,7 +456,7 @@ CREATE TABLE app_settings (
 --
 
 CREATE TABLE collection_api_client_permissions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     edit_metadata_and_relations boolean DEFAULT false NOT NULL,
     collection_id uuid NOT NULL,
@@ -458,7 +472,7 @@ CREATE TABLE collection_api_client_permissions (
 --
 
 CREATE TABLE collection_collection_arcs (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     child_id uuid NOT NULL,
     parent_id uuid NOT NULL,
     highlight boolean DEFAULT false
@@ -470,7 +484,7 @@ CREATE TABLE collection_collection_arcs (
 --
 
 CREATE TABLE collection_filter_set_arcs (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     filter_set_id uuid NOT NULL,
     collection_id uuid NOT NULL,
     highlight boolean DEFAULT false
@@ -482,7 +496,7 @@ CREATE TABLE collection_filter_set_arcs (
 --
 
 CREATE TABLE collection_group_permissions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     edit_metadata_and_relations boolean DEFAULT false NOT NULL,
     collection_id uuid NOT NULL,
@@ -498,7 +512,7 @@ CREATE TABLE collection_group_permissions (
 --
 
 CREATE TABLE collection_media_entry_arcs (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     media_entry_id uuid NOT NULL,
     collection_id uuid NOT NULL,
     highlight boolean DEFAULT false,
@@ -511,7 +525,7 @@ CREATE TABLE collection_media_entry_arcs (
 --
 
 CREATE TABLE collection_user_permissions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     edit_metadata_and_relations boolean DEFAULT false NOT NULL,
     edit_permissions boolean DEFAULT false NOT NULL,
@@ -528,7 +542,7 @@ CREATE TABLE collection_user_permissions (
 --
 
 CREATE TABLE collections (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
@@ -559,7 +573,7 @@ CREATE TABLE custom_urls (
 --
 
 CREATE TABLE edit_sessions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
@@ -611,7 +625,7 @@ CREATE TABLE favorite_media_entries (
 --
 
 CREATE TABLE filter_set_api_client_permissions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     edit_metadata_and_filter boolean DEFAULT false NOT NULL,
     filter_set_id uuid NOT NULL,
@@ -627,7 +641,7 @@ CREATE TABLE filter_set_api_client_permissions (
 --
 
 CREATE TABLE filter_set_group_permissions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     filter_set_id uuid NOT NULL,
     group_id uuid NOT NULL,
@@ -642,7 +656,7 @@ CREATE TABLE filter_set_group_permissions (
 --
 
 CREATE TABLE filter_set_user_permissions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     edit_metadata_and_filter boolean DEFAULT false NOT NULL,
     edit_permissions boolean DEFAULT false NOT NULL,
@@ -659,7 +673,7 @@ CREATE TABLE filter_set_user_permissions (
 --
 
 CREATE TABLE filter_sets (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
@@ -684,7 +698,7 @@ CREATE TABLE full_texts (
 --
 
 CREATE TABLE groups (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     previous_id integer,
     name character varying,
     institutional_group_id character varying,
@@ -727,7 +741,7 @@ CREATE TABLE io_mappings (
     key_map_type character varying,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
-    id uuid DEFAULT uuid_generate_v4() NOT NULL
+    id uuid DEFAULT gen_random_uuid() NOT NULL
 );
 
 
@@ -736,7 +750,7 @@ CREATE TABLE io_mappings (
 --
 
 CREATE TABLE keywords (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     term character varying DEFAULT ''::character varying NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
@@ -750,7 +764,7 @@ CREATE TABLE keywords (
 --
 
 CREATE TABLE license_groups (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     name text NOT NULL,
     description text,
     "position" double precision,
@@ -765,7 +779,7 @@ CREATE TABLE license_groups (
 --
 
 CREATE TABLE licenses (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     is_default boolean DEFAULT false,
     is_custom boolean DEFAULT false,
     label character varying,
@@ -792,7 +806,7 @@ CREATE TABLE licenses_license_groups (
 --
 
 CREATE TABLE media_entries (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
@@ -808,7 +822,7 @@ CREATE TABLE media_entries (
 --
 
 CREATE TABLE media_entry_api_client_permissions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     get_full_size boolean DEFAULT false NOT NULL,
     media_entry_id uuid NOT NULL,
@@ -824,7 +838,7 @@ CREATE TABLE media_entry_api_client_permissions (
 --
 
 CREATE TABLE media_entry_group_permissions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     get_full_size boolean DEFAULT false NOT NULL,
     edit_metadata boolean DEFAULT false NOT NULL,
@@ -841,7 +855,7 @@ CREATE TABLE media_entry_group_permissions (
 --
 
 CREATE TABLE media_entry_user_permissions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     get_full_size boolean DEFAULT false NOT NULL,
     edit_metadata boolean DEFAULT false NOT NULL,
@@ -859,7 +873,7 @@ CREATE TABLE media_entry_user_permissions (
 --
 
 CREATE TABLE media_files (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     height integer,
     size bigint,
     width integer,
@@ -882,7 +896,7 @@ CREATE TABLE media_files (
 --
 
 CREATE TABLE media_resources (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     previous_id integer,
     download boolean DEFAULT false NOT NULL,
     edit boolean DEFAULT false NOT NULL,
@@ -901,7 +915,7 @@ CREATE TABLE media_resources (
 --
 
 CREATE TABLE meta_data (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     meta_key_id character varying NOT NULL,
     type character varying,
     string text,
@@ -930,7 +944,7 @@ CREATE TABLE meta_data_groups (
 --
 
 CREATE TABLE meta_data_keywords (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     created_by_id uuid,
     meta_datum_id uuid NOT NULL,
     keyword_id uuid NOT NULL,
@@ -1015,7 +1029,7 @@ CREATE TABLE meta_keys (
 --
 
 CREATE TABLE people (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     is_bunch boolean DEFAULT false,
     date_of_birth date,
     date_of_death date,
@@ -1033,7 +1047,7 @@ CREATE TABLE people (
 --
 
 CREATE TABLE previews (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     media_file_id uuid NOT NULL,
     height integer,
     width integer,
@@ -1060,7 +1074,7 @@ CREATE TABLE schema_migrations (
 --
 
 CREATE TABLE usage_terms (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     title character varying,
     version character varying,
     intro text,
@@ -1075,7 +1089,7 @@ CREATE TABLE usage_terms (
 --
 
 CREATE TABLE users (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     previous_id integer,
     email character varying,
     login text,
@@ -1099,7 +1113,7 @@ CREATE TABLE users (
 --
 
 CREATE TABLE visualizations (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
     resource_identifier character varying NOT NULL,
     control_settings text,
@@ -1126,7 +1140,7 @@ CREATE TABLE vocabularies (
 --
 
 CREATE TABLE vocabulary_api_client_permissions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     api_client_id uuid NOT NULL,
     vocabulary_id character varying NOT NULL,
     use boolean DEFAULT false NOT NULL,
@@ -1139,7 +1153,7 @@ CREATE TABLE vocabulary_api_client_permissions (
 --
 
 CREATE TABLE vocabulary_group_permissions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     group_id uuid NOT NULL,
     vocabulary_id character varying NOT NULL,
     use boolean DEFAULT false NOT NULL,
@@ -1152,7 +1166,7 @@ CREATE TABLE vocabulary_group_permissions (
 --
 
 CREATE TABLE vocabulary_user_permissions (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
     vocabulary_id character varying NOT NULL,
     use boolean DEFAULT false NOT NULL,
@@ -1198,7 +1212,7 @@ UNION
 --
 
 CREATE TABLE zencoder_jobs (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     media_file_id uuid NOT NULL,
     zencoder_id integer,
     comment text,

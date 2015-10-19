@@ -1,7 +1,8 @@
 class CreateFilterSetGroupPermissions < ActiveRecord::Migration
 
   def change
-    create_table :filter_set_group_permissions, id: :uuid do |t|
+    create_table :filter_set_group_permissions, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.boolean :get_metadata_and_previews, null: false, default: false, index: true
 

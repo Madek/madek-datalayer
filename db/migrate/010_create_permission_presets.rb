@@ -3,7 +3,8 @@ class CreatePermissionPresets < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :permission_presets, id: :uuid do |t|
+    create_table :permission_presets, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.string :name
       t.float :position
       MADEK_V2_PERMISSION_ACTIONS.each do |action|

@@ -16,7 +16,8 @@ class CreateMediaEntryGrouppermission < ActiveRecord::Migration
     'download' => 'get_full_size' }
 
   def change
-    create_table :media_entry_group_permissions, id: :uuid do |t|
+    create_table :media_entry_group_permissions, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.boolean :get_metadata_and_previews, null: false, default: false
       t.index :get_metadata_and_previews, name: 'idx_megrpp_get_mdata_and_previews'

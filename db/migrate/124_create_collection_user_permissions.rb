@@ -1,7 +1,8 @@
 class CreateCollectionUserPermissions < ActiveRecord::Migration
 
   def change
-    create_table :collection_user_permissions, id: :uuid do |t|
+    create_table :collection_user_permissions, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.boolean :get_metadata_and_previews, null: false, default: false
       t.index :get_metadata_and_previews, name: 'idx_colluserperm_get_metadata_and_previews'

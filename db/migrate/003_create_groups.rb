@@ -3,7 +3,8 @@ class CreateGroups < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :groups, id: :uuid  do |t|
+    create_table :groups, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.integer :previous_id
 

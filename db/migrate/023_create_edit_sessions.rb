@@ -2,7 +2,8 @@ class CreateEditSessions < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :edit_sessions, id: :uuid do |t|
+    create_table :edit_sessions, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.uuid :user_id, null: false
       t.index :user_id
 

@@ -10,7 +10,8 @@ class MigrateMediaEntryApiClientPermissions < ActiveRecord::Migration
   end
 
   def change
-    create_table :media_entry_api_client_permissions, id: :uuid do |t|
+    create_table :media_entry_api_client_permissions, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.boolean :get_metadata_and_previews, null: false, default: false
       t.index :get_metadata_and_previews, name: 'idx_me_apicl_get_mdata_and_previews'

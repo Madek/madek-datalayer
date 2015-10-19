@@ -3,7 +3,9 @@ class CreateUsers < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :users, id: :uuid do |t|
+    create_table :users, id: false do |t|
+
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.integer :previous_id
 

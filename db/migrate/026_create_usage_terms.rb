@@ -2,7 +2,8 @@ class CreateUsageTerms < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :usage_terms, id: :uuid  do |t|
+    create_table :usage_terms, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.string :title
       t.string :version
       t.text :intro

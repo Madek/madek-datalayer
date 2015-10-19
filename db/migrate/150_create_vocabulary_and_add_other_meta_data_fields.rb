@@ -28,7 +28,8 @@ class CreateVocabularyAndAddOtherMetaDataFields < ActiveRecord::Migration
 
     add_column :meta_keys, :vocabulary_id, :string
 
-#    create_table :vocables, id: :uuid do |t|
+#    create_table :vocables, id: false do |t|
+#      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 #      t.string :meta_key_id
 #      t.index :meta_key_id
 #
@@ -41,7 +42,7 @@ class CreateVocabularyAndAddOtherMetaDataFields < ActiveRecord::Migration
 #      t.index [:meta_datum_id, :vocable_id], unique: true
 #      t.index [:vocable_id, :meta_datum_id]
 #    end
- 
+
     add_column :keyword_terms, :meta_key_id, :string
     add_index :keyword_terms, :meta_key_id
 

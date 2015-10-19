@@ -3,7 +3,8 @@ class MigrateApiApplication < ActiveRecord::Migration
 
   def change
 
-    create_table :api_clients, id: :uuid do |t|
+    create_table :api_clients, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.uuid :user_id, null: false
       t.string :login, null: false
       t.index :login, unique: true

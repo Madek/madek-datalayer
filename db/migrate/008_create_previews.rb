@@ -3,7 +3,8 @@ class CreatePreviews < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :previews, id: :uuid do |t|
+    create_table :previews, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.uuid :media_file_id, null: false
       t.index :media_file_id

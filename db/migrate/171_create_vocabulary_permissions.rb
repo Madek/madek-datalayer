@@ -2,12 +2,13 @@ class CreateVocabularyPermissions < ActiveRecord::Migration
   def change
 
     change_table :vocabularies do |t|
-      t.boolean :enabled_for_public_view, default: true, null: false 
-      t.boolean :enabled_for_public_use, default: true, null: false 
+      t.boolean :enabled_for_public_view, default: true, null: false
+      t.boolean :enabled_for_public_use, default: true, null: false
     end
 
-    %w(user api_client group).each do |entity| 
-      create_table "vocabulary_#{entity}_permissions", id: :uuid do |t| 
+    %w(user api_client group).each do |entity|
+      create_table "vocabulary_#{entity}_permissions", id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
         t.uuid "#{entity}_id", null: false
         t.string :vocabulary_id, null: false
         t.index ["#{entity}_id",:vocabulary_id], name: "idx_vocabulary_#{entity}",unique: true

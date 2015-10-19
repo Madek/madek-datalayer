@@ -23,7 +23,8 @@ class CopyrightsToLicenses < ActiveRecord::Migration
     rename_table :copyrights, :licenses
     rename_column :meta_data, :copyright_id, :license_id
 
-    create_table :license_groups, id: :uuid do |t|
+    create_table :license_groups, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.text :name, null: false
       t.text :description
       t.float :position

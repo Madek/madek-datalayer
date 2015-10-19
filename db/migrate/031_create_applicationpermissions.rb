@@ -3,7 +3,8 @@ class CreateApplicationpermissions < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :applicationpermissions, id: :uuid do |t|
+    create_table :applicationpermissions, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.uuid :media_resource_id, null: false
       t.index :media_resource_id
 

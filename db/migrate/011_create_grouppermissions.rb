@@ -3,7 +3,8 @@ class CreateGrouppermissions < ActiveRecord::Migration
   include Madek::Constants
 
   def change
-    create_table :grouppermissions, id: :uuid do |t|
+    create_table :grouppermissions, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.uuid :media_resource_id, null: false
       t.index :media_resource_id

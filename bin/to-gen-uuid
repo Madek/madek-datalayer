@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+set -eux
+egrep -R -l "id: :uuid" db/migrate/* | xargs -o -I {} vim "+%s/id: :uuid.*$/id: false do |t|\r      t.primary_key :id, :uuid, default: 'gen_random_uuid\(\)'" '+wq' {}

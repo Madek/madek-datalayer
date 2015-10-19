@@ -3,7 +3,8 @@ class CreateMediaResources < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :media_resources, id: :uuid do |t|
+    create_table :media_resources, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
 
       t.integer :previous_id
       t.index :previous_id

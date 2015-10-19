@@ -2,7 +2,8 @@ class CreateKeywords < ActiveRecord::Migration
   include Madek::MigrationHelper
 
   def change
-    create_table :keyword_terms, id: :uuid do |t|
+    create_table :keyword_terms, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.string :term, default: '', null: false
       t.timestamps null: false
       t.uuid :creator_id
@@ -16,7 +17,8 @@ class CreateKeywords < ActiveRecord::Migration
       end
     end
 
-    create_table :keywords, id: :uuid do |t|
+    create_table :keywords, id: false do |t|
+      t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.uuid :user_id
       t.index :user_id
 
