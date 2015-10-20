@@ -2137,6 +2137,13 @@ CREATE UNIQUE INDEX index_licenses_on_label ON licenses USING btree (label);
 
 
 --
+-- Name: index_licenses_on_url; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_licenses_on_url ON licenses USING btree (url);
+
+
+--
 -- Name: index_md_groups_on_md_id_and_group_id_and_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3826,6 +3833,8 @@ INSERT INTO schema_migrations (version) VALUES ('183');
 INSERT INTO schema_migrations (version) VALUES ('184');
 
 INSERT INTO schema_migrations (version) VALUES ('185');
+
+INSERT INTO schema_migrations (version) VALUES ('186');
 
 INSERT INTO schema_migrations (version) VALUES ('187');
 
