@@ -9,9 +9,7 @@ class DeleteUnrelatedMetaData < ActiveRecord::Migration
       {join_table: 'meta_data_licenses',
         type: 'MetaDatum::Licenses'},
       {join_table: 'meta_data_people',
-       type: 'MetaDatum::People'},
-      {join_table: 'meta_data_users',
-       type: 'MetaDatum::Users'},
+       type: 'MetaDatum::People'}
     ].each do |item|
 
       reversible do |dir|

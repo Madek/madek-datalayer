@@ -345,44 +345,6 @@ CREATE FUNCTION delete_empty_meta_data_people_after_insert() RETURNS trigger
 
 
 --
--- Name: delete_empty_meta_data_users_after_delete_join(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION delete_empty_meta_data_users_after_delete_join() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-                    BEGIN
-                      IF (EXISTS (SELECT 1 FROM meta_data WHERE meta_data.id = OLD.meta_datum_id)
-                          AND NOT EXISTS ( SELECT 1 FROM meta_data
-                                            JOIN  meta_data_users ON meta_data.id = meta_data_users.meta_datum_id
-                                            WHERE meta_data.id = OLD.meta_datum_id)
-                            ) THEN
-                        DELETE FROM meta_data WHERE meta_data.id = OLD.meta_datum_id;
-                      END IF;
-                      RETURN NEW;
-                    END;
-                    $$;
-
-
---
--- Name: delete_empty_meta_data_users_after_insert(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION delete_empty_meta_data_users_after_insert() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-                    BEGIN
-                      IF ( NOT EXISTS ( SELECT 1 FROM meta_data
-                                            JOIN meta_data_users ON meta_data.id = meta_data_users.meta_datum_id
-                                            WHERE meta_data.id = NEW.id)) THEN
-                        DELETE FROM meta_data WHERE meta_data.id = NEW.id;
-                      END IF;
-                      RETURN NEW;
-                    END;
-                    $$;
-
-
---
 -- Name: update_updated_at_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -981,17 +943,6 @@ CREATE TABLE meta_data_meta_terms (
 CREATE TABLE meta_data_people (
     meta_datum_id uuid NOT NULL,
     person_id uuid NOT NULL,
-    created_by_id uuid
-);
-
-
---
--- Name: meta_data_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE meta_data_users (
-    meta_datum_id uuid NOT NULL,
-    user_id uuid NOT NULL,
     created_by_id uuid
 );
 
@@ -2207,13 +2158,6 @@ CREATE UNIQUE INDEX index_md_people_on_md_id_and_person_id_and_created_by_id ON 
 
 
 --
--- Name: index_md_users_on_md_id_and_user_id_and_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE UNIQUE INDEX index_md_users_on_md_id_and_user_id_and_created_by_id ON meta_data_users USING btree (meta_datum_id, user_id, created_by_id);
-
-
---
 -- Name: index_media_entries_on_creator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2687,20 +2631,6 @@ CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_people_after_delete_joi
 --
 
 CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_people_after_insert AFTER INSERT ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::People'::text)) EXECUTE PROCEDURE delete_empty_meta_data_people_after_insert();
-
-
---
--- Name: trigger_delete_empty_meta_data_users_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_users_after_delete_join AFTER DELETE ON meta_data_users DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_empty_meta_data_users_after_delete_join();
-
-
---
--- Name: trigger_delete_empty_meta_data_users_after_insert; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_users_after_insert AFTER INSERT ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::Users'::text)) EXECUTE PROCEDURE delete_empty_meta_data_users_after_insert();
 
 
 --
@@ -3588,30 +3518,6 @@ ALTER TABLE ONLY meta_data_people
 
 
 --
--- Name: meta-data-users_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY meta_data_users
-    ADD CONSTRAINT "meta-data-users_meta-data_fkey" FOREIGN KEY (meta_datum_id) REFERENCES meta_data(id) ON DELETE CASCADE;
-
-
---
--- Name: meta-data-users_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY meta_data_users
-    ADD CONSTRAINT "meta-data-users_users_fkey" FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
-
-
---
--- Name: meta-data-users_users_fkey2; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY meta_data_users
-    ADD CONSTRAINT "meta-data-users_users_fkey2" FOREIGN KEY (created_by_id) REFERENCES users(id);
-
-
---
 -- Name: meta-data_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3920,6 +3826,8 @@ INSERT INTO schema_migrations (version) VALUES ('183');
 INSERT INTO schema_migrations (version) VALUES ('184');
 
 INSERT INTO schema_migrations (version) VALUES ('185');
+
+INSERT INTO schema_migrations (version) VALUES ('187');
 
 INSERT INTO schema_migrations (version) VALUES ('19');
 

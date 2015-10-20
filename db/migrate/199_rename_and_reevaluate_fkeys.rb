@@ -36,11 +36,6 @@ class RenameAndReevaluateFkeys < ActiveRecord::Migration
     remove_foreign_key :meta_data_people, :people
     add_foreign_key :meta_data_people, :people, name: 'meta-data-people_people_fkey'
 
-    remove_foreign_key :meta_data_users, :meta_data
-    add_foreign_key :meta_data_users, :meta_data, on_delete: :cascade, name: 'meta-data-users_meta-data_fkey'
-    remove_foreign_key :meta_data_users, :users
-    add_foreign_key :meta_data_users, :users, on_delete: :cascade, name: 'meta-data-users_users_fkey'
-
     remove_foreign_key :edit_sessions, :users
     add_foreign_key :edit_sessions, :users, on_delete: :cascade, name: 'edit-sessions_users_fkey'
 

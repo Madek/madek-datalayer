@@ -9,7 +9,7 @@ module Concerns
 
         included do
           scope :filter_by_meta_datum_type, lambda { |value, type|
-            # Example: MetaDatum::Users -> filter_by_meta_datum_users
+            # Example: MetaDatum::People -> filter_by_meta_datum_people
             filter_method = "filter_by_#{type.delete('::').underscore}".to_sym
             send(filter_method, value)
           }

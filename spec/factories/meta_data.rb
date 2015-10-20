@@ -96,19 +96,5 @@ FactoryGirl.define do
         end
       end
     end
-
-    factory :meta_datum_users, class: MetaDatum::Users do
-      meta_key do
-        MetaKey.find_by(id: 'test:users') \
-          || FactoryGirl.create(:meta_key_users)
-      end
-      users { (1..3).map { FactoryGirl.create :user } }
-      after(:build) do |md|
-        md.meta_data_users.map do |mdu|
-          mdu.created_by = create(:user)
-        end
-      end
-    end
-
   end
 end
