@@ -1,4 +1,6 @@
-unless Rails.env.development? ||  Rails.env.test?
+unless Rails.env.development? \
+  || Rails.env.test? \
+  || ENV['DISABLE_SECRETS_STRENGTH_CHECK'].present?
 
   unless StrongPassword::StrengthChecker.new(
     Rails.application.secrets.secret_key_base.to_s
