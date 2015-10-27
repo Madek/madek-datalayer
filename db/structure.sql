@@ -2144,24 +2144,31 @@ CREATE UNIQUE INDEX index_licenses_on_url ON licenses USING btree (url);
 
 
 --
--- Name: index_md_groups_on_md_id_and_group_id_and_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_md_groups_on_md_id_and_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE UNIQUE INDEX index_md_groups_on_md_id_and_group_id_and_created_by_id ON meta_data_groups USING btree (meta_datum_id, group_id, created_by_id);
-
-
---
--- Name: index_md_licenses_on_md_id_and_license_id_and_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE UNIQUE INDEX index_md_licenses_on_md_id_and_license_id_and_created_by_id ON meta_data_licenses USING btree (meta_datum_id, license_id, created_by_id);
+CREATE UNIQUE INDEX index_md_groups_on_md_id_and_group_id ON meta_data_groups USING btree (meta_datum_id, group_id);
 
 
 --
--- Name: index_md_people_on_md_id_and_person_id_and_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_md_licenses_on_md_id_and_license_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE UNIQUE INDEX index_md_people_on_md_id_and_person_id_and_created_by_id ON meta_data_people USING btree (meta_datum_id, person_id, created_by_id);
+CREATE UNIQUE INDEX index_md_licenses_on_md_id_and_license_id ON meta_data_licenses USING btree (meta_datum_id, license_id);
+
+
+--
+-- Name: index_md_people_on_md_id_and_person_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_md_people_on_md_id_and_person_id ON meta_data_people USING btree (meta_datum_id, person_id);
+
+
+--
+-- Name: index_md_users_on_md_id_and_keyword_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_md_users_on_md_id_and_keyword_id ON meta_data_keywords USING btree (meta_datum_id, keyword_id);
 
 
 --
@@ -3837,6 +3844,8 @@ INSERT INTO schema_migrations (version) VALUES ('185');
 INSERT INTO schema_migrations (version) VALUES ('186');
 
 INSERT INTO schema_migrations (version) VALUES ('187');
+
+INSERT INTO schema_migrations (version) VALUES ('188');
 
 INSERT INTO schema_migrations (version) VALUES ('19');
 
