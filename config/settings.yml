@@ -3,7 +3,7 @@
 madek_session_validity_duration: 7 days
 
 default_storage_dir: 'tmp'
-zip_storage_dir: 'tmp/<%= Rails.env %>/zipfiles'
-download_storage_dir: 'tmp/<%= Rails.env %>/downloads'
-file_storage_dir: 'tmp/<%= Rails.env %>/originals'
-thumbnail_storage_dir: 'tmp/<%= Rails.env %>/thumbnails'
+#zip_storage_dir: 'tmp/<%= Rails.env %>/zipfiles'
+#download_storage_dir: 'tmp/<%= Rails.env %>/downloads'
+#file_storage_dir: 'tmp/<%= Rails.env %>/originals'
+#thumbnail_storage_dir: 'tmp/<%= Rails.env %>/thumbnails'
