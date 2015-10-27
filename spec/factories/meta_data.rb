@@ -48,7 +48,7 @@ FactoryGirl.define do
     factory :meta_datum_keywords, class: MetaDatum::Keywords do
       meta_key do
         MetaKey.find_by(id: 'test:keywords') \
-          || FactoryGirl.create(:meta_key_text)
+          || FactoryGirl.create(:meta_key_keywords)
       end
       keywords { (1..3).map { FactoryGirl.create :keyword } }
       after(:build) do |md|
