@@ -51,8 +51,8 @@ class MediaFile < ActiveRecord::Base
       # TODO: more exception handling for the cases where
       # some thumbnails and/or previews potentially already exist ?
       store_location_new_file = "#{thumbnail_store_location}_#{thumb_size}.jpg"
-      w = (dimensions ? dimensions[:width] : width)
-      h = (dimensions ? dimensions[:height] : height)
+      w = dimensions.try(:fetch, :width)
+      h = dimensions.try(:fetch, :height)
 
       FileConversion.convert(original_store_location,
                              store_location_new_file, w, h)
