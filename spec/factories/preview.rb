@@ -12,5 +12,6 @@ FactoryGirl.define do
     end
     thumbnail 'large'
     media_type { content_type.split('/').first }
+    media_file
   end
 end
