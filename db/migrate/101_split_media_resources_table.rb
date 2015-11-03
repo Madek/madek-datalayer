@@ -13,6 +13,8 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
       t.boolean :get_metadata_and_previews, null: false, default: false
       t.boolean :get_full_size, null: false, default: false
       t.string :type, default: 'MediaEntry'
+      t.index :created_at
+      t.index :updated_at
     end
 
     reversible { |d|d.up { set_timestamps_defaults :media_entries } }
@@ -62,6 +64,8 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
       t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.boolean :get_metadata_and_previews, null: false, default: false
       t.timestamps null: false
+      t.index :created_at
+      t.index :updated_at
     end
     reversible { |d|d.up { set_timestamps_defaults :collections } }
 
@@ -85,6 +89,8 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
       t.boolean :get_metadata_and_previews, null: false, default: false
       t.timestamps null: false
       t.column :filter, :jsonb, null: false, default: '{}'
+      t.index :created_at
+      t.index :updated_at
     end
     reversible { |d|d.up { set_timestamps_defaults :filter_sets } }
 

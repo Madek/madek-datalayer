@@ -1871,6 +1871,13 @@ CREATE INDEX index_collection_user_permissions_on_user_id ON collection_user_per
 
 
 --
+-- Name: index_collections_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_collections_on_created_at ON collections USING btree (created_at);
+
+
+--
 -- Name: index_collections_on_creator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1882,6 +1889,13 @@ CREATE INDEX index_collections_on_creator_id ON collections USING btree (creator
 --
 
 CREATE INDEX index_collections_on_responsible_user_id ON collections USING btree (responsible_user_id);
+
+
+--
+-- Name: index_collections_on_updated_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_collections_on_updated_at ON collections USING btree (updated_at);
 
 
 --
@@ -2067,6 +2081,13 @@ CREATE INDEX index_filter_set_user_permissions_on_user_id ON filter_set_user_per
 
 
 --
+-- Name: index_filter_sets_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_filter_sets_on_created_at ON filter_sets USING btree (created_at);
+
+
+--
 -- Name: index_filter_sets_on_creator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2078,6 +2099,13 @@ CREATE INDEX index_filter_sets_on_creator_id ON filter_sets USING btree (creator
 --
 
 CREATE INDEX index_filter_sets_on_responsible_user_id ON filter_sets USING btree (responsible_user_id);
+
+
+--
+-- Name: index_filter_sets_on_updated_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_filter_sets_on_updated_at ON filter_sets USING btree (updated_at);
 
 
 --
@@ -2172,6 +2200,13 @@ CREATE UNIQUE INDEX index_md_users_on_md_id_and_keyword_id ON meta_data_keywords
 
 
 --
+-- Name: index_media_entries_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_media_entries_on_created_at ON media_entries USING btree (created_at);
+
+
+--
 -- Name: index_media_entries_on_creator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2183,6 +2218,13 @@ CREATE INDEX index_media_entries_on_creator_id ON media_entries USING btree (cre
 --
 
 CREATE INDEX index_media_entries_on_responsible_user_id ON media_entries USING btree (responsible_user_id);
+
+
+--
+-- Name: index_media_entries_on_updated_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_media_entries_on_updated_at ON media_entries USING btree (updated_at);
 
 
 --
