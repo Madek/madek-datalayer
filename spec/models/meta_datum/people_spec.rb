@@ -54,10 +54,13 @@ describe MetaDatum::People do
           it 'resets the associated people' do
             created_by_user = create(:user)
             expect(@meta_datum_people.people).not_to be == [@person1, @person2]
+
             expect do
               @meta_datum_people.set_value!([@person1, @person2], created_by_user)
             end.not_to raise_error
-            expect(@meta_datum_people.reload.people).to be == [@person1, @person2]
+
+            expect(@meta_datum_people.reload.people.to_a.sort_by(&:id)).to \
+              be == [@person1, @person2].sort_by(&:id)
 
             expect(
               @meta_datum_people
