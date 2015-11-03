@@ -24,12 +24,13 @@ class MigrateFilterSetUserPermissionsData < ActiveRecord::Migration
         ::MigrationUserPermission \
           .joins('JOIN filter_sets ON filter_sets.id = userpermissions.media_resource_id')\
           .find_each do |up|
-          ::MigrationFilterSetUserPermission.create! up.attributes \
-            .map { |k, v| k == 'media_resource_id' ? ['filter_set_id', v] : [k, v] } \
-            .map { |k, v| [(USERPERMISSION_KEYS_MAP[k] || k), v] } \
-            .reject { |k, v| k == 'download' } \
-            .instance_eval { Hash[self] }
-
+          unless ::MigrationFilterSetUserPermission.find_by(filter_set_id: up.media_resource_id, user_id: up.user_id)
+            ::MigrationFilterSetUserPermission.create! up.attributes \
+              .map { |k, v| k == 'media_resource_id' ? ['filter_set_id', v] : [k, v] } \
+              .map { |k, v| [(USERPERMISSION_KEYS_MAP[k] || k), v] } \
+              .reject { |k, v| k == 'download' } \
+              .instance_eval { Hash[self] }
+          end
         end
       end
     end

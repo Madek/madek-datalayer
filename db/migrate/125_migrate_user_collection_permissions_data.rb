@@ -24,11 +24,13 @@ class MigrateUserCollectionPermissionsData < ActiveRecord::Migration
         ::MigrationUserPermission \
           .joins('JOIN collections ON collections.id = userpermissions.media_resource_id')\
           .find_each do |up|
-          ::MigrationCollectionUserPermission.create! up.attributes \
-            .map { |k, v| k == 'media_resource_id' ? ['collection_id', v] : [k, v] } \
-            .map { |k, v| [(USERPERMISSION_KEYS_MAP[k] || k), v] } \
-            .reject { |k, v| k == 'download' } \
-            .instance_eval { Hash[self] }
+            unless ::MigrationCollectionUserPermission.find_by(collection_id: up.media_resource_id, user_id: up.user_id)
+              ::MigrationCollectionUserPermission.create! up.attributes \
+                .map { |k, v| k == 'media_resource_id' ? ['collection_id', v] : [k, v] } \
+                .map { |k, v| [(USERPERMISSION_KEYS_MAP[k] || k), v] } \
+                .reject { |k, v| k == 'download' } \
+                .instance_eval { Hash[self] }
+            end
 
         end
       end
