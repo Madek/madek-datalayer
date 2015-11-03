@@ -15,7 +15,7 @@ class CreateUserpermissions < ActiveRecord::Migration
       t.uuid :user_id, null: false
       t.index :user_id
 
-      t.index [:media_resource_id, :user_id], unique: true
+      t.index [:media_resource_id, :user_id]
 
     end
 
