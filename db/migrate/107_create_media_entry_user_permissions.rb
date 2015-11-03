@@ -50,14 +50,14 @@ class CreateMediaEntryUserPermissions < ActiveRecord::Migration
         ::MigrationUserPermission \
           .joins('JOIN media_entries ON media_entries.id = userpermissions.media_resource_id')\
           .find_each do |up|
-          ::MigrationMediaEntryUserPermission.create! up.attributes \
-            .map { |k, v| k == 'media_resource_id' ? ['media_entry_id', v] : [k, v] } \
-            .map { |k, v| [(USERPERMISSION_KEYS_MAP[k] || k), v] } \
-            .instance_eval { Hash[self] }
-
+            unless ::MigrationMediaEntryUserPermission.find_by(media_entry_id: up.media_resource_id, user_id: up.user_id)
+              ::MigrationMediaEntryUserPermission.create! up.attributes \
+                .map { |k, v| k == 'media_resource_id' ? ['media_entry_id', v] : [k, v] } \
+                .map { |k, v| [(USERPERMISSION_KEYS_MAP[k] || k), v] } \
+                .instance_eval { Hash[self] }
+            end
+          end
         end
-      end
     end
   end
-
 end
