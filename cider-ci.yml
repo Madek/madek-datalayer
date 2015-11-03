@@ -1,5 +1,5 @@
 jobs:
-  all_tests:
+  all-tests:
     name: All Tests
     descriptions: |
       This job depends on all other tests and checks
