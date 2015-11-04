@@ -37,4 +37,56 @@ FactoryGirl.define do
     end
   end
 
+  trait :fat do
+    after(:create) do |me|
+      vocabulary = create(:vocabulary,
+                          id: Faker::Lorem.characters(10))
+
+      rand(1..3).times do
+        me.meta_data << \
+          create(:meta_datum_text,
+                 meta_key: \
+                 create(:meta_key_text,
+                        id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                        vocabulary: vocabulary))
+      end
+      rand(1..3).times do
+        me.meta_data << \
+          create(:meta_datum_keywords,
+                 meta_key: \
+                   create(:meta_key_keywords,
+                          id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                          vocabulary: vocabulary))
+      end
+      rand(1..3).times do
+        me.meta_data << \
+          create(:meta_datum_people,
+                 meta_key: \
+                   create(:meta_key_people,
+                          id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                          vocabulary: vocabulary))
+      end
+      rand(1..3).times do
+        me.meta_data << \
+          create(:meta_datum_licenses,
+                 meta_key: \
+                   create(:meta_key_licenses,
+                          id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                          vocabulary: vocabulary))
+      end
+
+      rand(1..3).times do
+        me.user_permissions << create(:media_entry_user_permission,
+                                      user: create(:user))
+      end
+      rand(1..3).times do
+        me.group_permissions << create(:media_entry_group_permission,
+                                       group: create(:group))
+      end
+      rand(1..3).times do
+        me.api_client_permissions << create(:media_entry_api_client_permission,
+                                            api_client: create(:api_client))
+      end
+    end
+  end
 end

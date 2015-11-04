@@ -92,6 +92,8 @@ module Concerns
               entrusted_to_group Group.find(value)
             when 'entrusted_to_user'
               entrusted_to_user User.find(value)
+            else
+              raise 'Unrecognized permission key'
             end
           end
         end

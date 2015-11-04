@@ -9,45 +9,39 @@ FactoryGirl.define do
     end
 
     factory :meta_key_text, class: MetaKey do
-      id 'test:string'
+      id { 'test:string' }
       meta_datum_object_type 'MetaDatum::Text'
     end
 
     factory :meta_key_text_date, class: MetaKey do
-      id 'test:datestring'
+      id { 'test:datestring' }
       meta_datum_object_type 'MetaDatum::TextDate'
     end
 
     factory :meta_key_title, class: MetaKey do
-      id 'test:title'
+      id { 'test:title' }
       meta_datum_object_type 'MetaDatum::Text'
     end
 
     factory :meta_key_licenses, class: MetaKey do
-      id 'test:licenses'
+      id { 'test:licenses' }
       meta_datum_object_type 'MetaDatum::Licenses'
     end
 
     factory :meta_key_keywords, class: MetaKey do
-      id 'test:keywords'
+      id { 'test:keywords' }
       meta_datum_object_type 'MetaDatum::Keywords'
     end
 
     factory :meta_key_people, class: MetaKey do
-      id 'test:people'
+      id { 'test:people' }
       meta_datum_object_type 'MetaDatum::People'
     end
 
     factory :meta_key_groups, class: MetaKey do
-      id 'test:groups'
+      id { 'test:groups' }
       meta_datum_object_type 'MetaDatum::Groups'
     end
-
-    factory :meta_key_users, class: MetaKey do
-      id 'test:users'
-      meta_datum_object_type 'MetaDatum::Users'
-    end
-
   end
 
   factory :meta_key_core, class: MetaKey do
