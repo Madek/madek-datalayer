@@ -8,6 +8,7 @@ class User < ActiveRecord::Base
   # include UserModules::AutoCompletion
   include Concerns::FindResource
   include Concerns::Users::Filters
+  include Concerns::Users::Keywords
 
   has_secure_password validations: false
 
@@ -34,8 +35,6 @@ class User < ActiveRecord::Base
 
   #############################################################
 
-  has_many :keywords, foreign_key: :creator_id
-
   has_many :created_custom_urls, class_name: 'CustomUrl', foreign_key: :creator_id
   has_many :updated_custom_urls, class_name: 'CustomUrl', foreign_key: :updator_id
 
@@ -51,12 +50,6 @@ class User < ActiveRecord::Base
 
   has_and_belongs_to_many :groups
   has_one :admin, dependent: :destroy
-
-  has_and_belongs_to_many :used_keywords,
-                          join_table: 'meta_data_keywords',
-                          foreign_key: :created_by_id,
-                          association_foreign_key: :keyword_id,
-                          class_name: '::Keyword'
 
   #############################################################
 
