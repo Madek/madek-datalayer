@@ -8,10 +8,12 @@ module Concerns
         include Concerns::MediaResources::Filters::MetaData::Primitive
 
         included do
-          scope :filter_by_meta_datum_type, lambda { |value, type|
+          scope :filter_by_meta_datum_type, lambda { |meta_datum|
             # Example: MetaDatum::People -> filter_by_meta_datum_people
-            filter_method = "filter_by_#{type.delete('::').underscore}".to_sym
-            send(filter_method, value)
+            filter_method = \
+              "filter_by_#{meta_datum[:type].delete('::').underscore}"
+                .to_sym
+            send(filter_method, meta_datum)
           }
         end
       end

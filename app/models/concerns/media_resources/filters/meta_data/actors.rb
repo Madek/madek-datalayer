@@ -8,11 +8,16 @@ module Concerns
           include Concerns::MediaResources::Filters::MetaData::Helpers
 
           included do
-            %w(user group person license keyword).each do |actor_type|
-              method_name =  "filter_by_meta_datum_#{actor_type.pluralize}".to_sym
+            [[:group, :searchable],
+             [:person, :searchable],
+             [:license, :label],
+             [:keyword, :term]].each do |actor_type, match_column|
+              method_name = "filter_by_meta_datum_#{actor_type.to_s.pluralize}"
               scope method_name,
-                    lambda { |id|
-                      filter_by_meta_datum_actor_type(id, actor_type)
+                    lambda { |meta_datum|
+                      filter_by_meta_datum_actor_type(actor_type,
+                                                      match_column,
+                                                      meta_datum)
                     }
             end
           end

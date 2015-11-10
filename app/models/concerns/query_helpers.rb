@@ -8,7 +8,7 @@ module Concerns
       end
 
       def join_query_strings_with_intersect(*query_strings)
-        join_query_strings(:union, *query_strings)
+        join_query_strings(:intersect, *query_strings)
       end
 
       def join_query_strings(set_op, *query_strings)

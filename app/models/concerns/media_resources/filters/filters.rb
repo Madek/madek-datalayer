@@ -13,28 +13,27 @@ module Concerns
         end
 
         module ClassMethods
-          def filter(meta_data: nil, media_file_specs: nil, permission_specs: nil)
+          def filter(**filter_opts)
             # NOTE: for the sake of sanity when analyzing the generated sql
-            # and to prevent strange active record generation strategies
-            sql = \
-              "((#{all.to_sql}) " \
-              'INTERSECT ' \
-              "(#{unscoped.filter_by_permissions(*permission_specs).to_sql}) " \
-              'INTERSECT ' \
-              "(#{unscoped.filter_by_media_files(*media_file_specs).to_sql}) " \
-              'INTERSECT ' \
-              "(#{unscoped.filter_by_meta_data(*meta_data).to_sql})) " \
-            "AS #{model_name.plural}"
-            from(sql)
+            # and to prevent strange active record generation strategies, we
+            # have to use "to_sql".
+            # "unscoped" must be used in order to ensure proper chaining of
+            # multiple filters
+            scopes = [all]
+            filter_opts.each do |key, value|
+              scopes << unscoped.send("filter_by_#{key}", *value) if value
+            end
+            from \
+              join_query_strings_with_intersect \
+                *scopes.map(&:to_sql)
           end
 
           def filter_by_meta_data(*meta_data)
             unless meta_data.blank?
               query_strings = meta_data.map do |meta_datum|
-                raise 'Value can\'t be an array' if meta_datum[:value].is_a?(Array)
-                type = determine_type(meta_datum)
+                validate! meta_datum
                 unscoped
-                  .filter_by_meta_datum(meta_datum[:key], meta_datum[:value], type)
+                  .filter_by_meta_datum(meta_datum)
                   .to_sql
               end
               from \
@@ -45,31 +44,31 @@ module Concerns
             end
           end
 
-          def determine_type(meta_datum)
-            if meta_datum[:type].blank?
-              MetaKey.find(meta_datum[:key]).meta_datum_object_type
-            else
-              meta_datum[:type]
+          def validate!(meta_datum)
+            [:value, :match].each do |key_name|
+              if meta_datum[key_name] and not meta_datum[key_name].is_a?(String)
+                raise "#{key_name.capitalize} must be a string!"
+              end
             end
           end
 
-          def filter_by_media_files(*media_file_specs)
+          def filter_by_media_files(*media_files)
             each_with_method_chain(:filter_by_media_file_helper,
-                                   *media_file_specs)
+                                   *media_files)
           end
 
-          def filter_by_permissions(*permission_specs)
+          def filter_by_permissions(*permissions)
             each_with_method_chain(:filter_by_permission_helper,
-                                   *permission_specs)
+                                   *permissions)
           end
 
-          def each_with_method_chain(method, *key_value_specs)
+          def each_with_method_chain(method, *key_values)
             result = all
-            key_value_specs.each do |key_value_spec|
+            key_values.each do |key_value|
               result = \
                 result.send(method,
-                            key: key_value_spec[:key],
-                            value: key_value_spec[:value])
+                            key: key_value[:key],
+                            value: key_value[:value])
             end
             result
           end
