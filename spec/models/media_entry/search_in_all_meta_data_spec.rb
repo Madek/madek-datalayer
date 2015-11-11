@@ -64,7 +64,7 @@ describe MediaEntry do
   context 'search in all meta data' do
     it 'is successful' do
       filtered_media_entries = \
-        MediaEntry.filter(meta_data: [{ key: 'any', match: 'nitai' }])
+        MediaEntry.filter_by(meta_data: [{ key: 'any', match: 'nitai' }])
 
       [@media_entry_1,
        @media_entry_2,
@@ -89,9 +89,9 @@ describe MediaEntry do
 
       filtered_media_entries = \
         MediaEntry
-          .filter(meta_data: [{ key: 'any', match: 'nitai' }])
-          .filter(meta_data: [{ key: meta_datum_text.meta_key_id,
-                                match: meta_datum_text.string }])
+          .filter_by(meta_data: [{ key: 'any', match: 'nitai' }])
+          .filter_by(meta_data: [{ key: meta_datum_text.meta_key_id,
+                                   match: meta_datum_text.string }])
 
       expect(filtered_media_entries).to include @media_entry_1
       expect(filtered_media_entries.count).to be == 1

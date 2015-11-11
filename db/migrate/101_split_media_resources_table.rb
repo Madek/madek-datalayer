@@ -88,7 +88,7 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
       t.primary_key :id, :uuid, default: 'gen_random_uuid()'
       t.boolean :get_metadata_and_previews, null: false, default: false
       t.timestamps null: false
-      t.column :filter, :jsonb, null: false, default: '{}'
+      t.column :definition, :jsonb, null: false, default: '{}'
       t.index :created_at
       t.index :updated_at
     end
@@ -101,7 +101,7 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
             get_metadata_and_previews: mrfs.view,
             created_at: mrfs.created_at,
             updated_at: mrfs.updated_at,
-            filter: mrfs.settings['filter'].to_json || {}
+            definition: mrfs.settings['filter'].to_json || {}
         end
       end
     end

@@ -78,12 +78,12 @@ describe MediaEntry do
 
     filtered_media_entries = \
       MediaEntry
-        .filter(meta_data: meta_data_1,
-                media_files: media_files_1,
-                permissions: permissions_1)
-        .filter(meta_data: meta_data_2,
-                media_files: media_files_2,
-                permissions: permissions_2)
+        .filter_by(meta_data: meta_data_1,
+                   media_files: media_files_1,
+                   permissions: permissions_1)
+        .filter_by(meta_data: meta_data_2,
+                   media_files: media_files_2,
+                   permissions: permissions_2)
 
     expect(filtered_media_entries.count).to be == 1
     expect(filtered_media_entries.first).to be == @media_entry

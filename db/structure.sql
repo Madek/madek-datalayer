@@ -639,7 +639,7 @@ CREATE TABLE filter_sets (
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
-    filter jsonb DEFAULT '{}'::jsonb NOT NULL,
+    definition jsonb DEFAULT '{}'::jsonb NOT NULL,
     responsible_user_id uuid NOT NULL,
     creator_id uuid NOT NULL
 );

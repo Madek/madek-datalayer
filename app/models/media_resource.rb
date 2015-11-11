@@ -6,8 +6,8 @@ class MediaResource < ActiveRecord::Base
     scope_helper(:viewable_by_user_or_public, user)
   end
 
-  def self.filter(filter_opts)
-    scope_helper(:filter, filter_opts)
+  def self.filter_by(filter_opts)
+    scope_helper(:filter_by, filter_opts)
   end
 
   def self.unified_scope(scope1, scope2, scope3)

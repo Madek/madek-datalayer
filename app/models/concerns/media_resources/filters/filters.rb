@@ -13,7 +13,7 @@ module Concerns
         end
 
         module ClassMethods
-          def filter(**filter_opts)
+          def filter_by(**filter_opts)
             # NOTE: for the sake of sanity when analyzing the generated sql
             # and to prevent strange active record generation strategies, we
             # have to use "to_sql".
