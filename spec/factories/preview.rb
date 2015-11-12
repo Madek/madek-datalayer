@@ -10,8 +10,8 @@ FactoryGirl.define do
       ]
         .join('.')
     end
-    thumbnail 'large'
+    thumbnail { [:maximum, :x_large, :large, :medium, :small_125, :small].sample }
     media_type { content_type.split('/').first }
-    media_file
+    association :media_file
   end
 end
