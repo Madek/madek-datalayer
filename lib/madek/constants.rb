@@ -58,6 +58,13 @@ module Madek
       raise 'unknown starting location'
     end
 
+    THUMBNAILS = { maximum: nil,
+                   x_large: { width: 1024, height: 768 },
+                   large: { width: 620, height: 500 },
+                   medium: { width: 300, height: 300 },
+                   small_125: { width: 125, height: 125 },
+                   small: { width: 100, height: 100 } }
+
     SPECIAL_WHITESPACE_CHARS = ["\u180E",
                                 "\uFEFF",
                                 "\u200B",

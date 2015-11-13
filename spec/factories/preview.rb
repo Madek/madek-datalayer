@@ -10,7 +10,7 @@ FactoryGirl.define do
       ]
         .join('.')
     end
-    thumbnail { [:maximum, :x_large, :large, :medium, :small_125, :small].sample }
+    thumbnail { Madek::Constants::THUMBNAILS.keys.sample }
     media_type { content_type.split('/').first }
     association :media_file
   end
