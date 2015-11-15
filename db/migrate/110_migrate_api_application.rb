@@ -1,6 +1,11 @@
 class MigrateApiApplication < ActiveRecord::Migration
   include Madek::MigrationHelper
 
+  class ApiApplication < ActiveRecord::Base
+    self.table_name = 'applications'
+  end
+
+
   def change
 
     create_table :api_clients, id: false do |t|
@@ -14,14 +19,13 @@ class MigrateApiApplication < ActiveRecord::Migration
     end
     set_timestamps_defaults :api_clients
 
-    # copy over (not migrate) the applications (it's dropped at the very end)
-    execute \
-      "INSERT INTO api_clients (user_id, login, description, password_digest) " \
-                        "SELECT user_id, id,    description, secret " \
-                        "FROM applications"
+    ApiApplication.all.each do |api_app|
+      ApiClient.create! login: api_app.id,
+        user_id: api_app.user_id, description: api_app.description,
+        password: api_app.secret
+    end
 
     add_foreign_key :api_clients, :users
-
 
     execute %q< ALTER TABLE api_clients ADD CONSTRAINT name_format CHECK (login~ '^[a-z][a-z0-9\-\_]+$'); >
 
