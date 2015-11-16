@@ -100,11 +100,11 @@ class RenameAndReevaluateFkeys < ActiveRecord::Migration
     end
 
     remove_foreign_key :meta_data, :media_entries
-    add_foreign_key :meta_data, :media_entries, name: 'meta-data_media-entries_fkey'
+    add_foreign_key :meta_data, :media_entries, name: 'meta-data_media-entries_fkey', on_delete: :cascade
     remove_foreign_key :meta_data, :collections
-    add_foreign_key :meta_data, :collections, name: 'meta-data_collections_fkey'
+    add_foreign_key :meta_data, :collections, name: 'meta-data_collections_fkey', on_delete: :cascade
     remove_foreign_key :meta_data, :filter_sets
-    add_foreign_key :meta_data, :filter_sets, name: 'meta-data_filter-sets_fkey'
+    add_foreign_key :meta_data, :filter_sets, name: 'meta-data_filter-sets_fkey', on_delete: :cascade
 
     remove_foreign_key :media_entry_user_permissions, :users
     add_foreign_key :media_entry_user_permissions, :users, on_delete: :cascade,
@@ -151,13 +151,13 @@ class RenameAndReevaluateFkeys < ActiveRecord::Migration
       name: 'favorite-media-entries_media-entries_fkey'
 
     remove_foreign_key :edit_sessions, :media_entries
-    add_foreign_key :edit_sessions, :media_entries, dependent: :destroy,
+    add_foreign_key :edit_sessions, :media_entries, on_delete: :cascade,
       name: 'edit-sessions_media-entries_fkey'
     remove_foreign_key :edit_sessions, :collections
-    add_foreign_key :edit_sessions, :collections, dependent: :destroy,
+    add_foreign_key :edit_sessions, :collections, on_delete: :cascade,
       name: 'edit-sessions_collections_fkey'
     remove_foreign_key :edit_sessions, :filter_sets
-    add_foreign_key :edit_sessions, :filter_sets, dependent: :destroy,
+    add_foreign_key :edit_sessions, :filter_sets, on_delete: :cascade,
       name: 'edit-sessions_filter-sets_fkey'
 
     remove_foreign_key :collection_group_permissions, :groups

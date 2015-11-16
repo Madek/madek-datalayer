@@ -3138,7 +3138,7 @@ ALTER TABLE ONLY custom_urls
 --
 
 ALTER TABLE ONLY edit_sessions
-    ADD CONSTRAINT "edit-sessions_collections_fkey" FOREIGN KEY (collection_id) REFERENCES collections(id);
+    ADD CONSTRAINT "edit-sessions_collections_fkey" FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE;
 
 
 --
@@ -3146,7 +3146,7 @@ ALTER TABLE ONLY edit_sessions
 --
 
 ALTER TABLE ONLY edit_sessions
-    ADD CONSTRAINT "edit-sessions_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES filter_sets(id);
+    ADD CONSTRAINT "edit-sessions_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES filter_sets(id) ON DELETE CASCADE;
 
 
 --
@@ -3154,7 +3154,7 @@ ALTER TABLE ONLY edit_sessions
 --
 
 ALTER TABLE ONLY edit_sessions
-    ADD CONSTRAINT "edit-sessions_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id);
+    ADD CONSTRAINT "edit-sessions_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id) ON DELETE CASCADE;
 
 
 --
@@ -3578,7 +3578,7 @@ ALTER TABLE ONLY meta_data_people
 --
 
 ALTER TABLE ONLY meta_data
-    ADD CONSTRAINT "meta-data_collections_fkey" FOREIGN KEY (collection_id) REFERENCES collections(id);
+    ADD CONSTRAINT "meta-data_collections_fkey" FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE;
 
 
 --
@@ -3586,7 +3586,7 @@ ALTER TABLE ONLY meta_data
 --
 
 ALTER TABLE ONLY meta_data
-    ADD CONSTRAINT "meta-data_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES filter_sets(id);
+    ADD CONSTRAINT "meta-data_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES filter_sets(id) ON DELETE CASCADE;
 
 
 --
@@ -3594,7 +3594,7 @@ ALTER TABLE ONLY meta_data
 --
 
 ALTER TABLE ONLY meta_data
-    ADD CONSTRAINT "meta-data_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id);
+    ADD CONSTRAINT "meta-data_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id) ON DELETE CASCADE;
 
 
 --
