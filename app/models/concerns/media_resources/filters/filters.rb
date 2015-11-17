@@ -28,6 +28,10 @@ module Concerns
                 *scopes.map(&:to_sql)
           end
 
+          def filter_by_search(term)
+            filter_by_meta_data(key: 'any', match: term)
+          end
+
           def filter_by_meta_data(*meta_data)
             unless meta_data.blank?
               query_strings = meta_data.map do |meta_datum|

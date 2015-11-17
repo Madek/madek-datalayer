@@ -89,7 +89,7 @@ describe MediaEntry do
 
       filtered_media_entries = \
         MediaEntry
-          .filter_by(meta_data: [{ key: 'any', match: 'nitai' }])
+          .filter_by(search: 'nitai')
           .filter_by(meta_data: [{ key: meta_datum_text.meta_key_id,
                                    match: meta_datum_text.string }])
 
