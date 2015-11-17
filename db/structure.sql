@@ -137,23 +137,6 @@ CREATE FUNCTION check_meta_data_meta_key_type_consistency() RETURNS trigger
 
 
 --
--- Name: check_meta_datum_text_string_not_null(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION check_meta_datum_text_string_not_null() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-          BEGIN
-            IF ((NEW.type = 'MetaDatum::Text' OR NEW.type = 'MetaDatum::TextDate')
-                AND NEW.string IS NULL) THEN
-              RAISE EXCEPTION 'String can not be NULL for type MetaDatum::Text or MetaDatum::TextDate';
-            END IF;
-            RETURN NEW;
-          END;
-          $$;
-
-
---
 -- Name: check_meta_key_meta_data_type_consistency(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -342,6 +325,23 @@ CREATE FUNCTION delete_empty_meta_data_people_after_insert() RETURNS trigger
                       RETURN NEW;
                     END;
                     $$;
+
+
+--
+-- Name: delete_meta_datum_text_string_null(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION delete_meta_datum_text_string_null() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+          BEGIN
+            IF ((NEW.type = 'MetaDatum::Text' OR NEW.type = 'MetaDatum::TextDate')
+                AND NEW.string IS NULL) THEN
+              DELETE FROM meta_data WHERE meta_data.id = NEW.id;
+            END IF;
+            RETURN NEW;
+          END;
+          $$;
 
 
 --
@@ -2613,13 +2613,6 @@ CREATE CONSTRAINT TRIGGER trigger_check_collection_cover_uniqueness AFTER INSERT
 
 
 --
--- Name: trigger_check_meta_datum_text_string_not_null; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE CONSTRAINT TRIGGER trigger_check_meta_datum_text_string_not_null AFTER INSERT OR UPDATE ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_meta_datum_text_string_not_null();
-
-
---
 -- Name: trigger_check_users_apiclients_login_uniqueness_on_apiclients; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -2687,6 +2680,13 @@ CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_people_after_delete_joi
 --
 
 CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_people_after_insert AFTER INSERT ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::People'::text)) EXECUTE PROCEDURE delete_empty_meta_data_people_after_insert();
+
+
+--
+-- Name: trigger_delete_meta_datum_text_string_null; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER trigger_delete_meta_datum_text_string_null AFTER INSERT OR UPDATE ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_meta_datum_text_string_null();
 
 
 --

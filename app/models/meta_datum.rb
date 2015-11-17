@@ -37,16 +37,6 @@ class MetaDatum < ActiveRecord::Base
   def self.create_with_user!(user, attrs)
     value = attrs.delete(:value)
     meta_datum = new attrs.merge(created_by: user)
-
-    # FIXME: handle this in the db (constraint/trigger auto-delete…)
-    if ['MetaDatum::Text', 'MetaDatum::TextDate'].include?(meta_datum.type)
-      sanitized_value = meta_datum.with_sanitized(value) { |v| v }
-      unless sanitized_value
-        Rails.logger.warn 'skipping useless MetaDatum::Text creation!'
-        return false
-      end
-    end
-
     meta_datum.set_value!(value, user)
     meta_datum
   end

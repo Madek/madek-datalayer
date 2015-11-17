@@ -1,14 +1,14 @@
-class NotNullableStringForMetaData < ActiveRecord::Migration
+class DeleteMetaDatumStringNull < ActiveRecord::Migration
   def change
     reversible do |dir|
       dir.up do
         execute <<-SQL
-          CREATE OR REPLACE FUNCTION check_meta_datum_text_string_not_null()
+          CREATE OR REPLACE FUNCTION delete_meta_datum_text_string_null()
           RETURNS TRIGGER AS $$
           BEGIN
             IF ((NEW.type = 'MetaDatum::Text' OR NEW.type = 'MetaDatum::TextDate')
                 AND NEW.string IS NULL) THEN
-              RAISE EXCEPTION 'String can not be NULL for type MetaDatum::Text or MetaDatum::TextDate';
+              DELETE FROM meta_data WHERE meta_data.id = NEW.id;
             END IF;
             RETURN NEW;
           END;
@@ -16,23 +16,23 @@ class NotNullableStringForMetaData < ActiveRecord::Migration
         SQL
 
         execute <<-SQL
-          CREATE CONSTRAINT TRIGGER trigger_check_meta_datum_text_string_not_null
+          CREATE CONSTRAINT TRIGGER trigger_delete_meta_datum_text_string_null
           AFTER INSERT OR UPDATE
           ON meta_data
           INITIALLY DEFERRED
           FOR EACH ROW
-          EXECUTE PROCEDURE check_meta_datum_text_string_not_null()
+          EXECUTE PROCEDURE delete_meta_datum_text_string_null()
         SQL
       end
 
       dir.down do
         execute <<-SQL
-          DROP TRIGGER trigger_check_meta_datum_text_string_not_null
+          DROP TRIGGER trigger_delete_meta_datum_text_string_null
           ON meta_data
         SQL
 
         execute <<-SQL
-          DROP FUNCTION check_meta_datum_text_string_not_null
+          DROP FUNCTION delete_meta_datum_text_string_null
         SQL
       end
     end

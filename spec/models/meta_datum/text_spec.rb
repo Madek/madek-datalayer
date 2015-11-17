@@ -25,16 +25,16 @@ describe MetaDatum::Text do
         .to raise_error
     end
 
-    it 'should raise an error for empty string' do
+    it 'should auto delete for empty string' do
       expect { FactoryGirl.create :meta_datum_text, string: nil }
-        .to raise_error
+        .not_to change { MetaDatum.count }
     end
 
-    it 'should sanitize special whitespace char and raise error' do
+    it 'should sanitize special whitespace char and auto delete' do
       string = Madek::Constants::SPECIAL_WHITESPACE_CHARS.sample
       # using value= because of sanitization
       expect { FactoryGirl.create :meta_datum_text, value: string }
-        .to raise_error
+        .not_to change { MetaDatum.count }
     end
   end
 

@@ -16,12 +16,7 @@ class MetaDatum::Text < MetaDatum
 
   def set_value!(new_value, _created_by_user = nil)
     self.value = new_value
-    unless value.blank?
-      self.save!
-    else
-      # FIXME: handle this in the db (constraint/trigger auto-delete…)
-      self.destroy!
-    end
+    self.save!
   end
 
   # can't be private because it's used from elsewhere
