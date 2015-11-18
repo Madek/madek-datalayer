@@ -35,7 +35,7 @@ class MigrateCoreKeys < ActiveRecord::Migration
         is_enabled_for_filter_sets: true,
         vocabulary_id: 'madek_core'
     }},
-    
+
     {id: 'core:keywords',
       attributes: {
         id: 'madek_core:keywords',
@@ -44,7 +44,7 @@ class MigrateCoreKeys < ActiveRecord::Migration
         is_enabled_for_collections: true,
         is_enabled_for_filter_sets: true,
         vocabulary_id: 'madek_core'
-    }}, 
+    }},
 
     {id: 'core:author',
       attributes: {
@@ -85,7 +85,7 @@ class MigrateCoreKeys < ActiveRecord::Migration
       [IoMapping,MetaData,MetaKeyDefinitions,Keyword].each do |klass|
         klass.where(meta_key_id: update_data[:id]).find_each do |model|
           model.update_columns(meta_key_id: update_data[:attributes][:id])
-          puts "* #{klass} * #{model.reload.meta_key_id}"
+          # puts "* #{klass} * #{model.reload.meta_key_id}"
         end
       end
 
