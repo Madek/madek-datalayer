@@ -44,8 +44,9 @@ class MediaFile < ActiveRecord::Base
 
   ################################################################################
 
-  def create_previews!
-    raise "Input file doesn't exist!" unless File.exist?(original_store_location)
+  def create_previews!(alternative_store_location = nil)
+    store_location = alternative_store_location || original_store_location
+    raise "Input file doesn't exist!" unless File.exist?(store_location)
 
     Madek::Constants::THUMBNAILS.each do |thumb_size, dimensions|
       # TODO: more exception handling for the cases where
@@ -54,7 +55,7 @@ class MediaFile < ActiveRecord::Base
       w = dimensions.try(:fetch, :width)
       h = dimensions.try(:fetch, :height)
 
-      FileConversion.convert(original_store_location,
+      FileConversion.convert(store_location,
                              store_location_new_file, w, h)
 
       previews.create!(content_type: 'image/jpeg',
@@ -83,6 +84,10 @@ class MediaFile < ActiveRecord::Base
 
   def image?
     media_type == 'image'
+  end
+
+  def video?
+    media_type =~ /video/
   end
 
   def audio_video?
