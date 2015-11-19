@@ -13,15 +13,21 @@ module Concerns
             if meta_datum[:not_key]
               filter_by_not_meta_key meta_datum[:not_key]
             elsif meta_datum[:key] == 'any'
-              if meta_datum[:type].blank?
-                filter_in_all_meta_data(meta_datum)
-              else
-                joins(:meta_data)
-                  .filter_by_meta_datum_type \
-                    Concerns::MetaData::FilterHelpers.with_type(meta_datum)
-              end
+              filter_by_any_meta_key meta_datum
+            elsif meta_datum[:match].nil? and meta_datum[:value].nil?
+              filter_by_meta_key(meta_datum[:key])
             else
               filter_by_meta_key(meta_datum[:key])
+                .filter_by_meta_datum_type \
+                  Concerns::MetaData::FilterHelpers.with_type(meta_datum)
+            end
+          end
+
+          def filter_by_any_meta_key(meta_datum)
+            if meta_datum[:type].blank?
+              filter_in_all_meta_data(meta_datum)
+            else
+              joins(:meta_data)
                 .filter_by_meta_datum_type \
                   Concerns::MetaData::FilterHelpers.with_type(meta_datum)
             end

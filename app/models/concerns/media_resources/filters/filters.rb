@@ -78,11 +78,7 @@ module Concerns
           end
 
           def filter_by_media_file_helper(key: nil, value: nil)
-            filter = joins(:media_file)
-            unless value == 'any'
-              filter = filter.where(media_files: Hash[key, value])
-            end
-            filter
+            joins(:media_file).where(media_files: Hash[key, value])
           end
 
           def filter_by_permission_helper(key: nil, value: nil)

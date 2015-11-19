@@ -25,12 +25,13 @@ describe MediaEntry do
                      { key: 'uploader_id',
                        value: @media_entry.media_file.uploader_id }]
     media_files_2 = [{ key: 'extension',
-                       value: 'any' }]
+                       value: @media_entry.media_file.extension }]
 
     # META DATA  ##########################################################
     meta_datum_text = create(:meta_datum_text,
                              value: 'a par tial match')
     @media_entry.meta_data << meta_datum_text
+
     meta_datum_keywords_1 = \
       create(:meta_datum_keywords,
              meta_key: \
@@ -38,6 +39,7 @@ describe MediaEntry do
                       id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
                       vocabulary: vocabulary))
     @media_entry.meta_data << meta_datum_keywords_1
+
     meta_datum_keywords_2 = \
       create(:meta_datum_keywords,
              meta_key: \
@@ -45,13 +47,18 @@ describe MediaEntry do
                       id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
                       vocabulary: vocabulary))
     @media_entry.meta_data << meta_datum_keywords_2
+
     meta_datum_people = create(:meta_datum_people)
     @media_entry.meta_data << meta_datum_people
+
+    meta_datum_licenses = create(:meta_datum_licenses)
+    @media_entry.meta_data << meta_datum_licenses
 
     meta_data_1 = [{ key: meta_datum_text.meta_key_id,
                      match: 'par tial' },
                    { key: meta_datum_keywords_1.meta_key_id,
                      value: meta_datum_keywords_1.value.sample.id },
+                   { key: meta_datum_licenses.meta_key.id },
                    { not_key: not_meta_key.id }]
     meta_data_2 = [{ key: meta_datum_people.meta_key_id,
                      value: meta_datum_people.value.sample.id },
