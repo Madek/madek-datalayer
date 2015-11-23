@@ -91,7 +91,7 @@ class MediaFile < ActiveRecord::Base
   end
 
   def audio_video?
-    media_type =~ /video|audio/
+    content_type =~ /video|audio/
   end
 
   def original_store_location
