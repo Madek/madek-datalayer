@@ -520,11 +520,14 @@ CREATE TABLE collections (
 CREATE TABLE custom_urls (
     id character varying NOT NULL,
     is_primary boolean DEFAULT false NOT NULL,
-    media_resource_id uuid NOT NULL,
     creator_id uuid NOT NULL,
     updator_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    media_entry_id uuid,
+    collection_id uuid,
+    filter_set_id uuid,
+    CONSTRAINT custom_url_is_related CHECK ((((((media_entry_id IS NULL) AND (collection_id IS NULL)) AND (filter_set_id IS NOT NULL)) OR (((media_entry_id IS NULL) AND (collection_id IS NOT NULL)) AND (filter_set_id IS NULL))) OR (((media_entry_id IS NOT NULL) AND (collection_id IS NULL)) AND (filter_set_id IS NULL)))),
     CONSTRAINT custom_urls_id_format CHECK (((id)::text ~ '^[a-z][a-z0-9\-\_]+$'::text)),
     CONSTRAINT custom_urls_id_is_not_uuid CHECK ((NOT ((id)::text ~* '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'::text)))
 );
@@ -1906,13 +1909,6 @@ CREATE INDEX index_custom_urls_on_creator_id ON custom_urls USING btree (creator
 
 
 --
--- Name: index_custom_urls_on_media_resource_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_custom_urls_on_media_resource_id ON custom_urls USING btree (media_resource_id);
-
-
---
 -- Name: index_custom_urls_on_updator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3110,6 +3106,14 @@ ALTER TABLE ONLY collections
 
 
 --
+-- Name: custom-urls_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY custom_urls
+    ADD CONSTRAINT "custom-urls_collections_fkey" FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE;
+
+
+--
 -- Name: custom-urls_creators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3118,11 +3122,19 @@ ALTER TABLE ONLY custom_urls
 
 
 --
--- Name: custom-urls_media-resources_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: custom-urls_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY custom_urls
-    ADD CONSTRAINT "custom-urls_media-resources_fkey" FOREIGN KEY (media_resource_id) REFERENCES media_resources(id) ON DELETE CASCADE;
+    ADD CONSTRAINT "custom-urls_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES filter_sets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: custom-urls_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY custom_urls
+    ADD CONSTRAINT "custom-urls_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id) ON DELETE CASCADE;
 
 
 --
@@ -3888,6 +3900,8 @@ INSERT INTO schema_migrations (version) VALUES ('186');
 INSERT INTO schema_migrations (version) VALUES ('187');
 
 INSERT INTO schema_migrations (version) VALUES ('188');
+
+INSERT INTO schema_migrations (version) VALUES ('189');
 
 INSERT INTO schema_migrations (version) VALUES ('19');
 

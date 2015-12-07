@@ -53,8 +53,13 @@ class RenameAndReevaluateFkeys < ActiveRecord::Migration
     remove_foreign_key :zencoder_jobs, :media_files
     add_foreign_key :zencoder_jobs, :media_files, name: 'zencoder-jobs_media-files_fkey'
 
-    remove_foreign_key :custom_urls, :media_resources
-    add_foreign_key :custom_urls, :media_resources, on_delete: :cascade, name: 'custom-urls_media-resources_fkey'
+    remove_foreign_key :custom_urls, :media_entries
+    add_foreign_key :custom_urls, :media_entries, on_delete: :cascade, name: 'custom-urls_media-entries_fkey'
+    remove_foreign_key :custom_urls, :collections
+    add_foreign_key :custom_urls, :collections, on_delete: :cascade, name: 'custom-urls_collections_fkey'
+    remove_foreign_key :custom_urls, :filter_sets
+    add_foreign_key :custom_urls, :filter_sets, on_delete: :cascade, name: 'custom-urls_filter-sets_fkey'
+
     remove_foreign_key :custom_urls, column: :creator_id
     add_foreign_key :custom_urls, :users, column: :creator_id, name: 'custom-urls_creators_fkey'
     remove_foreign_key :custom_urls, column: :updator_id

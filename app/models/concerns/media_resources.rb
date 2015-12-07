@@ -3,6 +3,7 @@ module Concerns
     extend ActiveSupport::Concern
 
     include Concerns::Entrust
+    include Concerns::MediaResources::CustomUrls
     include Concerns::MediaResources::EditSessions
     include Concerns::MediaResources::Favoritable
     include Concerns::MediaResources::Filters::Filters
