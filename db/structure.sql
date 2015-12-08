@@ -90,6 +90,50 @@ CREATE FUNCTION check_collection_cover_uniqueness() RETURNS trigger
 
 
 --
+-- Name: check_collection_primary_uniqueness(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION check_collection_primary_uniqueness() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+        BEGIN
+          IF
+            (SELECT
+              (SELECT COUNT(1)
+               FROM custom_urls
+               WHERE custom_urls.is_primary IS true
+               AND custom_urls.collection_id = NEW.collection_id)
+            > 1)
+            THEN RAISE EXCEPTION 'There exists already a primary id for collection %.', NEW.collection_id;
+          END IF;
+          RETURN NEW;
+        END;
+        $$;
+
+
+--
+-- Name: check_filter_set_primary_uniqueness(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION check_filter_set_primary_uniqueness() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+        BEGIN
+          IF
+            (SELECT
+              (SELECT COUNT(1)
+               FROM custom_urls
+               WHERE custom_urls.is_primary IS true
+               AND custom_urls.filter_set_id = NEW.filter_set_id)
+            > 1)
+            THEN RAISE EXCEPTION 'There exists already a primary id for filter_set %.', NEW.filter_set_id;
+          END IF;
+          RETURN NEW;
+        END;
+        $$;
+
+
+--
 -- Name: check_madek_core_meta_key_immutability(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -113,6 +157,28 @@ CREATE FUNCTION check_madek_core_meta_key_immutability() RETURNS trigger
             RETURN NEW;
           END;
           $$;
+
+
+--
+-- Name: check_media_entry_primary_uniqueness(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION check_media_entry_primary_uniqueness() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+        BEGIN
+          IF
+            (SELECT
+              (SELECT COUNT(1)
+               FROM custom_urls
+               WHERE custom_urls.is_primary IS true
+               AND custom_urls.media_entry_id = NEW.media_entry_id)
+            > 1)
+            THEN RAISE EXCEPTION 'There exists already a primary id for media_entry %.', NEW.media_entry_id;
+          END IF;
+          RETURN NEW;
+        END;
+        $$;
 
 
 --
@@ -2606,6 +2672,27 @@ CREATE INDEX users_trgm_searchable_idx ON users USING gin (trgm_searchable gin_t
 --
 
 CREATE CONSTRAINT TRIGGER trigger_check_collection_cover_uniqueness AFTER INSERT OR UPDATE ON collection_media_entry_arcs DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_collection_cover_uniqueness();
+
+
+--
+-- Name: trigger_check_collection_primary_uniqueness; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER trigger_check_collection_primary_uniqueness AFTER INSERT OR UPDATE ON custom_urls DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_collection_primary_uniqueness();
+
+
+--
+-- Name: trigger_check_filter_set_primary_uniqueness; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER trigger_check_filter_set_primary_uniqueness AFTER INSERT OR UPDATE ON custom_urls DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_filter_set_primary_uniqueness();
+
+
+--
+-- Name: trigger_check_media_entry_primary_uniqueness; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER trigger_check_media_entry_primary_uniqueness AFTER INSERT OR UPDATE ON custom_urls DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_media_entry_primary_uniqueness();
 
 
 --
