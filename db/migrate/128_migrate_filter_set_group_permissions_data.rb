@@ -23,13 +23,15 @@ class MigrateFilterSetGroupPermissionsData < ActiveRecord::Migration
 
         ::MigrationGroupPermission \
           .joins('JOIN filter_sets ON filter_sets.id = grouppermissions.media_resource_id')\
-          .find_each do |group_permission|
-            attributes = group_permission.attributes \
-              .map { |k, v| k == 'media_resource_id' ? ['filter_set_id', v] : [k, v] } \
-              .reject { |k, v| %w(edit download manage).include? k } \
-              .map { |k, v| [(GROUPPERMISSION_KEYS_MAP[k] || k), v] } \
-              .instance_eval { Hash[self] }
-            ::MigrationFilterSetGroupPermission.create! attributes
+          .find_each do |gp|
+            unless ::MigrationFilterSetGroupPermission.find_by(filter_set_id: gp.media_resource_id, group_id: gp.group_id)
+              attributes = gp.attributes \
+                .map { |k, v| k == 'media_resource_id' ? ['filter_set_id', v] : [k, v] } \
+                .reject { |k, v| %w(edit download manage).include? k } \
+                .map { |k, v| [(GROUPPERMISSION_KEYS_MAP[k] || k), v] } \
+                .instance_eval { Hash[self] }
+              ::MigrationFilterSetGroupPermission.create! attributes
+            end
         end
       end
     end

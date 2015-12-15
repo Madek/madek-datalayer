@@ -49,16 +49,16 @@ class CreateMediaEntryGrouppermission < ActiveRecord::Migration
 
         ::MigrationGroupPermission \
           .joins('JOIN media_entries ON media_entries.id = grouppermissions.media_resource_id')\
-          .find_each do |up|
-          ::MigrationMediaEntryGroupPermission.create! up.attributes \
-            .map { |k, v| k == 'media_resource_id' ? ['media_entry_id', v] : [k, v] } \
-            .map { |k, v| [(GROUPPERMISSION_KEYS_MAP[k] || k), v] } \
-            .reject { |k, v| k == 'manage' } \
-            .instance_eval { Hash[self] }
-
-        end
+          .find_each do |gp|
+            unless ::MigrationMediaEntryGroupPermission.find_by(media_entry_id: gp.media_resource_id, group_id: gp.group_id)
+              ::MigrationMediaEntryGroupPermission.create! gp.attributes \
+                .map { |k, v| k == 'media_resource_id' ? ['media_entry_id', v] : [k, v] } \
+                .map { |k, v| [(GROUPPERMISSION_KEYS_MAP[k] || k), v] } \
+                .reject { |k, v| k == 'manage' } \
+                .instance_eval { Hash[self] }
+            end
+          end
       end
     end
   end
-
 end
