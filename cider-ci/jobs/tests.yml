@@ -32,9 +32,10 @@ jobs:
             timeout: 60
 
         trial-attachments:
-          logs:
-            glob: 'log/*.log'
-            content-type: text/plain
+          - content-type: text/plain
+            include-match: '\.log$'
+          - content-type: text/yaml
+            include-match: 'config\/.*\.ya?ml$'
 
         traits:
           firefox-esr: true
