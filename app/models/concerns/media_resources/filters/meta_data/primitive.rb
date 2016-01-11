@@ -12,7 +12,8 @@ module Concerns
                     lambda { |meta_datum|
                       Concerns::MetaData::FilterHelpers
                         .validate_keys_for_primitive!(meta_datum)
-                      where("string ILIKE '%#{meta_datum[:match]}%'")
+                      where("to_tsvector('english', meta_data.string) @@ " \
+                            "plainto_tsquery('english', '#{meta_datum[:match]}')")
                     }
             end
           end

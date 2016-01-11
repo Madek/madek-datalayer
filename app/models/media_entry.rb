@@ -18,5 +18,4 @@ class MediaEntry < ActiveRecord::Base
 
   default_scope { where(is_published: true) }
   default_scope { reorder(:created_at, :id) }
-
 end

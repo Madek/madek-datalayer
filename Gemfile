@@ -16,7 +16,7 @@ gem 'strong_password'
 gem 'textacular', git: 'https://github.com/DrTom/textacular.git'
 gem 'uuidtools'
 
-gem 'cider_ci-support', '= 2.0.0.pre.beta.2', group: [:development, :test]
+gem 'cider_ci-support', '3.1', group: [:development, :test]
 gem 'factory_girl', group: [:test, :development]
 gem 'faker', group: [:test, :development]
 gem 'pry', group: [:test, :development]

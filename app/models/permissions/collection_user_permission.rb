@@ -1,6 +1,8 @@
 module Permissions
   class CollectionUserPermission < ActiveRecord::Base
     include ::Permissions::Modules::Collection
+    include ::Permissions::Modules::ArelConditions
+
     belongs_to :user
 
     define_destroy_ineffective(
@@ -11,6 +13,8 @@ module Permissions
           = collection_user_permissions.user_id").delete_all
     end
 
-  end
+    #################### AREL #########################
 
+    define_user_permission_exists_condition('collections')
+  end
 end

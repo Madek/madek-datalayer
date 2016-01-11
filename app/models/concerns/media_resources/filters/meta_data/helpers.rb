@@ -25,10 +25,12 @@ module Concerns
                 else
                   joined_meta_data
                     .joins("INNER JOIN #{actor_type_plural} " \
-                         "ON meta_data_#{actor_type_plural}.#{actor_type}_id " \
-                         "= #{actor_type_plural}.id")
-                    .where("#{actor_type_plural}.#{column} " \
-                           "ILIKE '%#{meta_datum[:match]}%'")
+                           "ON meta_data_#{actor_type_plural}.#{actor_type}_id " \
+                           "= #{actor_type_plural}.id")
+                    .where("to_tsvector('english', " \
+                                       "#{actor_type_plural}.#{column}) @@ " \
+                           "plainto_tsquery('english', " \
+                                           "'#{meta_datum[:match]}')")
                 end
               }
 

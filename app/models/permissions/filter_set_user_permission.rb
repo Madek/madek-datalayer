@@ -1,6 +1,8 @@
 module Permissions
   class FilterSetUserPermission < ActiveRecord::Base
     include ::Permissions::Modules::FilterSet
+    include ::Permissions::Modules::ArelConditions
+
     belongs_to :user
 
     define_destroy_ineffective(
@@ -10,5 +12,9 @@ module Permissions
            joins(:filter_set).where("filter_sets.responsible_user_id \
               = filter_set_user_permissions.user_id").delete_all
          end
+
+    #################### AREL #########################
+
+    define_user_permission_exists_condition('filter_sets')
   end
 end

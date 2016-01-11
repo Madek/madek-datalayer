@@ -18,18 +18,15 @@ module Concerns
         end
 
         def viewable_by_user(user)
-          scope1 = unscoped.viewable_by_public
-          scope2 = unscoped.by_user_directly(user,
-                                             self::VIEW_PERMISSION_NAME)
-          scope3 = unscoped.by_user_through_groups(user,
-                                                   self::VIEW_PERMISSION_NAME)
-          scope4 = unscoped.where(responsible_user: user)
-          sql = "((#{(current_scope or all).to_sql}) INTERSECT " \
-                 "((#{scope1.to_sql}) UNION " \
-                  "(#{scope2.to_sql}) UNION " \
-                  "(#{scope3.to_sql}) UNION " \
-                  "(#{scope4.to_sql}))) AS #{table_name}"
-          from(sql)
+          where \
+            arel_table[self::VIEW_PERMISSION_NAME].eq(true)
+              .or(arel_table[:responsible_user_id].eq(user.id))
+              .or("Permissions::#{name}UserPermission".constantize \
+                    .user_permission_exists_condition \
+                      self::VIEW_PERMISSION_NAME, user)
+              .or("Permissions::#{name}GroupPermission".constantize \
+                    .group_permission_for_user_exists_condition \
+                      self::VIEW_PERMISSION_NAME, user)
         end
 
         def viewable_by_user_or_public(user = nil)

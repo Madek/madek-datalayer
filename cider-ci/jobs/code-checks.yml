@@ -42,7 +42,7 @@ jobs:
           name: Code complexity with flog
           scripts:
             test:
-              body: bundle exec cider-ci_flog app/
+              body: bundle exec cider-ci_flog app/ -e app/models/permissions/modules/arel_conditions.rb
 
         code_similarity:
           name: Code similarity with flay

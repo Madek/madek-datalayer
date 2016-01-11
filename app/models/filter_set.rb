@@ -4,5 +4,4 @@ class FilterSet < ActiveRecord::Base
 
   include Concerns::MediaResources
   include Concerns::MediaResources::Highlight
-
 end
