@@ -2633,6 +2633,34 @@ CREATE INDEX keyword_terms_to_tsvector_idx ON keywords USING gin (to_tsvector('e
 
 
 --
+-- Name: licenses_label_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX licenses_label_idx ON licenses USING gin (label gin_trgm_ops);
+
+
+--
+-- Name: licenses_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX licenses_to_tsvector_idx ON licenses USING gin (to_tsvector('english'::regconfig, (label)::text));
+
+
+--
+-- Name: meta_data_string_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX meta_data_string_idx ON meta_data USING gin (string gin_trgm_ops);
+
+
+--
+-- Name: meta_data_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX meta_data_to_tsvector_idx ON meta_data USING gin (to_tsvector('english'::regconfig, string));
+
+
+--
 -- Name: people_searchable_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3991,6 +4019,10 @@ INSERT INTO schema_migrations (version) VALUES ('188');
 INSERT INTO schema_migrations (version) VALUES ('189');
 
 INSERT INTO schema_migrations (version) VALUES ('19');
+
+INSERT INTO schema_migrations (version) VALUES ('190');
+
+INSERT INTO schema_migrations (version) VALUES ('191');
 
 INSERT INTO schema_migrations (version) VALUES ('199');
 
