@@ -8,12 +8,7 @@ class CreateVocabularyAndAddOtherMetaDataFields < ActiveRecord::Migration
     add_column :meta_keys, :label, :text
     add_column :meta_keys, :description, :text
     add_column :meta_keys, :hint, :text
-    add_column :meta_keys, :is_required, :boolean, default: false
-
-    add_column :meta_keys, :length_max, :integer
-    add_column :meta_keys, :length_min, :integer
     add_column :meta_keys, :position, :integer
-    add_column :meta_keys, :input_type, :integer
 
     # Scope
     add_column :meta_keys, :is_enabled_for_media_entries, :bool, null: false, default: false

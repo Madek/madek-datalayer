@@ -580,6 +580,41 @@ CREATE TABLE collections (
 
 
 --
+-- Name: context_keys; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE context_keys (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    description text DEFAULT ''::text,
+    hint text DEFAULT ''::text,
+    label text DEFAULT ''::text,
+    context_id character varying NOT NULL,
+    meta_key_id character varying NOT NULL,
+    is_required boolean DEFAULT false,
+    length_max integer,
+    length_min integer,
+    "position" integer NOT NULL,
+    input_type integer,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    admin_comment text
+);
+
+
+--
+-- Name: contexts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE contexts (
+    id character varying NOT NULL,
+    label character varying DEFAULT ''::character varying NOT NULL,
+    description text DEFAULT ''::text NOT NULL,
+    admin_comment text,
+    CONSTRAINT context_id_chars CHECK (((id)::text ~* '^[a-z0-9\-\_]+$'::text))
+);
+
+
+--
 -- Name: custom_urls; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1028,16 +1063,13 @@ CREATE TABLE meta_keys (
     label text,
     description text,
     hint text,
-    is_required boolean DEFAULT false,
-    length_max integer,
-    length_min integer,
     "position" integer,
-    input_type integer,
     is_enabled_for_media_entries boolean DEFAULT false NOT NULL,
     is_enabled_for_collections boolean DEFAULT false NOT NULL,
     is_enabled_for_filter_sets boolean DEFAULT false NOT NULL,
     vocabulary_id character varying NOT NULL,
     is_extensible boolean DEFAULT false,
+    admin_comment text,
     CONSTRAINT check_valid_meta_datum_object_type CHECK ((meta_datum_object_type = ANY (ARRAY['MetaDatum::Licenses'::text, 'MetaDatum::Text'::text, 'MetaDatum::TextDate'::text, 'MetaDatum::Groups'::text, 'MetaDatum::Keywords'::text, 'MetaDatum::Vocables'::text, 'MetaDatum::People'::text, 'MetaDatum::Users'::text]))),
     CONSTRAINT meta_key_id_chars CHECK (((id)::text ~* '^[a-z0-9\-\_\:]+$'::text)),
     CONSTRAINT start_id_like_vocabulary_id CHECK (((id)::text ~~ ((vocabulary_id)::text || ':%'::text)))
@@ -1149,6 +1181,7 @@ CREATE TABLE vocabularies (
     id character varying NOT NULL,
     label text,
     description text,
+    admin_comment text,
     enabled_for_public_view boolean DEFAULT true NOT NULL,
     enabled_for_public_use boolean DEFAULT true NOT NULL,
     CONSTRAINT vocabulary_id_chars CHECK (((id)::text ~* '^[a-z0-9\-\_]+$'::text))
@@ -1327,6 +1360,14 @@ ALTER TABLE ONLY collections
 
 
 --
+-- Name: contexts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY contexts
+    ADD CONSTRAINT contexts_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: copyrights_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1492,6 +1533,14 @@ ALTER TABLE ONLY media_resources
 
 ALTER TABLE ONLY meta_data
     ADD CONSTRAINT meta_data_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: meta_key_definitions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY context_keys
+    ADD CONSTRAINT meta_key_definitions_pkey PRIMARY KEY (id);
 
 
 --
@@ -1965,6 +2014,20 @@ CREATE INDEX index_collections_on_responsible_user_id ON collections USING btree
 --
 
 CREATE INDEX index_collections_on_updated_at ON collections USING btree (updated_at);
+
+
+--
+-- Name: index_context_keys_on_context_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_context_keys_on_context_id ON context_keys USING btree (context_id);
+
+
+--
+-- Name: index_context_keys_on_meta_key_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_context_keys_on_meta_key_id ON context_keys USING btree (meta_key_id);
 
 
 --
@@ -2871,6 +2934,13 @@ CREATE TRIGGER update_updated_at_column_of_collections BEFORE UPDATE ON collecti
 
 
 --
+-- Name: update_updated_at_column_of_context_keys; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_context_keys BEFORE UPDATE ON context_keys FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+
+
+--
 -- Name: update_updated_at_column_of_custom_urls; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -3429,6 +3499,14 @@ ALTER TABLE ONLY filter_sets
 
 
 --
+-- Name: fk_rails_2957e036b5; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY context_keys
+    ADD CONSTRAINT fk_rails_2957e036b5 FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON DELETE CASCADE;
+
+
+--
 -- Name: fk_rails_45043d2037; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3450,6 +3528,14 @@ ALTER TABLE ONLY meta_data_licenses
 
 ALTER TABLE ONLY meta_data_licenses
     ADD CONSTRAINT fk_rails_6f33d95dfc FOREIGN KEY (meta_datum_id) REFERENCES meta_data(id) ON DELETE CASCADE;
+
+
+--
+-- Name: fk_rails_b297363c89; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY context_keys
+    ADD CONSTRAINT fk_rails_b297363c89 FOREIGN KEY (context_id) REFERENCES contexts(id);
 
 
 --

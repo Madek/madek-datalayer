@@ -20,7 +20,8 @@ class CreateVocabularyPermissions < ActiveRecord::Migration
       add_foreign_key "vocabulary_#{entity}_permissions", :vocabularies, on_delete: :cascade
     end
 
-
+    # set permissions for orphans (hide them)
+    execute %q< UPDATE vocabularies SET enabled_for_public_view = '0', enabled_for_public_use = '0' WHERE id = 'madek_orphans'; >
   end
 
 end

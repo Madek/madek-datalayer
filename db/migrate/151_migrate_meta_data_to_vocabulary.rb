@@ -78,8 +78,7 @@ class MigrateMetaDataToVocabulary < ActiveRecord::Migration
 
 
   def change
-    @meta_data_count = 0
-    begin 
+    begin
       KeywordTerm.reset_column_information
       Vocabulary.reset_column_information
       MetaKey.reset_column_information
@@ -87,141 +86,120 @@ class MigrateMetaDataToVocabulary < ActiveRecord::Migration
       MetaTerm.reset_column_information
       MetaKeyDefinition.reset_column_information
 
+      # only required on meta_keys themselves:
+      change_column_null :meta_key_definitions, :label, true
+      change_column_null :meta_key_definitions, :description, true
+      change_column_null :meta_key_definitions, :hint, true
+
+      # add admin comments
+      add_column(:vocabularies, :admin_comment, :text, null: true)
+      add_column(:contexts, :admin_comment, :text, null: true)
+      add_column(:meta_keys, :admin_comment, :text, null: true)
+      add_column(:meta_key_definitions, :admin_comment, :text, null: true)
+
+      orphan_vocabulary = Vocabulary.find_or_create_by(id:'madek_orphans', label: 'Orphans',
+        description: 'The related meta_keys in this vocabulary were not related to any context before the migration.')
+
       MetaKey.order(:id).each do |meta_key|
+        # Find Context to base new Vocabulary on (and the associated MKDef)
         if meta_key.meta_key_definitions.count == 0
-
-          orphan_vocabulary = Vocabulary.find_or_create_by id: 'orphans', label: 'Orphans',
-            description: 'The related meta_keys in this vocabulary were not related to any context before the migration.'
-
-          new_id_meta_key_part = meta_key.id.downcase.gsub(/\s+/, '_').gsub(/-/, '_') \
-            .gsub(/_+/, '_').gsub(/[^a-z0-9\_\-]/, '')
-
-          new_meta_key_id = "#{orphan_vocabulary.id}:#{new_id_meta_key_part}"
-
-          new_meta_key = MetaKey.find_or_create_by(id: new_meta_key_id,
-                                                   meta_datum_object_type:  meta_key.meta_datum_object_type,
-                                                   is_extensible: meta_key.is_extensible_list,
-                                                   vocabulary: orphan_vocabulary)
-          Rails.logger.info "CREATED NEW META_KEY: #{new_meta_key.attributes}"
-
-          clone_meta_key_data(meta_key, new_meta_key)
-          create_io_mapping meta_key, new_meta_key
-
-          new_meta_key.meta_data.reset
-
+          meta_key_definition = nil
+          vocabulary = orphan_vocabulary
         else
+          # Find "prefered" context, use it as base for new vocabulary!
+          # The following works in the general case, and can be "cleaned up" by an admin pre migration (in UI).
+          # - find or create Contexts that should become Vocabularies
+          # - make sure each MetaKey is used only once as a MetaKeyDefinition in all of those Contexts
+          # - put only those Context in a ContextGroup
+          meta_key_definition = meta_key.meta_key_definitions
+            .sort_by {|mkd| mkd.context.context_group_id || '❌'}.first
+          context = meta_key_definition.context
 
-          meta_key.meta_key_definitions.each do |meta_key_definition|
-            Rails.logger.info "MIGRATING meta_key_definition: #{meta_key_definition.attributes}"
-
-            context = meta_key_definition.context
-            vocabulary_id = context.id.downcase.gsub(/\s+/, '_').gsub(/-/, '_').gsub(/_+/, '_').gsub(/[^a-z0-9\_\-]/, '')
-            vocabulary = Vocabulary.find_or_create_by(id: vocabulary_id)
-            vocabulary.update_attributes label: context.label, description: context.description
-
-            new_id_meta_key_part = meta_key.id.downcase.gsub(/\s+/, '_').gsub(/[^a-z0-9\-\_]/,'_').gsub(/-/, '_').gsub(/_+/, '_')
-            new_meta_key_id = "#{vocabulary_id}:#{new_id_meta_key_part}"
-
-            new_meta_key_attributes = { description: meta_key_definition.description,
-                                        is_enabled_for_collections: enabled_for_collections?(meta_key_definition),
-                                        is_enabled_for_media_entries: true,
-                                        hint: meta_key_definition.hint,
-                                        id: new_meta_key_id,
-                                        input_type: meta_key_definition.input_type,
-                                        is_required: meta_key_definition.is_required,
-                                        label: meta_key_definition.label,
-                                        length_max: meta_key_definition.length_max,
-                                        length_min: meta_key_definition.length_min,
-                                        meta_datum_object_type:  meta_key.meta_datum_object_type,
-                                        position: meta_key_definition.position,
-                                        is_extensible: meta_key.is_extensible_list,
-                                        vocabulary: vocabulary, } 
-            Rails.logger.info "CREATING NEW META_KEY: #{new_meta_key_attributes}"
-
-            new_meta_key = MetaKey.find_or_create_by(new_meta_key_attributes)
-
-            clone_meta_key_data meta_key, new_meta_key
-            create_io_mapping meta_key, new_meta_key
-
-            meta_key_definition.destroy
-            new_meta_key.meta_data.reset
-
-          end
+          # create vocabulary based on context:
+          vocabulary = Vocabulary.find_or_create_by(id: sanitize_namespace_id(context.id))
+          vocabulary.update_attributes(
+            label: context.label,
+            description: context.description,
+            admin_comment: "[Created automatically from Context '#{context.label}']")
         end
-        meta_key.io_mappings.delete_all
-        meta_key.meta_data.reset
-        meta_key.delete
+
+        old_meta_key_id = meta_key.id.to_s
+        new_meta_key_id = "#{vocabulary.id}:#{sanitize_meta_key_id(meta_key.id)}"
+
+        new_meta_key_attributes = { # new columns:
+                                    is_enabled_for_collections: enabled_for_collections?(meta_key_definition),
+                                    is_enabled_for_media_entries: true,
+                                    # new vocabulary:
+                                    vocabulary_id: vocabulary.id,
+                                    # new id schema:
+                                    id: new_meta_key_id }
+        # merge some attributes from MKD (if not orphan)
+        if meta_key_definition.present?
+          # *move* 'label', 'description' and 'hint'; only *copy* 'position'
+          new_meta_key_attributes.merge!(
+            label: meta_key_definition.label,
+            description: meta_key_definition.description,
+            hint: meta_key_definition.label,
+            position: meta_key_definition.position)
+          meta_key_definition.update!(label: nil, description: nil, hint: nil)
+        end
+
+
+        Rails.logger.info "LINKING META_KEY: #{new_meta_key_attributes}"
+        # disable db constraints while rewriting (foreign) keys:
+        execute "SET session_replication_role = REPLICA"
+
+        meta_key.update!(new_meta_key_attributes)
+
+        execute "UPDATE meta_key_definitions" \
+          " SET meta_key_id = '#{new_meta_key_id}'" \
+          " WHERE meta_key_id = '#{old_meta_key_id}'"
+
+        execute "UPDATE meta_data" \
+          " SET meta_key_id = '#{new_meta_key_id}'" \
+          " WHERE meta_key_id = '#{old_meta_key_id}'"
+
+        # keywords - TODO: what about unused keywords?
+        meta_key.meta_data.each do |meta_datum|
+          migrate_meta_terms(meta_datum, new_meta_key_id)
+        end
+
+        execute "UPDATE io_mappings" \
+          " SET meta_key_id = '#{new_meta_key_id}'" \
+          " WHERE meta_key_id = '#{old_meta_key_id}'"
+
+        execute "SET session_replication_role = DEFAULT" # re-enable db constraints
       end
+
     rescue Exception => e
       Rails.logger.warn "#{e.class} #{e.message} #{e.backtrace.join(', ')}"
       raise e
     end
   end
 
-  def create_io_mapping(meta_key, new_meta_key)
-    if io_mapping = IoMapping.find_by_meta_key_id(meta_key.id)
-      attrs = io_mapping.attributes
-      attrs["meta_key_id"] = new_meta_key.id
-      attrs.delete("id")
-      IoMapping.create(attrs)
-    end
+  def sanitize_namespace_id(str)
+    str.downcase
+      .gsub(/ä/, 'ae').gsub(/ö/, 'oe').gsub(/ü/, 'ue').gsub(/ß/, 'ss')
+      .gsub(/\s+/, '_').gsub(/-/, '_').gsub(/_+/, '_').gsub(/[^a-z0-9\_\-]/, '')
   end
 
-  def enabled_for_collections? meta_key_definition
+  def sanitize_meta_key_id(str)
+    str.downcase
+      .gsub(/ä/, 'ae').gsub(/ö/, 'oe').gsub(/ü/, 'ue').gsub(/ß/, 'ss')
+      .gsub(/\s+/, '_').gsub(/[^a-z0-9\-\_]/,'_').gsub(/-/, '_').gsub(/_+/, '_')
+  end
+
+  def migrate_meta_terms(meta_datum, new_meta_key_id)
+    meta_datum.meta_terms.each do |meta_term|
+      keyword_term = KeywordTerm.find_or_create_by(term: meta_term.term, meta_key_id: new_meta_key_id)
+      Keyword.find_or_create_by meta_datum_id: meta_datum.id, keyword_term_id: keyword_term.id
+    end
+    meta_datum.keywords.reset
+  end
+
+  def enabled_for_collections?(meta_key_definition)
+    return false unless meta_key_definition.present?
     !!(meta_key_definition.context_id =~ /media_set/)
-  end
-
-  def clone_meta_key_data(meta_key, new_meta_key)
-    meta_key.meta_data.each do |meta_datum|
-
-      @meta_data_count+=1
-      Rails.logger.info("#meta-datum: #{@meta_data_count} for #{new_meta_key.id}") if ((@meta_data_count % 1000) == 0)
-
-      shared_attributes = meta_datum.slice(:string, :license_id, :media_entry_id, :collection_id, :filter_set_id, :type)
-      new_meta_datum = MetaDatum.create! shared_attributes.merge(meta_key: new_meta_key)
-
-      object_type = meta_key.meta_datum_object_type
-      case meta_key.meta_datum_object_type
-
-      when 'MetaDatum::License', 'MetaDatum::Text', 'MetaDatum::TextDate'
-
-      when 'MetaDatum::People'
-        new_meta_datum.people = meta_datum.people
-        new_meta_datum.save!
-        new_meta_datum.people.reset
-        meta_datum.people.reset
-
-      when 'MetaDatum::Keywords'
-        new_meta_datum.keywords = meta_datum.keywords
-        new_meta_datum.save!
-        new_meta_datum.keywords.reset
-        meta_datum.keywords.reset
-
-      when 'MetaDatum::Vocables'
-        meta_datum.meta_terms.each do |meta_term|
-          keyword_term = KeywordTerm.find_or_create_by(term: meta_term.term, meta_key_id: new_meta_key.id)
-          Keyword.find_or_create_by meta_datum_id: new_meta_datum.id, keyword_term_id: keyword_term.id
-        end
-        meta_datum.meta_terms.reset 
-        new_meta_datum.keywords.reset
-
-      when 'MetaDatum::Groups'
-        new_meta_datum.groups = meta_datum.groups
-        new_meta_datum.save!
-        new_meta_datum.groups.reset
-        meta_datum.groups.reset
-
-      when 'MetaDatum::Users'
-        new_meta_datum.users = meta_datum.users
-        new_meta_datum.save!
-        new_meta_datum.users.reset
-        meta_datum.users.reset
-
-      else
-        raise "MIGRATING meta_datum_object_type #{object_type} is pending"
-      end
-
-    end
   end
 
 end
