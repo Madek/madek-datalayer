@@ -17,3 +17,4 @@
 /tmp
 /config/database.yml
 /config/settings.local.yml
+backups

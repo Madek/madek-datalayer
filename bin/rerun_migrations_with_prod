@@ -1,5 +1,7 @@
 #!/bin/sh
 
+mkdir -p db/backups
+
 rsync -LPh \
   root@prod.madek.zhdk.ch:/home/madek/madek_app/db/media_files/production/backups/latest-data.pgbin \
   db/backups/prod.zhdk-data.pgbin
