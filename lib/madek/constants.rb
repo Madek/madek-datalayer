@@ -18,12 +18,22 @@ module Madek
         end
 
       WEBAPP_ROOT_DIR =
+        if File.exists?(DATALAYER_ROOT_DIR.join('..', '..', '.madek-webapp'))
+          DATALAYER_ROOT_DIR.join('..', '..').realpath
+        end
+
+      ADMIN_ROOT_DIR =
         if File.exists?(DATALAYER_ROOT_DIR.join('..', '..', '.madek-admin'))
           DATALAYER_ROOT_DIR.join('..', '..').realpath
         end
 
     when File.exists?('.madek-webapp')
       WEBAPP_ROOT_DIR = Pathname('.').realpath
+
+      ADMIN_ROOT_DIR =
+        if File.exists?(WEBAPP_ROOT_DIR.join('..', 'admin-webapp', '.madek-admin'))
+          WEBAPP_ROOT_DIR.join('..', 'admin-webapp').realpath
+        end
 
       DATALAYER_ROOT_DIR =
         if File.exists?(WEBAPP_ROOT_DIR.join('engines', 'datalayer',
@@ -42,6 +52,11 @@ module Madek
       WEBAPP_ROOT_DIR =
         if File.exists?(API_ROOT_DIR.join('..', 'webapp', '.madek-webapp'))
           API_ROOT_DIR.join('..', 'webapp').realpath
+        end
+
+      ADMIN_ROOT_DIR =
+        if File.exists?(API_ROOT_DIR.join('..', 'admin-webapp', '.madek-admin'))
+          API_ROOT_DIR.join('..', 'admin-webapp').realpath
         end
 
       DATALAYER_ROOT_DIR =
