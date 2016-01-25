@@ -22,10 +22,10 @@ class FinalizeMetaTermsToKeywords< ActiveRecord::Migration
     add_foreign_key :meta_key_definitions, :meta_keys, on_delete: :cascade
 
     execute "UPDATE keywords" \
-      " SET meta_key_id = 'core:keywords'" \
+      " SET meta_key_id = 'media_content:keywords'" \
       " WHERE meta_key_id IS NULL"
 
-    change_column :keywords, :meta_key_id, :string, null: false 
+    change_column :keywords, :meta_key_id, :string, null: false
 
     execute "DROP TABLE meta_keys_meta_terms CASCADE"
     execute "DROP TABLE meta_terms CASCADE"
