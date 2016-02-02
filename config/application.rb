@@ -33,5 +33,12 @@ module MadekDatalayer
       Rails.root.join('lib')
     ]
 
+    if ENV['RAILS_LOG_LEVEL'].present?
+      config.log_level = ENV['RAILS_LOG_LEVEL']
+    else
+      config.log_level = :info
+    end
+
+
   end
 end

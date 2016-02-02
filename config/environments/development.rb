@@ -38,4 +38,14 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  if ENV['RAILS_LOG_LEVEL'].present?
+    config.log_level = ENV['RAILS_LOG_LEVEL']
+  else
+    config.log_level = :info
+  end
+
+  config.log_tags = [Time.now.strftime('%T')]
+
+
 end
