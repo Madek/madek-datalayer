@@ -24,4 +24,19 @@ class Vocabulary < ActiveRecord::Base
   def to_s
     id
   end
+
+  def self.user_permission_exists_condition(perm_type, user)
+    Permissions::VocabularyUserPermission
+      .user_permission_exists_condition(perm_type, user)
+  end
+
+  def self.group_permission_exists_condition(perm_type, group)
+    Permissions::VocabularyGroupPermission
+      .user_permission_exists_condition(perm_type, group)
+  end
+
+  def self.group_permission_for_user_exists_condition(perm_type, user)
+    Permissions::VocabularyGroupPermission
+      .group_permission_for_user_exists_condition(perm_type, user)
+  end
 end

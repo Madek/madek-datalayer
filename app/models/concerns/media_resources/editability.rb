@@ -6,9 +6,10 @@ module Concerns
 
       included do
         define_access_methods(:editable_by, self::EDIT_PERMISSION_NAME) do |user|
-          [by_user_directly(user, self::EDIT_PERMISSION_NAME),
-           by_user_through_groups(user, self::EDIT_PERMISSION_NAME),
-           where(responsible_user: user)]
+          user_permission_exists_condition(self::EDIT_PERMISSION_NAME, user)
+            .or(group_permission_for_user_exists_condition(
+                  self::EDIT_PERMISSION_NAME, user))
+            .or(arel_table[:responsible_user_id].eq user.id)
         end
       end
     end

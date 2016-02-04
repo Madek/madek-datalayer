@@ -5,8 +5,9 @@ module Concerns
 
     included do
       define_access_methods(:entrusted_to, self::VIEW_PERMISSION_NAME) do |user|
-        [by_user_directly(user, self::VIEW_PERMISSION_NAME),
-         by_user_through_groups(user, self::VIEW_PERMISSION_NAME)]
+        user_permission_exists_condition(self::VIEW_PERMISSION_NAME, user).or(
+          group_permission_for_user_exists_condition(self::VIEW_PERMISSION_NAME,
+                                                     user))
       end
     end
   end

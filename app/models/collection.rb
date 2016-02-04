@@ -6,6 +6,7 @@ class Collection < ActiveRecord::Base
   include Concerns::Collections::Arcs
   include Concerns::Collections::Siblings
   include Concerns::MediaResources
+  include Concerns::MediaResources::MetaDataArelConditions
   include Concerns::MediaResources::Editability
   include Concerns::MediaResources::Highlight
 

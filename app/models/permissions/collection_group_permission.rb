@@ -1,12 +1,10 @@
 module Permissions
   class CollectionGroupPermission < ActiveRecord::Base
+    BASE_ENTITY_TABLE_NAME = 'collections'
+
     include ::Permissions::Modules::Collection
-    include ::Permissions::Modules::ArelConditions
+    include ::Permissions::Modules::GroupPermissionExistsConditions
 
     belongs_to :group
-
-    #################### AREL #########################
-
-    define_group_permission_for_user_exists_condition('collections')
   end
 end

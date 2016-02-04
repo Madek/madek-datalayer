@@ -12,7 +12,10 @@ module Concerns
                     lambda { |meta_datum|
                       Concerns::MetaData::FilterHelpers
                         .validate_keys_for_primitive!(meta_datum)
-                      where("to_tsvector('english', meta_data.string) @@ " \
+
+                      joins("AND to_tsvector('english', " \
+                              "#{meta_datum[:md_alias] or 'meta_data'}.string) " \
+                            '@@ ' \
                             "plainto_tsquery('english', '#{meta_datum[:match]}')")
                     }
             end

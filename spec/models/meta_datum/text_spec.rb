@@ -41,7 +41,7 @@ describe MetaDatum::Text do
   context 'an existing MetaDatumString instance ' do
 
     before :each do
-      @mds =  FactoryGirl.create :meta_datum_text, string: 'original value'
+      @mds = FactoryGirl.create :meta_datum_text, string: 'original value'
     end
 
     describe 'the string field' do

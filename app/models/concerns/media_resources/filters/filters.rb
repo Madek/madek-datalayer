@@ -14,37 +14,35 @@ module Concerns
 
         module ClassMethods
           def filter_by(**filter_opts)
-            # NOTE: for the sake of sanity when analyzing the generated sql
-            # and to prevent strange active record generation strategies, we
-            # have to use "to_sql".
-            # "unscoped" must be used in order to ensure proper chaining of
-            # multiple filters
-            scopes = [all]
-            filter_opts.each do |key, value|
-              scopes << unscoped.send("filter_by_#{key}", *value) if value
+            if filter_opts.blank?
+              all
+            else
+              filter_by_search(filter_opts[:search])
+                .filter_by_meta_data(filter_opts[:meta_data])
+                .filter_by_media_files(filter_opts[:media_files])
+                .filter_by_permissions(filter_opts[:permissions])
+                .uniq
             end
-            from \
-              join_query_strings_with_intersect \
-                *scopes.map(&:to_sql)
           end
 
           def filter_by_search(term)
-            filter_by_meta_data(key: 'any', match: term)
+            if term.blank?
+              all
+            else
+              filter_by_meta_data [{ key: 'any', match: term }]
+            end
           end
 
-          def filter_by_meta_data(*meta_data)
-            unless meta_data.blank?
-              query_strings = meta_data.map do |meta_datum|
-                validate! meta_datum
-                unscoped
-                  .filter_by_meta_datum(meta_datum)
-                  .to_sql
-              end
-              from \
-                join_query_strings_with_intersect \
-                  *query_strings
-            else
+          def filter_by_meta_data(meta_data)
+            if meta_data.blank?
               all
+            else
+              meta_data
+                .map do |md, index|
+                  md.merge md_alias: "md_#{SecureRandom.hex(4)}"
+                end
+                .reduce(all, :filter_by_meta_datum)
+              # validate! meta_datum
             end
           end
 
@@ -56,25 +54,20 @@ module Concerns
             end
           end
 
-          def filter_by_media_files(*media_files)
-            each_with_method_chain(:filter_by_media_file_helper,
-                                   *media_files)
-          end
-
-          def filter_by_permissions(*permissions)
-            each_with_method_chain(:filter_by_permission_helper,
-                                   *permissions)
-          end
-
-          def each_with_method_chain(method, *key_values)
-            result = all
-            key_values.each do |key_value|
-              result = \
-                result.send(method,
-                            key: key_value[:key],
-                            value: key_value[:value])
+          def filter_by_media_files(media_files)
+            if media_files.blank?
+              all
+            else
+              media_files.reduce(all, :filter_by_media_file_helper)
             end
-            result
+          end
+
+          def filter_by_permissions(permissions)
+            if permissions.blank?
+              all
+            else
+              permissions.reduce(all, :filter_by_permission_helper)
+            end
           end
 
           def filter_by_media_file_helper(key: nil, value: nil)
