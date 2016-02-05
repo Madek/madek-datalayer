@@ -29,6 +29,7 @@ module MadekDatalayer
       << Rails.root.join('initializers')
 
     config.autoload_paths += [
+      Rails.root.join('app', 'queries'),
       Rails.root.join('app', 'lib'),
       Rails.root.join('lib')
     ]
