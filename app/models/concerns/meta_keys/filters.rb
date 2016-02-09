@@ -6,9 +6,21 @@ module Concerns
       included do
         scope :filter_by, lambda { |term|
           where(
-            'meta_keys.id ILIKE :t OR meta_keys.label ILIKE :t',
-            t: "%#{term}%"
-          )
+            "setweight(to_tsvector('english', " \
+                                  "coalesce(meta_keys.id, '')), " \
+                      "'A') || " \
+            "setweight(to_tsvector('english', " \
+                                  "coalesce(meta_keys.label, '')), " \
+                      "'A') || " \
+            "setweight(to_tsvector('english', " \
+                                  "coalesce(meta_keys.description, '')), " \
+                      "'B') || " \
+            "setweight(to_tsvector('english', " \
+                                  "coalesce(meta_keys.hint, '')), " \
+                      "'C') @@ " \
+            "plainto_tsquery('english', ?)",
+            term
+          ).reorder(nil)
         }
         scope :with_type, lambda { |type|
           where(meta_datum_object_type: type)

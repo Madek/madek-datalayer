@@ -31,4 +31,8 @@ class MetaKey < ActiveRecord::Base
     meta_datum_object_type == 'MetaDatum::Keywords'
   end
 
+  def self.viewable_by_user_or_public(user = nil)
+    viewable_vocabs = Vocabulary.viewable_by_user_or_public(user)
+    where(vocabulary_id: viewable_vocabs)
+  end
 end
