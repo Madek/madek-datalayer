@@ -19,9 +19,10 @@ class MediaResource < ActiveRecord::Base
   end
 
   def self.scope_helper(method_name, arg)
-    view_scope = unified_scope(MediaEntry.send(method_name, arg),
-                               Collection.send(method_name, arg),
-                               FilterSet.send(method_name, arg))
+    view_scope = \
+      unified_scope(MediaEntry.send(method_name, arg).reorder(nil),
+                    Collection.send(method_name, arg).reorder(nil),
+                    FilterSet.send(method_name, arg).reorder(nil))
 
     sql = "((#{(current_scope or all).to_sql}) INTERSECT " \
            "(#{view_scope.to_sql})) AS vw_media_resources"
