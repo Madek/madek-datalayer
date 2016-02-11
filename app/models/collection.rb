@@ -77,4 +77,30 @@ class Collection < ActiveRecord::Base
         .update_attributes!(cover: true)
     end
   end
+
+  def descendent_media_entries
+    MediaEntry.joins(:collection_media_entry_arcs)
+      .where("collection_media_entry_arcs.collection_id = '#{self.id}' OR "\
+             'collection_media_entry_arcs.collection_id IN ' \
+               "(#{Collection.descendent_collection_tree_sql_for(self.id)})")
+  end
+
+  def self.descendent_collection_tree_sql_for(collection_id)
+    raise 'Not an UUID!' unless UUIDTools::UUID_REGEXP =~ collection_id
+
+    <<-SQL
+      WITH RECURSIVE collection_tree(parent_id, child_id, path) AS
+        (SELECT parent_id, child_id, ARRAY[parent_id]
+         FROM collection_collection_arcs
+         WHERE parent_id = '#{collection_id}'
+         UNION ALL SELECT cca.parent_id,
+                          cca.child_id,
+                          path || cca.parent_id
+         FROM collection_tree
+         INNER JOIN collection_collection_arcs cca
+         ON cca.parent_id = collection_tree.child_id
+         WHERE NOT cca.parent_id = ANY(path))
+      SELECT collection_tree.child_id AS id FROM collection_tree
+    SQL
+  end
 end
