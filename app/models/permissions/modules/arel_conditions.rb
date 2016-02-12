@@ -31,7 +31,7 @@ module Permissions
               .where(build_where_conditions(resources_table,
                                             perm,
                                             groups_users[:user_id],
-                                            user.id))
+                                            user))
               .exists
           end
         end
@@ -43,7 +43,7 @@ module Permissions
             permissions_exists_condition_helper(resources_table,
                                                 perm,
                                                 arel_table[:user_id],
-                                                user.id)
+                                                user)
           end
         end
 
@@ -54,21 +54,21 @@ module Permissions
             permissions_exists_condition_helper(resources_table,
                                                 perm,
                                                 arel_table[:group_id],
-                                                group.id)
+                                                group)
           end
         end
 
         def self.permissions_exists_condition_helper(resources_table,
                                                      perm,
                                                      arel_attribute,
-                                                     id)
+                                                     subject)
           permissions = arel_table
           permissions
             .project(1)
             .where(build_where_conditions(resources_table,
                                           perm,
                                           arel_attribute,
-                                          id))
+                                          subject.try(:id)))
             .exists
         end
       end
