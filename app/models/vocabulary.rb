@@ -7,8 +7,9 @@ class Vocabulary < ActiveRecord::Base
   include Concerns::Vocabularies::Visibility
   include Concerns::Vocabularies::Usability
   include Concerns::Vocabularies::Filters
+  include Concerns::Orderable
 
-  has_many :meta_keys, -> { order(:id) }
+  has_many :meta_keys
   has_many :keywords,
            through: :meta_keys
 
@@ -38,5 +39,13 @@ class Vocabulary < ActiveRecord::Base
   def self.group_permission_for_user_exists_condition(perm_type, user)
     Permissions::VocabularyGroupPermission
       .group_permission_for_user_exists_condition(perm_type, user)
+  end
+
+  def move_up
+    move :up
+  end
+
+  def move_down
+    move :down
   end
 end

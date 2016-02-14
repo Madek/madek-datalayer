@@ -1184,6 +1184,7 @@ CREATE TABLE vocabularies (
     admin_comment text,
     enabled_for_public_view boolean DEFAULT true NOT NULL,
     enabled_for_public_use boolean DEFAULT true NOT NULL,
+    "position" integer,
     CONSTRAINT vocabulary_id_chars CHECK (((id)::text ~* '^[a-z0-9\-\_]+$'::text))
 );
 
@@ -2668,6 +2669,13 @@ CREATE UNIQUE INDEX index_users_on_zhdkid ON users USING btree (zhdkid);
 
 
 --
+-- Name: index_vocabularies_on_position; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_vocabularies_on_position ON vocabularies USING btree ("position");
+
+
+--
 -- Name: index_zencoder_jobs_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -4109,6 +4117,8 @@ INSERT INTO schema_migrations (version) VALUES ('19');
 INSERT INTO schema_migrations (version) VALUES ('190');
 
 INSERT INTO schema_migrations (version) VALUES ('191');
+
+INSERT INTO schema_migrations (version) VALUES ('192');
 
 INSERT INTO schema_migrations (version) VALUES ('199');
 

@@ -1,12 +1,12 @@
 class MetaKey < ActiveRecord::Base
 
   include Concerns::MetaKeys::Filters
+  include Concerns::Orderable
 
   has_many :meta_data, dependent: :destroy
   has_many :keywords
   belongs_to :vocabulary
 
-  default_scope { order(:id) }
   scope :order_by_name_part, lambda {
     reorder("substring(meta_keys.id FROM ':(.*)$') ASC, meta_keys.id")
   }
@@ -34,5 +34,13 @@ class MetaKey < ActiveRecord::Base
   def self.viewable_by_user_or_public(user = nil)
     viewable_vocabs = Vocabulary.viewable_by_user_or_public(user)
     where(vocabulary_id: viewable_vocabs)
+  end
+
+  def move_up
+    move :up, vocabulary_id: vocabulary.id
+  end
+
+  def move_down
+    move :down, vocabulary_id: vocabulary.id
   end
 end
