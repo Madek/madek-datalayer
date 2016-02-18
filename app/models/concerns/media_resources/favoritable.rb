@@ -16,6 +16,11 @@ module Concerns
         users_who_favored.delete(user) if users_who_favored.exists?(user.id)
       end
 
+      def favored?(user)
+        raise ArgumentError, 'Missing user!' unless user
+        users_who_favored.exists?(user.id)
+      end
+
       included do
         has_and_belongs_to_many \
           :users_who_favored,
