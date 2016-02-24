@@ -1,9 +1,8 @@
 class ContextKey < ActiveRecord::Base
+  include Concerns::Orderable
 
   belongs_to :context, foreign_key: :context_id
   belongs_to :meta_key
-
-  default_scope { order('position ASC') }
 
   # TODO: migrate this to bool, db default instead of method:
   enum input_type: [:text_field, :text_area]
@@ -21,6 +20,14 @@ class ContextKey < ActiveRecord::Base
     else
       true
     end
+  end
+
+  def move_up
+    move :up, context_id: context.id
+  end
+
+  def move_down
+    move :down, context_id: context.id
   end
 
 end
