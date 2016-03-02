@@ -18,11 +18,12 @@ class MetaDatum < ActiveRecord::Base
 
   belongs_to :meta_key
   has_one :vocabulary, through: :meta_key
+  belongs_to :created_by, class_name: 'User'
 
-  belongs_to :media_entry
+  # NOTE: need to overwrite the default scope, Rails 5 has '#rescope'
+  belongs_to :media_entry, -> { where(is_published: [true, false]) }
   belongs_to :collection
   belongs_to :filter_set
-  belongs_to :created_by, class_name: 'User'
 
   # TODO: create DB constraint for this
   validates_presence_of :created_by, on: :create
