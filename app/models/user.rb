@@ -19,9 +19,15 @@ class User < ActiveRecord::Base
   belongs_to :person
   accepts_nested_attributes_for :person
 
-  has_many :collections, foreign_key: :responsible_user_id
-  has_many :media_entries, foreign_key: :responsible_user_id
-  has_many :filter_sets, foreign_key: :responsible_user_id
+  has_many :responsible_collections,
+           foreign_key: :responsible_user_id,
+           class_name: 'Collection'
+  has_many :responsible_media_entries,
+           foreign_key: :responsible_user_id,
+           class_name: 'MediaEntry'
+  has_many :responsible_filter_sets,
+           foreign_key: :responsible_user_id,
+           class_name: 'FilterSet'
 
   has_many :unpublished_media_entries,
            -> { where(is_published: false) },
@@ -29,7 +35,7 @@ class User < ActiveRecord::Base
            class_name: 'MediaEntry',
            dependent: :destroy
 
-  has_many :published_media_entries,
+  has_many :created_media_entries,
            class_name: 'MediaEntry',
            foreign_key: :creator_id
 
@@ -80,7 +86,7 @@ class User < ActiveRecord::Base
   #############################################################
 
   def entrusted_media_entry_to_groups?(media_entry)
-    media_entries
+    responsible_media_entries
       .joins(:group_permissions)
       .where(media_entry_group_permissions:
         { media_entry_id: media_entry.id,
@@ -89,7 +95,7 @@ class User < ActiveRecord::Base
   end
 
   def entrusted_media_entry_to_users?(media_entry)
-    media_entries
+    responsible_media_entries
       .joins(:user_permissions)
       .where(media_entry_user_permissions:
         { media_entry_id: media_entry.id,
@@ -98,7 +104,7 @@ class User < ActiveRecord::Base
   end
 
   def entrusted_collection_to_groups?(collection)
-    collections
+    responsible_collections
       .joins(:group_permissions)
       .where(collection_group_permissions:
         { collection_id: collection.id,
@@ -107,7 +113,7 @@ class User < ActiveRecord::Base
   end
 
   def entrusted_collection_to_users?(collection)
-    collections
+    responsible_collections
       .joins(:user_permissions)
       .where(collection_user_permissions:
         { collection_id: collection.id,
@@ -116,7 +122,7 @@ class User < ActiveRecord::Base
   end
 
   def entrusted_filter_set_to_groups?(filter_set)
-    filter_sets
+    responsible_filter_sets
       .joins(:group_permissions)
       .where(filter_set_group_permissions:
         { filter_set_id: filter_set.id,
@@ -125,7 +131,7 @@ class User < ActiveRecord::Base
   end
 
   def entrusted_filter_set_to_users?(filter_set)
-    filter_sets
+    responsible_filter_sets
       .joins(:user_permissions)
       .where(filter_set_user_permissions:
         { filter_set_id: filter_set.id,
