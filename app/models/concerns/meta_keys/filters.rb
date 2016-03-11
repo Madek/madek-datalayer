@@ -29,6 +29,14 @@ module Concerns
           joins(:vocabulary)
             .where('vocabularies.id = :t', t: vocabulary_id)
         }
+        scope :not_in_context, lambda { |context|
+          where(
+            'NOT EXISTS (SELECT 1 FROM context_keys
+             WHERE context_keys.context_id = ?
+             AND context_keys.meta_key_id = meta_keys.id)',
+            context.id
+          )
+        }
       end
     end
   end

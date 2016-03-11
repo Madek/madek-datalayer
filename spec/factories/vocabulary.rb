@@ -4,6 +4,7 @@ FactoryGirl.define do
     id { Faker::Internet.slug(nil, '-') }
     label { Faker::Lorem.word }
     description { Faker::Lorem.sentence }
+    admin_comment { Faker::Lorem.sentence }
   end
 
 end
