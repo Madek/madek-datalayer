@@ -25,14 +25,6 @@ class MediaFile < ActiveRecord::Base
 
   serialize :meta_data, Hash
 
-  def delete_files
-    begin
-      File.delete(original_store_location)
-    rescue Exception => error # ignore errors on FILE deletion, but do log them:
-      Rails.logger.warn(error)
-    end
-  end
-
   has_many :previews, -> { order(:created_at, :id) }, dependent: :destroy
 
   scope :incomplete_encoded_videos, lambda {
@@ -42,7 +34,22 @@ class MediaFile < ActiveRecord::Base
                   "WHERE mf.id = media_files.id AND previews.media_type = 'video')"
   }
 
-  ################################################################################
+  # The media type can be shown as an image?
+  def representable_as_image?
+    image? or video? or pdf?
+  end
+
+  # Can Previews be created internally?
+  def previews_internal?
+    image? or pdf?
+  end
+
+  # Can Previews be created using zencoder service?
+  def previews_zencoder?
+    content_type =~ /video|audio/
+  end
+
+  # actions
 
   def create_previews!(alternative_store_location = nil)
     store_location = alternative_store_location || original_store_location
@@ -66,17 +73,15 @@ class MediaFile < ActiveRecord::Base
     end
   end
 
-  def preview(size)
-    previews.find_by(thumbnail: size)
+  def delete_files
+    begin
+      File.delete(original_store_location)
+    rescue Exception => error # ignore errors on FILE deletion, but do log them:
+      Rails.logger.warn(error)
+    end
   end
 
-  def representable_as_image?
-    ['image', 'video'].include? media_type
-  end
-
-  def needs_previews?
-    image? or pdf?
-  end
+  # helpers
 
   def pdf?
     media_type == 'document' and extension == 'pdf'
@@ -90,10 +95,6 @@ class MediaFile < ActiveRecord::Base
     media_type =~ /video/
   end
 
-  def audio_video?
-    content_type =~ /video|audio/
-  end
-
   def original_store_location
     File.join(Madek::Constants::FILE_STORAGE_DIR, guid.first, guid)
   end
@@ -101,4 +102,10 @@ class MediaFile < ActiveRecord::Base
   def thumbnail_store_location
     File.join(Madek::Constants::THUMBNAIL_STORAGE_DIR, guid.first, guid)
   end
+
+  # FIXME: remove this
+  def preview(size)
+    previews.find_by(thumbnail: size)
+  end
+
 end
