@@ -1181,9 +1181,9 @@ CREATE TABLE vocabularies (
     id character varying NOT NULL,
     label text,
     description text,
-    admin_comment text,
     enabled_for_public_view boolean DEFAULT true NOT NULL,
     enabled_for_public_use boolean DEFAULT true NOT NULL,
+    admin_comment text,
     "position" integer,
     CONSTRAINT vocabulary_id_chars CHECK (((id)::text ~* '^[a-z0-9\-\_]+$'::text))
 );

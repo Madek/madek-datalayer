@@ -19,6 +19,8 @@ class CreateVocabularyAndAddOtherMetaDataFields < ActiveRecord::Migration
     create_table :vocabularies, id: :string do |t|
       t.text :label
       t.text :description
+      t.boolean :enabled_for_public_view, default: true, null: false
+      t.boolean :enabled_for_public_use, default: true, null: false
     end
 
     add_column :meta_keys, :vocabulary_id, :string

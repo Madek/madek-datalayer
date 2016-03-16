@@ -26,6 +26,9 @@ class MigrateMetaDataToVocabulary < ActiveRecord::Migration
     has_many :meta_key_definitions
   end
 
+  class ContextGroup < ActiveRecord::Base
+  end
+
   class MetaDatum < ActiveRecord::Base
     self.inheritance_column = false
 
@@ -100,6 +103,9 @@ class MigrateMetaDataToVocabulary < ActiveRecord::Migration
       orphan_vocabulary = Vocabulary.find_or_create_by(id:'madek_orphans', label: 'Orphans',
         description: 'The related meta_keys in this vocabulary were not related to any context before the migration.')
 
+
+      second_context_group = ContextGroup.reorder(:position).second
+
       MetaKey.order(:id).each do |meta_key|
         # Find Context to base new Vocabulary on (and the associated MKDef)
         if meta_key.meta_key_definitions.count == 0
@@ -115,9 +121,13 @@ class MigrateMetaDataToVocabulary < ActiveRecord::Migration
             .sort_by {|mkd| mkd.context.context_group_id || '❌'}.first
           context = meta_key_definition.context
 
+          is_public = context.context_group_id != second_context_group.id
+
           # create vocabulary based on context:
           vocabulary = Vocabulary.find_or_create_by(id: sanitize_namespace_id(context.id))
           vocabulary.update_attributes(
+            enabled_for_public_view: is_public,
+            enabled_for_public_use: is_public,
             label: context.label,
             description: context.description,
             admin_comment: "[Created automatically from Context '#{context.label}']")
