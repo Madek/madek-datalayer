@@ -5,22 +5,19 @@ module Concerns
 
       included do
         scope :filter_by, lambda { |term|
-          where(
-            "setweight(to_tsvector('english', " \
-                                  "coalesce(meta_keys.id, '')), " \
-                      "'A') || " \
-            "setweight(to_tsvector('english', " \
-                                  "coalesce(meta_keys.label, '')), " \
-                      "'A') || " \
-            "setweight(to_tsvector('english', " \
-                                  "coalesce(meta_keys.description, '')), " \
-                      "'B') || " \
-            "setweight(to_tsvector('english', " \
-                                  "coalesce(meta_keys.hint, '')), " \
-                      "'C') @@ " \
-            "plainto_tsquery('english', ?)",
-            term
-          ).reorder(nil)
+          # rubocop:disable Metrics/LineLength
+          vector = <<-SQL
+            setweight(to_tsvector('english', coalesce(meta_keys.id, '')), 'A') ||
+            setweight(to_tsvector('english', coalesce(meta_keys.label, '')),  'A') ||
+            setweight(to_tsvector('english', coalesce(meta_keys.description, '')), 'B') ||
+            setweight(to_tsvector('english', coalesce(meta_keys.hint, '')), 'C')
+          SQL
+          # rubocop:enable Metrics/LineLength
+          query = "plainto_tsquery('english', '#{term}')"
+
+          select('meta_keys.*', "ts_rank_cd(#{vector}, #{query}) AS search_rank")
+            .where("#{vector} @@ #{query}", term)
+            .reorder('search_rank DESC')
         }
         scope :with_type, lambda { |type|
           where(meta_datum_object_type: type)
