@@ -9,6 +9,7 @@ class User < ActiveRecord::Base
   include Concerns::FindResource
   include Concerns::Users::Filters
   include Concerns::Users::Keywords
+  include Concerns::Users::ResourcesAssociations
 
   has_secure_password validations: false
 
@@ -18,16 +19,6 @@ class User < ActiveRecord::Base
 
   belongs_to :person
   accepts_nested_attributes_for :person
-
-  has_many :responsible_collections,
-           foreign_key: :responsible_user_id,
-           class_name: 'Collection'
-  has_many :responsible_media_entries,
-           foreign_key: :responsible_user_id,
-           class_name: 'MediaEntry'
-  has_many :responsible_filter_sets,
-           foreign_key: :responsible_user_id,
-           class_name: 'FilterSet'
 
   has_many :unpublished_media_entries,
            -> { where(is_published: false) },
@@ -43,16 +34,6 @@ class User < ActiveRecord::Base
 
   has_many :created_custom_urls, class_name: 'CustomUrl', foreign_key: :creator_id
   has_many :updated_custom_urls, class_name: 'CustomUrl', foreign_key: :updator_id
-
-  has_and_belongs_to_many :favorite_media_entries,
-                          join_table: 'favorite_media_entries',
-                          class_name: 'MediaEntry'
-  has_and_belongs_to_many :favorite_collections,
-                          join_table: 'favorite_collections',
-                          class_name: 'Collection'
-  has_and_belongs_to_many :favorite_filter_sets,
-                          join_table: 'favorite_filter_sets',
-                          class_name: 'FilterSet'
 
   has_and_belongs_to_many :groups
   has_one :admin, dependent: :destroy
@@ -84,60 +65,6 @@ class User < ActiveRecord::Base
   end
 
   #############################################################
-
-  def entrusted_media_entry_to_groups?(media_entry)
-    responsible_media_entries
-      .joins(:group_permissions)
-      .where(media_entry_group_permissions:
-        { media_entry_id: media_entry.id,
-          get_metadata_and_previews: true })
-      .exists?
-  end
-
-  def entrusted_media_entry_to_users?(media_entry)
-    responsible_media_entries
-      .joins(:user_permissions)
-      .where(media_entry_user_permissions:
-        { media_entry_id: media_entry.id,
-          get_metadata_and_previews: true })
-      .exists?
-  end
-
-  def entrusted_collection_to_groups?(collection)
-    responsible_collections
-      .joins(:group_permissions)
-      .where(collection_group_permissions:
-        { collection_id: collection.id,
-          get_metadata_and_previews: true })
-      .exists?
-  end
-
-  def entrusted_collection_to_users?(collection)
-    responsible_collections
-      .joins(:user_permissions)
-      .where(collection_user_permissions:
-        { collection_id: collection.id,
-          get_metadata_and_previews: true })
-      .exists?
-  end
-
-  def entrusted_filter_set_to_groups?(filter_set)
-    responsible_filter_sets
-      .joins(:group_permissions)
-      .where(filter_set_group_permissions:
-        { filter_set_id: filter_set.id,
-          get_metadata_and_previews: true })
-      .exists?
-  end
-
-  def entrusted_filter_set_to_users?(filter_set)
-    responsible_filter_sets
-      .joins(:user_permissions)
-      .where(filter_set_user_permissions:
-        { filter_set_id: filter_set.id,
-          get_metadata_and_previews: true })
-      .exists?
-  end
 
   def can_edit_permissions_for?(resource)
     resource.responsible_user == self or

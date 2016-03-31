@@ -6,13 +6,15 @@ module Concerns
       included do
         has_many :keywords, foreign_key: :creator_id
 
-        has_and_belongs_to_many :used_keywords,
-                                -> { uniq },
-                                join_table: 'meta_data_keywords',
-                                foreign_key: :created_by_id,
-                                association_foreign_key: :keyword_id,
-                                class_name: '::Keyword'
-
+        def used_keywords
+          Keyword
+            .select('keywords.*', 'meta_data_keywords.created_at')
+            .joins('INNER JOIN meta_data_keywords ' \
+                   'ON meta_data_keywords.keyword_id = keywords.id')
+            .where(meta_data_keywords: { created_by_id: id })
+            .reorder('meta_data_keywords.created_at DESC')
+            .uniq
+        end
       end
     end
   end
