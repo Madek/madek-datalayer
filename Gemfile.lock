@@ -59,7 +59,7 @@ GEM
     builder (3.2.2)
     chronic_duration (0.10.6)
       numerizer (~> 0.1.1)
-    cider_ci-support (3.1.0)
+    cider_ci-support (3.2.0)
       flay (~> 2.6.1)
       flog (~> 4.3.2)
       mime-types
@@ -159,9 +159,9 @@ GEM
       rainbow (>= 1.99.1, < 3.0)
       ruby-progressbar (~> 1.4)
     ruby-progressbar (1.7.5)
-    ruby_parser (3.7.2)
+    ruby_parser (3.8.1)
       sexp_processor (~> 4.1)
-    sexp_processor (4.6.0)
+    sexp_processor (4.7.0)
     slop (3.6.0)
     sprockets (3.5.2)
       concurrent-ruby (~> 1.0)
@@ -184,7 +184,7 @@ DEPENDENCIES
   activerecord-jdbcpostgresql-adapter
   bcrypt
   chronic_duration
-  cider_ci-support (= 3.1)
+  cider_ci-support (= 3.2)
   factory_girl
   faker
   jdbc-postgres
