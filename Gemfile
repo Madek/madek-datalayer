@@ -17,7 +17,7 @@ gem 'rubocop', '= 0.29.1', require: false
 gem 'strong_password'
 gem 'uuidtools'
 
-gem 'cider_ci-support', '3.1', group: [:development, :test]
+gem 'cider_ci-support', '3.2', group: [:development, :test]
 gem 'factory_girl', group: [:test, :development]
 gem 'faker', group: [:test, :development]
 gem 'pry', group: [:test, :development]
