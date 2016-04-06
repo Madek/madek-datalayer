@@ -8,7 +8,8 @@ module Concerns
         def self.define_matching_meta_data_exists_conditition(match_table,
                                                               match_column)
           define_singleton_method \
-            "matching_meta_data_#{match_table}_exists_conditition" do |match|
+            "matching_meta_data_#{match_table}_exists_conditition" \
+            do |match, meta_key_ids|
             match_arel_table = Arel::Table.new(match_table)
             related_meta_data_arel_table = \
               Arel::Table.new("meta_data_#{match_table}")
@@ -28,6 +29,7 @@ module Concerns
                   "plainto_tsquery('english', '#{match}')")
               .where(meta_data_arel_table["#{model_name.singular}_id"]
                 .eq arel_table[:id])
+              .where(meta_data_arel_table[:meta_key_id].in(meta_key_ids))
               .exists
           end
         end
@@ -38,7 +40,7 @@ module Concerns
         define_matching_meta_data_exists_conditition('people', 'searchable')
         define_matching_meta_data_exists_conditition('groups', 'searchable')
 
-        def self.matching_meta_data_exists_condition(match)
+        def self.matching_meta_data_exists_condition(match, meta_key_ids)
           meta_data = MetaDatum.arel_table
           meta_data
             .project(1)
@@ -46,6 +48,7 @@ module Concerns
             .where(Arel::Nodes::SqlLiteral.new \
                      "to_tsvector('english', meta_data.string) @@ " \
                      "plainto_tsquery('english', '#{match}')")
+            .where(meta_data[:meta_key_id].in(meta_key_ids))
             .exists
         end
       end

@@ -36,6 +36,11 @@ class MetaKey < ActiveRecord::Base
     where(vocabulary_id: viewable_vocabs)
   end
 
+  def viewable_by_user_or_public?(user = nil)
+    viewable_meta_keys = self.class.viewable_by_user_or_public(user)
+    viewable_meta_keys.include? self
+  end
+
   def move_up
     move :up, vocabulary_id: vocabulary.id
   end

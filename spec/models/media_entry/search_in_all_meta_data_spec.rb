@@ -9,18 +9,21 @@ describe MediaEntry do
 
   context 'search in all meta data' do
     it 'is successful' do
+      # force evaluation
+      expected_result = [media_entry_1,
+                         media_entry_2,
+                         media_entry_3,
+                         media_entry_4,
+                         media_entry_5,
+                         media_entry_6]
+
       filtered_media_entries = \
         MediaEntry.filter_by(meta_data: [{ key: 'any', match: 'nitai' }])
 
-      [media_entry_1,
-       media_entry_2,
-       media_entry_3,
-       media_entry_4,
-       media_entry_5,
-       media_entry_6].each do |me|
-         expect(filtered_media_entries).to include me
-       end
       expect(filtered_media_entries.count).to be == 6
+      expected_result.each do |me|
+         expect(filtered_media_entries).to include me
+      end
     end
 
     it 'chains properly with other filter' do

@@ -1,5 +1,7 @@
 RSpec.shared_context 'meta data from not public vocabulary shared context' do
-  let(:vocabulary) { FactoryGirl.create(:vocabulary, id: 'filter') }
+  let(:vocabulary) do
+    FactoryGirl.create(:vocabulary, id: 'filter', enabled_for_public_view: false)
+  end
   let(:responsible_user) { FactoryGirl.create(:user) }
   let(:meta_key) do
     FactoryGirl.create(:meta_key_text,

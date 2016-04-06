@@ -13,12 +13,15 @@ module Concerns
         end
 
         module ClassMethods
-          def filter_by(**filter_opts)
+          # we need to supply the user information, because we need to scope
+          # the meta_data by meta_keys/vocabularies a particular user is
+          # allowed to see. In case of public, the user is nil per default.
+          def filter_by(user = nil, **filter_opts)
             if filter_opts.blank?
               all
             else
               filter_by_search(filter_opts[:search])
-                .filter_by_meta_data(filter_opts[:meta_data])
+                .filter_by_meta_data(user, filter_opts[:meta_data])
                 .filter_by_media_files(filter_opts[:media_files])
                 .filter_by_permissions(filter_opts[:permissions])
                 .uniq
@@ -33,19 +36,43 @@ module Concerns
             end
           end
 
-          def filter_by_meta_data(meta_data)
+          def filter_by_meta_data(user = nil, meta_data)
             if meta_data.blank?
               all
             else
-              meta_data
-                .map do |md, index|
-                  md.merge md_alias: "md_#{SecureRandom.hex(4)}"
-                end
-                .reduce(all, :filter_by_meta_datum)
-              # validate! meta_datum
+              transformed_meta_data = \
+                meta_data
+                .map { |md| raise_if_not_viewable_meta_key_provided! md, user }
+                .map { |md| add_scoped_meta_keys md, user }
+                .map { |md| add_md_table_alias md }
+
+              transformed_meta_data.reduce(all, :filter_by_meta_datum)
             end
           end
 
+          def add_scoped_meta_keys(md, user)
+            if md[:key] == 'any' or md[:not_key]
+              md.merge meta_keys_scope: MetaKey.viewable_by_user_or_public(user)
+            else
+              md
+            end
+          end
+
+          def add_md_table_alias(md)
+            md.merge md_alias: "md_#{SecureRandom.hex(4)}"
+          end
+
+          def raise_if_not_viewable_meta_key_provided!(md, user)
+            meta_key_id = (md[:key] or md[:not_key])
+            if meta_key_id == 'any' \
+                or MetaKey.find(meta_key_id).viewable_by_user_or_public?(user)
+              md
+            else
+              raise "Not viewable meta_key leaked in: #{meta_key_id}!"
+            end
+          end
+
+          # TODO: to we need this method?
           def validate!(meta_datum)
             [:value, :match].each do |key_name|
               if meta_datum[key_name] and not meta_datum[key_name].is_a?(String)
