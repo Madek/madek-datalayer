@@ -1,25 +1,47 @@
-require 'rails_config'
-RailsConfig.setup do |config|
-  config.const_name = 'Settings'
+require 'active_support/all'
+
+DATALAYER_PATHNAME = Pathname(File.dirname(File.absolute_path(__FILE__))).parent
+
+require DATALAYER_PATHNAME.join('lib', 'madek', 'constants.rb')
+
+SETTINGS_LOCATIONS = [['config', 'settings.yml'],
+                      ['config', 'settings.local.yml'],
+                      ['..', 'config', 'settings.yml'],
+                      ['..', 'config', 'settings.local.yml'],
+                      ['..', '..', 'config', 'settings.yml'],
+                      ['..', '..', 'config', 'settings.local.yml']]
+
+def ostructify(d)
+  if d.is_a? Hash
+    OpenStruct.new(d.map do |k, v|
+      [k, ostructify(v)]
+    end.to_h)
+  else
+    d
+  end
 end
 
-%w(settings.yml settings.local.yml).each do |settings_file_name|
-  [Madek::Constants::DATALAYER_ROOT_DIR,
-   Madek::Constants::WEBAPP_ROOT_DIR,
-   Madek::Constants::ADMIN_ROOT_DIR,
-   Madek::Constants::MADEK_ROOT_DIR].each do |location|
-     if location
-       Settings.add_source! \
-         location.join('config', settings_file_name).to_s
-     end
-   end
+def load_settings
+  conf = {}.with_indifferent_access
+  SETTINGS_LOCATIONS.each do |rel_location|
+    if File.exists? (conf_file = DATALAYER_PATHNAME.join(*rel_location))
+      conf.deep_merge! YAML.load_file conf_file
+    end
+  end
+  ostructify(conf)
 end
 
+Settings = OpenStruct.new
+Settings.send :define_singleton_method, :reload! do
+  each_pair.to_h.keys do |k|
+    self.delete_field k
+  end
+  load_settings.to_h.map do |k, v|
+    self[k] = v
+  end
+  self
+end
 Settings.reload!
-
-# Now, add some constants which can be configured and hence the Settings
-# business must be configured before. Settings independent constants should go
-# into lib/madek/constants.
 
 module Madek
   module Constants

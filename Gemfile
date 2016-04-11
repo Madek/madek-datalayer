@@ -11,7 +11,6 @@ gem 'textacular', git: 'https://github.com/DrTom/textacular.git'
 
 gem 'bcrypt'
 gem 'chronic_duration'
-gem 'rails_config', git: 'https://github.com/DrTom/rails_config.git', ref: 'master'
 gem 'rspec-rails', '~> 3.1', group: [:test, :development]
 gem 'rubocop', '= 0.29.1', require: false
 gem 'strong_password'
