@@ -1,3 +1,5 @@
+require 'madek/constants'
+
 [Madek::Constants::FILE_STORAGE_DIR,
  Madek::Constants::THUMBNAIL_STORAGE_DIR,
  Madek::Constants::DOWNLOAD_STORAGE_DIR,

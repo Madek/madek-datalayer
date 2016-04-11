@@ -1,96 +1,53 @@
-require 'fileutils'
-require 'yaml'
-
+require 'settings'
 require 'chronic_duration'
 ChronicDuration.raise_exceptions = true
 
 module Madek
-
   module Constants
 
-    case
-    when File.exists?('.madek-datalayer')
-      DATALAYER_ROOT_DIR = Pathname('.').realpath
+    DATALAYER_ROOT_DIR = \
+      Pathname(File.dirname(File.absolute_path(__FILE__))).parent.parent
 
-      MADEK_ROOT_DIR =
-        if File.exists?(DATALAYER_ROOT_DIR.join('..', '..', '..', '.madek'))
-          DATALAYER_ROOT_DIR.join('..', '..', '..').realpath
-        end
+    MADEK_ROOT_DIR = DATALAYER_ROOT_DIR.join('..', '..')
 
-      WEBAPP_ROOT_DIR =
-        if File.exists?(DATALAYER_ROOT_DIR.join('..', '..', '.madek-webapp'))
-          DATALAYER_ROOT_DIR.join('..', '..').realpath
-        end
+    WEBAPP_ROOT_DIR = MADEK_ROOT_DIR.join('webapp')
 
-      ADMIN_ROOT_DIR =
-        if File.exists?(DATALAYER_ROOT_DIR.join('..', '..', '.madek-admin'))
-          DATALAYER_ROOT_DIR.join('..', '..').realpath
-        end
+    ADMIN_ROOT_DIR = MADEK_ROOT_DIR.join('admin-webapp')
 
-    when File.exists?('.madek-webapp')
-      WEBAPP_ROOT_DIR = Pathname('.').realpath
-
-      ADMIN_ROOT_DIR =
-        if File.exists?(WEBAPP_ROOT_DIR.join('..', 'admin-webapp', '.madek-admin'))
-          WEBAPP_ROOT_DIR.join('..', 'admin-webapp').realpath
-        end
-
-      DATALAYER_ROOT_DIR =
-        if File.exists?(WEBAPP_ROOT_DIR.join('engines', 'datalayer',
-                                             '.madek-datalayer'))
-          WEBAPP_ROOT_DIR.join('engines', 'datalayer').realpath
-        end
-
-      MADEK_ROOT_DIR =
-        if File.exists?(WEBAPP_ROOT_DIR.join('..', '.madek'))
-          WEBAPP_ROOT_DIR.join('..').realpath
-        end
-
-    when File.exists?('.madek-api')
-      API_ROOT_DIR = Pathname('.').realpath
-
-      WEBAPP_ROOT_DIR =
-        if File.exists?(API_ROOT_DIR.join('..', 'webapp', '.madek-webapp'))
-          API_ROOT_DIR.join('..', 'webapp').realpath
-        end
-
-      ADMIN_ROOT_DIR =
-        if File.exists?(API_ROOT_DIR.join('..', 'admin-webapp', '.madek-admin'))
-          API_ROOT_DIR.join('..', 'admin-webapp').realpath
-        end
-
-      DATALAYER_ROOT_DIR =
-        if File.exists?(API_ROOT_DIR.join('datalayer', '.madek-datalayer'))
-          API_ROOT_DIR.join('datalayer').realpath
-        end
-
-      MADEK_ROOT_DIR =
-        if File.exists?(API_ROOT_DIR.join('..', '.madek'))
-          API_ROOT_DIR.join('..').realpath
-        end
-
-    when File.exists?('.madek-admin')
-      ADMIN_ROOT_DIR = Pathname('.').realpath
-
-      WEBAPP_ROOT_DIR =
-        if File.exists?(ADMIN_ROOT_DIR.join('..', 'webapp', '.madek-webapp'))
-          ADMIN_ROOT_DIR.join('..', 'webapp').realpath
-        end
-
-      DATALAYER_ROOT_DIR =
-        if File.exists?(ADMIN_ROOT_DIR.join('engines', 'datalayer',
-                                            '.madek-datalayer'))
-          ADMIN_ROOT_DIR.join('engines', 'datalayer').realpath
-        end
-
-      MADEK_ROOT_DIR =
-        if File.exists?(ADMIN_ROOT_DIR.join('..', '.madek'))
-          ADMIN_ROOT_DIR.join('..').realpath
-        end
-
-    else
-      raise 'unknown starting location'
+    def self.env_path_or_nil(env_var)
+      ENV[env_var].present? && Pathname(ENV[env_var]).realpath
     end
+
+    def self.pathname_or_nil(path)
+      if path.present?
+        pathname = Pathname(path)
+        FileUtils.mkpath(pathname) unless Dir.exists?(pathname)
+        pathname.realpath
+      end
+    end
+
+    DEFAULT_STORAGE_DIR = env_path_or_nil('MADEK_STORAGE_DIR') \
+      || pathname_or_nil(Settings.default_storage_dir) \
+      || (MADEK_ROOT_DIR && MADEK_ROOT_DIR.join('tmp', Rails.env)) \
+      || (WEBAPP_ROOT_DIR && WEBAPP_ROOT_DIR.join('tmp', Rails.env)) \
+      || (DATALAYER_ROOT_DIR && DATALAYER_ROOT_DIR.join('tmp', Rails.env)) \
+      || (ADMIN_ROOT_DIR && ADMIN_ROOT_DIR.join('tmp', Rails.env))
+
+    ZIP_STORAGE_DIR  = env_path_or_nil('MADEK_ZIP_STORAGE_DIR') \
+      || pathname_or_nil(Settings.zip_storage_dir) \
+      || DEFAULT_STORAGE_DIR.join('zipfiles')
+
+    DOWNLOAD_STORAGE_DIR = env_path_or_nil('MADEK_DOWNLOAD_STORAGE_DIR') \
+      || pathname_or_nil(Settings.download_storage_dir) \
+      || DEFAULT_STORAGE_DIR.join('downloads')
+
+    FILE_STORAGE_DIR = env_path_or_nil('MADEK_FILE_STORAGE_DIR') \
+      || pathname_or_nil(Settings.file_storage_dir) \
+      || DEFAULT_STORAGE_DIR.join('originals')
+
+    THUMBNAIL_STORAGE_DIR = env_path_or_nil('MADEK_THUMBNAIL_STORAGE_DIR') \
+      || pathname_or_nil(Settings.thumbnail_storage_dir) \
+      || DEFAULT_STORAGE_DIR.join('thumbnails')
 
     THUMBNAILS = { maximum: nil,
                    x_large: { width: 1024, height: 768 },
@@ -111,6 +68,11 @@ module Madek
         "^([[:space:]]|#{Madek::Constants::SPECIAL_WHITESPACE_CHARS.join('|')})$"
 
     MADEK_V2_PERMISSION_ACTIONS = [:download, :edit, :manage, :view]
+
+    MADEK_SESSION_COOKIE_NAME = Settings.madek_session_cookie_name.presence
+
+    MADEK_SESSION_VALIDITY_DURATION =
+      ChronicDuration.parse(Settings.madek_session_validity_duration).seconds
 
   end
 end
