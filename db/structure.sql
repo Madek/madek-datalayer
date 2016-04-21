@@ -437,6 +437,34 @@ CREATE FUNCTION delete_meta_datum_text_string_null() RETURNS trigger
 
 
 --
+-- Name: groups_update_searchable_column(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION groups_update_searchable_column() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+   NEW.searchable = COALESCE(NEW.name::text, '') || ' ' || COALESCE(NEW.institutional_group_name::text, '') ;
+   RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: people_update_searchable_column(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION people_update_searchable_column() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+   NEW.searchable = COALESCE(NEW.first_name::text, '') || ' ' || COALESCE(NEW.last_name::text, '') || ' ' || COALESCE(NEW.pseudonym::text, '') ;
+   RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: update_updated_at_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -448,6 +476,20 @@ CREATE FUNCTION update_updated_at_column() RETURNS trigger
              RETURN NEW;
           END;
           $$;
+
+
+--
+-- Name: users_update_searchable_column(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION users_update_searchable_column() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+   NEW.searchable = COALESCE(NEW.login::text, '') || ' ' || COALESCE(NEW.email::text, '') ;
+   RETURN NEW;
+END;
+$$;
 
 
 SET default_tablespace = '';
@@ -1114,9 +1156,9 @@ CREATE TABLE people (
     first_name character varying,
     last_name character varying,
     pseudonym character varying,
-    searchable text DEFAULT ''::text NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    searchable text DEFAULT ''::text NOT NULL
 );
 
 
@@ -1178,10 +1220,10 @@ CREATE TABLE users (
     person_id uuid NOT NULL,
     zhdkid integer,
     usage_terms_accepted_at timestamp with time zone,
-    searchable text DEFAULT ''::text NOT NULL,
     trgm_searchable text DEFAULT ''::text NOT NULL,
     autocomplete text DEFAULT ''::text NOT NULL,
     contrast_mode boolean DEFAULT false NOT NULL,
+    searchable text DEFAULT ''::text NOT NULL,
     CONSTRAINT users_login_simple CHECK ((login ~* '^[a-z0-9\.\-\_]+$'::text))
 );
 
@@ -2779,6 +2821,13 @@ CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (v
 
 
 --
+-- Name: users_searchable_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX users_searchable_idx ON users USING gin (searchable gin_trgm_ops);
+
+
+--
 -- Name: users_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2923,6 +2972,27 @@ CREATE CONSTRAINT TRIGGER trigger_meta_data_meta_key_type_consistency AFTER INSE
 --
 
 CREATE CONSTRAINT TRIGGER trigger_meta_key_meta_data_type_consistency AFTER INSERT OR UPDATE ON meta_keys DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_meta_key_meta_data_type_consistency();
+
+
+--
+-- Name: update_searchable_column_of_groups; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_searchable_column_of_groups BEFORE INSERT OR UPDATE ON groups FOR EACH ROW EXECUTE PROCEDURE groups_update_searchable_column();
+
+
+--
+-- Name: update_searchable_column_of_people; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_searchable_column_of_people BEFORE INSERT OR UPDATE ON people FOR EACH ROW EXECUTE PROCEDURE people_update_searchable_column();
+
+
+--
+-- Name: update_searchable_column_of_users; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_searchable_column_of_users BEFORE INSERT OR UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE users_update_searchable_column();
 
 
 --
@@ -4166,6 +4236,8 @@ INSERT INTO schema_migrations (version) VALUES ('200');
 INSERT INTO schema_migrations (version) VALUES ('201');
 
 INSERT INTO schema_migrations (version) VALUES ('202');
+
+INSERT INTO schema_migrations (version) VALUES ('203');
 
 INSERT INTO schema_migrations (version) VALUES ('21');
 
