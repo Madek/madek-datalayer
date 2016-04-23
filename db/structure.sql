@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.0
--- Dumped by pg_dump version 9.5.0
+-- Dumped from database version 9.5.1
+-- Dumped by pg_dump version 9.5.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -461,8 +461,8 @@ SET default_with_oids = false;
 CREATE TABLE admins (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -476,8 +476,8 @@ CREATE TABLE api_clients (
     login character varying NOT NULL,
     description text,
     password_digest character varying,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT name_format CHECK (((login)::text ~ '^[a-z][a-z0-9\-\_]+$'::text))
 );
 
@@ -496,8 +496,8 @@ CREATE TABLE app_settings (
     welcome_title character varying DEFAULT 'Powerful Global Information System'::character varying NOT NULL,
     welcome_text character varying DEFAULT '**“Academic information should be freely available to anyone”** — Tim Berners-Lee'::character varying NOT NULL,
     teaser_set_id uuid,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     brand_logo_url character varying DEFAULT '/assets/inserts/image-logo-zhdk.png'::character varying NOT NULL,
     brand_text character varying DEFAULT 'ACME, Inc.'::character varying NOT NULL,
     sitemap jsonb DEFAULT '[{"Medienarchiv ZHdK": "http://medienarchiv.zhdk.ch"}, {"Madek Project on Github": "https://github.com/Madek"}]'::jsonb NOT NULL,
@@ -516,8 +516,8 @@ CREATE TABLE collection_api_client_permissions (
     collection_id uuid NOT NULL,
     api_client_id uuid NOT NULL,
     updator_id uuid,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -556,8 +556,8 @@ CREATE TABLE collection_group_permissions (
     collection_id uuid NOT NULL,
     group_id uuid NOT NULL,
     updator_id uuid,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -586,8 +586,8 @@ CREATE TABLE collection_user_permissions (
     collection_id uuid NOT NULL,
     user_id uuid NOT NULL,
     updator_id uuid,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -598,8 +598,8 @@ CREATE TABLE collection_user_permissions (
 CREATE TABLE collections (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     responsible_user_id uuid NOT NULL,
     creator_id uuid NOT NULL
 );
@@ -621,8 +621,8 @@ CREATE TABLE context_keys (
     length_min integer,
     "position" integer NOT NULL,
     input_type integer,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     admin_comment text
 );
 
@@ -649,8 +649,8 @@ CREATE TABLE custom_urls (
     is_primary boolean DEFAULT false NOT NULL,
     creator_id uuid NOT NULL,
     updator_id uuid NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     media_entry_id uuid,
     collection_id uuid,
     filter_set_id uuid,
@@ -667,8 +667,8 @@ CREATE TABLE custom_urls (
 CREATE TABLE edit_sessions (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     media_entry_id uuid,
     collection_id uuid,
     filter_set_id uuid,
@@ -683,8 +683,8 @@ CREATE TABLE edit_sessions (
 CREATE TABLE favorite_collections (
     user_id uuid NOT NULL,
     collection_id uuid NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -695,8 +695,8 @@ CREATE TABLE favorite_collections (
 CREATE TABLE favorite_filter_sets (
     user_id uuid NOT NULL,
     filter_set_id uuid NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -707,8 +707,8 @@ CREATE TABLE favorite_filter_sets (
 CREATE TABLE favorite_media_entries (
     user_id uuid NOT NULL,
     media_entry_id uuid NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -723,8 +723,8 @@ CREATE TABLE filter_set_api_client_permissions (
     filter_set_id uuid NOT NULL,
     api_client_id uuid NOT NULL,
     updator_id uuid,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -738,8 +738,8 @@ CREATE TABLE filter_set_group_permissions (
     filter_set_id uuid NOT NULL,
     group_id uuid NOT NULL,
     updator_id uuid,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -755,8 +755,8 @@ CREATE TABLE filter_set_user_permissions (
     filter_set_id uuid NOT NULL,
     user_id uuid NOT NULL,
     updator_id uuid,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -767,8 +767,8 @@ CREATE TABLE filter_set_user_permissions (
 CREATE TABLE filter_sets (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     definition jsonb DEFAULT '{}'::jsonb NOT NULL,
     responsible_user_id uuid NOT NULL,
     creator_id uuid NOT NULL
@@ -817,8 +817,8 @@ CREATE TABLE groups_users (
 CREATE TABLE io_interfaces (
     id character varying NOT NULL,
     description character varying,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -831,8 +831,8 @@ CREATE TABLE io_mappings (
     meta_key_id character varying NOT NULL,
     key_map character varying,
     key_map_type character varying,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     id uuid DEFAULT gen_random_uuid() NOT NULL
 );
 
@@ -844,8 +844,8 @@ CREATE TABLE io_mappings (
 CREATE TABLE keywords (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     term character varying DEFAULT ''::character varying NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     creator_id uuid,
     meta_key_id character varying NOT NULL
 );
@@ -861,8 +861,8 @@ CREATE TABLE license_groups (
     description text,
     "position" double precision,
     parent_id uuid,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -888,8 +888,8 @@ CREATE TABLE licenses (
 CREATE TABLE licenses_license_groups (
     license_id uuid,
     license_group_id uuid,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -899,8 +899,8 @@ CREATE TABLE licenses_license_groups (
 
 CREATE TABLE media_entries (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     get_full_size boolean DEFAULT false NOT NULL,
     responsible_user_id uuid NOT NULL,
@@ -920,8 +920,8 @@ CREATE TABLE media_entry_api_client_permissions (
     media_entry_id uuid NOT NULL,
     api_client_id uuid NOT NULL,
     updator_id uuid,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -937,8 +937,8 @@ CREATE TABLE media_entry_group_permissions (
     media_entry_id uuid NOT NULL,
     group_id uuid NOT NULL,
     updator_id uuid,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -955,8 +955,8 @@ CREATE TABLE media_entry_user_permissions (
     media_entry_id uuid NOT NULL,
     user_id uuid NOT NULL,
     updator_id uuid,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -977,8 +977,8 @@ CREATE TABLE media_files (
     extension character varying,
     media_type character varying,
     media_entry_id uuid,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     uploader_id uuid NOT NULL
 );
 
@@ -995,8 +995,8 @@ CREATE TABLE media_resources (
     manage boolean DEFAULT false NOT NULL,
     view boolean DEFAULT false NOT NULL,
     type character varying,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT edit_on_publicpermissions_is_false CHECK ((edit = false)),
     CONSTRAINT manage_on_publicpermissions_is_false CHECK ((manage = false))
 );
@@ -1040,8 +1040,8 @@ CREATE TABLE meta_data_keywords (
     created_by_id uuid,
     meta_datum_id uuid NOT NULL,
     keyword_id uuid NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -1115,8 +1115,8 @@ CREATE TABLE people (
     last_name character varying,
     pseudonym character varying,
     searchable text DEFAULT ''::text NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -1132,8 +1132,8 @@ CREATE TABLE previews (
     content_type character varying,
     filename character varying,
     thumbnail character varying,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     media_type character varying NOT NULL
 );
 
@@ -1157,8 +1157,8 @@ CREATE TABLE usage_terms (
     version character varying,
     intro text,
     body text,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -1172,12 +1172,12 @@ CREATE TABLE users (
     email character varying,
     login text,
     notes text,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     password_digest character varying,
     person_id uuid NOT NULL,
     zhdkid integer,
-    usage_terms_accepted_at timestamp without time zone,
+    usage_terms_accepted_at timestamp with time zone,
     searchable text DEFAULT ''::text NOT NULL,
     trgm_searchable text DEFAULT ''::text NOT NULL,
     autocomplete text DEFAULT ''::text NOT NULL,
@@ -1301,8 +1301,8 @@ CREATE TABLE zencoder_jobs (
     notification text,
     request text,
     response text,
-    created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -4164,6 +4164,8 @@ INSERT INTO schema_migrations (version) VALUES ('20');
 INSERT INTO schema_migrations (version) VALUES ('200');
 
 INSERT INTO schema_migrations (version) VALUES ('201');
+
+INSERT INTO schema_migrations (version) VALUES ('202');
 
 INSERT INTO schema_migrations (version) VALUES ('21');
 
