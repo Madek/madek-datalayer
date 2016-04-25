@@ -451,6 +451,20 @@ $$;
 
 
 --
+-- Name: licenses_update_searchable_column(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION licenses_update_searchable_column() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+   NEW.searchable = COALESCE(NEW.label::text, '') || ' ' || COALESCE(NEW.usage::text, '') || ' ' || COALESCE(NEW.url::text, '') ;
+   RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: people_update_searchable_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -919,7 +933,8 @@ CREATE TABLE licenses (
     label character varying,
     usage character varying,
     url character varying,
-    "position" double precision
+    "position" double precision,
+    searchable text DEFAULT ''::text NOT NULL
 );
 
 
@@ -2779,10 +2794,24 @@ CREATE INDEX licenses_label_idx ON licenses USING gin (label gin_trgm_ops);
 
 
 --
+-- Name: licenses_searchable_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX licenses_searchable_idx ON licenses USING gin (searchable gin_trgm_ops);
+
+
+--
 -- Name: licenses_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX licenses_to_tsvector_idx ON licenses USING gin (to_tsvector('english'::regconfig, (label)::text));
+
+
+--
+-- Name: licenses_to_tsvector_idx1; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX licenses_to_tsvector_idx1 ON licenses USING gin (to_tsvector('english'::regconfig, searchable));
 
 
 --
@@ -2979,6 +3008,13 @@ CREATE CONSTRAINT TRIGGER trigger_meta_key_meta_data_type_consistency AFTER INSE
 --
 
 CREATE TRIGGER update_searchable_column_of_groups BEFORE INSERT OR UPDATE ON groups FOR EACH ROW EXECUTE PROCEDURE groups_update_searchable_column();
+
+
+--
+-- Name: update_searchable_column_of_licenses; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_searchable_column_of_licenses BEFORE INSERT OR UPDATE ON licenses FOR EACH ROW EXECUTE PROCEDURE licenses_update_searchable_column();
 
 
 --

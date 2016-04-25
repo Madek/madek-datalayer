@@ -7,7 +7,7 @@ module Concerns
 
           module ClassMethods
             # actors: group, person, license, keyword
-            def filter_by_meta_datum_actor_type(actor_type, column, meta_datum)
+            def filter_by_meta_datum_actor_type(actor_type, meta_datum)
               actor_type_plural = actor_type.to_s.pluralize
               rmd_alias = "md#{actor_type_plural.first}_#{SecureRandom.hex(4)}"
 
@@ -26,7 +26,7 @@ module Concerns
                          "ON #{rmd_alias}.#{actor_type}_id " \
                          "= #{actor_type_plural}.id " \
                          "AND to_tsvector('english', " \
-                                         "#{actor_type_plural}.#{column}) @@ " \
+                                         "#{actor_type_plural}.searchable) @@ " \
                          "plainto_tsquery('english', " \
                                          "'#{meta_datum[:match]}')")
               end

@@ -41,7 +41,8 @@ RSpec.shared_context 'search in all meta data shared context' do
         :meta_datum_people,
         people: [FactoryGirl.create(:person),
                  FactoryGirl.create(:person,
-                                    searchable: 'gaura nitai bol')]
+                                    first_name: 'gaura',
+                                    last_name: 'nitai bol')]
     media_entry.meta_data << meta_datum_people
     media_entry
   end
