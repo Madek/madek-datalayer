@@ -14,6 +14,6 @@ class Keyword < ActiveRecord::Base
   def self.viewable_by_user_or_public(user = nil)
     viewable_vocabs = Vocabulary.viewable_by_user_or_public(user)
     joins(:meta_key)
-      .where(meta_keys: { vocabulary_id: viewable_vocabs })
+      .where('meta_keys.vocabulary_id IN (?)', viewable_vocabs.map(&:id))
   end
 end

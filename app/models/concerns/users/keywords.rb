@@ -8,12 +8,12 @@ module Concerns
 
         def used_keywords
           Keyword
-            .select('keywords.*', 'meta_data_keywords.created_at')
+            .select('keywords.*, count(keywords.id) AS usage_count')
             .joins('INNER JOIN meta_data_keywords ' \
                    'ON meta_data_keywords.keyword_id = keywords.id')
-            .where(meta_data_keywords: { created_by_id: id })
-            .reorder('meta_data_keywords.created_at DESC')
-            .uniq
+            .where('meta_data_keywords.created_by_id = ?', id)
+            .group('keywords.id')
+            .order('usage_count DESC')
         end
       end
     end

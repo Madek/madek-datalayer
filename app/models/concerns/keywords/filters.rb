@@ -4,34 +4,41 @@ module Concerns
       extend ActiveSupport::Concern
 
       included do
-        scope :filter_by, lambda { |meta_key_id, term = nil, used_by_id = nil|
-          if UUIDTools::UUID_REGEXP =~ term
-            where(id: term)
-          else
-            keywords = Keyword.all
+        def self.uniq_last_used_by(user_id)
+          # NOTE: this is a helper method to get a subquery used in other methods.
+          # Used in a standalone manner might result in something unexpected.
+          select('keywords.*, max(meta_data_keywords.created_at) AS last_used_at')
+            .joins('INNER JOIN meta_data_keywords ' \
+                   'ON meta_data_keywords.keyword_id = keywords.id')
+            .where('meta_data_keywords.created_by_id = ?', user_id)
+            .group('keywords.id')
+            .as('keywords')
+        end
 
-            if meta_key_id
-              keywords.where(meta_key_id: meta_key_id)
-            end
+        def self.filter_by(meta_key_id = nil, term = nil, used_by_id = nil)
+          keywords = Keyword.all
 
-            if term
+          if meta_key_id
+            keywords = Keyword.where('keywords.meta_key_id = ?', meta_key_id)
+          end
+
+          if term
+            if UUIDTools::UUID_REGEXP =~ term
+              keywords = keywords.where(id: term)
+            else
               keywords = keywords.where('keywords.term ILIKE :t', t: "%#{term}%")
             end
-
-            if used_by_id
-              keywords = \
-                keywords
-                  .select('keywords.*', 'meta_data_keywords.created_at')
-                  .joins('INNER JOIN meta_data_keywords ' \
-                         'ON meta_data_keywords.keyword_id = keywords.id')
-                  .where(meta_data_keywords: { created_by_id: used_by_id })
-                  .reorder('meta_data_keywords.created_at DESC')
-                  .uniq
-            end
-
-            keywords
           end
-        }
+
+          if used_by_id
+            keywords = \
+              keywords
+                .from(uniq_last_used_by used_by_id)
+                .order('keywords.last_used_at DESC')
+          end
+
+          keywords
+        end
       end
     end
   end
