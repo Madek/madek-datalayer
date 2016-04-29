@@ -8,6 +8,11 @@ FactoryGirl.define do
         || FactoryGirl.create(:vocabulary, id: vocabulary_id)
     end
 
+    is_enabled_for_media_entries true
+    is_enabled_for_collections true
+
+    label { Faker::Lorem.characters(10) }
+
     factory :meta_key_text, class: MetaKey do
       id { 'test:string' }
       meta_datum_object_type 'MetaDatum::Text'
