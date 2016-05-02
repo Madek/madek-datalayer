@@ -6,7 +6,7 @@ module Concerns
 
       module ClassMethods
         def filter_by(term)
-          filter_by_term_using_attributes(term, :label)
+          filter_by_term_using_attributes(term, :label, :url, :usage)
         end
       end
     end
