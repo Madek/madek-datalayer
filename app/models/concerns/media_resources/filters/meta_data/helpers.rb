@@ -18,7 +18,7 @@ module Concerns
 
               unless meta_datum[:value].blank?
                 joined_meta_data
-                  .joins("AND #{rmd_alias}.#{actor_type}_id = ",
+                  .joins("AND #{rmd_alias}.#{actor_type}_id = " \
                          "'#{meta_datum[:value]}'")
               else
                 joined_meta_data
