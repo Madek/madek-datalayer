@@ -21,7 +21,7 @@ module Madek
     def self.pathname_or_nil(path)
       if path.present?
         pathname = Pathname(path)
-        FileUtils.mkpath(pathname) unless Dir.exists?(pathname)
+        FileUtils.mkpath(pathname) unless Dir.exist?(pathname)
         pathname.realpath
       end
     end
