@@ -19,7 +19,7 @@ module Concerns
 
         if conditions
           define_singleton_method "#{prefix}_user" do |user|
-            where conditions.call(user)
+            where yield(user)
           end
         end
       end

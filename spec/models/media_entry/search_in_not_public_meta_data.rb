@@ -18,7 +18,7 @@ describe MediaEntry do
 
     it ':not_key returns an empty result' do
       meta_datum_text # just force evaluation
-      filter = { meta_data: [{ 'not_key': "#{Faker::Lorem.word}" }] }
+      filter = { meta_data: [{ 'not_key': Faker::Lorem.word.to_s }] }
       filtered_media_entries = MediaEntry.filter_by(filter)
       expect(filtered_media_entries.count).to be == 0
     end

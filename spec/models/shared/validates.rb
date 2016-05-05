@@ -4,7 +4,7 @@ end
 
 RSpec.shared_examples 'presence of' do |attr|
 
-  it "#{attr}" do
+  it attr.to_s do
     resource = FactoryGirl.create described_class.model_name.singular.to_sym
     resource.send("#{attr}=", nil)
     expect { resource.save! }.to raise_error ActiveRecord::RecordInvalid

@@ -53,7 +53,7 @@ FactoryGirl.define do
 
     vocabulary do
       Vocabulary.find_by(id: 'madek_core') \
-        ||  FactoryGirl.create(:vocabulary, id: 'madek_core')
+        || FactoryGirl.create(:vocabulary, id: 'madek_core')
     end
 
     factory :meta_key_core_description, class: MetaKey do

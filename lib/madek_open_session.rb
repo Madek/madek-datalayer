@@ -6,8 +6,9 @@ module MadekOpenSession
 
   extend ActiveSupport::Concern
 
-  def build_session_value(user,
-        max_duration_secs: Madek::Constants::MADEK_SESSION_VALIDITY_DURATION)
+  SESSION_VALIDITY_DURATION = Madek::Constants::MADEK_SESSION_VALIDITY_DURATION
+
+  def build_session_value(user, max_duration_secs: SESSION_VALIDITY_DURATION)
     CiderCi::OpenSession::Encryptor.encrypt(
       secret, user_id: user.id, signature: create_user_signature(user),
               issued_at: Time.now.iso8601, max_duration_secs: max_duration_secs)
@@ -16,7 +17,7 @@ module MadekOpenSession
   def validate_not_expired!(session_object)
     issued_at = Time.parse(session_object[:issued_at]) || \
       raise(StandardError, 'Session issued_at could not be determined!')
-    if issued_at + Madek::Constants::MADEK_SESSION_VALIDITY_DURATION < Time.now
+    if issued_at + SESSION_VALIDITY_DURATION < Time.now
       raise(StandardError, 'Session is expired!')
     end
     if session_object[:max_duration_secs]

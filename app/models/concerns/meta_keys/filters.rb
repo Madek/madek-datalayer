@@ -5,14 +5,12 @@ module Concerns
 
       included do
         scope :filter_by, lambda { |term|
-          # rubocop:disable Metrics/LineLength
           vector = <<-SQL
             setweight(to_tsvector('english', coalesce(meta_keys.id, '')), 'A') ||
             setweight(to_tsvector('english', coalesce(meta_keys.label, '')),  'A') ||
             setweight(to_tsvector('english', coalesce(meta_keys.description, '')), 'B') ||
             setweight(to_tsvector('english', coalesce(meta_keys.hint, '')), 'C')
           SQL
-          # rubocop:enable Metrics/LineLength
           query = "plainto_tsquery('english', '#{term}')"
 
           select('meta_keys.*', "ts_rank_cd(#{vector}, #{query}) AS search_rank")

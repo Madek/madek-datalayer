@@ -12,7 +12,7 @@ gem 'drtom-textacular', '= 4.0.0.alpha.20160302'
 gem 'bcrypt'
 gem 'chronic_duration'
 gem 'rspec-rails', '~> 3.1', group: [:test, :development]
-gem 'rubocop', '= 0.29.1', require: false
+gem 'rubocop', '= 0.39.0', require: false
 gem 'strong_password'
 gem 'uuidtools'
 
