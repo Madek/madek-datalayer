@@ -3,6 +3,8 @@ class UpgradeAppSettingsForV3 < ActiveRecord::Migration
     self.table_name = 'app_settings'
   end
 
+  # NOTE: This migrates the general settings (just text, links, etc)
+
   def change
     change_column_default :app_settings, :id, 0
 

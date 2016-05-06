@@ -10,9 +10,6 @@ class FinalizeVocabularyMigration < ActiveRecord::Migration
     execute %q< ALTER TABLE meta_keys ADD CONSTRAINT meta_key_id_chars CHECK (id ~* '^[a-z0-9\-\_\:]+$'); >
     execute %q< ALTER TABLE meta_keys ADD CONSTRAINT start_id_like_vocabulary_id CHECK (id like vocabulary_id || ':%' ); >
 
-    remove_column :app_settings, :third_displayed_context_id
-    remove_column :app_settings, :second_displayed_context_id
-
     # sanitize context ids:
     execute "SET session_replication_role = REPLICA"
     Context.all.each do |c|
