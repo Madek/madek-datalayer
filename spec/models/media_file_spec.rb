@@ -8,7 +8,8 @@ describe MediaFile do
     end
 
     it 'validates presence of uploader' do
-      expect { FactoryGirl.create :media_file, uploader: nil }.to raise_error
+      expect { FactoryGirl.create :media_file, uploader: nil }
+        .to raise_error ActiveRecord::RecordInvalid
     end
   end
 

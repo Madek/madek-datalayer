@@ -26,7 +26,8 @@ describe EditSession do
     it %(should raise an error if neither media entry, \
          collection nor filter set is provided) do
 
-      expect { FactoryGirl.create :edit_session }.to raise_error
+      expect { FactoryGirl.create :edit_session }
+        .to raise_error ActiveRecord::RecordInvalid
 
     end
 
@@ -38,7 +39,7 @@ describe EditSession do
                            media_entry: FactoryGirl.create(:media_entry),
                            collection: FactoryGirl.create(:collection)
       end
-        .to raise_error
+        .to raise_error ActiveRecord::StatementInvalid
 
     end
 
