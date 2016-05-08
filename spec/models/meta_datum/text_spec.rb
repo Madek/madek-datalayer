@@ -86,6 +86,30 @@ describe MetaDatum::Text do
 
     end
 
+    describe 'required context keys validation' do
+
+      it 'validates correctly' do
+        media_entry = FactoryGirl.create(:media_entry, is_published: true)
+        meta_datum_text = FactoryGirl.create(:meta_datum_text,
+                                             meta_key_id: 'test:string',
+                                             media_entry: media_entry)
+
+        validation_context_id = 'upload'
+        Context.find_by_id(validation_context_id) \
+          or FactoryGirl.create(:context, id: validation_context_id)
+        AppSetting.first.update_attributes! \
+          contexts_for_validation: [validation_context_id]
+        FactoryGirl.create(:context_key,
+                           context_id: validation_context_id,
+                           is_required: true)
+
+        expect(meta_datum_text.update_attributes(value: nil)).to be false
+        meta_datum_text.reload
+        expect(meta_datum_text.value).not_to be_blank
+      end
+
+    end
+
   end
 
 end

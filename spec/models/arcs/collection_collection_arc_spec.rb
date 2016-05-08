@@ -53,10 +53,10 @@ describe Arcs::CollectionCollectionArc do
   end
 
   def create_collection(title)
-    collection = Collection.create!(
-      get_metadata_and_previews: true,
-      responsible_user: @user,
-      creator: @user)
+    collection = FactoryGirl.create(:collection,
+                                    get_metadata_and_previews: true,
+                                    responsible_user: @user,
+                                    creator: @user)
     MetaDatum::Text.create!(
       collection: collection,
       string: title,

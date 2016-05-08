@@ -19,4 +19,8 @@ class MediaEntry < ActiveRecord::Base
 
   default_scope { where(is_published: true) }
   default_scope { reorder(:created_at, :id) }
+
+  # NOTE: could possibly be made as a DB trigger
+  validate :validate_existence_of_meta_data_for_required_context_keys,
+           if: :is_published?
 end

@@ -180,6 +180,9 @@ Rails/ReadWriteAttribute:
 Rails/Validation:
   Enabled: false
 
+Rails/FindEach:
+  Enabled: false
+
 # NEW CONFIG SINCE VERSION > 0.29.1
 
 Style/MultilineMethodCallIndentation:

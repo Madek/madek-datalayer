@@ -8,7 +8,10 @@ FactoryGirl.define do
   factory :meta_datum do
     created_by { create(:user) }
 
-    after :build do |md|
+    before :create do |md|
+      # we need app_setting for required context keys validation
+      AppSetting.first.presence || create(:app_setting)
+
       unless md.media_entry or md.collection or md.filter_set
         md.media_entry = FactoryGirl.create :media_entry
       end

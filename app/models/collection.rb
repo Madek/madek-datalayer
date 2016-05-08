@@ -51,6 +51,10 @@ class Collection < ActiveRecord::Base
 
   default_scope { reorder(:created_at, :id) }
 
+  # NOTE: could possibly be made as a DB trigger
+  # NOTE: disabled because there is no workflow yet
+  # validate :validate_existence_of_meta_data_for_required_context_keys
+
   def child_media_resources
     MediaResource.unified_scope(media_entries,
                                 collections,

@@ -9,6 +9,13 @@ FactoryGirl.define do
     association :responsible_user, factory: :user
     association :creator, factory: :user
 
+    before :create do |md|
+      app_setting = AppSetting.first.presence || create(:app_setting)
+      # NOTE: default in personas for historical reasons,
+      # needs to be disabled when using factories
+      app_setting.update_attributes!(contexts_for_validation: [])
+    end
+
     factory :media_entry_with_title do
       transient do
         title { Faker::Lorem.words.join(' ') }

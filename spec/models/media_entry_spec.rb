@@ -61,4 +61,21 @@ describe MediaEntry do
   it_responds_to 'permission_types_for_user' do
     let(:irrelevant_group_perm_types) { [:edit_permissions] }
   end
+
+  it 'can not be published if required meta data is missing' do
+    media_entry = FactoryGirl.create(:media_entry, is_published: false)
+
+    validation_context_id = 'upload'
+    Context.find_by_id(validation_context_id) \
+      or FactoryGirl.create(:context, id: validation_context_id)
+    AppSetting.first.update_attributes! \
+      contexts_for_validation: [validation_context_id]
+    FactoryGirl.create(:context_key,
+                       context_id: validation_context_id,
+                       is_required: true)
+
+    expect(media_entry.update_attributes(is_published: true)).to be false
+    media_entry.reload
+    expect(media_entry.is_published?).to be false
+  end
 end

@@ -1,5 +1,6 @@
 class MetaDatum < ActiveRecord::Base
 
+  include Concerns::ContextsHelpers
   include Concerns::MetaData::Filters
   include Concerns::MetaData::SanitizeValue
 
@@ -28,6 +29,21 @@ class MetaDatum < ActiveRecord::Base
   # TODO: create DB constraint for this
   validates_presence_of :created_by, on: :create
 
+  # NOTE: could possibly be made as a DB trigger
+  validate if: :validate_required_context_key_condition? do
+    context_ids = context_ids_for_required_context_keys_validation
+    if value.blank? \
+        and ContextKey.find_by(meta_key_id: meta_key.id,
+                               context_id: context_ids,
+                               is_required: true)
+      errors.add \
+        :base,
+        "#{I18n.t(:meta_data_blank_value_for_required_meta_key_pre)}" \
+        "#{meta_key.id}" \
+        "#{I18n.t(:meta_data_blank_value_for_required_meta_key_post)}"
+    end
+  end
+
   # needed for Pundit#authorize in controllers
   def self.policy_class
     MetaDatumPolicy
@@ -40,5 +56,15 @@ class MetaDatum < ActiveRecord::Base
     meta_datum = new attrs.merge(created_by: user)
     meta_datum.set_value!(value, user)
     meta_datum
+  end
+
+  private
+
+  def validate_required_context_key_condition?
+    if collection or filter_set
+      false # NOTE: disabled till spec is clear
+    else
+      media_entry and media_entry.is_published?
+    end
   end
 end
