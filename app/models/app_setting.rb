@@ -13,6 +13,23 @@ class AppSetting < ActiveRecord::Base
     used_as
   end
 
+  %i(
+    context_for_show_summary
+    contexts_for_show_extra
+    contexts_for_list_details
+    contexts_for_validation
+    contexts_for_dynamic_filters
+  ).each do |context_field|
+    define_method context_field do
+      ids = self[context_field]
+      if context_field.to_s.start_with?('contexts_')
+        Context.where(id: ids).sort_by { |c| ids.index(c.id) }
+      else
+        Context.find_by(id: ids)
+      end
+    end
+  end
+
   private
 
   def include_context?(attr, context_id)
