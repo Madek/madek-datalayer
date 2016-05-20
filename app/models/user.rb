@@ -62,7 +62,7 @@ class User < ActiveRecord::Base
   #############################################################
 
   def reset_usage_terms
-    update!(accepted_usage_terms: nil)
+    update!(accepted_usage_terms_id: nil)
   end
 
   #############################################################
