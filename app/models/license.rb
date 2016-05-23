@@ -1,4 +1,5 @@
 class License < ActiveRecord::Base
+  include Concerns::FindResource
   include Concerns::Licenses::Filters
 
   def self.find_resource!(val)

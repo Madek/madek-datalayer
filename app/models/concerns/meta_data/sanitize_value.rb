@@ -49,7 +49,7 @@ module Concerns
 
       def modelify_if_necessary(val)
         if self.value.class < ActiveRecord::Associations::CollectionProxy
-          self.value.klass.find_resource!(val)
+          self.value.klass.find_or_build_resource!(val, self)
         else
           val
         end
