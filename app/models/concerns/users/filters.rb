@@ -6,8 +6,14 @@ module Concerns
 
       included do
         scope :admin_users, -> { joins(:admin) }
-        scope :filter_by, lambda { |term|
-          filter_by_term_using_attributes(term, :login, :email)
+        scope :filter_by, lambda { |term, search_also_in_person = false|
+          result = all
+          search_attributes = ['users.searchable']
+          if search_also_in_person
+            search_attributes << 'people.searchable'
+            result = joins(:person)
+          end
+          result.filter_by_term_using_attributes(term, *search_attributes)
         }
         scope :sort_by, lambda { |attribute|
           case attribute.to_sym
