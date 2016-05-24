@@ -1,0 +1,20 @@
+environment_variables:
+  RUBY_ENGINE: ruby
+  RUBY_VERSION: 2.2.4
+  RUBY: '{{RUBY_ENGINE}}-{{RUBY_VERSION}}'
+
+traits:
+  curl: true
+  ruby-install: true
+
+scripts:
+
+  bundle:
+    exclusive_executor_resource: ruby-install_{{$RUBY}}
+    timeout: 20 Minutes
+    body: cider-ci_v4/bin/bundle
+
+  test:
+    start_when:
+      bundle has passed:
+        script_key: bundle

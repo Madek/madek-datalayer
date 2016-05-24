@@ -1,0 +1,68 @@
+jobs:
+
+  tests:
+
+    name: Tests
+
+    description: |
+      Run all specs.
+
+    priority: 1
+
+    run_when:
+      any branch matches:
+        type: branch
+        include_match: ^.+$
+
+    context:
+
+      name: Tests
+
+      generate_tasks:
+        include_match: spec/.*_spec.rb
+
+      tasks:
+        spec/models/media_entry/combined_filter_spec.rb: {priority: 1}
+
+      script_defaults:
+        template_environment_variables: true
+
+      task_defaults:
+
+        include:
+          - cider-ci_v4/task_components/bundle.yml
+          - cider-ci_v4/task_components/pg_rails.yml
+
+        eager_trials: 1
+        max_trials: 1
+        dispatch_storm_delay_duration: 1 Second
+
+        environment_variables:
+          RUBY_ENGINE: ruby
+          RUBY_VERSION: 2.2.4
+          RAILS_ENV: test
+          LANG: "en_US.UTF-8"
+
+        git_options:
+          submodules:
+            include_match: ^.*$
+
+        trial_attachments:
+          logs:
+            content_type: text/plain
+            include_match: '\.log$'
+          config files:
+            content_type: text/yaml
+            include_match: 'config\/.*\.ya?ml$'
+
+        traits:
+          ImageMagick: true
+          nodejs: true
+
+        scripts:
+
+          test:
+            body: |
+              set -eux
+              export PATH=~/.rubies/$RUBY/bin:$PATH
+              bundle exec rspec $CIDER_CI_TASK_FILE

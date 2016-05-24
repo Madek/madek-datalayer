@@ -1,0 +1,27 @@
+jobs:
+  all-tests:
+    name: All Tests
+    description: |
+      This job depends on all other tests and checks
+      and it will pass if and only if all dependencies have passed.
+    depends_on:
+      test:
+        type: job
+        job_key: tests
+        states: [passed]
+      code-checks:
+        type: job
+        job_key: code-checks
+        states: [passed]
+    run_when:
+      any branch matches:
+        type: branch
+        include_match: ^.+$
+    context:
+      task: |
+        echo 'Yay, all dependencies have passed!'
+        exit 0
+
+include:
+  - cider-ci_v4/jobs/code-checks.yml
+  - cider-ci_v4/jobs/tests.yml

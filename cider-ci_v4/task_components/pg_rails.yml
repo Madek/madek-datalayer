@@ -1,0 +1,48 @@
+traits:
+  Ruby: true
+  PostgreSQL: true
+
+scripts:
+
+  configure-database:
+    body: |
+      #!/usr/bin/env ruby
+      require 'yaml'
+      config = \
+        { 'test' =>
+          { 'adapter' => 'postgresql',
+            'encoding' => 'unicode',
+            'host' => 'localhost',
+            'pool' => 3,
+            'username' => ENV['PGUSER'],
+            'password' =>  ENV['PGPASSWORD'],
+            'database' => "test_#{ENV['CIDER_CI_TRIAL_ID']}"}}
+      File.open('config/database.yml','w') { |file| file.write config.to_yaml }
+
+  create-database:
+    body: |
+      #!/usr/bin/env bash
+      set -eux
+      createdb "test_${CIDER_CI_TRIAL_ID}"
+      psql -d "test_${CIDER_CI_TRIAL_ID}" -f db/structure.sql
+
+
+
+  test:
+    start_when:
+      database has been created:
+        script_key: create-database
+      database has been configured:
+        script_key: configure-database
+
+  delete-database:
+    body: |
+      #!/usr/bin/env bash
+      set -eux
+      dropdb "test_${CIDER_CI_TRIAL_ID}"
+    start_when:
+      test is in termial state:
+        script_key: test
+        states: [aborted, passed, failed, skipped]
+
+
