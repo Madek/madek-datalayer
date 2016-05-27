@@ -7,7 +7,7 @@ FactoryGirl.define do
                                  '_' + SecureRandom.uuid.first(8) + '@')
     end
     login { Faker::Internet.user_name + (SecureRandom.uuid.first 8) }
-    usage_terms_accepted_at { Time.now }
+    accepted_usage_terms { UsageTerms.most_recent or create(:usage_terms) }
     password { SecureRandom.uuid }
   end
 
@@ -18,7 +18,7 @@ FactoryGirl.define do
                                  '_' + SecureRandom.uuid.first(8) + '@')
     end
     login { Faker::Internet.user_name + (SecureRandom.uuid.first 8) }
-    usage_terms_accepted_at { Time.now }
+    accepted_usage_terms { UsageTerms.most_recent or create(:usage_terms) }
     password { SecureRandom.uuid }
     admin { FactoryGirl.create :admin }
   end

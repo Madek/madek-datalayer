@@ -51,6 +51,14 @@ module Madek
       self.table_name = :userpermissions
     end
 
+    class ::MigrationUser < ActiveRecord::Base
+      self.table_name = :users
+    end
+
+    class ::MigrationUsageTerms < ActiveRecord::Base
+      self.table_name = :usage_terms
+    end
+
     class ::MigrationMetaDatum < ActiveRecord::Base
       self.table_name = 'meta_data'
       belongs_to :media_resource, class_name: '::MigrationMediaResource', foreign_key: :media_resource_id
