@@ -31,7 +31,7 @@ jobs:
 
         include:
           - cider-ci_v4/task_components/bundle.yml
-          - cider-ci_v4/task_components/pg_rails.yml
+          - cider-ci_v4/task_components/database.yml
 
         eager_trials: 1
         max_trials: 1
@@ -41,6 +41,7 @@ jobs:
           RUBY_ENGINE: ruby
           RUBY_VERSION: 2.2.4
           RAILS_ENV: test
+          DATABASE: madek_datalayer_test_{{CIDER_CI_TRIAL_ID}}
           LANG: "en_US.UTF-8"
 
         git_options:

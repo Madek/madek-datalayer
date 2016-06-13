@@ -16,17 +16,15 @@ scripts:
             'pool' => 3,
             'username' => ENV['PGUSER'],
             'password' =>  ENV['PGPASSWORD'],
-            'database' => "test_#{ENV['CIDER_CI_TRIAL_ID']}"}}
+            'database' => ENV['DATABASE']}}
       File.open('config/database.yml','w') { |file| file.write config.to_yaml }
 
   create-database:
     body: |
       #!/usr/bin/env bash
       set -eux
-      createdb "test_${CIDER_CI_TRIAL_ID}"
-      psql -d "test_${CIDER_CI_TRIAL_ID}" -f db/structure.sql
-
-
+      createdb "$DATABASE"
+      psql -d "$DATABASE" -f db/structure.sql
 
   test:
     start_when:
@@ -39,7 +37,7 @@ scripts:
     body: |
       #!/usr/bin/env bash
       set -eux
-      dropdb "test_${CIDER_CI_TRIAL_ID}"
+      dropdb "$DATABASE"
     start_when:
       test is in termial state:
         script_key: test
