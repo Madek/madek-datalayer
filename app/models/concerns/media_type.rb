@@ -1,3 +1,6 @@
+# NOTE: Careful when touching this – it sets a field in the DB.
+#       Any changes here don't change existing data, migration needed!
+
 module Concerns
   module MediaType
     extend ActiveSupport::Concern
@@ -9,13 +12,12 @@ module Concerns
         'image'
       when /^video/
         'video'
-      # TODO: other media types
-      # when /^audio/
-      #   'audio'
-      # when /^text/
-      #   'document'
-      # when /^application/
-      #   'document'
+      when /^audio/
+        'audio'
+      when /^text/
+        'document'
+      when /^application/
+        'document'
       else
         'other'
       end
