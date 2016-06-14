@@ -546,7 +546,6 @@ CREATE TABLE app_settings (
     id integer DEFAULT 0 NOT NULL,
     featured_set_id uuid,
     splashscreen_slideshow_set_id uuid,
-    catalog_set_id uuid,
     site_title character varying DEFAULT 'Media Archive'::character varying NOT NULL,
     support_url character varying,
     welcome_title character varying DEFAULT 'Powerful Global Information System'::character varying NOT NULL,
@@ -562,6 +561,11 @@ CREATE TABLE app_settings (
     contexts_for_list_details text[] DEFAULT '{}'::text[],
     contexts_for_validation text[] DEFAULT '{}'::text[],
     contexts_for_dynamic_filters text[] DEFAULT '{}'::text[],
+    catalog_title character varying DEFAULT 'Catalog'::character varying NOT NULL,
+    catalog_subtitle character varying DEFAULT 'Browse the catalog'::character varying NOT NULL,
+    catalog_context_keys character varying[] DEFAULT '{madek_core:keywords}'::character varying[] NOT NULL,
+    featured_set_title character varying DEFAULT 'Featured Content'::character varying,
+    featured_set_subtitle character varying DEFAULT 'Highlights from this Archive'::character varying,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -3283,14 +3287,6 @@ ALTER TABLE ONLY admins
 
 
 --
--- Name: app-settings_catalog-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY app_settings
-    ADD CONSTRAINT "app-settings_catalog-sets_fkey" FOREIGN KEY (catalog_set_id) REFERENCES media_resources(id);
-
-
---
 -- Name: app-settings_featured-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4283,6 +4279,8 @@ INSERT INTO schema_migrations (version) VALUES ('202');
 INSERT INTO schema_migrations (version) VALUES ('203');
 
 INSERT INTO schema_migrations (version) VALUES ('204');
+
+INSERT INTO schema_migrations (version) VALUES ('205');
 
 INSERT INTO schema_migrations (version) VALUES ('21');
 

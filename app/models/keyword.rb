@@ -16,4 +16,12 @@ class Keyword < ActiveRecord::Base
     joins(:meta_key)
       .where('meta_keys.vocabulary_id IN (?)', viewable_vocabs.map(&:id))
   end
+
+  def self.with_usage_count
+    select('keywords.*, count(keywords.id) AS usage_count')
+      .joins('INNER JOIN meta_data_keywords ' \
+             'ON meta_data_keywords.keyword_id = keywords.id')
+      .group('keywords.id')
+      .order('usage_count DESC')
+  end
 end

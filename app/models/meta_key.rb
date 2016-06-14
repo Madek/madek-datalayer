@@ -6,6 +6,7 @@ class MetaKey < ActiveRecord::Base
   has_many :meta_data, dependent: :destroy
   has_many :keywords
   belongs_to :vocabulary
+  has_many :context_keys
 
   scope :order_by_name_part, lambda {
     reorder("substring(meta_keys.id FROM ':(.*)$') ASC, meta_keys.id")
