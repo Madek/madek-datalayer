@@ -24,6 +24,10 @@ jobs:
         eager_trials: 1
         max_trials: 2
 
+        git_options:
+          submodules:
+            include_match: ^.*$
+            exclude_match: ^.*vendor\/.*$
 
         include: cider-ci_v4/task_components/bundle.yml
 
