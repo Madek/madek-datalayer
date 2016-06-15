@@ -5,18 +5,19 @@ traits:
 scripts:
 
   configure-database:
+    # NOTE: also sets up 'production', needed for asset precompilation
     body: |
       #!/usr/bin/env ruby
       require 'yaml'
-      config = \
-        { 'test' =>
-          { 'adapter' => 'postgresql',
-            'encoding' => 'unicode',
-            'host' => 'localhost',
-            'pool' => 3,
-            'username' => ENV['PGUSER'],
-            'password' =>  ENV['PGPASSWORD'],
-            'database' => ENV['DATABASE']}}
+      db_config = {
+        'adapter' => 'postgresql',
+        'encoding' => 'unicode',
+        'host' => 'localhost',
+        'pool' => 10,
+        'username' => ENV['PGUSER'],
+        'password' =>  ENV['PGPASSWORD'],
+        'database' => ENV['DATABASE']}
+      config = { 'test' => db_config, 'production' => db_config }
       File.open('config/database.yml','w') { |file| file.write config.to_yaml }
 
   create-database:
@@ -42,5 +43,3 @@ scripts:
       test is in termial state:
         script_key: test
         states: [aborted, passed, failed, skipped]
-
-
