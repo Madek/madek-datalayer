@@ -1,0 +1,99 @@
+---
+madek_core:authors:
+  is_extensible_list: false
+  meta_datum_object_type: MetaDatum::People
+  keywords_alphabetical_order: true
+  label: Autoren
+  description:
+  hint:
+  position: 0
+  is_enabled_for_media_entries: true
+  is_enabled_for_collections: false
+  is_enabled_for_filter_sets: false
+  vocabulary_id: madek_core
+  is_extensible: false
+  admin_comment:
+madek_core:copyright_notice:
+  is_extensible_list: false
+  meta_datum_object_type: MetaDatum::Text
+  keywords_alphabetical_order: true
+  label: Rechteinhaber
+  description:
+  hint:
+  position: 0
+  is_enabled_for_media_entries: true
+  is_enabled_for_collections: false
+  is_enabled_for_filter_sets: false
+  vocabulary_id: madek_core
+  is_extensible: false
+  admin_comment:
+madek_core:description:
+  is_extensible_list: false
+  meta_datum_object_type: MetaDatum::Text
+  keywords_alphabetical_order: true
+  label: Description
+  description:
+  hint:
+  position: 0
+  is_enabled_for_media_entries: true
+  is_enabled_for_collections: true
+  is_enabled_for_filter_sets: true
+  vocabulary_id: madek_core
+  is_extensible: false
+  admin_comment:
+madek_core:keywords:
+  is_extensible_list: false
+  meta_datum_object_type: MetaDatum::Keywords
+  keywords_alphabetical_order: true
+  label: Schlagworte
+  description:
+  hint:
+  position: 0
+  is_enabled_for_media_entries: true
+  is_enabled_for_collections: true
+  is_enabled_for_filter_sets: true
+  vocabulary_id: madek_core
+  is_extensible: false
+  admin_comment:
+madek_core:portrayed_object_date:
+  is_extensible_list: false
+  meta_datum_object_type: MetaDatum::TextDate
+  keywords_alphabetical_order: true
+  label: Datierung
+  description:
+  hint:
+  position: 0
+  is_enabled_for_media_entries: true
+  is_enabled_for_collections: false
+  is_enabled_for_filter_sets: false
+  vocabulary_id: madek_core
+  is_extensible: false
+  admin_comment:
+madek_core:subtitle:
+  is_extensible_list: false
+  meta_datum_object_type: MetaDatum::Text
+  keywords_alphabetical_order: true
+  label: Subtitle
+  description:
+  hint:
+  position: 0
+  is_enabled_for_media_entries: true
+  is_enabled_for_collections: true
+  is_enabled_for_filter_sets: true
+  vocabulary_id: madek_core
+  is_extensible: false
+  admin_comment:
+madek_core:title:
+  is_extensible_list: false
+  meta_datum_object_type: MetaDatum::Text
+  keywords_alphabetical_order: true
+  label: Title
+  description:
+  hint:
+  position: 0
+  is_enabled_for_media_entries: true
+  is_enabled_for_collections: true
+  is_enabled_for_filter_sets: true
+  vocabulary_id: madek_core
+  is_extensible: false
+  admin_comment:
