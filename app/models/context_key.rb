@@ -4,15 +4,18 @@ class ContextKey < ActiveRecord::Base
   belongs_to :context, foreign_key: :context_id
   belongs_to :meta_key
 
-  # TODO: migrate this to bool, db default instead of method:
-  enum input_type: [:text_field, :text_area]
+  enum text_element: {
+    input: 'input',
+    textarea: 'textarea'
+  }
+
   def multiline?
     return nil unless self.meta_key_string?
     definition = self
     case
     # explicit config:
-    when !definition.input_type.nil?
-      definition.input_type != 'text_area' ? false : true
+    when !definition.text_element.nil?
+      definition.text_element != 'text_area' ? false : true
     # otherwise implicit config:
     when !definition.length_max.nil?
       definition.length_max >= 255 ? true : false

@@ -72,6 +72,16 @@ COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UU
 SET search_path = public, pg_catalog;
 
 --
+-- Name: text_element; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE text_element AS ENUM (
+    'input',
+    'textarea'
+);
+
+
+--
 -- Name: check_collection_cover_uniqueness(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -681,14 +691,14 @@ CREATE TABLE context_keys (
     label text DEFAULT ''::text,
     context_id character varying NOT NULL,
     meta_key_id character varying NOT NULL,
-    is_required boolean DEFAULT false,
+    is_required boolean DEFAULT false NOT NULL,
     length_max integer,
     length_min integer,
-    "position" integer NOT NULL,
-    input_type integer,
+    "position" integer DEFAULT 0 NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    admin_comment text
+    admin_comment text,
+    text_element text_element
 );
 
 
@@ -1149,18 +1159,18 @@ CREATE TABLE meta_data_people (
 
 CREATE TABLE meta_keys (
     id character varying NOT NULL,
-    is_extensible_list boolean,
+    is_extensible_list boolean DEFAULT false NOT NULL,
     meta_datum_object_type text DEFAULT 'MetaDatum::Text'::text NOT NULL,
-    keywords_alphabetical_order boolean DEFAULT true,
+    keywords_alphabetical_order boolean DEFAULT true NOT NULL,
     label text,
     description text,
     hint text,
-    "position" integer,
+    "position" integer DEFAULT 0 NOT NULL,
     is_enabled_for_media_entries boolean DEFAULT false NOT NULL,
     is_enabled_for_collections boolean DEFAULT false NOT NULL,
     is_enabled_for_filter_sets boolean DEFAULT false NOT NULL,
     vocabulary_id character varying NOT NULL,
-    is_extensible boolean DEFAULT false,
+    is_extensible boolean DEFAULT false NOT NULL,
     admin_comment text,
     CONSTRAINT check_valid_meta_datum_object_type CHECK ((meta_datum_object_type = ANY (ARRAY['MetaDatum::Licenses'::text, 'MetaDatum::Text'::text, 'MetaDatum::TextDate'::text, 'MetaDatum::Groups'::text, 'MetaDatum::Keywords'::text, 'MetaDatum::Vocables'::text, 'MetaDatum::People'::text, 'MetaDatum::Users'::text]))),
     CONSTRAINT meta_key_id_chars CHECK (((id)::text ~* '^[a-z0-9\-\_\:]+$'::text)),
@@ -4281,6 +4291,8 @@ INSERT INTO schema_migrations (version) VALUES ('203');
 INSERT INTO schema_migrations (version) VALUES ('204');
 
 INSERT INTO schema_migrations (version) VALUES ('205');
+
+INSERT INTO schema_migrations (version) VALUES ('206');
 
 INSERT INTO schema_migrations (version) VALUES ('21');
 
