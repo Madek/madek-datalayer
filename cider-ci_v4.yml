@@ -1,15 +1,16 @@
 jobs:
+
   all-tests:
     name: All Tests
     description: |
       This job depends on all other tests and checks
       and it will pass if and only if all dependencies have passed.
     depends_on:
-      test:
+      rspec tests:
         type: job
-        job_key: tests
+        job_key: rspec-tests
         states: [passed]
-      code-checks:
+      code checks:
         type: job
         job_key: code-checks
         states: [passed]
@@ -22,6 +23,25 @@ jobs:
         echo 'Yay, all dependencies have passed!'
         exit 0
 
-include:
-  - cider-ci_v4/jobs/code-checks.yml
-  - cider-ci_v4/jobs/tests.yml
+  code-checks:
+    name: Code-Checks
+    description: |
+      Run static checks and metrics: complexity, duplication, and code format.
+    priority: 1
+    run_when:
+      'any branch matches':
+        type: branch
+        include_match: ^.+$
+    context:
+      include: cider-ci_v4/contexts/code-checks.yml
+
+  rspec-tests:
+    name: RSpec Tests
+    description: Run all specs.
+    priority: 1
+    run_when:
+      any branch matches:
+        type: branch
+        include_match: ^.+$
+    context:
+      include: cider-ci_v4/contexts/rspec.yml
