@@ -6,6 +6,7 @@ require 'spec_helper'
   'entrusted_to_user.rb',
   'favored_by_user.rb',
   'favoritable.rb',
+  'find_by_custom_id.rb',
   'in_responsibility_of_user.rb',
   'meta_data.rb',
   'permission_types_for_user.rb',
@@ -62,4 +63,6 @@ describe FilterSet do
     let(:irrelevant_group_perm_types) \
       { [:edit_metadata_and_filter, :edit_permissions] }
   end
+
+  it_can 'be found via custom id'
 end

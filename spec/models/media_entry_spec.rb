@@ -6,6 +6,7 @@ require 'spec_helper'
   'entrusted_to_user.rb',
   'favored_by_user.rb',
   'favoritable.rb',
+  'find_by_custom_id.rb',
   'in_responsibility_of_user.rb',
   'meta_data.rb',
   'permission_types_for_user.rb',
@@ -78,4 +79,6 @@ describe MediaEntry do
     media_entry.reload
     expect(media_entry.is_published?).to be false
   end
+
+  it_can 'be found via custom id'
 end

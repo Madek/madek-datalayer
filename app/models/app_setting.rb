@@ -43,7 +43,7 @@ class AppSetting < ActiveRecord::Base
   end
 
   def featured_set_existence
-    unless Collection.find_by(id: featured_set_id)
+    unless Collection.find_by_id(featured_set_id)
       errors.add(
         :base,
         "The set with a given ID: #{featured_set_id} doesn't exist!"

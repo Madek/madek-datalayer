@@ -10,6 +10,28 @@ module Concerns
         def to_param
           custom_urls.find_by(is_primary: true).try(:to_param) or super
         end
+
+        # this provides customized `find` and `find_by_id` methods
+        # on the model class itself:
+        # eg. Collection.find('custom_id or uuid')
+        # it also prevents the use of `find_by` and `find_by!`
+        extend Concerns::MediaResources::CustomUrls::Finders
+        class << self
+          alias_method_chain :find, :custom_id
+        end
+
+        # this provides customized `find` and `find_by_id` methods
+        # on the model relation, so that they work also when chained
+        # after other AR methods:
+        # eg. Collection
+        #       .joins(:custom_urls)
+        #       .where(custom_urls: { is_primary: true })
+        #       .find('custom_id')
+        # it also prevents the use of `find_by` and `find_by!`
+        self::ActiveRecord_Relation.class_eval do
+          include Concerns::MediaResources::CustomUrls::Finders
+          alias_method_chain :find, :custom_id
+        end
       end
     end
   end
