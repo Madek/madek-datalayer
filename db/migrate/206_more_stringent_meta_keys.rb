@@ -1,7 +1,9 @@
 class MoreStringentMetaKeys < ActiveRecord::Migration
   def change
+
     reversible do |dir|
       dir.up do
+
 
         ActiveRecord::Base.connection.execute <<-SQL.strip_heredoc
           SET session_replication_role = replica;
@@ -40,6 +42,8 @@ class MoreStringentMetaKeys < ActiveRecord::Migration
           CREATE TYPE text_element AS ENUM ('input', 'textarea')
         SQL
         add_column :context_keys, :text_element, :text_element, default: nil
+
+        ContextKey.reset_column_information
 
         ContextKey.find_each do |ck|
           ck.update_attributes! text_element: \
