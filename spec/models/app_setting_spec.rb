@@ -3,6 +3,7 @@ require 'spec_helper'
 describe AppSetting do
   let(:context) { create :context }
   let(:app_setting) { AppSetting.first.presence || create(:app_setting) }
+  let(:random_uuid) { SecureRandom.uuid }
   before do
     app_setting.assign_attributes(
       { context_for_show_summary: context.id }.tap do |hash|
@@ -74,6 +75,24 @@ describe AppSetting do
         expect(app_setting.contexts_for_list_details).to eq [valid_context]
         expect(app_setting.contexts_for_validation).to eq [valid_context]
         expect(app_setting.contexts_for_dynamic_filters).to eq [valid_context]
+      end
+    end
+  end
+
+  describe 'featured set id validation' do
+    context 'when set with the id exists' do
+      it 'is valid' do
+        app_setting.featured_set_id = create(:collection).id
+        expect(app_setting).to be_valid
+      end
+    end
+
+    context 'when set with the id does not exist' do
+      it 'is not valid' do
+        app_setting.featured_set_id = random_uuid
+        expect(app_setting).not_to be_valid
+        expect(app_setting.errors.messages[:base]).to eq \
+          ["The set with a given ID: #{random_uuid} doesn't exist!"]
       end
     end
   end

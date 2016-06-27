@@ -1,4 +1,8 @@
 class AppSetting < ActiveRecord::Base
+  validate :featured_set_existence, if: proc { |record|
+    record.featured_set_id.present?
+  }
+
   def uses_context_as(context_id = nil)
     used_as = []
     attrs = attributes.select do |attr|
@@ -36,5 +40,14 @@ class AppSetting < ActiveRecord::Base
     attributes[attr].respond_to?(:include?) && \
       attributes[attr].include?(context_id) || \
       attributes[attr] == context_id
+  end
+
+  def featured_set_existence
+    unless Collection.find_by(id: featured_set_id)
+      errors.add(
+        :base,
+        "The set with a given ID: #{featured_set_id} doesn't exist!"
+      )
+    end
   end
 end
