@@ -28,7 +28,7 @@ scripts:
       fi
 
       DIGEST=$(git ls-tree HEAD --\
-        cider-ci_v3.yml cider-ci_v4 Gemfile.lock \
+        cider-ci.yml cider-ci Gemfile.lock \
         | openssl dgst -sha1 | cut -d ' ' -f 2)
 
       DIGEST=$(echo "$DIGEST $PATH" \

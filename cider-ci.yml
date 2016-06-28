@@ -31,7 +31,7 @@ jobs:
     priority: 1
     run_when: *DEFAULT_TRIGGERS
     context:
-      include: cider-ci_v4/contexts/code-checks.yml
+      include: cider-ci/contexts/code-checks.yml
 
   rspec-tests:
     name: RSpec Tests
@@ -39,7 +39,7 @@ jobs:
     priority: 1
     run_when: *DEFAULT_TRIGGERS
     context:
-      include: cider-ci_v4/contexts/rspec.yml
+      include: cider-ci/contexts/rspec.yml
 
   meta-checks:
     name: Meta
@@ -49,7 +49,7 @@ jobs:
     priority: 3 # "I don't always run this, but when I do, it should be fast"
     run_when: *DEFAULT_TRIGGERS
     context:
-      include: cider-ci_v4/contexts/meta-checks.yml
+      include: cider-ci/contexts/meta-checks.yml
       task_defaults:
         environment_variables:
           GIT_LINEAR_HISTORY_CHECK_START_SHA: ec23e77651c3b80d4343ead339514512aff946c1

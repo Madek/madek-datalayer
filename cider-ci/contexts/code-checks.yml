@@ -8,7 +8,7 @@ task_defaults:
       include_match: ^.*$
       exclude_match: ^.*vendor\/.*$
 
-  include: cider-ci_v4/task_components/bundle.yml
+  include: cider-ci/task_components/bundle.yml
 
   environment_variables:
     RAILS_ENV: test
