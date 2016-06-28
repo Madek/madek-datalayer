@@ -15,7 +15,7 @@ jobs:
         type: job
         job_key: code-checks
         states: [passed]
-    run_when:
+    run_when: &DEFAULT_TRIGGERS
       any branch matches:
         type: branch
         include_match: ^.+$
@@ -29,10 +29,7 @@ jobs:
     description: |
       Run static checks and metrics: complexity, duplication, and code format.
     priority: 1
-    run_when:
-      'any branch matches':
-        type: branch
-        include_match: ^.+$
+    run_when: *DEFAULT_TRIGGERS
     context:
       include: cider-ci_v4/contexts/code-checks.yml
 
@@ -40,9 +37,33 @@ jobs:
     name: RSpec Tests
     description: Run all specs.
     priority: 1
-    run_when:
-      any branch matches:
-        type: branch
-        include_match: ^.+$
+    run_when: *DEFAULT_TRIGGERS
     context:
       include: cider-ci_v4/contexts/rspec.yml
+
+  meta-checks:
+    name: Meta
+    description: |
+      Tasks that rely on external (out-of-repository) state.
+      Their state is not as fixed as in the other Jobs, so it might change over time.
+    priority: 3 # "I don't always run this, but when I do, it should be fast"
+    run_when: *DEFAULT_TRIGGERS
+    context:
+      include: cider-ci_v4/contexts/meta-checks.yml
+      task_defaults:
+        environment_variables:
+          GIT_LINEAR_HISTORY_CHECK_START_SHA: ec23e77651c3b80d4343ead339514512aff946c1
+
+  good-to-merge:
+    name: "Good To Merge"
+    description: |
+      This job depends on all jobs that need to pass for "Delivery".
+      It is depended upon by GitHub's branch protection (for `master`)!
+    priority: 999 # "empty" job = high priority
+    context:
+      task: "echo '✔︎ All dependencies have passed' ; exit 0"
+    run_when: *DEFAULT_TRIGGERS
+    depends_on:
+      all-tests: {job_key: all-tests, type: job, states: [passed]}
+      meta-checks: {job_key: meta-checks, type: job, states: [passed]}
+
