@@ -1060,25 +1060,6 @@ CREATE TABLE media_files (
 
 
 --
--- Name: media_resources; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE media_resources (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    previous_id integer,
-    download boolean DEFAULT false NOT NULL,
-    edit boolean DEFAULT false NOT NULL,
-    manage boolean DEFAULT false NOT NULL,
-    view boolean DEFAULT false NOT NULL,
-    type character varying,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT edit_on_publicpermissions_is_false CHECK ((edit = false)),
-    CONSTRAINT manage_on_publicpermissions_is_false CHECK ((manage = false))
-);
-
-
---
 -- Name: meta_data; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1620,14 +1601,6 @@ ALTER TABLE ONLY media_entry_user_permissions
 
 ALTER TABLE ONLY media_files
     ADD CONSTRAINT media_files_pkey PRIMARY KEY (id);
-
-
---
--- Name: media_resources_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY media_resources
-    ADD CONSTRAINT media_resources_pkey PRIMARY KEY (id);
 
 
 --
@@ -2589,34 +2562,6 @@ CREATE INDEX index_media_files_on_media_type ON media_files USING btree (media_t
 
 
 --
--- Name: index_media_resources_on_created_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_media_resources_on_created_at ON media_resources USING btree (created_at);
-
-
---
--- Name: index_media_resources_on_previous_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_media_resources_on_previous_id ON media_resources USING btree (previous_id);
-
-
---
--- Name: index_media_resources_on_type; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_media_resources_on_type ON media_resources USING btree (type);
-
-
---
--- Name: index_media_resources_on_updated_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_media_resources_on_updated_at ON media_resources USING btree (updated_at);
-
-
---
 -- Name: index_meta_data_keywords_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3240,13 +3185,6 @@ CREATE TRIGGER update_updated_at_column_of_media_files BEFORE UPDATE ON media_fi
 
 
 --
--- Name: update_updated_at_column_of_media_resources; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_media_resources BEFORE UPDATE ON media_resources FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
-
-
---
 -- Name: update_updated_at_column_of_meta_data_keywords; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -3294,22 +3232,6 @@ CREATE TRIGGER update_updated_at_column_of_zencoder_jobs BEFORE UPDATE ON zencod
 
 ALTER TABLE ONLY admins
     ADD CONSTRAINT admins_users_fkey FOREIGN KEY (user_id) REFERENCES users(id);
-
-
---
--- Name: app-settings_featured-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY app_settings
-    ADD CONSTRAINT "app-settings_featured-sets_fkey" FOREIGN KEY (featured_set_id) REFERENCES media_resources(id);
-
-
---
--- Name: app-settings_splashscreen-slideshow-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY app_settings
-    ADD CONSTRAINT "app-settings_splashscreen-slideshow-sets_fkey" FOREIGN KEY (splashscreen_slideshow_set_id) REFERENCES media_resources(id);
 
 
 --
@@ -3694,14 +3616,6 @@ ALTER TABLE ONLY meta_data_licenses
 
 ALTER TABLE ONLY context_keys
     ADD CONSTRAINT fk_rails_b297363c89 FOREIGN KEY (context_id) REFERENCES contexts(id);
-
-
---
--- Name: full-texts_media-resources_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY full_texts
-    ADD CONSTRAINT "full-texts_media-resources_fkey" FOREIGN KEY (media_resource_id) REFERENCES media_resources(id) ON DELETE CASCADE;
 
 
 --
@@ -4293,6 +4207,8 @@ INSERT INTO schema_migrations (version) VALUES ('204');
 INSERT INTO schema_migrations (version) VALUES ('205');
 
 INSERT INTO schema_migrations (version) VALUES ('206');
+
+INSERT INTO schema_migrations (version) VALUES ('207');
 
 INSERT INTO schema_migrations (version) VALUES ('21');
 
