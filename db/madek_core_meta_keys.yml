@@ -42,7 +42,7 @@ madek_core:description:
   is_extensible: false
   admin_comment:
 madek_core:keywords:
-  is_extensible_list: false
+  is_extensible_list: true
   meta_datum_object_type: MetaDatum::Keywords
   keywords_alphabetical_order: true
   label: Schlagworte
