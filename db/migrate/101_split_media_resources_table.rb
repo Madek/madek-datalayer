@@ -2,6 +2,7 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
   include Madek::MigrationHelper
   include Madek::MediaResourceMigrationModels
 
+
   def change
     ###########################################################################
     ### media_entries #########################################################
@@ -69,13 +70,25 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
     end
     reversible { |d|d.up { set_timestamps_defaults :collections } }
 
+    execute <<-SQL.strip_heredoc
+      CREATE TYPE collection_layout AS ENUM ( #{COLLECTION_LAYOUT_VALUES.map{|x| "'#{x}'"}.join(', ')} );
+      CREATE TYPE collection_sorting AS ENUM ( #{COLLECTION_SORTING_VALUES.map{|x| "'#{x}'"}.join(', ')} );
+    SQL
+
+    add_column :collections, :layout, :collection_layout, null: false, default: :grid
+    add_column :collections, :sorting, :collection_sorting, null: false, default: :created_at
+
+    ::MigrationCollection.reset_column_information
+
     reversible do |dir|
       dir.up do
         ::MigrationMediaResource.where(type: 'MediaSet').find_each do |mrs|
           ::MigrationCollection.create! id: mrs.id,
             get_metadata_and_previews: mrs.view,
             created_at: mrs.created_at,
-            updated_at: mrs.updated_at
+            updated_at: mrs.updated_at,
+            layout: (mrs.settings[:layout].try(:to_s).presence || 'grid'),
+            sorting: (mrs.settings[:sorting].try(:to_s).presence || 'created_at')
         end
       end
     end

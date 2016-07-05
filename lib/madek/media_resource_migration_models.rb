@@ -1,6 +1,9 @@
 module Madek
   module MediaResourceMigrationModels
 
+    COLLECTION_LAYOUT_VALUES = %w(grid list miniature tiles)
+    COLLECTION_SORTING_VALUES = %w(author created_at title updated_at)
+
     class ::MigrationMediaResource < ActiveRecord::Base
       self.table_name = 'media_resources'
       self.inheritance_column = nil
@@ -24,6 +27,9 @@ module Madek
     end
 
     class ::MigrationCollection < ActiveRecord::Base
+      enum layout: COLLECTION_LAYOUT_VALUES.map{|k| [k,k]}.to_h
+      enum sorting:  COLLECTION_SORTING_VALUES.map{|k| [k,k]}.to_h
+
       self.table_name = 'collections'
     end
 
