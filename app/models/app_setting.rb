@@ -18,11 +18,13 @@ class AppSetting < ActiveRecord::Base
   end
 
   %i(
-    context_for_show_summary
-    contexts_for_show_extra
+    context_for_entry_summary
+    context_for_collection_summary
+    contexts_for_entry_extra
     contexts_for_list_details
     contexts_for_validation
     contexts_for_dynamic_filters
+    contexts_for_resource_edit
   ).each do |context_field|
     define_method context_field do
       ids = self[context_field]

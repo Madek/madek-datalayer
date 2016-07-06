@@ -2,16 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.1
--- Dumped by pg_dump version 9.5.1
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-SET row_security = off;
 
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
@@ -545,7 +541,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: admins; Type: TABLE; Schema: public; Owner: -
+-- Name: admins; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE admins (
@@ -557,7 +553,7 @@ CREATE TABLE admins (
 
 
 --
--- Name: api_clients; Type: TABLE; Schema: public; Owner: -
+-- Name: api_clients; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE api_clients (
@@ -573,7 +569,7 @@ CREATE TABLE api_clients (
 
 
 --
--- Name: app_settings; Type: TABLE; Schema: public; Owner: -
+-- Name: app_settings; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE app_settings (
@@ -590,8 +586,7 @@ CREATE TABLE app_settings (
     brand_logo_url character varying DEFAULT '/assets/inserts/image-logo-zhdk.png'::character varying NOT NULL,
     brand_text character varying DEFAULT 'ACME, Inc.'::character varying NOT NULL,
     sitemap jsonb DEFAULT '[{"Medienarchiv ZHdK": "http://medienarchiv.zhdk.ch"}, {"Madek Project on Github": "https://github.com/Madek"}]'::jsonb NOT NULL,
-    context_for_show_summary character varying,
-    contexts_for_show_extra text[] DEFAULT '{}'::text[],
+    contexts_for_entry_extra text[] DEFAULT '{}'::text[],
     contexts_for_list_details text[] DEFAULT '{}'::text[],
     contexts_for_validation text[] DEFAULT '{}'::text[],
     contexts_for_dynamic_filters text[] DEFAULT '{}'::text[],
@@ -600,12 +595,15 @@ CREATE TABLE app_settings (
     catalog_context_keys character varying[] DEFAULT '{madek_core:keywords}'::character varying[] NOT NULL,
     featured_set_title character varying DEFAULT 'Featured Content'::character varying,
     featured_set_subtitle character varying DEFAULT 'Highlights from this Archive'::character varying,
+    contexts_for_resource_edit text[] DEFAULT '{}'::text[],
+    context_for_entry_summary character varying,
+    context_for_collection_summary character varying,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
 
 --
--- Name: collection_api_client_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: collection_api_client_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE collection_api_client_permissions (
@@ -621,7 +619,7 @@ CREATE TABLE collection_api_client_permissions (
 
 
 --
--- Name: collection_collection_arcs; Type: TABLE; Schema: public; Owner: -
+-- Name: collection_collection_arcs; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE collection_collection_arcs (
@@ -633,7 +631,7 @@ CREATE TABLE collection_collection_arcs (
 
 
 --
--- Name: collection_filter_set_arcs; Type: TABLE; Schema: public; Owner: -
+-- Name: collection_filter_set_arcs; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE collection_filter_set_arcs (
@@ -645,7 +643,7 @@ CREATE TABLE collection_filter_set_arcs (
 
 
 --
--- Name: collection_group_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: collection_group_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE collection_group_permissions (
@@ -661,7 +659,7 @@ CREATE TABLE collection_group_permissions (
 
 
 --
--- Name: collection_media_entry_arcs; Type: TABLE; Schema: public; Owner: -
+-- Name: collection_media_entry_arcs; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE collection_media_entry_arcs (
@@ -674,7 +672,7 @@ CREATE TABLE collection_media_entry_arcs (
 
 
 --
--- Name: collection_user_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: collection_user_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE collection_user_permissions (
@@ -691,7 +689,7 @@ CREATE TABLE collection_user_permissions (
 
 
 --
--- Name: collections; Type: TABLE; Schema: public; Owner: -
+-- Name: collections; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE collections (
@@ -707,7 +705,7 @@ CREATE TABLE collections (
 
 
 --
--- Name: context_keys; Type: TABLE; Schema: public; Owner: -
+-- Name: context_keys; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE context_keys (
@@ -729,7 +727,7 @@ CREATE TABLE context_keys (
 
 
 --
--- Name: contexts; Type: TABLE; Schema: public; Owner: -
+-- Name: contexts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE contexts (
@@ -742,7 +740,7 @@ CREATE TABLE contexts (
 
 
 --
--- Name: custom_urls; Type: TABLE; Schema: public; Owner: -
+-- Name: custom_urls; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE custom_urls (
@@ -755,14 +753,14 @@ CREATE TABLE custom_urls (
     media_entry_id uuid,
     collection_id uuid,
     filter_set_id uuid,
-    CONSTRAINT custom_url_is_related CHECK ((((media_entry_id IS NULL) AND (collection_id IS NULL) AND (filter_set_id IS NOT NULL)) OR ((media_entry_id IS NULL) AND (collection_id IS NOT NULL) AND (filter_set_id IS NULL)) OR ((media_entry_id IS NOT NULL) AND (collection_id IS NULL) AND (filter_set_id IS NULL)))),
+    CONSTRAINT custom_url_is_related CHECK ((((((media_entry_id IS NULL) AND (collection_id IS NULL)) AND (filter_set_id IS NOT NULL)) OR (((media_entry_id IS NULL) AND (collection_id IS NOT NULL)) AND (filter_set_id IS NULL))) OR (((media_entry_id IS NOT NULL) AND (collection_id IS NULL)) AND (filter_set_id IS NULL)))),
     CONSTRAINT custom_urls_id_format CHECK (((id)::text ~ '^[a-z][a-z0-9\-\_]+$'::text)),
     CONSTRAINT custom_urls_id_is_not_uuid CHECK ((NOT ((id)::text ~* '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'::text)))
 );
 
 
 --
--- Name: edit_sessions; Type: TABLE; Schema: public; Owner: -
+-- Name: edit_sessions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE edit_sessions (
@@ -773,12 +771,12 @@ CREATE TABLE edit_sessions (
     media_entry_id uuid,
     collection_id uuid,
     filter_set_id uuid,
-    CONSTRAINT edit_sessions_is_related CHECK ((((media_entry_id IS NULL) AND (collection_id IS NULL) AND (filter_set_id IS NOT NULL)) OR ((media_entry_id IS NULL) AND (collection_id IS NOT NULL) AND (filter_set_id IS NULL)) OR ((media_entry_id IS NOT NULL) AND (collection_id IS NULL) AND (filter_set_id IS NULL))))
+    CONSTRAINT edit_sessions_is_related CHECK ((((((media_entry_id IS NULL) AND (collection_id IS NULL)) AND (filter_set_id IS NOT NULL)) OR (((media_entry_id IS NULL) AND (collection_id IS NOT NULL)) AND (filter_set_id IS NULL))) OR (((media_entry_id IS NOT NULL) AND (collection_id IS NULL)) AND (filter_set_id IS NULL))))
 );
 
 
 --
--- Name: favorite_collections; Type: TABLE; Schema: public; Owner: -
+-- Name: favorite_collections; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE favorite_collections (
@@ -790,7 +788,7 @@ CREATE TABLE favorite_collections (
 
 
 --
--- Name: favorite_filter_sets; Type: TABLE; Schema: public; Owner: -
+-- Name: favorite_filter_sets; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE favorite_filter_sets (
@@ -802,7 +800,7 @@ CREATE TABLE favorite_filter_sets (
 
 
 --
--- Name: favorite_media_entries; Type: TABLE; Schema: public; Owner: -
+-- Name: favorite_media_entries; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE favorite_media_entries (
@@ -814,7 +812,7 @@ CREATE TABLE favorite_media_entries (
 
 
 --
--- Name: filter_set_api_client_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: filter_set_api_client_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE filter_set_api_client_permissions (
@@ -830,7 +828,7 @@ CREATE TABLE filter_set_api_client_permissions (
 
 
 --
--- Name: filter_set_group_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: filter_set_group_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE filter_set_group_permissions (
@@ -845,7 +843,7 @@ CREATE TABLE filter_set_group_permissions (
 
 
 --
--- Name: filter_set_user_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: filter_set_user_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE filter_set_user_permissions (
@@ -862,7 +860,7 @@ CREATE TABLE filter_set_user_permissions (
 
 
 --
--- Name: filter_sets; Type: TABLE; Schema: public; Owner: -
+-- Name: filter_sets; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE filter_sets (
@@ -877,7 +875,7 @@ CREATE TABLE filter_sets (
 
 
 --
--- Name: full_texts; Type: TABLE; Schema: public; Owner: -
+-- Name: full_texts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE full_texts (
@@ -887,7 +885,7 @@ CREATE TABLE full_texts (
 
 
 --
--- Name: groups; Type: TABLE; Schema: public; Owner: -
+-- Name: groups; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE groups (
@@ -902,7 +900,7 @@ CREATE TABLE groups (
 
 
 --
--- Name: groups_users; Type: TABLE; Schema: public; Owner: -
+-- Name: groups_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE groups_users (
@@ -912,7 +910,7 @@ CREATE TABLE groups_users (
 
 
 --
--- Name: io_interfaces; Type: TABLE; Schema: public; Owner: -
+-- Name: io_interfaces; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE io_interfaces (
@@ -924,7 +922,7 @@ CREATE TABLE io_interfaces (
 
 
 --
--- Name: io_mappings; Type: TABLE; Schema: public; Owner: -
+-- Name: io_mappings; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE io_mappings (
@@ -939,7 +937,7 @@ CREATE TABLE io_mappings (
 
 
 --
--- Name: keywords; Type: TABLE; Schema: public; Owner: -
+-- Name: keywords; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE keywords (
@@ -953,7 +951,7 @@ CREATE TABLE keywords (
 
 
 --
--- Name: license_groups; Type: TABLE; Schema: public; Owner: -
+-- Name: license_groups; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE license_groups (
@@ -968,7 +966,7 @@ CREATE TABLE license_groups (
 
 
 --
--- Name: licenses; Type: TABLE; Schema: public; Owner: -
+-- Name: licenses; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE licenses (
@@ -984,7 +982,7 @@ CREATE TABLE licenses (
 
 
 --
--- Name: licenses_license_groups; Type: TABLE; Schema: public; Owner: -
+-- Name: licenses_license_groups; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE licenses_license_groups (
@@ -996,7 +994,7 @@ CREATE TABLE licenses_license_groups (
 
 
 --
--- Name: media_entries; Type: TABLE; Schema: public; Owner: -
+-- Name: media_entries; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE media_entries (
@@ -1012,7 +1010,7 @@ CREATE TABLE media_entries (
 
 
 --
--- Name: media_entry_api_client_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: media_entry_api_client_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE media_entry_api_client_permissions (
@@ -1028,7 +1026,7 @@ CREATE TABLE media_entry_api_client_permissions (
 
 
 --
--- Name: media_entry_group_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: media_entry_group_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE media_entry_group_permissions (
@@ -1045,7 +1043,7 @@ CREATE TABLE media_entry_group_permissions (
 
 
 --
--- Name: media_entry_user_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: media_entry_user_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE media_entry_user_permissions (
@@ -1063,7 +1061,7 @@ CREATE TABLE media_entry_user_permissions (
 
 
 --
--- Name: media_files; Type: TABLE; Schema: public; Owner: -
+-- Name: media_files; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE media_files (
@@ -1086,7 +1084,7 @@ CREATE TABLE media_files (
 
 
 --
--- Name: meta_data; Type: TABLE; Schema: public; Owner: -
+-- Name: meta_data; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE meta_data (
@@ -1099,12 +1097,12 @@ CREATE TABLE meta_data (
     filter_set_id uuid,
     created_by_id uuid,
     CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['MetaDatum::Licenses'::character varying, 'MetaDatum::Text'::character varying, 'MetaDatum::TextDate'::character varying, 'MetaDatum::Groups'::character varying, 'MetaDatum::Keywords'::character varying, 'MetaDatum::Vocables'::character varying, 'MetaDatum::People'::character varying, 'MetaDatum::Users'::character varying])::text[]))),
-    CONSTRAINT meta_data_is_related CHECK ((((media_entry_id IS NULL) AND (collection_id IS NULL) AND (filter_set_id IS NOT NULL)) OR ((media_entry_id IS NULL) AND (collection_id IS NOT NULL) AND (filter_set_id IS NULL)) OR ((media_entry_id IS NOT NULL) AND (collection_id IS NULL) AND (filter_set_id IS NULL))))
+    CONSTRAINT meta_data_is_related CHECK ((((((media_entry_id IS NULL) AND (collection_id IS NULL)) AND (filter_set_id IS NOT NULL)) OR (((media_entry_id IS NULL) AND (collection_id IS NOT NULL)) AND (filter_set_id IS NULL))) OR (((media_entry_id IS NOT NULL) AND (collection_id IS NULL)) AND (filter_set_id IS NULL))))
 );
 
 
 --
--- Name: meta_data_groups; Type: TABLE; Schema: public; Owner: -
+-- Name: meta_data_groups; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE meta_data_groups (
@@ -1115,7 +1113,7 @@ CREATE TABLE meta_data_groups (
 
 
 --
--- Name: meta_data_keywords; Type: TABLE; Schema: public; Owner: -
+-- Name: meta_data_keywords; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE meta_data_keywords (
@@ -1129,7 +1127,7 @@ CREATE TABLE meta_data_keywords (
 
 
 --
--- Name: meta_data_licenses; Type: TABLE; Schema: public; Owner: -
+-- Name: meta_data_licenses; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE meta_data_licenses (
@@ -1140,7 +1138,7 @@ CREATE TABLE meta_data_licenses (
 
 
 --
--- Name: meta_data_meta_terms; Type: TABLE; Schema: public; Owner: -
+-- Name: meta_data_meta_terms; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE meta_data_meta_terms (
@@ -1150,7 +1148,7 @@ CREATE TABLE meta_data_meta_terms (
 
 
 --
--- Name: meta_data_people; Type: TABLE; Schema: public; Owner: -
+-- Name: meta_data_people; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE meta_data_people (
@@ -1161,7 +1159,7 @@ CREATE TABLE meta_data_people (
 
 
 --
--- Name: meta_keys; Type: TABLE; Schema: public; Owner: -
+-- Name: meta_keys; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE meta_keys (
@@ -1186,7 +1184,7 @@ CREATE TABLE meta_keys (
 
 
 --
--- Name: people; Type: TABLE; Schema: public; Owner: -
+-- Name: people; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE people (
@@ -1204,7 +1202,7 @@ CREATE TABLE people (
 
 
 --
--- Name: previews; Type: TABLE; Schema: public; Owner: -
+-- Name: previews; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE previews (
@@ -1222,7 +1220,7 @@ CREATE TABLE previews (
 
 
 --
--- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE schema_migrations (
@@ -1231,7 +1229,7 @@ CREATE TABLE schema_migrations (
 
 
 --
--- Name: usage_terms; Type: TABLE; Schema: public; Owner: -
+-- Name: usage_terms; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE usage_terms (
@@ -1246,7 +1244,7 @@ CREATE TABLE usage_terms (
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: -
+-- Name: users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE users (
@@ -1270,7 +1268,7 @@ CREATE TABLE users (
 
 
 --
--- Name: visualizations; Type: TABLE; Schema: public; Owner: -
+-- Name: visualizations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE visualizations (
@@ -1283,7 +1281,7 @@ CREATE TABLE visualizations (
 
 
 --
--- Name: vocabularies; Type: TABLE; Schema: public; Owner: -
+-- Name: vocabularies; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE vocabularies (
@@ -1299,7 +1297,7 @@ CREATE TABLE vocabularies (
 
 
 --
--- Name: vocabulary_api_client_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: vocabulary_api_client_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE vocabulary_api_client_permissions (
@@ -1312,7 +1310,7 @@ CREATE TABLE vocabulary_api_client_permissions (
 
 
 --
--- Name: vocabulary_group_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: vocabulary_group_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE vocabulary_group_permissions (
@@ -1325,7 +1323,7 @@ CREATE TABLE vocabulary_group_permissions (
 
 
 --
--- Name: vocabulary_user_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: vocabulary_user_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE vocabulary_user_permissions (
@@ -1371,7 +1369,7 @@ UNION
 
 
 --
--- Name: zencoder_jobs; Type: TABLE; Schema: public; Owner: -
+-- Name: zencoder_jobs; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE zencoder_jobs (
@@ -1390,7 +1388,7 @@ CREATE TABLE zencoder_jobs (
 
 
 --
--- Name: admin_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: admin_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY admins
@@ -1398,7 +1396,7 @@ ALTER TABLE ONLY admins
 
 
 --
--- Name: api_clients_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: api_clients_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY api_clients
@@ -1406,7 +1404,7 @@ ALTER TABLE ONLY api_clients
 
 
 --
--- Name: app_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: app_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY app_settings
@@ -1414,7 +1412,7 @@ ALTER TABLE ONLY app_settings
 
 
 --
--- Name: collection_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY collection_api_client_permissions
@@ -1422,7 +1420,7 @@ ALTER TABLE ONLY collection_api_client_permissions
 
 
 --
--- Name: collection_collection_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_collection_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY collection_collection_arcs
@@ -1430,7 +1428,7 @@ ALTER TABLE ONLY collection_collection_arcs
 
 
 --
--- Name: collection_filter_set_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_filter_set_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY collection_filter_set_arcs
@@ -1438,7 +1436,7 @@ ALTER TABLE ONLY collection_filter_set_arcs
 
 
 --
--- Name: collection_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY collection_group_permissions
@@ -1446,7 +1444,7 @@ ALTER TABLE ONLY collection_group_permissions
 
 
 --
--- Name: collection_media_entry_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_media_entry_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY collection_media_entry_arcs
@@ -1454,7 +1452,7 @@ ALTER TABLE ONLY collection_media_entry_arcs
 
 
 --
--- Name: collection_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY collection_user_permissions
@@ -1462,7 +1460,7 @@ ALTER TABLE ONLY collection_user_permissions
 
 
 --
--- Name: collections_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: collections_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY collections
@@ -1470,7 +1468,7 @@ ALTER TABLE ONLY collections
 
 
 --
--- Name: contexts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: contexts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY contexts
@@ -1478,7 +1476,7 @@ ALTER TABLE ONLY contexts
 
 
 --
--- Name: copyrights_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: copyrights_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY licenses
@@ -1486,7 +1484,7 @@ ALTER TABLE ONLY licenses
 
 
 --
--- Name: custom_urls_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: custom_urls_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY custom_urls
@@ -1494,7 +1492,7 @@ ALTER TABLE ONLY custom_urls
 
 
 --
--- Name: edit_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: edit_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY edit_sessions
@@ -1502,7 +1500,7 @@ ALTER TABLE ONLY edit_sessions
 
 
 --
--- Name: filter_set_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY filter_set_api_client_permissions
@@ -1510,7 +1508,7 @@ ALTER TABLE ONLY filter_set_api_client_permissions
 
 
 --
--- Name: filter_set_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY filter_set_group_permissions
@@ -1518,7 +1516,7 @@ ALTER TABLE ONLY filter_set_group_permissions
 
 
 --
--- Name: filter_set_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY filter_set_user_permissions
@@ -1526,7 +1524,7 @@ ALTER TABLE ONLY filter_set_user_permissions
 
 
 --
--- Name: filter_sets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_sets_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY filter_sets
@@ -1534,7 +1532,7 @@ ALTER TABLE ONLY filter_sets
 
 
 --
--- Name: full_texts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: full_texts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY full_texts
@@ -1542,7 +1540,7 @@ ALTER TABLE ONLY full_texts
 
 
 --
--- Name: groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY groups
@@ -1550,7 +1548,7 @@ ALTER TABLE ONLY groups
 
 
 --
--- Name: io_interfaces_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: io_interfaces_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY io_interfaces
@@ -1558,7 +1556,7 @@ ALTER TABLE ONLY io_interfaces
 
 
 --
--- Name: io_mappings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: io_mappings_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY io_mappings
@@ -1566,7 +1564,7 @@ ALTER TABLE ONLY io_mappings
 
 
 --
--- Name: keyword_terms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: keyword_terms_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY keywords
@@ -1574,7 +1572,7 @@ ALTER TABLE ONLY keywords
 
 
 --
--- Name: keywords_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: keywords_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY meta_data_keywords
@@ -1582,7 +1580,7 @@ ALTER TABLE ONLY meta_data_keywords
 
 
 --
--- Name: license_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: license_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY license_groups
@@ -1590,7 +1588,7 @@ ALTER TABLE ONLY license_groups
 
 
 --
--- Name: media_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY media_entries
@@ -1598,7 +1596,7 @@ ALTER TABLE ONLY media_entries
 
 
 --
--- Name: media_entry_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY media_entry_api_client_permissions
@@ -1606,7 +1604,7 @@ ALTER TABLE ONLY media_entry_api_client_permissions
 
 
 --
--- Name: media_entry_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY media_entry_group_permissions
@@ -1614,7 +1612,7 @@ ALTER TABLE ONLY media_entry_group_permissions
 
 
 --
--- Name: media_entry_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY media_entry_user_permissions
@@ -1622,7 +1620,7 @@ ALTER TABLE ONLY media_entry_user_permissions
 
 
 --
--- Name: media_files_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: media_files_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY media_files
@@ -1630,7 +1628,7 @@ ALTER TABLE ONLY media_files
 
 
 --
--- Name: meta_data_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY meta_data
@@ -1638,7 +1636,7 @@ ALTER TABLE ONLY meta_data
 
 
 --
--- Name: meta_key_definitions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_key_definitions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY context_keys
@@ -1646,7 +1644,7 @@ ALTER TABLE ONLY context_keys
 
 
 --
--- Name: meta_keys_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_keys_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY meta_keys
@@ -1654,7 +1652,7 @@ ALTER TABLE ONLY meta_keys
 
 
 --
--- Name: people_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: people_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY people
@@ -1662,7 +1660,7 @@ ALTER TABLE ONLY people
 
 
 --
--- Name: previews_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: previews_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY previews
@@ -1670,7 +1668,7 @@ ALTER TABLE ONLY previews
 
 
 --
--- Name: usage_terms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: usage_terms_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY usage_terms
@@ -1678,7 +1676,7 @@ ALTER TABLE ONLY usage_terms
 
 
 --
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY users
@@ -1686,7 +1684,7 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: visualizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: visualizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY visualizations
@@ -1694,7 +1692,7 @@ ALTER TABLE ONLY visualizations
 
 
 --
--- Name: vocabularies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: vocabularies_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY vocabularies
@@ -1702,7 +1700,7 @@ ALTER TABLE ONLY vocabularies
 
 
 --
--- Name: vocabulary_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: vocabulary_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY vocabulary_api_client_permissions
@@ -1710,7 +1708,7 @@ ALTER TABLE ONLY vocabulary_api_client_permissions
 
 
 --
--- Name: vocabulary_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: vocabulary_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY vocabulary_group_permissions
@@ -1718,7 +1716,7 @@ ALTER TABLE ONLY vocabulary_group_permissions
 
 
 --
--- Name: vocabulary_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: vocabulary_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY vocabulary_user_permissions
@@ -1726,7 +1724,7 @@ ALTER TABLE ONLY vocabulary_user_permissions
 
 
 --
--- Name: zencoder_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: zencoder_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY zencoder_jobs
@@ -1734,1127 +1732,1127 @@ ALTER TABLE ONLY zencoder_jobs
 
 
 --
--- Name: full_texts_text_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: full_texts_text_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX full_texts_text_idx ON full_texts USING gin (text gin_trgm_ops);
 
 
 --
--- Name: full_texts_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: full_texts_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX full_texts_to_tsvector_idx ON full_texts USING gin (to_tsvector('english'::regconfig, text));
 
 
 --
--- Name: groups_searchable_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: groups_searchable_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX groups_searchable_idx ON groups USING gin (searchable gin_trgm_ops);
 
 
 --
--- Name: groups_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: groups_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX groups_to_tsvector_idx ON groups USING gin (to_tsvector('english'::regconfig, searchable));
 
 
 --
--- Name: idx_colgrpp_edit_mdata_and_relations; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_colgrpp_edit_mdata_and_relations; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX idx_colgrpp_edit_mdata_and_relations ON collection_group_permissions USING btree (edit_metadata_and_relations);
 
 
 --
--- Name: idx_colgrpp_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_colgrpp_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX idx_colgrpp_get_mdata_and_previews ON collection_group_permissions USING btree (get_metadata_and_previews);
 
 
 --
--- Name: idx_colgrpp_on_collection_id_and_group_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_colgrpp_on_collection_id_and_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX idx_colgrpp_on_collection_id_and_group_id ON collection_group_permissions USING btree (collection_id, group_id);
 
 
 --
--- Name: idx_colgrpp_on_filter_set_id_and_group_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_colgrpp_on_filter_set_id_and_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX idx_colgrpp_on_filter_set_id_and_group_id ON filter_set_group_permissions USING btree (filter_set_id, group_id);
 
 
 --
--- Name: idx_collapiclp_edit_mdata_and_relations; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_collapiclp_edit_mdata_and_relations; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX idx_collapiclp_edit_mdata_and_relations ON collection_api_client_permissions USING btree (edit_metadata_and_relations);
 
 
 --
--- Name: idx_collapiclp_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_collapiclp_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX idx_collapiclp_get_mdata_and_previews ON collection_api_client_permissions USING btree (get_metadata_and_previews);
 
 
 --
--- Name: idx_collapiclp_on_collection_id_and_api_client_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_collapiclp_on_collection_id_and_api_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX idx_collapiclp_on_collection_id_and_api_client_id ON collection_api_client_permissions USING btree (collection_id, api_client_id);
 
 
 --
--- Name: idx_collection_user_permission; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_collection_user_permission; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX idx_collection_user_permission ON collection_user_permissions USING btree (collection_id, user_id);
 
 
 --
--- Name: idx_colluserperm_edit_metadata_and_relations; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_colluserperm_edit_metadata_and_relations; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX idx_colluserperm_edit_metadata_and_relations ON collection_user_permissions USING btree (edit_metadata_and_relations);
 
 
 --
--- Name: idx_colluserperm_edit_permissions; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_colluserperm_edit_permissions; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX idx_colluserperm_edit_permissions ON collection_user_permissions USING btree (edit_permissions);
 
 
 --
--- Name: idx_colluserperm_get_metadata_and_previews; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_colluserperm_get_metadata_and_previews; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX idx_colluserperm_get_metadata_and_previews ON collection_user_permissions USING btree (get_metadata_and_previews);
 
 
 --
--- Name: idx_fsetapiclp_edit_mdata_and_filter; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_fsetapiclp_edit_mdata_and_filter; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX idx_fsetapiclp_edit_mdata_and_filter ON filter_set_api_client_permissions USING btree (edit_metadata_and_filter);
 
 
 --
--- Name: idx_fsetapiclp_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_fsetapiclp_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX idx_fsetapiclp_get_mdata_and_previews ON filter_set_api_client_permissions USING btree (get_metadata_and_previews);
 
 
 --
--- Name: idx_fsetapiclp_on_filter_set_id_and_api_client_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_fsetapiclp_on_filter_set_id_and_api_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX idx_fsetapiclp_on_filter_set_id_and_api_client_id ON filter_set_api_client_permissions USING btree (filter_set_id, api_client_id);
 
 
 --
--- Name: idx_fsetusrp_on_filter_set_id_and_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_fsetusrp_on_filter_set_id_and_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX idx_fsetusrp_on_filter_set_id_and_user_id ON filter_set_user_permissions USING btree (filter_set_id, user_id);
 
 
 --
--- Name: idx_me_apicl_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_me_apicl_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX idx_me_apicl_get_mdata_and_previews ON media_entry_api_client_permissions USING btree (get_metadata_and_previews);
 
 
 --
--- Name: idx_media_entry_user_permission; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_media_entry_user_permission; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX idx_media_entry_user_permission ON media_entry_user_permissions USING btree (media_entry_id, user_id);
 
 
 --
--- Name: idx_megrpp_get_full_size; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_megrpp_get_full_size; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX idx_megrpp_get_full_size ON media_entry_api_client_permissions USING btree (get_full_size);
 
 
 --
--- Name: idx_megrpp_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_megrpp_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX idx_megrpp_get_mdata_and_previews ON media_entry_group_permissions USING btree (get_metadata_and_previews);
 
 
 --
--- Name: idx_megrpp_on_media_entry_id_and_api_client_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_megrpp_on_media_entry_id_and_api_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX idx_megrpp_on_media_entry_id_and_api_client_id ON media_entry_api_client_permissions USING btree (media_entry_id, api_client_id);
 
 
 --
--- Name: idx_megrpp_on_media_entry_id_and_group_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_megrpp_on_media_entry_id_and_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX idx_megrpp_on_media_entry_id_and_group_id ON media_entry_group_permissions USING btree (media_entry_id, group_id);
 
 
 --
--- Name: idx_vocabulary_api_client; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_vocabulary_api_client; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX idx_vocabulary_api_client ON vocabulary_api_client_permissions USING btree (api_client_id, vocabulary_id);
 
 
 --
--- Name: idx_vocabulary_group; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_vocabulary_group; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX idx_vocabulary_group ON vocabulary_group_permissions USING btree (group_id, vocabulary_id);
 
 
 --
--- Name: idx_vocabulary_user; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_vocabulary_user; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX idx_vocabulary_user ON vocabulary_user_permissions USING btree (user_id, vocabulary_id);
 
 
 --
--- Name: index_admins_on_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_admins_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_admins_on_user_id ON admins USING btree (user_id);
 
 
 --
--- Name: index_api_clients_on_login; Type: INDEX; Schema: public; Owner: -
+-- Name: index_api_clients_on_login; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_api_clients_on_login ON api_clients USING btree (login);
 
 
 --
--- Name: index_collection_api_client_permissions_on_api_client_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_api_client_permissions_on_api_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_api_client_permissions_on_api_client_id ON collection_api_client_permissions USING btree (api_client_id);
 
 
 --
--- Name: index_collection_api_client_permissions_on_collection_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_api_client_permissions_on_collection_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_api_client_permissions_on_collection_id ON collection_api_client_permissions USING btree (collection_id);
 
 
 --
--- Name: index_collection_api_client_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_api_client_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_api_client_permissions_on_updator_id ON collection_api_client_permissions USING btree (updator_id);
 
 
 --
--- Name: index_collection_collection_arcs_on_child_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_collection_arcs_on_child_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_collection_arcs_on_child_id ON collection_collection_arcs USING btree (child_id);
 
 
 --
--- Name: index_collection_collection_arcs_on_child_id_and_parent_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_collection_arcs_on_child_id_and_parent_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_collection_arcs_on_child_id_and_parent_id ON collection_collection_arcs USING btree (child_id, parent_id);
 
 
 --
--- Name: index_collection_collection_arcs_on_parent_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_collection_arcs_on_parent_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_collection_arcs_on_parent_id ON collection_collection_arcs USING btree (parent_id);
 
 
 --
--- Name: index_collection_collection_arcs_on_parent_id_and_child_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_collection_arcs_on_parent_id_and_child_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_collection_collection_arcs_on_parent_id_and_child_id ON collection_collection_arcs USING btree (parent_id, child_id);
 
 
 --
--- Name: index_collection_filter_set_arcs_on_collection_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_filter_set_arcs_on_collection_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_filter_set_arcs_on_collection_id ON collection_filter_set_arcs USING btree (collection_id);
 
 
 --
--- Name: index_collection_filter_set_arcs_on_collection_id_and_filter_se; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_filter_set_arcs_on_collection_id_and_filter_se; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_collection_filter_set_arcs_on_collection_id_and_filter_se ON collection_filter_set_arcs USING btree (collection_id, filter_set_id);
 
 
 --
--- Name: index_collection_filter_set_arcs_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_filter_set_arcs_on_filter_set_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_filter_set_arcs_on_filter_set_id ON collection_filter_set_arcs USING btree (filter_set_id);
 
 
 --
--- Name: index_collection_filter_set_arcs_on_filter_set_id_and_collectio; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_filter_set_arcs_on_filter_set_id_and_collectio; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_filter_set_arcs_on_filter_set_id_and_collectio ON collection_filter_set_arcs USING btree (filter_set_id, collection_id);
 
 
 --
--- Name: index_collection_group_permissions_on_collection_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_group_permissions_on_collection_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_group_permissions_on_collection_id ON collection_group_permissions USING btree (collection_id);
 
 
 --
--- Name: index_collection_group_permissions_on_group_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_group_permissions_on_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_group_permissions_on_group_id ON collection_group_permissions USING btree (group_id);
 
 
 --
--- Name: index_collection_group_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_group_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_group_permissions_on_updator_id ON collection_group_permissions USING btree (updator_id);
 
 
 --
--- Name: index_collection_media_entry_arcs_on_collection_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_media_entry_arcs_on_collection_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_media_entry_arcs_on_collection_id ON collection_media_entry_arcs USING btree (collection_id);
 
 
 --
--- Name: index_collection_media_entry_arcs_on_collection_id_and_media_en; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_media_entry_arcs_on_collection_id_and_media_en; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_collection_media_entry_arcs_on_collection_id_and_media_en ON collection_media_entry_arcs USING btree (collection_id, media_entry_id);
 
 
 --
--- Name: index_collection_media_entry_arcs_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_media_entry_arcs_on_media_entry_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_media_entry_arcs_on_media_entry_id ON collection_media_entry_arcs USING btree (media_entry_id);
 
 
 --
--- Name: index_collection_media_entry_arcs_on_media_entry_id_and_collect; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_media_entry_arcs_on_media_entry_id_and_collect; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_media_entry_arcs_on_media_entry_id_and_collect ON collection_media_entry_arcs USING btree (media_entry_id, collection_id);
 
 
 --
--- Name: index_collection_user_permissions_on_collection_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_user_permissions_on_collection_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_user_permissions_on_collection_id ON collection_user_permissions USING btree (collection_id);
 
 
 --
--- Name: index_collection_user_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_user_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_user_permissions_on_updator_id ON collection_user_permissions USING btree (updator_id);
 
 
 --
--- Name: index_collection_user_permissions_on_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collection_user_permissions_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collection_user_permissions_on_user_id ON collection_user_permissions USING btree (user_id);
 
 
 --
--- Name: index_collections_on_created_at; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collections_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collections_on_created_at ON collections USING btree (created_at);
 
 
 --
--- Name: index_collections_on_creator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collections_on_creator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collections_on_creator_id ON collections USING btree (creator_id);
 
 
 --
--- Name: index_collections_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collections_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collections_on_responsible_user_id ON collections USING btree (responsible_user_id);
 
 
 --
--- Name: index_collections_on_updated_at; Type: INDEX; Schema: public; Owner: -
+-- Name: index_collections_on_updated_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_collections_on_updated_at ON collections USING btree (updated_at);
 
 
 --
--- Name: index_context_keys_on_context_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_context_keys_on_context_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_context_keys_on_context_id ON context_keys USING btree (context_id);
 
 
 --
--- Name: index_context_keys_on_meta_key_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_context_keys_on_meta_key_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_context_keys_on_meta_key_id ON context_keys USING btree (meta_key_id);
 
 
 --
--- Name: index_custom_urls_on_creator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_custom_urls_on_creator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_custom_urls_on_creator_id ON custom_urls USING btree (creator_id);
 
 
 --
--- Name: index_custom_urls_on_updator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_custom_urls_on_updator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_custom_urls_on_updator_id ON custom_urls USING btree (updator_id);
 
 
 --
--- Name: index_edit_sessions_on_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_edit_sessions_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_edit_sessions_on_user_id ON edit_sessions USING btree (user_id);
 
 
 --
--- Name: index_favorite_collections_on_collection_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_favorite_collections_on_collection_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_favorite_collections_on_collection_id ON favorite_collections USING btree (collection_id);
 
 
 --
--- Name: index_favorite_collections_on_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_favorite_collections_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_favorite_collections_on_user_id ON favorite_collections USING btree (user_id);
 
 
 --
--- Name: index_favorite_collections_on_user_id_and_collection_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_favorite_collections_on_user_id_and_collection_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_favorite_collections_on_user_id_and_collection_id ON favorite_collections USING btree (user_id, collection_id);
 
 
 --
--- Name: index_favorite_filter_sets_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_favorite_filter_sets_on_filter_set_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_favorite_filter_sets_on_filter_set_id ON favorite_filter_sets USING btree (filter_set_id);
 
 
 --
--- Name: index_favorite_filter_sets_on_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_favorite_filter_sets_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_favorite_filter_sets_on_user_id ON favorite_filter_sets USING btree (user_id);
 
 
 --
--- Name: index_favorite_filter_sets_on_user_id_and_filter_set_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_favorite_filter_sets_on_user_id_and_filter_set_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_favorite_filter_sets_on_user_id_and_filter_set_id ON favorite_filter_sets USING btree (user_id, filter_set_id);
 
 
 --
--- Name: index_favorite_media_entries_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_favorite_media_entries_on_media_entry_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_favorite_media_entries_on_media_entry_id ON favorite_media_entries USING btree (media_entry_id);
 
 
 --
--- Name: index_favorite_media_entries_on_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_favorite_media_entries_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_favorite_media_entries_on_user_id ON favorite_media_entries USING btree (user_id);
 
 
 --
--- Name: index_favorite_media_entries_on_user_id_and_media_entry_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_favorite_media_entries_on_user_id_and_media_entry_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_favorite_media_entries_on_user_id_and_media_entry_id ON favorite_media_entries USING btree (user_id, media_entry_id);
 
 
 --
--- Name: index_filter_set_api_client_permissions_on_api_client_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_set_api_client_permissions_on_api_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_set_api_client_permissions_on_api_client_id ON filter_set_api_client_permissions USING btree (api_client_id);
 
 
 --
--- Name: index_filter_set_api_client_permissions_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_set_api_client_permissions_on_filter_set_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_set_api_client_permissions_on_filter_set_id ON filter_set_api_client_permissions USING btree (filter_set_id);
 
 
 --
--- Name: index_filter_set_api_client_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_set_api_client_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_set_api_client_permissions_on_updator_id ON filter_set_api_client_permissions USING btree (updator_id);
 
 
 --
--- Name: index_filter_set_group_permissions_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_set_group_permissions_on_filter_set_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_set_group_permissions_on_filter_set_id ON filter_set_group_permissions USING btree (filter_set_id);
 
 
 --
--- Name: index_filter_set_group_permissions_on_get_metadata_and_previews; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_set_group_permissions_on_get_metadata_and_previews; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_set_group_permissions_on_get_metadata_and_previews ON filter_set_group_permissions USING btree (get_metadata_and_previews);
 
 
 --
--- Name: index_filter_set_group_permissions_on_group_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_set_group_permissions_on_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_set_group_permissions_on_group_id ON filter_set_group_permissions USING btree (group_id);
 
 
 --
--- Name: index_filter_set_group_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_set_group_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_set_group_permissions_on_updator_id ON filter_set_group_permissions USING btree (updator_id);
 
 
 --
--- Name: index_filter_set_user_permissions_on_edit_metadata_and_filter; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_set_user_permissions_on_edit_metadata_and_filter; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_set_user_permissions_on_edit_metadata_and_filter ON filter_set_user_permissions USING btree (edit_metadata_and_filter);
 
 
 --
--- Name: index_filter_set_user_permissions_on_edit_permissions; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_set_user_permissions_on_edit_permissions; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_set_user_permissions_on_edit_permissions ON filter_set_user_permissions USING btree (edit_permissions);
 
 
 --
--- Name: index_filter_set_user_permissions_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_set_user_permissions_on_filter_set_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_set_user_permissions_on_filter_set_id ON filter_set_user_permissions USING btree (filter_set_id);
 
 
 --
--- Name: index_filter_set_user_permissions_on_get_metadata_and_previews; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_set_user_permissions_on_get_metadata_and_previews; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_set_user_permissions_on_get_metadata_and_previews ON filter_set_user_permissions USING btree (get_metadata_and_previews);
 
 
 --
--- Name: index_filter_set_user_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_set_user_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_set_user_permissions_on_updator_id ON filter_set_user_permissions USING btree (updator_id);
 
 
 --
--- Name: index_filter_set_user_permissions_on_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_set_user_permissions_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_set_user_permissions_on_user_id ON filter_set_user_permissions USING btree (user_id);
 
 
 --
--- Name: index_filter_sets_on_created_at; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_sets_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_sets_on_created_at ON filter_sets USING btree (created_at);
 
 
 --
--- Name: index_filter_sets_on_creator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_sets_on_creator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_sets_on_creator_id ON filter_sets USING btree (creator_id);
 
 
 --
--- Name: index_filter_sets_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_sets_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_sets_on_responsible_user_id ON filter_sets USING btree (responsible_user_id);
 
 
 --
--- Name: index_filter_sets_on_updated_at; Type: INDEX; Schema: public; Owner: -
+-- Name: index_filter_sets_on_updated_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_filter_sets_on_updated_at ON filter_sets USING btree (updated_at);
 
 
 --
--- Name: index_groups_on_institutional_group_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_groups_on_institutional_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_groups_on_institutional_group_id ON groups USING btree (institutional_group_id);
 
 
 --
--- Name: index_groups_on_institutional_group_name; Type: INDEX; Schema: public; Owner: -
+-- Name: index_groups_on_institutional_group_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_groups_on_institutional_group_name ON groups USING btree (institutional_group_name);
 
 
 --
--- Name: index_groups_on_name; Type: INDEX; Schema: public; Owner: -
+-- Name: index_groups_on_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_groups_on_name ON groups USING btree (name);
 
 
 --
--- Name: index_groups_on_type; Type: INDEX; Schema: public; Owner: -
+-- Name: index_groups_on_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_groups_on_type ON groups USING btree (type);
 
 
 --
--- Name: index_groups_users_on_group_id_and_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_groups_users_on_group_id_and_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_groups_users_on_group_id_and_user_id ON groups_users USING btree (group_id, user_id);
 
 
 --
--- Name: index_groups_users_on_user_id_and_group_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_groups_users_on_user_id_and_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_groups_users_on_user_id_and_group_id ON groups_users USING btree (user_id, group_id);
 
 
 --
--- Name: index_keywords_on_meta_key_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_keywords_on_meta_key_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_keywords_on_meta_key_id ON keywords USING btree (meta_key_id);
 
 
 --
--- Name: index_licenses_on_label; Type: INDEX; Schema: public; Owner: -
+-- Name: index_licenses_on_label; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_licenses_on_label ON licenses USING btree (label);
 
 
 --
--- Name: index_licenses_on_url; Type: INDEX; Schema: public; Owner: -
+-- Name: index_licenses_on_url; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_licenses_on_url ON licenses USING btree (url);
 
 
 --
--- Name: index_md_groups_on_md_id_and_group_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_md_groups_on_md_id_and_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_md_groups_on_md_id_and_group_id ON meta_data_groups USING btree (meta_datum_id, group_id);
 
 
 --
--- Name: index_md_licenses_on_md_id_and_license_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_md_licenses_on_md_id_and_license_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_md_licenses_on_md_id_and_license_id ON meta_data_licenses USING btree (meta_datum_id, license_id);
 
 
 --
--- Name: index_md_people_on_md_id_and_person_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_md_people_on_md_id_and_person_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_md_people_on_md_id_and_person_id ON meta_data_people USING btree (meta_datum_id, person_id);
 
 
 --
--- Name: index_md_users_on_md_id_and_keyword_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_md_users_on_md_id_and_keyword_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_md_users_on_md_id_and_keyword_id ON meta_data_keywords USING btree (meta_datum_id, keyword_id);
 
 
 --
--- Name: index_media_entries_on_created_at; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entries_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entries_on_created_at ON media_entries USING btree (created_at);
 
 
 --
--- Name: index_media_entries_on_creator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entries_on_creator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entries_on_creator_id ON media_entries USING btree (creator_id);
 
 
 --
--- Name: index_media_entries_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entries_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entries_on_responsible_user_id ON media_entries USING btree (responsible_user_id);
 
 
 --
--- Name: index_media_entries_on_updated_at; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entries_on_updated_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entries_on_updated_at ON media_entries USING btree (updated_at);
 
 
 --
--- Name: index_media_entry_api_client_permissions_on_api_client_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_api_client_permissions_on_api_client_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_api_client_permissions_on_api_client_id ON media_entry_api_client_permissions USING btree (api_client_id);
 
 
 --
--- Name: index_media_entry_api_client_permissions_on_get_full_size; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_api_client_permissions_on_get_full_size; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_api_client_permissions_on_get_full_size ON media_entry_api_client_permissions USING btree (get_full_size);
 
 
 --
--- Name: index_media_entry_api_client_permissions_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_api_client_permissions_on_media_entry_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_api_client_permissions_on_media_entry_id ON media_entry_api_client_permissions USING btree (media_entry_id);
 
 
 --
--- Name: index_media_entry_api_client_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_api_client_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_api_client_permissions_on_updator_id ON media_entry_api_client_permissions USING btree (updator_id);
 
 
 --
--- Name: index_media_entry_group_permissions_on_edit_metadata; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_group_permissions_on_edit_metadata; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_group_permissions_on_edit_metadata ON media_entry_group_permissions USING btree (edit_metadata);
 
 
 --
--- Name: index_media_entry_group_permissions_on_get_full_size; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_group_permissions_on_get_full_size; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_group_permissions_on_get_full_size ON media_entry_group_permissions USING btree (get_full_size);
 
 
 --
--- Name: index_media_entry_group_permissions_on_group_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_group_permissions_on_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_group_permissions_on_group_id ON media_entry_group_permissions USING btree (group_id);
 
 
 --
--- Name: index_media_entry_group_permissions_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_group_permissions_on_media_entry_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_group_permissions_on_media_entry_id ON media_entry_group_permissions USING btree (media_entry_id);
 
 
 --
--- Name: index_media_entry_group_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_group_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_group_permissions_on_updator_id ON media_entry_group_permissions USING btree (updator_id);
 
 
 --
--- Name: index_media_entry_user_permissions_on_edit_metadata; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_user_permissions_on_edit_metadata; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_user_permissions_on_edit_metadata ON media_entry_user_permissions USING btree (edit_metadata);
 
 
 --
--- Name: index_media_entry_user_permissions_on_edit_permissions; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_user_permissions_on_edit_permissions; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_user_permissions_on_edit_permissions ON media_entry_user_permissions USING btree (edit_permissions);
 
 
 --
--- Name: index_media_entry_user_permissions_on_get_full_size; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_user_permissions_on_get_full_size; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_user_permissions_on_get_full_size ON media_entry_user_permissions USING btree (get_full_size);
 
 
 --
--- Name: index_media_entry_user_permissions_on_get_metadata_and_previews; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_user_permissions_on_get_metadata_and_previews; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_user_permissions_on_get_metadata_and_previews ON media_entry_user_permissions USING btree (get_metadata_and_previews);
 
 
 --
--- Name: index_media_entry_user_permissions_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_user_permissions_on_media_entry_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_user_permissions_on_media_entry_id ON media_entry_user_permissions USING btree (media_entry_id);
 
 
 --
--- Name: index_media_entry_user_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_user_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_user_permissions_on_updator_id ON media_entry_user_permissions USING btree (updator_id);
 
 
 --
--- Name: index_media_entry_user_permissions_on_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_entry_user_permissions_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_entry_user_permissions_on_user_id ON media_entry_user_permissions USING btree (user_id);
 
 
 --
--- Name: index_media_files_on_extension; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_files_on_extension; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_files_on_extension ON media_files USING btree (extension);
 
 
 --
--- Name: index_media_files_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_files_on_media_entry_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_files_on_media_entry_id ON media_files USING btree (media_entry_id);
 
 
 --
--- Name: index_media_files_on_media_type; Type: INDEX; Schema: public; Owner: -
+-- Name: index_media_files_on_media_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_media_files_on_media_type ON media_files USING btree (media_type);
 
 
 --
--- Name: index_meta_data_keywords_on_created_at; Type: INDEX; Schema: public; Owner: -
+-- Name: index_meta_data_keywords_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_meta_data_keywords_on_created_at ON meta_data_keywords USING btree (created_at);
 
 
 --
--- Name: index_meta_data_keywords_on_created_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_meta_data_keywords_on_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_meta_data_keywords_on_created_by_id ON meta_data_keywords USING btree (created_by_id);
 
 
 --
--- Name: index_meta_data_keywords_on_keyword_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_meta_data_keywords_on_keyword_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_meta_data_keywords_on_keyword_id ON meta_data_keywords USING btree (keyword_id);
 
 
 --
--- Name: index_meta_data_keywords_on_meta_datum_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_meta_data_keywords_on_meta_datum_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_meta_data_keywords_on_meta_datum_id ON meta_data_keywords USING btree (meta_datum_id);
 
 
 --
--- Name: index_meta_data_meta_terms_on_meta_datum_id_and_meta_term_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_meta_data_meta_terms_on_meta_datum_id_and_meta_term_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_meta_data_meta_terms_on_meta_datum_id_and_meta_term_id ON meta_data_meta_terms USING btree (meta_datum_id, meta_term_id);
 
 
 --
--- Name: index_meta_data_on_collection_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_meta_data_on_collection_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_meta_data_on_collection_id ON meta_data USING btree (collection_id);
 
 
 --
--- Name: index_meta_data_on_collection_id_and_meta_key_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_meta_data_on_collection_id_and_meta_key_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_meta_data_on_collection_id_and_meta_key_id ON meta_data USING btree (collection_id, meta_key_id);
 
 
 --
--- Name: index_meta_data_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_meta_data_on_filter_set_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_meta_data_on_filter_set_id ON meta_data USING btree (filter_set_id);
 
 
 --
--- Name: index_meta_data_on_filter_set_id_and_meta_key_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_meta_data_on_filter_set_id_and_meta_key_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_meta_data_on_filter_set_id_and_meta_key_id ON meta_data USING btree (filter_set_id, meta_key_id);
 
 
 --
--- Name: index_meta_data_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_meta_data_on_media_entry_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_meta_data_on_media_entry_id ON meta_data USING btree (media_entry_id);
 
 
 --
--- Name: index_meta_data_on_media_entry_id_and_meta_key_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_meta_data_on_media_entry_id_and_meta_key_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_meta_data_on_media_entry_id_and_meta_key_id ON meta_data USING btree (media_entry_id, meta_key_id);
 
 
 --
--- Name: index_meta_data_on_meta_key_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_meta_data_on_meta_key_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_meta_data_on_meta_key_id ON meta_data USING btree (meta_key_id);
 
 
 --
--- Name: index_meta_data_on_type; Type: INDEX; Schema: public; Owner: -
+-- Name: index_meta_data_on_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_meta_data_on_type ON meta_data USING btree (type);
 
 
 --
--- Name: index_people_on_first_name; Type: INDEX; Schema: public; Owner: -
+-- Name: index_people_on_first_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_people_on_first_name ON people USING btree (first_name);
 
 
 --
--- Name: index_people_on_is_bunch; Type: INDEX; Schema: public; Owner: -
+-- Name: index_people_on_is_bunch; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_people_on_is_bunch ON people USING btree (is_bunch);
 
 
 --
--- Name: index_people_on_last_name; Type: INDEX; Schema: public; Owner: -
+-- Name: index_people_on_last_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_people_on_last_name ON people USING btree (last_name);
 
 
 --
--- Name: index_previews_on_created_at; Type: INDEX; Schema: public; Owner: -
+-- Name: index_previews_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_previews_on_created_at ON previews USING btree (created_at);
 
 
 --
--- Name: index_previews_on_media_file_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_previews_on_media_file_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_previews_on_media_file_id ON previews USING btree (media_file_id);
 
 
 --
--- Name: index_previews_on_media_type; Type: INDEX; Schema: public; Owner: -
+-- Name: index_previews_on_media_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_previews_on_media_type ON previews USING btree (media_type);
 
 
 --
--- Name: index_users_on_autocomplete; Type: INDEX; Schema: public; Owner: -
+-- Name: index_users_on_autocomplete; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_users_on_autocomplete ON users USING btree (autocomplete);
 
 
 --
--- Name: index_users_on_login; Type: INDEX; Schema: public; Owner: -
+-- Name: index_users_on_login; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_users_on_login ON users USING btree (login);
 
 
 --
--- Name: index_users_on_zhdkid; Type: INDEX; Schema: public; Owner: -
+-- Name: index_users_on_zhdkid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_users_on_zhdkid ON users USING btree (zhdkid);
 
 
 --
--- Name: index_vocabularies_on_position; Type: INDEX; Schema: public; Owner: -
+-- Name: index_vocabularies_on_position; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_vocabularies_on_position ON vocabularies USING btree ("position");
 
 
 --
--- Name: index_zencoder_jobs_on_created_at; Type: INDEX; Schema: public; Owner: -
+-- Name: index_zencoder_jobs_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_zencoder_jobs_on_created_at ON zencoder_jobs USING btree (created_at);
 
 
 --
--- Name: index_zencoder_jobs_on_media_file_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_zencoder_jobs_on_media_file_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_zencoder_jobs_on_media_file_id ON zencoder_jobs USING btree (media_file_id);
 
 
 --
--- Name: keyword_terms_term_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: keyword_terms_term_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX keyword_terms_term_idx ON keywords USING gin (term gin_trgm_ops);
 
 
 --
--- Name: keyword_terms_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: keyword_terms_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX keyword_terms_to_tsvector_idx ON keywords USING gin (to_tsvector('english'::regconfig, (term)::text));
 
 
 --
--- Name: licenses_label_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: licenses_label_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX licenses_label_idx ON licenses USING gin (label gin_trgm_ops);
 
 
 --
--- Name: licenses_searchable_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: licenses_searchable_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX licenses_searchable_idx ON licenses USING gin (searchable gin_trgm_ops);
 
 
 --
--- Name: licenses_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: licenses_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX licenses_to_tsvector_idx ON licenses USING gin (to_tsvector('english'::regconfig, (label)::text));
 
 
 --
--- Name: licenses_to_tsvector_idx1; Type: INDEX; Schema: public; Owner: -
+-- Name: licenses_to_tsvector_idx1; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX licenses_to_tsvector_idx1 ON licenses USING gin (to_tsvector('english'::regconfig, searchable));
 
 
 --
--- Name: meta_data_string_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: meta_data_string_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX meta_data_string_idx ON meta_data USING gin (string gin_trgm_ops);
 
 
 --
--- Name: meta_data_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: meta_data_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX meta_data_to_tsvector_idx ON meta_data USING gin (to_tsvector('english'::regconfig, string));
 
 
 --
--- Name: people_searchable_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: people_searchable_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX people_searchable_idx ON people USING gin (searchable gin_trgm_ops);
 
 
 --
--- Name: people_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: people_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX people_to_tsvector_idx ON people USING gin (to_tsvector('english'::regconfig, searchable));
 
 
 --
--- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -
+-- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (version);
 
 
 --
--- Name: users_searchable_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: users_searchable_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX users_searchable_idx ON users USING gin (searchable gin_trgm_ops);
 
 
 --
--- Name: users_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: users_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX users_to_tsvector_idx ON users USING gin (to_tsvector('english'::regconfig, searchable));
 
 
 --
--- Name: users_trgm_searchable_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: users_trgm_searchable_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX users_trgm_searchable_idx ON users USING gin (trgm_searchable gin_trgm_ops);
@@ -4032,7 +4030,7 @@ ALTER TABLE ONLY zencoder_jobs
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO "$user",public;
 
 INSERT INTO schema_migrations (version) VALUES ('0');
 
@@ -4213,6 +4211,8 @@ INSERT INTO schema_migrations (version) VALUES ('191');
 INSERT INTO schema_migrations (version) VALUES ('192');
 
 INSERT INTO schema_migrations (version) VALUES ('193');
+
+INSERT INTO schema_migrations (version) VALUES ('194');
 
 INSERT INTO schema_migrations (version) VALUES ('199');
 
