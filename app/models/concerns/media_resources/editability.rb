@@ -11,6 +11,10 @@ module Concerns
                   self::EDIT_PERMISSION_NAME, user))
             .or(arel_table[:responsible_user_id].eq user.id)
         end
+        define_access_methods(:manageable_by, self::MANAGE_PERMISSION_NAME) do |u|
+          user_permission_exists_condition(self::MANAGE_PERMISSION_NAME, u)
+            .or(arel_table[:responsible_user_id].eq u.id)
+        end
       end
     end
   end

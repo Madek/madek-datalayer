@@ -18,6 +18,7 @@ class Collection < ActiveRecord::Base
 
   VIEW_PERMISSION_NAME = :get_metadata_and_previews
   EDIT_PERMISSION_NAME = :edit_metadata_and_relations
+  MANAGE_PERMISSION_NAME = :edit_permissions
 
   include Concerns::Collections::Arcs
   include Concerns::Collections::Siblings
