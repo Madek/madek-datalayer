@@ -2441,6 +2441,13 @@ CREATE INDEX index_media_entries_on_creator_id ON media_entries USING btree (cre
 
 
 --
+-- Name: index_media_entries_on_is_published; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_media_entries_on_is_published ON media_entries USING btree (is_published);
+
+
+--
 -- Name: index_media_entries_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4235,6 +4242,8 @@ INSERT INTO schema_migrations (version) VALUES ('205');
 INSERT INTO schema_migrations (version) VALUES ('206');
 
 INSERT INTO schema_migrations (version) VALUES ('207');
+
+INSERT INTO schema_migrations (version) VALUES ('208');
 
 INSERT INTO schema_migrations (version) VALUES ('21');
 

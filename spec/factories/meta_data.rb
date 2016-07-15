@@ -13,7 +13,7 @@ FactoryGirl.define do
       AppSetting.first.presence || create(:app_setting)
 
       unless md.media_entry or md.collection or md.filter_set
-        md.media_entry = FactoryGirl.create :media_entry
+        md.media_entry = FactoryGirl.create(:media_entry, is_published: true)
       end
     end
 
