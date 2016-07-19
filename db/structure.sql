@@ -2385,6 +2385,13 @@ CREATE INDEX index_keywords_on_meta_key_id ON keywords USING btree (meta_key_id)
 
 
 --
+-- Name: index_keywords_on_meta_key_id_and_term; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_keywords_on_meta_key_id_and_term ON keywords USING btree (meta_key_id, term);
+
+
+--
 -- Name: index_licenses_on_label; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4244,6 +4251,8 @@ INSERT INTO schema_migrations (version) VALUES ('206');
 INSERT INTO schema_migrations (version) VALUES ('207');
 
 INSERT INTO schema_migrations (version) VALUES ('208');
+
+INSERT INTO schema_migrations (version) VALUES ('209');
 
 INSERT INTO schema_migrations (version) VALUES ('21');
 
