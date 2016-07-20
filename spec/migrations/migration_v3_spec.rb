@@ -21,7 +21,8 @@ describe 'Migration from v2 to v3' do
     settings = AppSettings.first
     # hardcoded in v2, should be set in v3 to not break
     # existing instances
-    expect(settings.context_for_show_summary).to eq 'core'
+    expect(settings.context_for_entry_summary).to eq 'core'
+    expect(settings.context_for_collection_summary).to eq 'core'
     expect(settings.contexts_for_validation).to eq ['upload']
   end
 

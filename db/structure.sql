@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.1
--- Dumped by pg_dump version 9.5.1
+-- Dumped from database version 9.5.0
+-- Dumped by pg_dump version 9.5.0
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -590,11 +590,13 @@ CREATE TABLE app_settings (
     brand_logo_url character varying DEFAULT '/assets/inserts/image-logo-zhdk.png'::character varying NOT NULL,
     brand_text character varying DEFAULT 'ACME, Inc.'::character varying NOT NULL,
     sitemap jsonb DEFAULT '[{"Medienarchiv ZHdK": "http://medienarchiv.zhdk.ch"}, {"Madek Project on Github": "https://github.com/Madek"}]'::jsonb NOT NULL,
-    context_for_show_summary character varying,
-    contexts_for_show_extra text[] DEFAULT '{}'::text[],
+    contexts_for_entry_extra text[] DEFAULT '{}'::text[],
     contexts_for_list_details text[] DEFAULT '{}'::text[],
     contexts_for_validation text[] DEFAULT '{}'::text[],
     contexts_for_dynamic_filters text[] DEFAULT '{}'::text[],
+    contexts_for_resource_edit text[] DEFAULT '{}'::text[],
+    context_for_entry_summary character varying,
+    context_for_collection_summary character varying,
     catalog_title character varying DEFAULT 'Catalog'::character varying NOT NULL,
     catalog_subtitle character varying DEFAULT 'Browse the catalog'::character varying NOT NULL,
     catalog_context_keys character varying[] DEFAULT '{madek_core:keywords}'::character varying[] NOT NULL,
@@ -4227,6 +4229,8 @@ INSERT INTO schema_migrations (version) VALUES ('191');
 INSERT INTO schema_migrations (version) VALUES ('192');
 
 INSERT INTO schema_migrations (version) VALUES ('193');
+
+INSERT INTO schema_migrations (version) VALUES ('194');
 
 INSERT INTO schema_migrations (version) VALUES ('199');
 
