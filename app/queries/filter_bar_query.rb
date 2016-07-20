@@ -15,7 +15,7 @@
 # rubocop:disable all
 class FilterBarQuery < ActiveRecord::Base
 
-  def self.sql_query(init_scope, context_ids)
+  def self.meta_data_sql_query(init_scope, context_ids)
 
     <<SQL
 WITH with_media_entries AS
@@ -86,11 +86,52 @@ SQL
 
   end
 
+  def self.media_types_sql_query(init_scope)
+
+    <<SQL
+SELECT media_files.media_type AS label,
+       media_files.media_type AS uuid,
+       count(media_files.media_type) AS count
+FROM media_files
+WHERE media_files.media_entry_id IN (#{init_scope.select(:id).reorder(nil).to_sql})
+GROUP BY media_files.media_type
+HAVING NOT media_files.media_type = ''
+ORDER BY count DESC
+SQL
+
+  end
+
+  def self.extensions_sql_query(init_scope)
+
+    <<SQL
+SELECT media_files.extension AS label,
+       media_files.extension AS uuid,
+       count(media_files.extension) AS count
+FROM "media_files"
+WHERE media_files.media_entry_id IN (#{init_scope.select(:id).reorder(nil).to_sql})
+GROUP BY media_files.extension
+HAVING NOT media_files.extension = ''
+ORDER BY count DESC
+SQL
+
+  end
+
   def self.get_metadata_unsafe(init_scope, context_ids)
-    query = sql_query(init_scope, context_ids)
-    connection
-      .exec_query(query)
-      .to_hash
+    run meta_data_sql_query(init_scope, context_ids)
+  end
+
+  def self.get_extensions_unsafe(init_scope)
+    run extensions_sql_query(init_scope)
+  end
+
+  def self.get_media_types_unsafe(init_scope)
+    run media_types_sql_query(init_scope)
+  end
+
+  private_class_method
+
+  def self.run(query)
+    connection.exec_query(query).to_hash
   end
 end
 # rubocop:enable all
