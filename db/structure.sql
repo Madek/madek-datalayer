@@ -618,7 +618,7 @@ CREATE TABLE app_settings (
     context_for_collection_summary character varying,
     catalog_title character varying DEFAULT 'Catalog'::character varying NOT NULL,
     catalog_subtitle character varying DEFAULT 'Browse the catalog'::character varying NOT NULL,
-    catalog_context_keys character varying[] DEFAULT '{madek_core:keywords}'::character varying[] NOT NULL,
+    catalog_context_keys character varying[] DEFAULT '{}'::character varying[] NOT NULL,
     featured_set_title character varying DEFAULT 'Featured Content'::character varying,
     featured_set_subtitle character varying DEFAULT 'Highlights from this Archive'::character varying,
     contexts_for_entry_edit text[] DEFAULT '{}'::text[],
