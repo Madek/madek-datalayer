@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.0
--- Dumped by pg_dump version 9.5.0
+-- Dumped from database version 9.5.1
+-- Dumped by pg_dump version 9.5.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -519,11 +519,11 @@ $$;
 CREATE FUNCTION update_updated_at_column() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
-          BEGIN
-             NEW.updated_at = now();
-             RETURN NEW;
-          END;
-          $$;
+BEGIN
+   NEW.updated_at = now();
+   RETURN NEW;
+END;
+$$;
 
 
 --
@@ -934,8 +934,8 @@ CREATE TABLE io_mappings (
     meta_key_id character varying NOT NULL,
     key_map character varying,
     key_map_type character varying,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
     id uuid DEFAULT gen_random_uuid() NOT NULL
 );
 
@@ -964,8 +964,8 @@ CREATE TABLE license_groups (
     description text,
     "position" double precision,
     parent_id uuid,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
 );
 
 
@@ -992,8 +992,8 @@ CREATE TABLE licenses (
 CREATE TABLE licenses_license_groups (
     license_id uuid,
     license_group_id uuid,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
 );
 
 
@@ -1242,8 +1242,8 @@ CREATE TABLE usage_terms (
     version character varying,
     intro text,
     body text,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
 );
 
 
@@ -1267,6 +1267,7 @@ CREATE TABLE users (
     contrast_mode boolean DEFAULT false NOT NULL,
     searchable text DEFAULT ''::text NOT NULL,
     accepted_usage_terms_id uuid,
+    last_signed_in_at timestamp with time zone,
     CONSTRAINT users_login_simple CHECK ((login ~* '^[a-z0-9\.\-\_]+$'::text))
 );
 
@@ -4259,6 +4260,8 @@ INSERT INTO schema_migrations (version) VALUES ('208');
 INSERT INTO schema_migrations (version) VALUES ('209');
 
 INSERT INTO schema_migrations (version) VALUES ('21');
+
+INSERT INTO schema_migrations (version) VALUES ('210');
 
 INSERT INTO schema_migrations (version) VALUES ('22');
 
