@@ -11,7 +11,6 @@ madek_core:authors:
   is_enabled_for_collections: true
   is_enabled_for_filter_sets: false
   vocabulary_id: madek_core
-  is_extensible: false
   admin_comment:
 madek_core:copyright_notice:
   is_extensible_list: false
@@ -25,7 +24,6 @@ madek_core:copyright_notice:
   is_enabled_for_collections: true
   is_enabled_for_filter_sets: false
   vocabulary_id: madek_core
-  is_extensible: false
   admin_comment:
 madek_core:description:
   is_extensible_list: false
@@ -39,7 +37,6 @@ madek_core:description:
   is_enabled_for_collections: true
   is_enabled_for_filter_sets: true
   vocabulary_id: madek_core
-  is_extensible: false
   admin_comment:
 madek_core:keywords:
   is_extensible_list: true
@@ -53,7 +50,6 @@ madek_core:keywords:
   is_enabled_for_collections: true
   is_enabled_for_filter_sets: true
   vocabulary_id: madek_core
-  is_extensible: false
   admin_comment:
 madek_core:portrayed_object_date:
   is_extensible_list: false
@@ -67,7 +63,6 @@ madek_core:portrayed_object_date:
   is_enabled_for_collections: true
   is_enabled_for_filter_sets: false
   vocabulary_id: madek_core
-  is_extensible: false
   admin_comment:
 madek_core:subtitle:
   is_extensible_list: false
@@ -81,7 +76,6 @@ madek_core:subtitle:
   is_enabled_for_collections: true
   is_enabled_for_filter_sets: true
   vocabulary_id: madek_core
-  is_extensible: false
   admin_comment:
 madek_core:title:
   is_extensible_list: false
@@ -95,5 +89,4 @@ madek_core:title:
   is_enabled_for_collections: true
   is_enabled_for_filter_sets: true
   vocabulary_id: madek_core
-  is_extensible: false
   admin_comment:

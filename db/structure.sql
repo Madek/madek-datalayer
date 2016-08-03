@@ -1179,7 +1179,6 @@ CREATE TABLE meta_keys (
     is_enabled_for_collections boolean DEFAULT false NOT NULL,
     is_enabled_for_filter_sets boolean DEFAULT false NOT NULL,
     vocabulary_id character varying NOT NULL,
-    is_extensible boolean DEFAULT false NOT NULL,
     admin_comment text,
     CONSTRAINT check_valid_meta_datum_object_type CHECK ((meta_datum_object_type = ANY (ARRAY['MetaDatum::Licenses'::text, 'MetaDatum::Text'::text, 'MetaDatum::TextDate'::text, 'MetaDatum::Groups'::text, 'MetaDatum::Keywords'::text, 'MetaDatum::Vocables'::text, 'MetaDatum::People'::text, 'MetaDatum::Users'::text]))),
     CONSTRAINT meta_key_id_chars CHECK (((id)::text ~* '^[a-z0-9\-\_\:]+$'::text)),
@@ -4262,6 +4261,8 @@ INSERT INTO schema_migrations (version) VALUES ('209');
 INSERT INTO schema_migrations (version) VALUES ('21');
 
 INSERT INTO schema_migrations (version) VALUES ('210');
+
+INSERT INTO schema_migrations (version) VALUES ('211');
 
 INSERT INTO schema_migrations (version) VALUES ('22');
 
