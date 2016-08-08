@@ -72,6 +72,27 @@ describe 'relations between meta_data and meta_keys' do
 
   end
 
+  describe MetaDatum::Keyword do
+
+    it 'raises if meta_key_id is inconsistent for meta_data and keywords' do
+      meta_datum_keywords = FactoryGirl.create(:meta_datum_keywords)
+      vocabulary = FactoryGirl.create(:vocabulary, id: Faker::Lorem.characters(8))
+      meta_key = \
+        FactoryGirl.create(:meta_key_keywords,
+                           id: "#{vocabulary.id}:#{Faker::Lorem.characters(8)}")
+      keyword = FactoryGirl.create(:keyword, meta_key: meta_key)
+
+      expect do
+        MetaDatum::Keyword.transaction do
+          ActiveRecord::Base.connection.execute \
+            "INSERT INTO meta_data_keywords (meta_datum_id, keyword_id)
+             VALUES ('#{meta_datum_keywords.id}','#{keyword.id}')"
+        end
+      end.to raise_error /meta_key_id for meta_data and keywords must be identical/
+    end
+
+  end
+
   describe MetaKey do
 
     describe %(changing the type to be incomaptible) do

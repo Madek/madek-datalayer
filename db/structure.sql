@@ -241,6 +241,30 @@ CREATE FUNCTION check_meta_data_meta_key_type_consistency() RETURNS trigger
 
 
 --
+-- Name: check_meta_key_id_consistency_for_keywords(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION check_meta_key_id_consistency_for_keywords() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+          BEGIN
+
+            IF (SELECT meta_key_id
+                FROM meta_data
+                WHERE meta_data.id = NEW.meta_datum_id) <>
+               (SELECT meta_key_id
+                FROM keywords
+                WHERE id = NEW.keyword_id)
+            THEN
+                RAISE EXCEPTION 'The meta_key_id for meta_data and keywords must be identical';
+            END IF;
+
+            RETURN NEW;
+          END;
+          $$;
+
+
+--
 -- Name: check_meta_key_meta_data_type_consistency(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -3003,6 +3027,13 @@ CREATE CONSTRAINT TRIGGER trigger_meta_data_meta_key_type_consistency AFTER INSE
 
 
 --
+-- Name: trigger_meta_key_id_for_keyword_consistency; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER trigger_meta_key_id_for_keyword_consistency AFTER INSERT OR UPDATE ON meta_data_keywords DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_meta_key_id_consistency_for_keywords();
+
+
+--
 -- Name: trigger_meta_key_meta_data_type_consistency; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -4263,6 +4294,8 @@ INSERT INTO schema_migrations (version) VALUES ('21');
 INSERT INTO schema_migrations (version) VALUES ('210');
 
 INSERT INTO schema_migrations (version) VALUES ('211');
+
+INSERT INTO schema_migrations (version) VALUES ('212');
 
 INSERT INTO schema_migrations (version) VALUES ('22');
 

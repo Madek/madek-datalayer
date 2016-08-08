@@ -53,7 +53,12 @@ FactoryGirl.define do
         MetaKey.find_by(id: 'test:keywords') \
           || FactoryGirl.create(:meta_key_keywords)
       end
-      keywords { (1..3).map { FactoryGirl.create :keyword } }
+      keywords do
+        (1..3).map do
+          FactoryGirl.create(:keyword,
+                             meta_key_id: (meta_key_id or meta_key.id))
+        end
+      end
       after(:build) do |md|
         md.meta_data_keywords.map do |mdk|
           mdk.created_by = create(:user)
