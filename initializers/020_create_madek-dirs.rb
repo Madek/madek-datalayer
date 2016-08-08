@@ -1,9 +1,7 @@
 require 'madek/constants'
 
 [Madek::Constants::FILE_STORAGE_DIR,
- Madek::Constants::THUMBNAIL_STORAGE_DIR,
- Madek::Constants::DOWNLOAD_STORAGE_DIR,
- Madek::Constants::ZIP_STORAGE_DIR].each do |dir|
+ Madek::Constants::THUMBNAIL_STORAGE_DIR].each do |dir|
   Madek::System.execute_cmd! %(mkdir -p #{dir})
 end
 [Madek::Constants::FILE_STORAGE_DIR,
