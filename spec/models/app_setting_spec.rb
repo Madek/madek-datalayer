@@ -12,7 +12,8 @@ describe AppSetting do
       }.tap do |hash|
         %i(
           contexts_for_entry_extra
-          contexts_for_resource_edit
+          contexts_for_entry_edit
+          contexts_for_collection_edit
           contexts_for_list_details
           contexts_for_validation
           contexts_for_dynamic_filters
@@ -31,7 +32,8 @@ describe AppSetting do
         context_for_entry_summary
         context_for_collection_summary
         contexts_for_entry_extra
-        contexts_for_resource_edit
+        contexts_for_entry_edit
+        contexts_for_collection_edit
         contexts_for_list_details
         contexts_for_validation
         contexts_for_dynamic_filters
@@ -51,7 +53,8 @@ describe AppSetting do
         expect(app_setting.context_for_entry_summary).to be_nil
         expect(app_setting.context_for_collection_summary).to be_nil
         expect(app_setting.contexts_for_entry_extra).to eq []
-        expect(app_setting.contexts_for_resource_edit).to eq []
+        expect(app_setting.contexts_for_entry_edit).to eq []
+        expect(app_setting.contexts_for_collection_edit).to eq []
         expect(app_setting.contexts_for_list_details).to eq []
         expect(app_setting.contexts_for_validation).to eq []
         expect(app_setting.contexts_for_dynamic_filters).to eq []

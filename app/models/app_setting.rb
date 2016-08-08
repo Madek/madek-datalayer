@@ -24,7 +24,8 @@ class AppSetting < ActiveRecord::Base
     contexts_for_list_details
     contexts_for_validation
     contexts_for_dynamic_filters
-    contexts_for_resource_edit
+    contexts_for_entry_edit
+    contexts_for_collection_edit
   ).each do |context_field|
     define_method context_field do
       ids = self[context_field]

@@ -9,7 +9,8 @@ FactoryGirl.define do
     context_for_entry_summary ''
     context_for_collection_summary ''
     contexts_for_entry_extra []
-    contexts_for_resource_edit []
+    contexts_for_entry_edit []
+    contexts_for_collection_edit []
     contexts_for_list_details []
     contexts_for_validation []
     contexts_for_dynamic_filters []
@@ -19,7 +20,8 @@ FactoryGirl.define do
     context_for_entry_summary 'foo'
     context_for_collection_summary 'foo'
     contexts_for_entry_extra %w(foo core)
-    contexts_for_resource_edit %w(foo core)
+    contexts_for_entry_edit %w(foo core)
+    contexts_for_collection_edit %w(core foo)
     contexts_for_list_details %w(core foo)
     contexts_for_validation %w(foo core)
     contexts_for_dynamic_filters %w(core foo)
