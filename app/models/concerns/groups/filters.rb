@@ -4,7 +4,12 @@ module Concerns
       extend ActiveSupport::Concern
 
       included do
-        scope :filter_by, lambda{ |search_term, filter = nil|
+
+        scope :filter_by, lambda{ |search_term, filter = nil, _scope = nil|
+          default_query(search_term, filter)
+        }
+
+        def self.default_query(search_term, filter)
           case filter
           when 'trgm_rank'
             if search_term.blank?
@@ -25,8 +30,7 @@ module Concerns
               .order('name ASC, institutional_group_name ASC') \
                 unless search_term.blank?
           end
-        }
-
+        end
       end
     end
   end
