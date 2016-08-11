@@ -110,4 +110,52 @@ describe AppSetting do
     end
   end
 
+  it 'catalog context keys types validation' do
+    meta_key_keywords = \
+      FactoryGirl.create(:meta_key_keywords,
+                         id: "test:#{Faker::Lorem.characters(8)}")
+    context_key_keywords = \
+      FactoryGirl.create(:context_key, meta_key: meta_key_keywords)
+
+    meta_key_groups = \
+      FactoryGirl.create(:meta_key_groups,
+                         id: "test:#{Faker::Lorem.characters(8)}")
+    context_key_groups = \
+      FactoryGirl.create(:context_key, meta_key: meta_key_groups)
+
+    meta_key_text = \
+      FactoryGirl.create(:meta_key_text,
+                         id: "test:#{Faker::Lorem.characters(8)}")
+    context_key_text = \
+      FactoryGirl.create(:context_key, meta_key: meta_key_text)
+
+    meta_key_text_date = \
+      FactoryGirl.create(:meta_key_text_date,
+                         id: "test:#{Faker::Lorem.characters(8)}")
+    context_key_text_date = \
+      FactoryGirl.create(:context_key, meta_key: meta_key_text_date)
+
+    meta_key_people = \
+      FactoryGirl.create(:meta_key_people,
+                         id: "test:#{Faker::Lorem.characters(8)}")
+    context_key_people = \
+    FactoryGirl.create(:context_key, meta_key: meta_key_people)
+
+    app_setting.catalog_context_keys = [context_key_keywords.id,
+                                        context_key_groups.id,
+                                        context_key_text.id,
+                                        context_key_text_date.id,
+                                        context_key_people.id]
+    expect(app_setting).not_to be_valid
+    expect(app_setting.errors.messages[:base]).to match_array \
+      ["The meta_key for context_key #{context_key_groups.id} " \
+       "is not of type 'MetaDatum::Keywords'",
+       "The meta_key for context_key #{context_key_text.id} " \
+       "is not of type 'MetaDatum::Keywords'",
+       "The meta_key for context_key #{context_key_text_date.id} " \
+       "is not of type 'MetaDatum::Keywords'",
+       "The meta_key for context_key #{context_key_people.id} " \
+       "is not of type 'MetaDatum::Keywords'"]
+  end
+
 end

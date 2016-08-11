@@ -3,6 +3,8 @@ class AppSetting < ActiveRecord::Base
     record.featured_set_id.present?
   }
 
+  validate :catalog_context_keys_types
+
   def uses_context_as(context_id = nil)
     used_as = []
     attrs = attributes.select do |attr|
@@ -51,6 +53,22 @@ class AppSetting < ActiveRecord::Base
         :base,
         "The set with a given ID: #{featured_set_id} doesn't exist!"
       )
+    end
+  end
+
+  def catalog_context_keys_types
+    # FIXME: we need this check because of the migrations
+    # might be removed when the migrations are changed
+    if self.class.method_defined? :catalog_context_keys
+      catalog_context_keys.each do |ck_id|
+        context_key = ContextKey.find_by_id(ck_id)
+        meta_key_type = context_key.try(:meta_key).try(:meta_datum_object_type)
+        next if not meta_key_type or meta_key_type == 'MetaDatum::Keywords'
+        errors.add \
+          :base,
+          "The meta_key for context_key #{ck_id} " \
+          "is not of type 'MetaDatum::Keywords'"
+      end
     end
   end
 end
