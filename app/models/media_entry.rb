@@ -34,8 +34,10 @@ class MediaEntry < ActiveRecord::Base
            through: :collection_media_entry_arcs,
            source: :collection
 
-  default_scope { where(is_published: true) }
-  default_scope { reorder(:created_at, :id) }
+  scope :ordered, -> { reorder(:created_at, :id) }
+  scope :published, -> { where(is_published: true) }
+  scope :not_published, -> { where(is_published: false) }
+  default_scope { published.ordered }
 
   # NOTE: could possibly be made as a DB trigger
   validate :validate_existence_of_meta_data_for_required_context_keys,
