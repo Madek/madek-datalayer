@@ -326,6 +326,27 @@ CREATE FUNCTION collection_may_not_be_its_own_parent() RETURNS trigger
 
 
 --
+-- Name: delete_empty_group_after_delete_join(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION delete_empty_group_after_delete_join() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+          BEGIN
+            IF (EXISTS (SELECT 1 FROM groups WHERE groups.id = OLD.group_id)
+                AND NOT EXISTS ( SELECT 1
+                                 FROM groups_users
+                                 JOIN groups ON groups.id = groups_users.group_id
+                                 WHERE groups.id = OLD.group_id))
+            THEN
+              DELETE FROM groups WHERE groups.id = OLD.group_id;
+            END IF;
+            RETURN NEW;
+          END;
+          $$;
+
+
+--
 -- Name: delete_empty_meta_data_groups_after_delete_join(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -2951,6 +2972,13 @@ CREATE CONSTRAINT TRIGGER trigger_collection_may_not_be_its_own_parent AFTER INS
 
 
 --
+-- Name: trigger_delete_empty_group_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER trigger_delete_empty_group_after_delete_join AFTER DELETE ON groups_users DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_empty_group_after_delete_join();
+
+
+--
 -- Name: trigger_delete_empty_meta_data_groups_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -4299,6 +4327,8 @@ INSERT INTO schema_migrations (version) VALUES ('211');
 INSERT INTO schema_migrations (version) VALUES ('212');
 
 INSERT INTO schema_migrations (version) VALUES ('213');
+
+INSERT INTO schema_migrations (version) VALUES ('214');
 
 INSERT INTO schema_migrations (version) VALUES ('22');
 
