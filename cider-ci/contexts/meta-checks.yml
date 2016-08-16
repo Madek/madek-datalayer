@@ -36,6 +36,9 @@ tasks:
 
   git-submodules-current:
     name: "git submodules trees all contain latest commit from origin/master"
+    git_options:
+      submodules:
+        include_match: ^.*$
     scripts:
       main:
         body: |
@@ -71,6 +74,9 @@ tasks:
   # TODO: automate submodule integration and check here if linear merge possible
   git-submodules-merged:
     name: "git submodules are all merged to origin/master"
+    git_options:
+      submodules:
+        include_match: ^.*$
     scripts:
       main:
         body: |
