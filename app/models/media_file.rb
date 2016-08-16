@@ -56,9 +56,16 @@ class MediaFile < ActiveRecord::Base
     raise "Input file doesn't exist!" unless File.exist?(store_location)
 
     Madek::Constants::THUMBNAILS.each do |thumb_size, dimensions|
+      next if thumb_size == :large && video?
       # TODO: more exception handling for the cases where
       # some thumbnails and/or previews potentially already exist ?
-      store_location_new_file = "#{thumbnail_store_location}_#{thumb_size}.jpg"
+
+      store_location_new_file =
+        if video?
+          video_thumbnail_filename(store_location, thumb_size)
+        else
+          "#{thumbnail_store_location}_#{thumb_size}.jpg"
+        end
       w = dimensions.try(:fetch, :width)
       h = dimensions.try(:fetch, :height)
 
@@ -106,6 +113,17 @@ class MediaFile < ActiveRecord::Base
   # FIXME: remove this
   def preview(size)
     previews.find_by(thumbnail: size)
+  end
+
+  private
+
+  def video_thumbnail_filename(store_location, thumb_size)
+    filename = store_location.split('/').last
+    filename, extension = filename.split('.')
+    variant = filename.split('_').last
+    suffix = [variant, thumb_size].join('_')
+
+    "#{thumbnail_store_location}_#{suffix}.#{extension}"
   end
 
 end
