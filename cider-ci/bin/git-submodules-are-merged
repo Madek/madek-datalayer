@@ -11,4 +11,4 @@ git fetch --all
 git submodule update --init --recursive
 
 git submodule foreach --recursive \
-  'git rev-list origin/master -- | grep -q "^$(git rev-parse HEAD)$"'
+  'git fetch --all && git rev-list origin/master -- | grep -q "^$(git rev-parse HEAD)$"'
