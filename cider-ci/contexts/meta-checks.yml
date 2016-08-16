@@ -79,18 +79,6 @@ tasks:
         include_match: ^.*$
     scripts:
       main:
-        body: |
-          #!/usr/bin/env bash
-          set -exu
+        body:
+          read_and_replace_with: cider-ci/bin/git-submodules-are-merged
 
-          # TODO: move this out of 'meta' tests (it's stable as long as origin doesn't change)
-
-          # checks if the commits referenced by submodules are included in their 'master'
-
-          # make sure all submodules are checked out
-          # WARNING: test is false-positive without this:
-          git fetch --all
-          git submodule update --init --recursive
-
-          git submodule foreach --recursive \
-            'git rev-list origin/master | grep -q "^$(git rev-parse HEAD)$"'
