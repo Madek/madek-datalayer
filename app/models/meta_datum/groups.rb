@@ -9,6 +9,10 @@ class MetaDatum::Groups < MetaDatum
 
   alias_method :value, :groups
 
+  def potential_value_for_new_record
+    meta_data_groups.map(&:group)
+  end
+
   def set_value!(groups, created_by_user)
     reset_with_sanitized_value!(groups, 'group', created_by_user)
   end

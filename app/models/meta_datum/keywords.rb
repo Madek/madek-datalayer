@@ -15,6 +15,10 @@ class MetaDatum::Keywords < MetaDatum
 
   alias_method :value, :keywords
 
+  def potential_value_for_new_record
+    meta_data_keywords.map(&:keyword)
+  end
+
   def set_value!(keywords, created_by_user)
     reset_with_sanitized_value!(keywords, 'keyword', created_by_user)
   end

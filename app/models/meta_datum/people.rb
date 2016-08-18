@@ -18,6 +18,10 @@ class MetaDatum::People < MetaDatum
 
   alias_method :value, :people
 
+  def potential_value_for_new_record
+    meta_data_people.map(&:person)
+  end
+
   def set_value!(people, created_by_user)
     reset_with_sanitized_value!(people, 'person', created_by_user)
   end

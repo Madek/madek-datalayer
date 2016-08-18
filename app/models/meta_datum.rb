@@ -32,7 +32,8 @@ class MetaDatum < ActiveRecord::Base
   # NOTE: could possibly be made as a DB trigger
   validate if: :validate_required_context_key_condition? do
     context_ids = context_ids_for_required_context_keys_validation
-    if value.blank? \
+    value_to_validate = new_record? ? potential_value_for_new_record : value
+    if value_to_validate.blank? \
         and ContextKey.find_by(meta_key_id: meta_key.id,
                                context_id: context_ids,
                                is_required: true)

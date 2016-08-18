@@ -7,6 +7,7 @@ class MetaDatum::Text < MetaDatum
   end
 
   alias_method :to_s, :value
+  alias_method :potential_value_for_new_record, :value
 
   def value=(new_value)
     with_sanitized(new_value) do |new_value|

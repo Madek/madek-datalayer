@@ -9,6 +9,10 @@ class MetaDatum::Licenses < MetaDatum
 
   alias_method :value, :licenses
 
+  def potential_value_for_new_record
+    meta_data_licenses.map(&:license)
+  end
+
   def set_value!(licenses, created_by_user)
     reset_with_sanitized_value!(licenses, 'license', created_by_user)
   end
