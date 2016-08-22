@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -eux
-bundle exec rake db:pg:terminate_connections db:drop db:create db:migrate VERSION=100
-bundle exec rake db:pg:truncate_tables db:pg:data:restore FILE=db/personas.100.pgbin
+bundle exec rake db:pg:terminate_connections db:drop db:create db:migrate VERSION=214
+bundle exec rake db:pg:truncate_tables db:pg:data:restore FILE=db/personas.214.pgbin
 bundle exec rake db:migrate
 bundle exec rake db:seed
 rm -f db/personas.pgbin
