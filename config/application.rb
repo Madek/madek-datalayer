@@ -24,6 +24,7 @@ module MadekDatalayer
     config.active_record.raise_in_transactional_callbacks = true
 
     config.active_record.schema_format = :sql
+    config.active_record.timestamped_migrations = false
 
     config.paths['config/initializers'] \
       << Rails.root.join('initializers')
