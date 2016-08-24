@@ -30,11 +30,19 @@ describe MetaDatum::Text do
         .not_to change { MetaDatum.count }
     end
 
-    it 'should sanitize special whitespace char and auto delete' do
-      string = Madek::Constants::SPECIAL_WHITESPACE_CHARS.sample
-      # using value= because of sanitization
-      expect { FactoryGirl.create :meta_datum_text, value: string }
-        .not_to change { MetaDatum.count }
+    context 'whitespace sanitization' do
+      it 'should sanitize special whitespace char and auto delete' do
+        string = Madek::Constants::SPECIAL_WHITESPACE_CHARS.sample
+        # using value= because of sanitization
+        expect { FactoryGirl.create :meta_datum_text, value: string }
+          .not_to change { MetaDatum.count }
+      end
+
+      it 'whitespace regexp should not match on newlines' do
+        string = 'foo\n\r\n\rbar'
+        expect { FactoryGirl.create :meta_datum_text, value: string }
+          .to change { MetaDatum.count }
+      end
     end
   end
 
