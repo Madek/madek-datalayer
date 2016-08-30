@@ -16,10 +16,10 @@ ActiveRecord::Base.transaction do
     ContextKey.find_or_create_by(context_id: 'core', meta_key_id: id)
   end
 
-  ck = ContextKey.find_by(context_id: 'core', meta_key_id: 'madek_core:keywords')
-  AppSetting.first.update_attributes!(
-    catalog_context_keys: [ck.id]
-  )
+  if AppSetting.first.catalog_context_keys.empty?
+    ck = ContextKey.find_by(context_id: 'core', meta_key_id: 'madek_core:keywords')
+    AppSetting.first.update_attributes!(catalog_context_keys: [ck.id])
+  end
 
   %w(madek_core:title madek_core:copyright_notice).each do |mkid|
     ContextKey.find_by(meta_key_id: mkid, context_id: 'core') \
