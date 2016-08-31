@@ -149,4 +149,28 @@ FactoryGirl.define do
     association :media_entry
     association :uploader, factory: :user
   end
+
+  factory :media_file_for_document, class: MediaFile do
+    extension 'pdf'
+    media_type 'document'
+    size 2_793_600
+    content_type 'application/pdf'
+    filename 'document.pdf'
+    guid { UUIDTools::UUID.random_create.hexdigest }
+    access_hash { UUIDTools::UUID.random_create.to_s }
+    association :media_entry
+    association :uploader, factory: :user
+  end
+
+  factory :media_file_for_other, class: MediaFile do
+    extension 'mts'
+    media_type 'other'
+    size 2_793_600
+    content_type 'model/vnd.mts'
+    filename 'other.mts'
+    guid { UUIDTools::UUID.random_create.hexdigest }
+    access_hash { UUIDTools::UUID.random_create.to_s }
+    association :media_entry
+    association :uploader, factory: :user
+  end
 end

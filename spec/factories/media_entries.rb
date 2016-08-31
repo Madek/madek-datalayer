@@ -42,6 +42,24 @@ FactoryGirl.define do
         FactoryGirl.create :media_file_for_audio, media_entry: me
       end
     end
+
+    factory :media_entry_with_video_media_file do
+      after(:create) do |me|
+        FactoryGirl.create :media_file_for_movie, media_entry: me
+      end
+    end
+
+    factory :media_entry_with_document_media_file do
+      after(:create) do |me|
+        FactoryGirl.create :media_file_for_document, media_entry: me
+      end
+    end
+
+    factory :media_entry_with_other_media_file do
+      after(:create) do |me|
+        FactoryGirl.create :media_file_for_other, media_entry: me
+      end
+    end
   end
 
   trait :fat do
