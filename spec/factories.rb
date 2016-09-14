@@ -15,7 +15,7 @@ module FactoryHelper
   def self.rand_bool(*opts)
     bias = ((opts and opts[0]) or 0.5)
     raise 'bias must be a real number within [0,1)' if bias < 0.0 or bias >= 1.0
-    (rand < bias) ? true : false
+    rand < bias ? true : false
   end
 
 end

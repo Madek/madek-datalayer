@@ -2,6 +2,16 @@
 
 class MetaDatum::Text < MetaDatum
 
+  before_save do
+    self.string =
+      if self.string.blank? \
+          || self.string.match(Madek::Constants::WHITESPACE_REGEXP)
+        nil
+      else
+        self.string.unicode_normalize(:nfc)
+      end
+  end
+
   def value
     string
   end

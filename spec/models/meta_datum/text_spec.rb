@@ -46,6 +46,29 @@ describe MetaDatum::Text do
     end
   end
 
+  context 'UTF8 NFC normalization' do
+
+    it "confirm that ruby :nfd isn't equal to :nfc" do
+      expect('Überweiß'.unicode_normalize(:nfd)).not_to \
+        be == 'Überweiß'.unicode_normalize(:nfc)
+    end
+
+    it 'converts to NFC when creating a meta datum' do
+      expect(FactoryGirl.create(
+        :meta_datum_text, string: 'Überweiß'.unicode_normalize(:nfd)
+      ).value).to \
+        be == 'Überweiß'.unicode_normalize(:nfc)
+    end
+
+    it 'converts to NFC when updating a meta datum' do
+      mdt = FactoryGirl.create(:meta_datum_text, \
+                               string: 'Blah'.unicode_normalize(:nfd))
+      mdt.update_attributes! string: 'Überweiß'.unicode_normalize(:nfd)
+      expect(mdt.value).to be == 'Überweiß'.unicode_normalize(:nfc)
+    end
+
+  end
+
   context 'an existing MetaDatumString instance ' do
 
     before :each do
