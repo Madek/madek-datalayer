@@ -88,10 +88,10 @@ CREATE TYPE collection_layout AS ENUM (
 --
 
 CREATE TYPE collection_sorting AS ENUM (
-    'author',
-    'created_at',
-    'title',
-    'updated_at'
+    'created_at ASC',
+    'created_at DESC',
+    'title ASC',
+    'title DESC'
 );
 
 
@@ -748,9 +748,9 @@ CREATE TABLE collections (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     layout collection_layout DEFAULT 'grid'::collection_layout NOT NULL,
-    sorting collection_sorting DEFAULT 'created_at'::collection_sorting NOT NULL,
     responsible_user_id uuid NOT NULL,
-    creator_id uuid NOT NULL
+    creator_id uuid NOT NULL,
+    sorting collection_sorting DEFAULT 'created_at DESC'::collection_sorting NOT NULL
 );
 
 
@@ -4329,6 +4329,8 @@ INSERT INTO schema_migrations (version) VALUES ('212');
 INSERT INTO schema_migrations (version) VALUES ('213');
 
 INSERT INTO schema_migrations (version) VALUES ('214');
+
+INSERT INTO schema_migrations (version) VALUES ('215');
 
 INSERT INTO schema_migrations (version) VALUES ('22');
 

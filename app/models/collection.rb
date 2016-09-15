@@ -23,9 +23,10 @@ class Collection < ActiveRecord::Base
   include Concerns::Collections::Arcs
   include Concerns::Collections::Siblings
   include Concerns::MediaResources
-  include Concerns::MediaResources::MetaDataArelConditions
+  include Concerns::MediaResources::CustomOrderBy
   include Concerns::MediaResources::Editability
   include Concerns::MediaResources::Highlight
+  include Concerns::MediaResources::MetaDataArelConditions
 
   #################################################################################
 
@@ -123,5 +124,11 @@ class Collection < ActiveRecord::Base
          WHERE NOT cca.parent_id = ANY(path))
       SELECT collection_tree.child_id AS id FROM collection_tree
     SQL
+  end
+
+  def self.joins_meta_data_title
+    joins('INNER JOIN meta_data ' \
+          'ON meta_data.collection_id = collections.id ' \
+          "AND meta_data.meta_key_id = 'madek_core:title'")
   end
 end

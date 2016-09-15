@@ -23,9 +23,10 @@ class MediaEntry < ActiveRecord::Base
   include Concerns::Collections::Siblings
   include Concerns::MediaEntries::Filters
   include Concerns::MediaResources
-  include Concerns::MediaResources::MetaDataArelConditions
+  include Concerns::MediaResources::CustomOrderBy
   include Concerns::MediaResources::Editability
   include Concerns::MediaResources::Highlight
+  include Concerns::MediaResources::MetaDataArelConditions
 
   has_one :media_file, dependent: :destroy
 
@@ -42,4 +43,10 @@ class MediaEntry < ActiveRecord::Base
   # NOTE: could possibly be made as a DB trigger
   validate :validate_existence_of_meta_data_for_required_context_keys,
            if: :is_published?
+
+  def self.joins_meta_data_title
+    joins('INNER JOIN meta_data ' \
+          'ON meta_data.media_entry_id = media_entries.id ' \
+          "AND meta_data.meta_key_id = 'madek_core:title'")
+  end
 end

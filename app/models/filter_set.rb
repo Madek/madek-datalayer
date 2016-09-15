@@ -19,10 +19,17 @@ class FilterSet < ActiveRecord::Base
   VIEW_PERMISSION_NAME = :get_metadata_and_previews
 
   include Concerns::MediaResources
+  include Concerns::MediaResources::CustomOrderBy
   include Concerns::MediaResources::Highlight
   include Concerns::MediaResources::MetaDataArelConditions
 
   # NOTE: could possibly be made as a DB trigger
   # NOTE: disabled because there is no workflow yet
   # validate :validate_existence_of_meta_data_for_required_context_keys
+
+  def self.joins_meta_data_title
+    joins('INNER JOIN meta_data ' \
+          'ON meta_data.filter_set_id = filter_sets.id ' \
+          "AND meta_data.meta_key_id = 'madek_core:title'")
+  end
 end
