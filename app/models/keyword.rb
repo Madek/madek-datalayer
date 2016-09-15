@@ -11,6 +11,12 @@ class Keyword < ActiveRecord::Base
     term
   end
 
+  before_save do
+    if self.term.present?
+      self.term = self.term.unicode_normalize(:nfc)
+    end
+  end
+
   def self.viewable_by_user_or_public(user = nil)
     viewable_vocabs = Vocabulary.viewable_by_user_or_public(user)
     joins(:meta_key)

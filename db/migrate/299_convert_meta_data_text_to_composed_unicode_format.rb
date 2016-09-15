@@ -1,8 +1,15 @@
 class ConvertMetaDataTextToComposedUnicodeFormat < ActiveRecord::Migration
   def change
-    MetaDatum::Text.find_each do |mdt|
-      mdt.update_attributes! string: \
-        mdt.string.present? ? mdt.string.unicode_normalize(:nfc) : nil
-    end
+
+    MetaDatum::Text.find_each { |mdt| mdt.save! touch: false}
+
+    execute <<-SQL.strip_heredoc
+      ALTER TABLE keywords DISABLE TRIGGER USER;
+    SQL
+    Keyword.find_each {|kw| kw.save! touch: false}
+    execute <<-SQL.strip_heredoc
+      ALTER TABLE keywords ENABLE TRIGGER USER;
+    SQL
+
   end
 end
