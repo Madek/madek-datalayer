@@ -40,8 +40,8 @@ class MediaResource < ActiveRecord::Base
       ON meta_data.meta_key_id = 'madek_core:title'
       AND (
         meta_data.media_entry_id = vw_media_resources.id
-        OR meta_data.media_entry_id = vw_media_resources.id
-        OR meta_data.media_entry_id = vw_media_resources.id
+        OR meta_data.collection_id = vw_media_resources.id
+        OR meta_data.filter_set_id = vw_media_resources.id
       )
     SQL
   end

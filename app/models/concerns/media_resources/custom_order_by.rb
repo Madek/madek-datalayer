@@ -5,19 +5,19 @@ module Concerns
 
       module ClassMethods
         def custom_order_by(order_spec)
-          case order_spec.downcase
-          when 'created_at asc'
+          case order_spec
+          when 'created_at ASC'
             reorder('created_at ASC')
-          when 'created_at desc'
+          when 'created_at DESC'
             reorder('created_at DESC')
-          when 'title asc'
+          when 'title ASC'
             joins_meta_data_title
               .reorder("meta_data.string ASC, #{table_name}.id ASC")
-          when 'title desc'
+          when 'title DESC'
             joins_meta_data_title
               .reorder("meta_data.string DESC, #{table_name}.id DESC")
           else
-            raise 'Invalid order spec!'
+            raise 'Invalid order spec! ' + order_spec
           end
         end
       end
