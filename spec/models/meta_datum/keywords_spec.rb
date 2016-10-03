@@ -8,7 +8,7 @@ describe MetaDatum::Keywords do
                         vocabulary: vocab,
                         id: "#{vocab.id}:#{Faker::Lorem.characters(10)}")
       expect { create(:meta_datum_keywords, created_by: nil, meta_key: meta_key) }
-        .to raise_error ActiveRecord::RecordInvalid
+        .to raise_error /created_by in table meta_data may not be null/
     end
   end
 end

@@ -19,7 +19,7 @@ module Concerns
           case attribute.to_sym
           when :first_name_last_name
             joins(:person)
-              .reorder('people.first_name ASC, people.last_name ASC')
+              .reorder('people.searchable ASC')
           else
             reorder(attribute)
           end

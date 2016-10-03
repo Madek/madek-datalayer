@@ -4,6 +4,7 @@ class Group < ActiveRecord::Base
   include Concerns::Groups::Searches
 
   has_and_belongs_to_many :users
+  belongs_to :person
 
   after_save :update_searchable
 

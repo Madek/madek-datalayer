@@ -3,7 +3,7 @@ class MetaDatum::People < MetaDatum
   ATTRIBUTES_FOR_ON_THE_FLY_RESOURCE_CREATION = [:first_name,
                                                  :last_name,
                                                  :pseudonym,
-                                                 :is_bunch]
+                                                 :subtype]
 
   has_many :meta_data_people,
            class_name: 'MetaDatum::Person',

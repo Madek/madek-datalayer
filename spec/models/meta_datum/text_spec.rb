@@ -22,7 +22,7 @@ describe MetaDatum::Text do
 
     it 'should raise an error for empty created_by' do
       expect { FactoryGirl.create :meta_datum_text, created_by: nil }
-        .to raise_error ActiveRecord::RecordInvalid
+        .to raise_error /created_by in table meta_data may not be null/
     end
 
     it 'should auto delete for empty string' do

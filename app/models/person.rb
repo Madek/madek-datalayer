@@ -2,6 +2,8 @@ class Person < ActiveRecord::Base
   include Concerns::FindResource
   include Concerns::People::Filters
 
+  self.inheritance_column = false
+
   default_scope { reorder(:last_name) }
 
   has_one :user
@@ -10,18 +12,19 @@ class Person < ActiveRecord::Base
 
   validate do
     if [first_name, last_name, pseudonym].all?(&:blank?)
-      errors.add(:base, 'Name cannot be blank')
+      errors.add(:base,
+                 'Either first_name or last_name or pseudonym must have a value!')
     end
   end
 
   def to_s
     case
     when ((first_name or last_name) and (pseudonym and !pseudonym.try(:empty?)))
-      "#{first_name} #{last_name} (#{pseudonym})"
+      "#{first_name} #{last_name} (#{pseudonym})".strip
     when (first_name or last_name)
-      "#{first_name} #{last_name}"
+      "#{first_name} #{last_name}".strip
     else
-      pseudonym.to_s
+      pseudonym.strip
     end
   end
 end

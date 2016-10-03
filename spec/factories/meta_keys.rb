@@ -41,11 +41,13 @@ FactoryGirl.define do
     factory :meta_key_people, class: MetaKey do
       id { 'test:people' }
       meta_datum_object_type 'MetaDatum::People'
+      allowed_people_subtypes %w(Person PeopleGroup)
     end
 
-    factory :meta_key_groups, class: MetaKey do
-      id { 'test:groups' }
-      meta_datum_object_type 'MetaDatum::Groups'
+    factory :meta_key_people_instgroup, class: MetaKey do
+      id { 'test:peopleinstgroup' }
+      meta_datum_object_type 'MetaDatum::People'
+      allowed_people_subtypes ['PeopleInstitutionalGroup']
     end
   end
 

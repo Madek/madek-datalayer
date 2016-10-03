@@ -49,12 +49,11 @@ RSpec.shared_context 'search in all meta data shared context' do
     collection = \
       FactoryGirl.create(:collection,
                          get_metadata_and_previews: true)
-    # don't use searchable for group, it has an after_save hook!
-    FactoryGirl.create(:meta_datum_groups,
-                       groups: [FactoryGirl.create(:group),
-                                FactoryGirl.create(:group,
-                                                   name: 'gaura nitai bol')],
-                       collection: collection)
+    FactoryGirl.create(
+      :meta_datum_people,
+      people: [FactoryGirl.create(:person),
+               FactoryGirl.create(:person, last_name: 'gaura nitai bol')],
+      collection: collection)
     collection
   end
 

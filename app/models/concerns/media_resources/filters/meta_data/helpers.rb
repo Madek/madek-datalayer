@@ -6,7 +6,7 @@ module Concerns
           extend ActiveSupport::Concern
 
           module ClassMethods
-            # actors: group, person, license, keyword
+            # actors: person, license, keyword
             def filter_by_meta_datum_actor_type(actor_type, meta_datum)
               actor_type_plural = actor_type.to_s.pluralize
               rmd_alias = "md#{actor_type_plural.first}_#{SecureRandom.hex(4)}"

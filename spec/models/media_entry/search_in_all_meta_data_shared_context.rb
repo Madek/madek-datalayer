@@ -47,20 +47,6 @@ RSpec.shared_context 'search in all meta data shared context' do
     media_entry
   end
 
-  let(:media_entry_5) do
-    media_entry = \
-      FactoryGirl.create(:media_entry,
-                         get_metadata_and_previews: true)
-    # don't use searchable for group, it has an after_save hook!
-    meta_datum_groups = \
-      FactoryGirl.create(:meta_datum_groups,
-                         groups: [FactoryGirl.create(:group),
-                                  FactoryGirl.create(:group,
-                                                     name: 'gaura nitai bol')])
-    media_entry.meta_data << meta_datum_groups
-    media_entry
-  end
-
   let(:media_entry_6) do
     media_entry = \
       FactoryGirl.create(:media_entry,

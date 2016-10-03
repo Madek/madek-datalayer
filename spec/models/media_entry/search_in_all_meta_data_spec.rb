@@ -14,13 +14,12 @@ describe MediaEntry do
                          media_entry_2,
                          media_entry_3,
                          media_entry_4,
-                         media_entry_5,
                          media_entry_6]
 
       filtered_media_entries = \
         MediaEntry.filter_by(meta_data: [{ key: 'any', match: 'nitai' }])
 
-      expect(filtered_media_entries.count).to be == 6
+      expect(filtered_media_entries.count).to be == 5
       expected_result.each do |me|
          expect(filtered_media_entries).to include me
       end

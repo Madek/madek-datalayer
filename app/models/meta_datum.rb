@@ -27,7 +27,7 @@ class MetaDatum < ActiveRecord::Base
   belongs_to :filter_set
 
   # TODO: create DB constraint for this
-  validates_presence_of :created_by, on: :create
+  # validates_presence_of :created_by, on: :create
 
   # NOTE: could possibly be made as a DB trigger
   validate if: :validate_required_context_key_condition? do

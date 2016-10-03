@@ -50,9 +50,12 @@ describe 'the namespace madek_core' do
       it "raises an exception 'may not be modified'" do
         expect do
           MetaKey.transaction do
-            MetaKey.connection.execute \
-              %(UPDATE meta_keys SET meta_datum_object_type = 'MetaDatum::People' \
-                WHERE id = 'madek_core:title')
+            MetaKey.connection.execute <<-SQL
+              UPDATE meta_keys
+              SET meta_datum_object_type = 'MetaDatum::People',
+                  allowed_people_subtypes = ARRAY['Person']
+              WHERE id = 'madek_core:title'
+            SQL
           end
         end.to raise_error(/may not be modified/)
       end

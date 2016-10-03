@@ -28,10 +28,10 @@ class RenameMetaDataTypes < ActiveRecord::Migration
 
     change_column :meta_keys, :meta_datum_object_type, :text, null: false, default: 'MetaDatum::Text'
 
-    execute %[ALTER TABLE meta_data ADD CONSTRAINT check_valid_type CHECK 
+    execute %[ALTER TABLE meta_data ADD CONSTRAINT check_valid_type CHECK
           (type IN (#{TYPE_MAP.values.uniq.map{|s|"'#{s}'"}.join(', ')}));]
 
-    execute %[ALTER TABLE meta_keys ADD CONSTRAINT check_valid_meta_datum_object_type CHECK 
+    execute %[ALTER TABLE meta_keys ADD CONSTRAINT check_valid_meta_datum_object_type CHECK
           (meta_datum_object_type IN (#{TYPE_MAP.values.uniq.map{|s|"'#{s}'"}.join(', ')}));]
 
   end

@@ -50,8 +50,6 @@ module Concerns
                                                                    meta_key_ids))
                 .or(matching_meta_data_people_exists_conditition(match,
                                                                  meta_key_ids))
-                .or(matching_meta_data_groups_exists_conditition(match,
-                                                                 meta_key_ids))
           end
         end
       end

@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
 
   default_scope { reorder(:login) }
 
-  belongs_to :person
+  belongs_to :person, -> { where(subtype: 'Person') }
   accepts_nested_attributes_for :person
 
   has_many :unpublished_media_entries,

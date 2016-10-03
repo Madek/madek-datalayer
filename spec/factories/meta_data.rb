@@ -92,17 +92,5 @@ FactoryGirl.define do
       end
     end
 
-    factory :meta_datum_groups, class: MetaDatum::Groups do
-      meta_key do
-        MetaKey.find_by(id: 'test:groups') \
-          || FactoryGirl.create(:meta_key_groups)
-      end
-      groups { (1..3).map { create :group } }
-      after(:build) do |md|
-        md.meta_data_groups.map do |mdg|
-          mdg.created_by = create(:user)
-        end
-      end
-    end
   end
 end

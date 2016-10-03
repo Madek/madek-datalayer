@@ -38,7 +38,6 @@ module Concerns
         define_matching_meta_data_exists_conditition('keywords', 'term')
         define_matching_meta_data_exists_conditition('licenses', 'label')
         define_matching_meta_data_exists_conditition('people', 'searchable')
-        define_matching_meta_data_exists_conditition('groups', 'searchable')
 
         def self.matching_meta_data_exists_condition(match, meta_key_ids)
           meta_data = MetaDatum.arel_table
