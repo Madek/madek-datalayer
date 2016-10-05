@@ -34,8 +34,4 @@ class InstitutionalGroup < Group
     end
   end
 
-  def readonly?
-    true
-  end
-
 end
