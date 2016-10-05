@@ -7,7 +7,10 @@ class Preview < ActiveRecord::Base
   before_create :set_media_type
 
   def file_path
-    "#{Madek::Constants::THUMBNAIL_STORAGE_DIR}/#{filename.first}/#{filename}"
+    path =
+      "#{Madek::Constants::THUMBNAIL_STORAGE_DIR}/#{filename.first}/#{filename}"
+    path.sub!('admin-webapp', 'webapp') if Rails.env.development?
+    path
   end
 
   after_destroy do

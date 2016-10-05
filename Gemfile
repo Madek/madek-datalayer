@@ -15,6 +15,7 @@ gem 'rspec-rails', '~> 3.1', group: [:test, :development]
 gem 'rubocop', '= 0.39.0', require: false
 gem 'strong_password'
 gem 'uuidtools'
+gem 'zencoder', '~> 2.4'
 
 gem 'cider_ci-support', '3.2', group: [:development, :test]
 gem 'factory_girl', group: [:test, :development]

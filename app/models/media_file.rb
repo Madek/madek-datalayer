@@ -8,7 +8,8 @@ class MediaFile < ActiveRecord::Base
   # include MediaFileModules::Previews
   # include MediaFileModules::MetaDataExtraction
 
-  belongs_to :media_entry, foreign_key: :media_entry_id
+  belongs_to :media_entry, -> { where(is_published: false) },
+             foreign_key: :media_entry_id
   has_many :zencoder_jobs, dependent: :destroy
   belongs_to :uploader, class_name: 'User'
 
@@ -103,11 +104,13 @@ class MediaFile < ActiveRecord::Base
   end
 
   def original_store_location
-    File.join(Madek::Constants::FILE_STORAGE_DIR, guid.first, guid)
+    path = File.join(Madek::Constants::FILE_STORAGE_DIR, guid.first, guid)
+    path_for_env(path)
   end
 
   def thumbnail_store_location
-    File.join(Madek::Constants::THUMBNAIL_STORAGE_DIR, guid.first, guid)
+    path = File.join(Madek::Constants::THUMBNAIL_STORAGE_DIR, guid.first, guid)
+    path_for_env(path)
   end
 
   # FIXME: remove this
@@ -116,6 +119,11 @@ class MediaFile < ActiveRecord::Base
   end
 
   private
+
+  def path_for_env(path)
+    return path.sub('admin-webapp', 'webapp') if Rails.env.development?
+    path
+  end
 
   def video_thumbnail_filename(store_location, thumb_size)
     filename = store_location.split('/').last

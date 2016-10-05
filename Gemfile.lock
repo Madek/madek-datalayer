@@ -76,6 +76,7 @@ GEM
     mime-types-data (3.2016.0221)
     mini_portile2 (2.0.0)
     minitest (5.8.4)
+    multi_json (1.11.2)
     nokogiri (1.6.7.2)
       mini_portile2 (~> 2.0.0.rc2)
     numerizer (0.1.1)
@@ -164,6 +165,8 @@ GEM
       thread_safe (~> 0.1)
     unicode-display_width (1.0.5)
     uuidtools (2.1.5)
+    zencoder (2.5.1)
+      multi_json
 
 PLATFORMS
   ruby
@@ -187,6 +190,7 @@ DEPENDENCIES
   rubocop (= 0.39.0)
   strong_password
   uuidtools
+  zencoder (~> 2.4)
 
 BUNDLED WITH
-   1.12.2
+   1.12.5
