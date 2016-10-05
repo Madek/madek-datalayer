@@ -29,4 +29,16 @@ ActiveRecord::Base.transaction do
   ActiveRecord::Base.connection.execute <<-SQL.strip_heredoc
     SET session_replication_role = DEFAULT;
   SQL
+
+
+  %w(label description hint).each do |column_name|
+    ActiveRecord::Base.connection.execute <<-SQL.strip_heredoc
+      UPDATE context_keys
+        SET #{column_name} = NULL
+        FROM meta_keys
+        WHERE meta_key_id = meta_keys.id
+        AND meta_keys.#{column_name} = context_keys.#{column_name}
+    SQL
+  end
+
 end
