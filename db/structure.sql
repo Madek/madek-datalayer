@@ -1382,6 +1382,8 @@ CREATE TABLE users (
     searchable text DEFAULT ''::text NOT NULL,
     accepted_usage_terms_id uuid,
     last_signed_in_at timestamp with time zone,
+    CONSTRAINT either_login_or_email_present CHECK (((email IS NOT NULL) OR (login IS NOT NULL))),
+    CONSTRAINT email_format CHECK ((((email)::text ~ '\S+@\S+'::text) OR (email IS NULL))),
     CONSTRAINT users_login_simple CHECK ((login ~* '^[a-z0-9\.\-\_]+$'::text))
 );
 
@@ -2950,6 +2952,20 @@ CREATE INDEX people_to_tsvector_idx ON people USING gin (to_tsvector('english'::
 
 
 --
+-- Name: unique_email_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX unique_email_idx ON users USING btree (lower((email)::text));
+
+
+--
+-- Name: unique_login_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX unique_login_idx ON users USING btree (login);
+
+
+--
 -- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4425,6 +4441,8 @@ INSERT INTO schema_migrations (version) VALUES ('31');
 INSERT INTO schema_migrations (version) VALUES ('310');
 
 INSERT INTO schema_migrations (version) VALUES ('311');
+
+INSERT INTO schema_migrations (version) VALUES ('312');
 
 INSERT INTO schema_migrations (version) VALUES ('32');
 
