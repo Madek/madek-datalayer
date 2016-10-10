@@ -1382,7 +1382,6 @@ CREATE TABLE users (
     searchable text DEFAULT ''::text NOT NULL,
     accepted_usage_terms_id uuid,
     last_signed_in_at timestamp with time zone,
-    CONSTRAINT either_login_or_email_present CHECK (((email IS NOT NULL) OR (login IS NOT NULL))),
     CONSTRAINT email_format CHECK ((((email)::text ~ '\S+@\S+'::text) OR (email IS NULL))),
     CONSTRAINT users_login_simple CHECK ((login ~* '^[a-z0-9\.\-\_]+$'::text))
 );

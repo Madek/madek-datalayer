@@ -9,7 +9,9 @@ class AddContraintsForUserSignInColumns < ActiveRecord::Migration
 
       ALTER TABLE users ADD CONSTRAINT email_format CHECK ((email ~ '\\S+@\\S+') OR (email IS NULL));
 
-      ALTER TABLE users ADD CONSTRAINT either_login_or_email_present CHECK ((email IS NOT NULL) OR (login IS NOT NULL));
+      -- we can't enfoce this currently with ZHdK data; login AND email may be reused and must be reset
+      -- to NULL possibly
+      -- ALTER TABLE users ADD CONSTRAINT either_login_or_email_present CHECK ((email IS NOT NULL) OR (login IS NOT NULL));
     SQL
   end
 end
