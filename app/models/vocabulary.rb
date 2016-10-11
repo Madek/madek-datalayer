@@ -4,8 +4,7 @@ class Vocabulary < ActiveRecord::Base
 
   include Concerns::Entrust
   include Concerns::PermissionsAssociations
-  include Concerns::Vocabularies::Visibility
-  include Concerns::Vocabularies::Usability
+  include Concerns::Vocabularies::AccessScopesAndHelpers
   include Concerns::Vocabularies::Filters
   include Concerns::Orderable
 
