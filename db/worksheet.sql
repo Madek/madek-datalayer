@@ -1,7 +1,28 @@
 
-SELECT DISTINCT meta_terms.term, meta_keys.id, meta_key_definitions.label,  contexts.id 
+SELECT subtype, institutional_id, last_name, pseudonym  FROM people
+  WHERE institutional_id IS NOT NULL
+  AND subtype = 'PeopleInstitutionalGroup' ;
+
+SELECT subtype, institutional_id, last_name  FROM people
+  WHERE institutional_id IS NOT NULL
+  AND subtype = 'PeopleInstitutionalGroup'
+  AND institutional_id !~ '^.*\.alle$'
+  AND NOT EXISTS (SELECT 1 FROM meta_data_people WHERE meta_data_people.person_id = people.id)
+  ;
+
+SELECT meta_keys.id AS meta_key_id,
+       contexts.id AS context_id,
+       meta_keys.label AS mk_label,
+       context_keys.label AS ctxk_label
+FROM meta_keys
+INNER JOIN context_keys ON context_keys.meta_key_id = meta_keys.id
+INNER JOIN contexts ON context_keys.context_id = contexts.id
+ORDER BY meta_keys.id ;
+
+
+SELECT DISTINCT meta_terms.term, meta_keys.id, meta_key_definitions.label,  contexts.id
 FROM meta_terms, meta_keys_meta_terms, meta_keys, meta_key_definitions, contexts
-WHERE true 
+WHERE true
 AND meta_keys_meta_terms.meta_term_id = meta_terms.id
 AND meta_keys_meta_terms.meta_key_id = meta_keys.id
 AND meta_key_definitions.meta_key_id = meta_keys.id
@@ -14,25 +35,25 @@ SELECT meta_keys.id, meta_key_definitions.label, meta_key_definitions.descriptio
 JOIN meta_key_definitions ON meta_key_definitions.meta_key_id  = meta_keys.id
 JOIN contexts ON meta_key_definitions.context_id = contexts.id
 AND contexts.id = 'core'
-; 
+;
 
 
 Connection: T(PGSQL)  H(localhost)  S(localhost)  D(madek_v3_development)  U(thomas)   at 09:59
-           id           |     label     | description 
+           id           |     label     | description
 ------------------------+---------------+-------------
- portrayed object dates | Datierung     | 
- keywords               | Schlagworte   | 
- author                 | Autor/in      | 
- title                  | Titel         | 
- subtitle               | Untertitel    | 
- copyright notice       | Rechteinhaber | 
+ portrayed object dates | Datierung     |
+ keywords               | Schlagworte   |
+ author                 | Autor/in      |
+ title                  | Titel         |
+ subtitle               | Untertitel    |
+ copyright notice       | Rechteinhaber |
 (6 rows)
 
 
 
 
 
-### 
+###
 
    SELECT count(collections.id) + count(media_entries.id) + count(filter_sets.id)
    FROM resources
@@ -47,10 +68,10 @@ Connection: T(PGSQL)  H(localhost)  S(localhost)  D(madek_v3_development)  U(tho
 
 ### Refactoring meta_key_definitions -> meta_keys #############################
 
-SELECT meta_key_definitions.label AS meta_key_definition_label, 
-  meta_keys.id AS meta_key_id, 
-  contexts.label AS context_label 
-FROM meta_key_definitions 
+SELECT meta_key_definitions.label AS meta_key_definition_label,
+  meta_keys.id AS meta_key_id,
+  contexts.label AS context_label
+FROM meta_key_definitions
 LEFT OUTER JOIN meta_keys ON meta_key_definitions.meta_key_id = meta_keys.id
 LEFT OUTER JOIN contexts ON meta_key_definitions.context_id = contexts.id
 ORDER BY meta_key_id
@@ -82,7 +103,7 @@ SELECT * from meta_data_institutional_groups;
 ######################################################################################
 
 
-SELECT media_resource_arcs.* from media_resource_arcs 
+SELECT media_resource_arcs.* from media_resource_arcs
 INNER JOIN media_resources ON media_resources.id = child_id
 WHERE cover = true
 AND media_resources.type = 'MediaSet'
@@ -90,7 +111,7 @@ AND media_resources.type = 'MediaSet'
 
 
 
-SELECT meta_keys.id AS meta_key_id, 
+SELECT meta_keys.id AS meta_key_id,
 (SELECT count(*) FROM meta_key_definitions AS mkds WHERE mkds.meta_key_id = meta_keys.id) AS multiplicity,
 meta_key_definitions.label AS meta_key_definitions_label,
 contexts.label
@@ -111,7 +132,7 @@ GROUP BY meta_terms.term,
          meta_keys_meta_terms.meta_key_id,
          meta_keys_meta_terms.meta_term_id
 HAVING count(*) > 1
-ORDER BY count desc 
+ORDER BY count desc
 ;
 
 SELECT "media_resources".*
@@ -148,7 +169,7 @@ WHERE "grouppermissions"."view" = 'f'
   AND "grouppermissions"."edit" = 'f'
   AND "grouppermissions"."download" = 'f'
   AND "grouppermissions"."manage" = 'f'
-GROUP BY groups.id 
+GROUP BY groups.id
 ORDER BY count_all_false_grouppermissions DESC;
 
 
@@ -202,7 +223,7 @@ WHERE "grouppermissions"."view" = 'f'
   AND "grouppermissions"."edit" = 'f'
   AND "grouppermissions"."download" = 'f'
   AND "grouppermissions"."manage" = 'f'
-GROUP BY groups.id 
+GROUP BY groups.id
 ORDER BY count_all_false_grouppermissions DESC;
 
 
@@ -242,18 +263,18 @@ SELECT * FROM pg_stat_activity WHERE pg_stat_activity.datname = 'madek_test';
 SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'madek_test';
 
 
--- All media_fieles of type video which do not have both previews (mp4 and webm)  
+-- All media_fieles of type video which do not have both previews (mp4 and webm)
 -- and are referenced by an media_entry
 SELECT count(media_files.id) FROM media_files
  INNER JOIN media_resources ON media_resources.media_file_id = media_files.id
  WHERE media_files.media_type = 'video'
- AND 
+ AND
   (
     NOT EXISTS  (SELECT true FROM media_files as mf
                     INNER JOIN previews ON previews.media_file_id = mf.id
                     WHERE mf.id = media_files.id
                     AND previews.content_type  = 'video/mp4')
-  OR 
+  OR
     NOT EXISTS  (SELECT true FROM media_files as mf
                   INNER JOIN previews ON previews.media_file_id = mf.id
                   WHERE mf.id = media_files.id
@@ -261,21 +282,21 @@ SELECT count(media_files.id) FROM media_files
               );
 
 
-                  
-
-SELECT DISTINCT content_type FROM previews; 
 
 
-SELECT * FROM previews WHERE content_type = 'video/x-ms-wmv'; 
-SELECT * FROM previews WHERE content_type = 'video/quicktime'; 
+SELECT DISTINCT content_type FROM previews;
 
 
-SELECT * FROM previews WHERE filename ilike '%mp4' AND content_type != 'video/mp4' ; 
-SELECT * FROM previews WHERE filename ilike '%webm' AND content_type != 'video/webm' ; 
+SELECT * FROM previews WHERE content_type = 'video/x-ms-wmv';
+SELECT * FROM previews WHERE content_type = 'video/quicktime';
 
 
-UPDATE previews SET content_type = 'video/mp4' WHERE filename ilike '%mp4' AND content_type != 'video/mp4'; 
-UPDATE previews SET content_type = 'video/webm' WHERE filename ilike '%webm' AND content_type != 'video/webm'; 
+SELECT * FROM previews WHERE filename ilike '%mp4' AND content_type != 'video/mp4' ;
+SELECT * FROM previews WHERE filename ilike '%webm' AND content_type != 'video/webm' ;
+
+
+UPDATE previews SET content_type = 'video/mp4' WHERE filename ilike '%mp4' AND content_type != 'video/mp4';
+UPDATE previews SET content_type = 'video/webm' WHERE filename ilike '%webm' AND content_type != 'video/webm';
 
 
 
@@ -284,7 +305,7 @@ UPDATE previews SET content_type = 'video/webm' WHERE filename ilike '%webm' AND
 
 SELECT count(arc_id) as size, media_resources.id, meta_data.string as meta_datum_title FROM "media_resources" LEFT OUTER JOIN (  WITH RECURSIVE triple(p,c,media_resource_id) as
       (
-        SELECT parent_id as p, child_id as c, media_resources.id as media_resource_id 
+        SELECT parent_id as p, child_id as c, media_resources.id as media_resource_id
           FROM media_resource_arcs, media_resources
           WHERE parent_id = media_resources.id
           AND child_id in ( SELECT media_resources.id FROM "media_resources"  WHERE (media_resources.id in (6751,6763,6755,6745,6753,6749,6741,6747,6743,6757,6761,8375,6759)) )
@@ -292,15 +313,15 @@ SELECT count(arc_id) as size, media_resources.id, meta_data.string as meta_datum
         SELECT parent_id as p, child_id as c, media_resource_id FROM triple, media_resource_arcs
           WHERE parent_id = triple.c
           AND child_id in ( SELECT media_resources.id FROM "media_resources"  WHERE (media_resources.id in (6751,6763,6755,6745,6753,6749,6741,6747,6743,6757,6761,8375,6759)) )
-      ) 
+      )
       SELECT id as arc_id, media_resource_id FROM media_resource_arcs, triple
         WHERE media_resource_arcs.parent_id = triple.p
-        AND media_resource_arcs.child_id = triple.c 
-     ) descendants ON media_resources.id = descendants.media_resource_id 
-   LEFT OUTER JOIN "meta_data" ON "meta_data"."media_resource_id" = "media_resources"."id" 
-   LEFT OUTER JOIN "meta_keys" ON "meta_keys"."id" = "meta_data"."meta_key_id" 
-   WHERE (media_resources.id in (6751,6763,6755,6745,6753,6749,6741,6747,6743,6757,6761,8375,6759)) 
-   AND (("meta_keys"."label" = 'title' OR  "meta_keys"."label" is NULL)) 
+        AND media_resource_arcs.child_id = triple.c
+     ) descendants ON media_resources.id = descendants.media_resource_id
+   LEFT OUTER JOIN "meta_data" ON "meta_data"."media_resource_id" = "media_resources"."id"
+   LEFT OUTER JOIN "meta_keys" ON "meta_keys"."id" = "meta_data"."meta_key_id"
+   WHERE (media_resources.id in (6751,6763,6755,6745,6753,6749,6741,6747,6743,6757,6761,8375,6759))
+   AND (("meta_keys"."label" = 'title' OR  "meta_keys"."label" is NULL))
    GROUP BY media_resources.id, meta_datum_title
 ;
 
@@ -308,21 +329,21 @@ SELECT count(arc_id) as size, media_resources.id, meta_data.string as meta_datum
 [6751, 6763, 6755, 6745, 6753, 6749, 6741, 6747, 6743, 6757, 6761, 8375, 6759]
 -- Fix: include nodes without title
 
-SELECT media_resources.id, media_resources.type, meta_data.string as meta_datum_title 
+SELECT media_resources.id, media_resources.type, meta_data.string as meta_datum_title
   FROM media_resources
-  LEFT OUTER JOIN "meta_data" ON "meta_data"."media_resource_id" = "media_resources"."id" 
-  LEFT OUTER JOIN "meta_keys" ON "meta_keys"."id" = "meta_data"."meta_key_id" 
+  LEFT OUTER JOIN "meta_data" ON "meta_data"."media_resource_id" = "media_resources"."id"
+  LEFT OUTER JOIN "meta_keys" ON "meta_keys"."id" = "meta_data"."meta_key_id"
   WHERE ("meta_keys"."label" = 'title' OR  "meta_keys"."label" is NULL)
   GROUP BY media_resources.id, meta_datum_title
   ;
 
-SELECT count(arc_id) as size, media_resources.id,media_resources.type, meta_data.string as meta_datum_title FROM "media_resources" 
-  LEFT OUTER JOIN "meta_data" ON "meta_data"."media_resource_id" = "media_resources"."id" 
-  LEFT OUTER JOIN "meta_keys" ON "meta_keys"."id" = "meta_data"."meta_key_id" 
-  LEFT OUTER JOIN 
+SELECT count(arc_id) as size, media_resources.id,media_resources.type, meta_data.string as meta_datum_title FROM "media_resources"
+  LEFT OUTER JOIN "meta_data" ON "meta_data"."media_resource_id" = "media_resources"."id"
+  LEFT OUTER JOIN "meta_keys" ON "meta_keys"."id" = "meta_data"."meta_key_id"
+  LEFT OUTER JOIN
     (  WITH RECURSIVE triple(p,c,media_resource_id) as
         (
-          SELECT parent_id as p, child_id as c, media_resources.id as media_resource_id 
+          SELECT parent_id as p, child_id as c, media_resources.id as media_resource_id
             FROM media_resource_arcs, media_resources
             WHERE parent_id = media_resources.id
             AND child_id in ( SELECT media_resources.id FROM "media_resources"  WHERE "media_resources"."user_id" = 1 )
@@ -330,12 +351,12 @@ SELECT count(arc_id) as size, media_resources.id,media_resources.type, meta_data
           SELECT parent_id as p, child_id as c, media_resource_id FROM triple, media_resource_arcs
             WHERE parent_id = triple.c
             AND child_id in ( SELECT media_resources.id FROM "media_resources"  WHERE "media_resources"."user_id" = 1 )
-        ) 
+        )
         SELECT id as arc_id, media_resource_id FROM media_resource_arcs, triple
           WHERE media_resource_arcs.parent_id = triple.p
-          AND media_resource_arcs.child_id = triple.c 
-       ) descendants ON media_resources.id = descendants.media_resource_id 
-  WHERE "media_resources"."user_id" = 1 
+          AND media_resource_arcs.child_id = triple.c
+       ) descendants ON media_resources.id = descendants.media_resource_id
+  WHERE "media_resources"."user_id" = 1
   AND ( "meta_keys"."label" = 'title' OR  "meta_keys"."label" is NULL)
   GROUP BY media_resources.id, meta_datum_title
   ;
@@ -347,17 +368,17 @@ FROM media_resources,
   (
     WITH RECURSIVE triple(p,c,media_resource_id) as
     (
-      SELECT parent_id as p, child_id as c, media_resources.id as media_resource_id 
+      SELECT parent_id as p, child_id as c, media_resources.id as media_resource_id
         FROM media_resource_arcs, media_resources
         WHERE parent_id = media_resources.id
       UNION
       SELECT parent_id as p, child_id as c, media_resource_id FROM triple, media_resource_arcs
         WHERE parent_id = triple.c
-    ) 
+    )
     SELECT id as arc_id, media_resource_id FROM media_resource_arcs, triple
       WHERE media_resource_arcs.parent_id = triple.p
-      AND media_resource_arcs.child_id = triple.c 
-  ) descendants 
+      AND media_resource_arcs.child_id = triple.c
+  ) descendants
   WHERE media_resources.id = media_resource_id
   GROUP BY media_resources.id
   ORDER BY size DESC;
@@ -365,33 +386,33 @@ FROM media_resources,
 
     WITH RECURSIVE triple(p,c,media_resource_id) as
     (
-      SELECT parent_id as p, child_id as c, media_resources.id as media_resource_id 
+      SELECT parent_id as p, child_id as c, media_resources.id as media_resource_id
         FROM media_resource_arcs, media_resources
         WHERE parent_id = media_resources.id
       UNION
       SELECT parent_id as p, child_id as c, media_resource_id FROM triple, media_resource_arcs
         WHERE parent_id = triple.c
-    ) 
+    )
     SELECT id as arc_id, media_resource_id FROM media_resource_arcs, triple
       WHERE media_resource_arcs.parent_id = triple.p
-      AND media_resource_arcs.child_id = triple.c 
+      AND media_resource_arcs.child_id = triple.c
       ;
 
 
-select count(arc_id), media_resource_id 
+select count(arc_id), media_resource_id
   FROM media_resources,
     (
       WITH RECURSIVE pair(p,c) as
       (
-        SELECT parent_id as p, child_id as c FROM media_resource_arcs 
+        SELECT parent_id as p, child_id as c FROM media_resource_arcs
           WHERE parent_id = 163
         UNION
         SELECT parent_id as p, child_id as c FROM pair, media_resource_arcs
           WHERE parent_id = pair.c
-      ) 
+      )
       SELECT id as arc_id, 163 as media_resource_id FROM media_resource_arcs, pair
         WHERE media_resource_arcs.parent_id = pair.p
-        AND media_resource_arcs.child_id = pair.c 
+        AND media_resource_arcs.child_id = pair.c
     ) descendants
   WHERE descendants.media_resource_id = media_resources.id
   GROUP BY media_resource_id
@@ -400,34 +421,34 @@ select count(arc_id), media_resource_id
 
 WITH RECURSIVE pair(p,c) as
 (
-  SELECT parent_id as p, child_id as c FROM media_resource_arcs 
+  SELECT parent_id as p, child_id as c FROM media_resource_arcs
     WHERE parent_id = 163
   UNION
   SELECT parent_id as p, child_id as c FROM pair, media_resource_arcs
     WHERE parent_id = pair.c
-) 
+)
 SELECT id FROM media_resource_arcs, pair
   WHERE media_resource_arcs.parent_id = pair.p
   AND media_resource_arcs.child_id = pair.c ;
 
 
-SELECT COUNT(id) FROM "media_resources" 
-  WHERE ( media_resources.id in 
-    ( SELECT child_id FROM "media_resource_arcs" 
-      WHERE ( media_resource_arcs.id in ( 
+SELECT COUNT(id) FROM "media_resources"
+  WHERE ( media_resources.id in
+    ( SELECT child_id FROM "media_resource_arcs"
+      WHERE ( media_resource_arcs.id in (
          WITH RECURSIVE pair(p,c) as
          (
-           SELECT parent_id as p, child_id as c FROM media_resource_arcs 
+           SELECT parent_id as p, child_id as c FROM media_resource_arcs
            WHERE parent_id = 163
            UNION
            SELECT parent_id as p, child_id as c FROM pair, media_resource_arcs
            WHERE parent_id = pair.c
-           ) 
+           )
            SELECT id FROM media_resource_arcs, pair
            WHERE media_resource_arcs.parent_id = pair.p
            AND media_resource_arcs.child_id = pair.c
-           )) 
-    ) 
+           ))
+    )
   )  ;
 
 
@@ -439,8 +460,8 @@ SELECT COUNT(id) FROM "media_resources"
 SELECT user_id FROM keywords WHERE meta_datum_id IS NULL GROUP BY user_id;
 
 -- migrate the data
-DELETE FROM keywords WHERE meta_datum_id IS NULL; 
-DELETE FROM meta_keys_meta_terms  WHERE meta_term_id NOT IN (SELECT id FROM  meta_terms); 
+DELETE FROM keywords WHERE meta_datum_id IS NULL;
+DELETE FROM meta_keys_meta_terms  WHERE meta_term_id NOT IN (SELECT id FROM  meta_terms);
 UPDATE media_resources SET user_id = 10301 WHERE user_id IS NULL;
 
 ###############################################################################################
@@ -454,14 +475,14 @@ select count(*) from information_schema.columns where table_name = 'people';
 
 # descendants
 
-SELECT * from media_resources 
+SELECT * from media_resources
   WHERE media_resources.id = 147
   AND media_resources.id in (SELECT media_resources.id where media_resources.user_id = 10301)
 UNION
   (
   WITH RECURSIVE pair(p,c) AS
     (
-      SELECT parent_id as p, child_id as c FROM media_resource_arcs 
+      SELECT parent_id as p, child_id as c FROM media_resource_arcs
           WHERE parent_id in (163)
           AND parent_id in (SELECT media_resources.id FROM media_resources WHERE media_resources.user_id = 10301)
           AND child_id in (SELECT media_resources.id FROM media_resources WHERE media_resources.user_id = 10301)
@@ -477,7 +498,7 @@ UNION
 
 WITH RECURSIVE pair(p,c) AS
 (
-  SELECT parent_id as p, child_id as c FROM media_resource_arcs 
+  SELECT parent_id as p, child_id as c FROM media_resource_arcs
   WHERE parent_id in (163)
   AND parent_id in (SELECT media_resources.id FROM media_resources WHERE media_resources.user_id = 10301)
   AND child_id in (SELECT media_resources.id FROM media_resources WHERE media_resources.user_id = 10301)
@@ -493,7 +514,7 @@ SELECT * from media_resources  where media_resources.id in (SELECT pair.c from p
 
 WITH RECURSIVE pair(p,c) as
 (
-    SELECT parent_id as p, child_id as c FROM media_resource_arcs 
+    SELECT parent_id as p, child_id as c FROM media_resource_arcs
       WHERE parent_id in (43886)
        OR child_id in (43886)
   UNION
@@ -502,7 +523,7 @@ WITH RECURSIVE pair(p,c) as
       OR parent_id = pair.p
       OR child_id = pair.p
       OR child_id = pair.c
-) 
+)
 SELECT * FROM pair ;
 
 select * from media_resource_arcs where parent_id in ( 43885,43886,43887) ;
@@ -512,14 +533,14 @@ select * from media_resource_arcs where parent_id in ( 43885,43886,43887) ;
 SELECT id FROM media_resources WHERE media_resources.id in (
   WITH RECURSIVE pair(p,c) as
   (
-      SELECT parent_id as p, child_id as c FROM media_resource_arcs 
+      SELECT parent_id as p, child_id as c FROM media_resource_arcs
         WHERE parent_id = 1
     UNION
       SELECT pair.p as p, media_resource_arcs.child_id as c from pair, media_resource_arcs
         WHERE media_resource_arcs.parent_id = c
-        
+
   ) select c from pair
-) order by id; 
+) order by id;
 
 ##############################################
 
@@ -528,44 +549,44 @@ SELECT id FROM media_resources WHERE media_resources.id in (
 SELECT id FROM media_resources WHERE media_resources.id in (
   WITH RECURSIVE pair(p,c) as
   (
-      SELECT parent_id as p, child_id as c FROM media_resource_arcs 
+      SELECT parent_id as p, child_id as c FROM media_resource_arcs
         WHERE parent_id = 1
     UNION
       SELECT pair.p as p, media_resource_arcs.child_id as c from pair, media_resource_arcs
         WHERE media_resource_arcs.parent_id = c
-        
+
   ) select c from pair
-) order by id; 
+) order by id;
 
 ##############################################
 
 SELECT DISTINCT ON  meta_key_definitions.meta_context_id
-  meta_key_definitions.meta_context_id, meta_data.id as meta_data_id, meta_data.string , meta_keys.* 
-  FROM meta_data,meta_keys,meta_key_definitions 
+  meta_key_definitions.meta_context_id, meta_data.id as meta_data_id, meta_data.string , meta_keys.*
+  FROM meta_data,meta_keys,meta_key_definitions
   WHERE  true
-  AND meta_key_definitions.meta_key_id = meta_keys.id 
-  AND  meta_data.meta_key_id = meta_keys.id 
-  AND type = 'MetaDatumString' 
+  AND meta_key_definitions.meta_key_id = meta_keys.id
+  AND  meta_data.meta_key_id = meta_keys.id
+  AND type = 'MetaDatumString'
   AND string like '%Binary%'
   ;
 
 
-SELECT 
-  meta_key_definitions.meta_context_id, meta_data.id as meta_data_id, meta_data.string , meta_keys.* 
-  FROM meta_data,meta_keys,meta_key_definitions 
+SELECT
+  meta_key_definitions.meta_context_id, meta_data.id as meta_data_id, meta_data.string , meta_keys.*
+  FROM meta_data,meta_keys,meta_key_definitions
   WHERE  true
-  AND meta_key_definitions.meta_key_id = meta_keys.id 
-  AND  meta_data.meta_key_id = meta_keys.id 
-  AND type <> 'MetaDatumString' 
+  AND meta_key_definitions.meta_key_id = meta_keys.id
+  AND  meta_data.meta_key_id = meta_keys.id
+  AND type <> 'MetaDatumString'
   AND string like '%Binary%'
   ;
 
 
 
 
-SELECT 
+SELECT
     keywords.id as keyword_id,
-    meta_data.id as meta_data_id, 
+    meta_data.id as meta_data_id,
     meta_keys.meta_datum_object_type as object_type
   FROM meta_data
   INNER JOIN meta_data_keywords ON meta_data_keywords.meta_datum_id = meta_data.id
@@ -583,7 +604,7 @@ SELECT keywords.id, count(meta_data.id) as count_meta_data_id
   INNER JOIN meta_keys ON  meta_data.meta_key_id = meta_keys.id
   WHERE true
   AND meta_keys.meta_datum_object_type = 'MetaDatumKeywords'
-  GROUP BY keywords.id 
+  GROUP BY keywords.id
   ORDER BY count_meta_data_id DESC
   ;
 
@@ -614,7 +635,7 @@ SELECT meta_datum_id, count(keyword_id) as keyword_id_count
 
 
 
--- 
+--
 
 
 SELECT meta_data.value, meta_keys.object_type FROM meta_data, meta_keys
@@ -622,69 +643,69 @@ SELECT meta_data.value, meta_keys.object_type FROM meta_data, meta_keys
   AND meta_data.meta_key_id = meta_keys.id
   AND meta_keys.object_type = 'MetaDepartment'
   AND meta_data.value LIKE '%87%';
-  
 
-select * from meta_data 
+
+select * from meta_data
 where true
 AND meta_data.media_resource_id = 27
 ;
 
 --
 
-SELECT `media_resources`.* FROM `media_resources`  WHERE (id in ((( SELECT NULL) 
+SELECT `media_resources`.* FROM `media_resources`  WHERE (id in ((( SELECT NULL)
       UNION ( ( SELECT media_resources.id as media_resource_id FROM `grouppermissions` INNER JOIN `groups` ON `groups`.`id` = `grouppermissions`.`group_id` INNER JOIN `groups_users` ON `groups_users`.`group_id` = `groups`.`id` INNER JOIN `users` ON `users`.`id` = `groups_users`.`user_id` INNER JOIN `media_resources` ON `media_resources`.`id` = `grouppermissions`.`media_resource_id` WHERE `grouppermissions`.`download` = 0 AND `grouppermissions`.`view` = 1 AND `grouppermissions`.`edit` = 0 AND `grouppermissions`.`manage` = 0 AND (users.id = 2) )
               )
-            ) UNION (( SELECT NULL) 
-            UNION ( SELECT media_resources.id as media_resource_id FROM `userpermissions` INNER JOIN `media_resources` ON `media_resources`.`id` = `userpermissions`.`media_resource_id` WHERE `userpermissions`.`download` = 0 AND `userpermissions`.`view` = 1 AND `userpermissions`.`edit` = 0 AND `userpermissions`.`manage` = 0 AND `userpermissions`.`user_id` = 2 ) 
+            ) UNION (( SELECT NULL)
+            UNION ( SELECT media_resources.id as media_resource_id FROM `userpermissions` INNER JOIN `media_resources` ON `media_resources`.`id` = `userpermissions`.`media_resource_id` WHERE `userpermissions`.`download` = 0 AND `userpermissions`.`view` = 1 AND `userpermissions`.`edit` = 0 AND `userpermissions`.`manage` = 0 AND `userpermissions`.`user_id` = 2 )
           )));
 
-SELECT `media_resources`.* FROM `media_resources`  WHERE (id in 
-  (  SELECT media_resources.id as media_resource_id 
-          FROM `grouppermissions` 
-          INNER JOIN `groups` ON `groups`.`id` = `grouppermissions`.`group_id` INNER JOIN `groups_users` ON `groups_users`.`group_id` = `groups`.`id` 
-          INNER JOIN `users` ON `users`.`id` = `groups_users`.`user_id` INNER JOIN `media_resources` ON `media_resources`.`id` = `grouppermissions`.`media_resource_id` 
-          WHERE `grouppermissions`.`download` = 0 AND `grouppermissions`.`view` = 1 AND `grouppermissions`.`edit` = 0 AND `grouppermissions`.`manage` = 0 AND (users.id = 2) 
-       UNION 
-         SELECT media_resources.id as media_resource_id FROM `userpermissions` 
-          INNER JOIN `media_resources` ON `media_resources`.`id` = `userpermissions`.`media_resource_id` 
-          WHERE `userpermissions`.`download` = 0 AND `userpermissions`.`view` = 1 
+SELECT `media_resources`.* FROM `media_resources`  WHERE (id in
+  (  SELECT media_resources.id as media_resource_id
+          FROM `grouppermissions`
+          INNER JOIN `groups` ON `groups`.`id` = `grouppermissions`.`group_id` INNER JOIN `groups_users` ON `groups_users`.`group_id` = `groups`.`id`
+          INNER JOIN `users` ON `users`.`id` = `groups_users`.`user_id` INNER JOIN `media_resources` ON `media_resources`.`id` = `grouppermissions`.`media_resource_id`
+          WHERE `grouppermissions`.`download` = 0 AND `grouppermissions`.`view` = 1 AND `grouppermissions`.`edit` = 0 AND `grouppermissions`.`manage` = 0 AND (users.id = 2)
+       UNION
+         SELECT media_resources.id as media_resource_id FROM `userpermissions`
+          INNER JOIN `media_resources` ON `media_resources`.`id` = `userpermissions`.`media_resource_id`
+          WHERE `userpermissions`.`download` = 0 AND `userpermissions`.`view` = 1
           AND `userpermissions`.`edit` = 0 AND `userpermissions`.`manage` = 0 AND `userpermissions`.`user_id` = 2 )) ;
 
 
-SELECT `media_resources`.* FROM `media_resources`  WHERE (id in ( 
-      ( SELECT media_resources.id as media_resource_id FROM `userpermissions` 
-        INNER JOIN `media_resources` ON `media_resources`.`id` = `userpermissions`.`media_resource_id` 
-          WHERE `userpermissions`.`download` = 0 
-          AND `userpermissions`.`view` = 1 
-          AND `userpermissions`.`edit` = 0 
-          AND `userpermissions`.`manage` = 0 
-          AND `userpermissions`.`user_id` = 2 ) 
+SELECT `media_resources`.* FROM `media_resources`  WHERE (id in (
+      ( SELECT media_resources.id as media_resource_id FROM `userpermissions`
+        INNER JOIN `media_resources` ON `media_resources`.`id` = `userpermissions`.`media_resource_id`
+          WHERE `userpermissions`.`download` = 0
+          AND `userpermissions`.`view` = 1
+          AND `userpermissions`.`edit` = 0
+          AND `userpermissions`.`manage` = 0
+          AND `userpermissions`.`user_id` = 2 )
           )) ;
 
-SELECT `media_resources`.* FROM `media_resources`  WHERE (id in ( 
+SELECT `media_resources`.* FROM `media_resources`  WHERE (id in (
       (SELECT NULL)
     UNION
-      ( SELECT media_resources.id as media_resource_id FROM `userpermissions` 
-        INNER JOIN `media_resources` ON `media_resources`.`id` = `userpermissions`.`media_resource_id` 
-          WHERE `userpermissions`.`download` = 0 
-          AND `userpermissions`.`view` = 1 
-          AND `userpermissions`.`edit` = 0 
-          AND `userpermissions`.`manage` = 0 
-          AND `userpermissions`.`user_id` = 2 ) 
+      ( SELECT media_resources.id as media_resource_id FROM `userpermissions`
+        INNER JOIN `media_resources` ON `media_resources`.`id` = `userpermissions`.`media_resource_id`
+          WHERE `userpermissions`.`download` = 0
+          AND `userpermissions`.`view` = 1
+          AND `userpermissions`.`edit` = 0
+          AND `userpermissions`.`manage` = 0
+          AND `userpermissions`.`user_id` = 2 )
           ))
       ;
 
 
 (SELECT Null) UNION (SELECT NULL);
 
-SELECT `media_resources`.* FROM `media_resources`  WHERE (id in ((( SELECT NULL) ) UNION (( SELECT NULL) UNION 
-      ( SELECT media_resources.id as media_resource_id FROM `userpermissions` 
-        INNER JOIN `media_resources` ON `media_resources`.`id` = `userpermissions`.`media_resource_id` 
-          WHERE `userpermissions`.`download` = 0 
-          AND `userpermissions`.`view` = 1 
-          AND `userpermissions`.`edit` = 0 
-          AND `userpermissions`.`manage` = 0 
-          AND `userpermissions`.`user_id` = 2 ) 
+SELECT `media_resources`.* FROM `media_resources`  WHERE (id in ((( SELECT NULL) ) UNION (( SELECT NULL) UNION
+      ( SELECT media_resources.id as media_resource_id FROM `userpermissions`
+        INNER JOIN `media_resources` ON `media_resources`.`id` = `userpermissions`.`media_resource_id`
+          WHERE `userpermissions`.`download` = 0
+          AND `userpermissions`.`view` = 1
+          AND `userpermissions`.`edit` = 0
+          AND `userpermissions`.`manage` = 0
+          AND `userpermissions`.`user_id` = 2 )
           )))
       ;
 
@@ -694,10 +715,10 @@ SELECT `media_resources`.* FROM `media_resources`  WHERE (id in (( SELECT NULL))
 
 -- filtering Betrachter and "Betrachter original" on prod for susanneschuhmacher
 
-SELECT "media_resources".* FROM "media_resources"  WHERE ( media_resources.id in (  (( SELECT NULL) 
-      UNION ((SELECT media_resources.id as media_resource_id FROM "grouppermissions" INNER JOIN "groups" ON "groups"."id" = "grouppermissions"."group_id" INNER JOIN "groups_users" ON "groups_users"."group_id" = "groups"."id" INNER JOIN "users" ON "users"."id" = "groups_users"."user_id" INNER JOIN "media_resources" ON "media_resources"."id" = "grouppermissions"."media_resource_id" WHERE "grouppermissions"."download" = 'f' AND "grouppermissions"."view" = 't' AND "grouppermissions"."edit" = 'f' AND "grouppermissions"."manage" = 'f' AND (users.id = 10301)) EXCEPT ((SELECT NULL)UNION (SELECT media_resources.id FROM "userpermissions" INNER JOIN "media_resources" ON "media_resources"."id" = "userpermissions"."media_resource_id" WHERE "userpermissions"."view" = 'f' AND "userpermissions"."user_id" = 10301)))UNION ((SELECT media_resources.id as media_resource_id FROM "grouppermissions" INNER JOIN "groups" ON "groups"."id" = "grouppermissions"."group_id" INNER JOIN "groups_users" ON "groups_users"."group_id" = "groups"."id" INNER JOIN "users" ON "users"."id" = "groups_users"."user_id" INNER JOIN "media_resources" ON "media_resources"."id" = "grouppermissions"."media_resource_id" WHERE "grouppermissions"."download" = 't' AND "grouppermissions"."view" = 't' AND "grouppermissions"."edit" = 'f' AND "grouppermissions"."manage" = 'f' AND (users.id = 10301)) EXCEPT ((SELECT NULL)UNION (SELECT media_resources.id FROM "userpermissions" INNER JOIN "media_resources" ON "media_resources"."id" = "userpermissions"."media_resource_id" WHERE "userpermissions"."download" = 'f' AND "userpermissions"."user_id" = 10301)UNION (SELECT media_resources.id FROM "userpermissions" INNER JOIN "media_resources" ON "media_resources"."id" = "userpermissions"."media_resource_id" WHERE "userpermissions"."view" = 'f' AND "userpermissions"."user_id" = 10301)))) UNION (( SELECT NULL) 
-      UNION (SELECT media_resources.id as media_resource_id FROM "userpermissions" INNER JOIN "media_resources" ON "media_resources"."id" = "userpermissions"."media_resource_id" WHERE "userpermissions"."download" = 'f' AND "userpermissions"."view" = 't' AND "userpermissions"."edit" = 'f' AND "userpermissions"."manage" = 'f' AND "userpermissions"."user_id" = 10301) 
-      UNION (SELECT media_resources.id as media_resource_id FROM "userpermissions" INNER JOIN "media_resources" ON "media_resources"."id" = "userpermissions"."media_resource_id" WHERE "userpermissions"."download" = 't' AND "userpermissions"."view" = 't' AND "userpermissions"."edit" = 'f' AND "userpermissions"."manage" = 'f' AND "userpermissions"."user_id" = 10301) 
+SELECT "media_resources".* FROM "media_resources"  WHERE ( media_resources.id in (  (( SELECT NULL)
+      UNION ((SELECT media_resources.id as media_resource_id FROM "grouppermissions" INNER JOIN "groups" ON "groups"."id" = "grouppermissions"."group_id" INNER JOIN "groups_users" ON "groups_users"."group_id" = "groups"."id" INNER JOIN "users" ON "users"."id" = "groups_users"."user_id" INNER JOIN "media_resources" ON "media_resources"."id" = "grouppermissions"."media_resource_id" WHERE "grouppermissions"."download" = 'f' AND "grouppermissions"."view" = 't' AND "grouppermissions"."edit" = 'f' AND "grouppermissions"."manage" = 'f' AND (users.id = 10301)) EXCEPT ((SELECT NULL)UNION (SELECT media_resources.id FROM "userpermissions" INNER JOIN "media_resources" ON "media_resources"."id" = "userpermissions"."media_resource_id" WHERE "userpermissions"."view" = 'f' AND "userpermissions"."user_id" = 10301)))UNION ((SELECT media_resources.id as media_resource_id FROM "grouppermissions" INNER JOIN "groups" ON "groups"."id" = "grouppermissions"."group_id" INNER JOIN "groups_users" ON "groups_users"."group_id" = "groups"."id" INNER JOIN "users" ON "users"."id" = "groups_users"."user_id" INNER JOIN "media_resources" ON "media_resources"."id" = "grouppermissions"."media_resource_id" WHERE "grouppermissions"."download" = 't' AND "grouppermissions"."view" = 't' AND "grouppermissions"."edit" = 'f' AND "grouppermissions"."manage" = 'f' AND (users.id = 10301)) EXCEPT ((SELECT NULL)UNION (SELECT media_resources.id FROM "userpermissions" INNER JOIN "media_resources" ON "media_resources"."id" = "userpermissions"."media_resource_id" WHERE "userpermissions"."download" = 'f' AND "userpermissions"."user_id" = 10301)UNION (SELECT media_resources.id FROM "userpermissions" INNER JOIN "media_resources" ON "media_resources"."id" = "userpermissions"."media_resource_id" WHERE "userpermissions"."view" = 'f' AND "userpermissions"."user_id" = 10301)))) UNION (( SELECT NULL)
+      UNION (SELECT media_resources.id as media_resource_id FROM "userpermissions" INNER JOIN "media_resources" ON "media_resources"."id" = "userpermissions"."media_resource_id" WHERE "userpermissions"."download" = 'f' AND "userpermissions"."view" = 't' AND "userpermissions"."edit" = 'f' AND "userpermissions"."manage" = 'f' AND "userpermissions"."user_id" = 10301)
+      UNION (SELECT media_resources.id as media_resource_id FROM "userpermissions" INNER JOIN "media_resources" ON "media_resources"."id" = "userpermissions"."media_resource_id" WHERE "userpermissions"."download" = 't' AND "userpermissions"."view" = 't' AND "userpermissions"."edit" = 'f' AND "userpermissions"."manage" = 'f' AND "userpermissions"."user_id" = 10301)
     ) ))
 ;
 
@@ -713,26 +734,26 @@ SELECT DISTINCT m.* FROM `media_resources` AS m
         LEFT JOIN `userpermissions` AS up2 ON gp.media_resource_id = up2.media_resource_id)
     ON m.id = gp.media_resource_id AND gp.view = 1
 WHERE (up.id IS NOT NULL OR gp.id IS NOT NULL)
-  AND (up2.view = 1 OR up2.view IS NULL); -- (up2.view != 0) doesn't work, alternative: (IFNULL(up2.view, -1) != 0) 
+  AND (up2.view = 1 OR up2.view IS NULL); -- (up2.view != 0) doesn't work, alternative: (IFNULL(up2.view, -1) != 0)
 
 
-SELECT * 
-  FROM "grouppermissions" INNER JOIN groups_users ON groups_users.group_id = grouppermissions.group_id 
-  WHERE "grouppermissions"."view" = 't' 
-  AND (groups_users.user_id = 1) 
-  AND ( media_resource_id NOT IN ( SELECT media_resource_id FROM "userpermissions"  WHERE "userpermissions"."view" = 'f' AND "userpermissions"."user_id" = 1 )) 
+SELECT *
+  FROM "grouppermissions" INNER JOIN groups_users ON groups_users.group_id = grouppermissions.group_id
+  WHERE "grouppermissions"."view" = 't'
+  AND (groups_users.user_id = 1)
+  AND ( media_resource_id NOT IN ( SELECT media_resource_id FROM "userpermissions"  WHERE "userpermissions"."view" = 'f' AND "userpermissions"."user_id" = 1 ))
 
 
 
-SELECT users.id as user_id, people.lastname as lastname, people.firstname as firstname 
+SELECT users.id as user_id, people.lastname as lastname, people.firstname as firstname
   FROM users, people
   WHERE true
   AND users.person_id = people.id
   AND users.id in
     (SELECT media_resources.user_id FROM "media_resources" LEFT JOIN full_texts ON media_resources.id = full_texts.media_resource_id WHERE "media_resources"."type" IN ('MediaEntry') AND ( media_resources.id IN  (
-                SELECT media_resource_id FROM "userpermissions"  WHERE "userpermissions"."view" = 't' AND "userpermissions"."user_id" = 1 
+                SELECT media_resource_id FROM "userpermissions"  WHERE "userpermissions"."view" = 't' AND "userpermissions"."user_id" = 1
             UNION
-                SELECT media_resource_id FROM "grouppermissions" INNER JOIN groups_users ON groups_users.group_id = grouppermissions.group_id WHERE "grouppermissions"."view" = 't' AND (groups_users.user_id = 1) AND ( media_resource_id NOT IN ( SELECT media_resource_id FROM "userpermissions"  WHERE "userpermissions"."view" = 'f' AND "userpermissions"."user_id" = 1 )) 
+                SELECT media_resource_id FROM "grouppermissions" INNER JOIN groups_users ON groups_users.group_id = grouppermissions.group_id WHERE "grouppermissions"."view" = 't' AND (groups_users.user_id = 1) AND ( media_resource_id NOT IN ( SELECT media_resource_id FROM "userpermissions"  WHERE "userpermissions"."view" = 'f' AND "userpermissions"."user_id" = 1 ))
             UNION
                 SELECT media_resources.id FROM "media_resources"  WHERE (media_resources.user_id = 1 OR media_resources.view = 't')
                   )) AND (text ILIKE '%au%')
@@ -741,13 +762,13 @@ SELECT users.id as user_id, people.lastname as lastname, people.firstname as fir
 
 
 
-SELECT users.id as user_id, people.lastname as lastname, people.firstname as firstname 
-    FROM "users" 
-    INNER JOIN "people" ON "people"."id" = "users"."person_id" 
+SELECT users.id as user_id, people.lastname as lastname, people.firstname as firstname
+    FROM "users"
+    INNER JOIN "people" ON "people"."id" = "users"."person_id"
     WHERE ( users.id in SELECT "media_resources".* FROM "media_resources" LEFT JOIN full_texts ON media_resources.id = full_texts.media_resource_id WHERE "media_resources"."type" IN ('MediaEntry') AND ( media_resources.id IN  (
-            SELECT media_resource_id FROM "userpermissions"  WHERE "userpermissions"."view" = 't' AND "userpermissions"."user_id" = 1 
+            SELECT media_resource_id FROM "userpermissions"  WHERE "userpermissions"."view" = 't' AND "userpermissions"."user_id" = 1
         UNION
-            SELECT media_resource_id FROM "grouppermissions" INNER JOIN groups_users ON groups_users.group_id = grouppermissions.group_id WHERE "grouppermissions"."view" = 't' AND (groups_users.user_id = 1) AND ( media_resource_id NOT IN ( SELECT media_resource_id FROM "userpermissions"  WHERE "userpermissions"."view" = 'f' AND "userpermissions"."user_id" = 1 )) 
+            SELECT media_resource_id FROM "grouppermissions" INNER JOIN groups_users ON groups_users.group_id = grouppermissions.group_id WHERE "grouppermissions"."view" = 't' AND (groups_users.user_id = 1) AND ( media_resource_id NOT IN ( SELECT media_resource_id FROM "userpermissions"  WHERE "userpermissions"."view" = 'f' AND "userpermissions"."user_id" = 1 ))
         UNION
             SELECT media_resources.id FROM "media_resources"  WHERE (media_resources.user_id = 1 OR media_resources.view = 't')
               )) AND (text ILIKE '%au%') )
@@ -764,8 +785,8 @@ SELECT meta_terms.*, meta_key_definitions.label_id as label_id
   AND meta_context.name = 'core'
   ;
 
-SELECT media_resources.id as media_resource_id 
-     , meta_data.id as meta_datum_id 
+SELECT media_resources.id as media_resource_id
+     , meta_data.id as meta_datum_id
      , meta_data.value as meta_datum_value
      , meta_keys.id as meta_key_id
      , meta_contexts.id as meta_context_id
@@ -773,7 +794,7 @@ SELECT media_resources.id as media_resource_id
      , meta_key_definitions.id as meta_key_definition_id
      , meta_key_definitions.label_id as label_id
      , meta_terms.en_gb as meta_term_en
-  FROM media_resources 
+  FROM media_resources
   INNER JOIN meta_data ON meta_data.media_resource_id = media_resources.id
   INNER JOIN meta_keys ON meta_data.meta_key_id = meta_keys.id
   INNER JOIN meta_key_definitions ON meta_key_definitions.meta_key_id = meta_keys.id
@@ -783,13 +804,13 @@ SELECT media_resources.id as media_resource_id
   AND media_resources.id = 4
   ;
 
--- relative top level sets of the user with id = 999999 
+-- relative top level sets of the user with id = 999999
 
 SELECT * from media_resources
     WHERE type = 'MediaSet'
     AND user_id = 999999
-    AND id NOT IN 
-      (SELECT child_id FROM media_set_arcs 
+    AND id NOT IN
+      (SELECT child_id FROM media_set_arcs
           WHERE parent_id in
           (SELECT id from media_resources
             WHERE type = 'MediaSet'
@@ -804,23 +825,23 @@ SELECT DISTINCT mr1.* FROM media_resources mr1
   LEFT JOIN media_resources mr2 ON msa.parent_id = mr2.id AND mr2.user_id = mr1.user_id
 WHERE mr1.type IN ('MediaSet') AND mr1.user_id = 999999 AND mr2.id IS NULL;
 
--- 
+--
 
-SELECT "users".* FROM "users" 
-  INNER JOIN "groups_users" ON "groups_users"."user_id" = "users"."id" 
-  INNER JOIN "groups" ON "groups"."id" = "groups_users"."group_id" 
-  INNER JOIN "grouppermissions" ON "grouppermissions"."group_id" = "groups"."id" 
-  INNER JOIN "media_resources" ON "media_resources"."id" = "grouppermissions"."media_resource_id" 
-  WHERE "grouppermissions"."view" = 't'  
+SELECT "users".* FROM "users"
+  INNER JOIN "groups_users" ON "groups_users"."user_id" = "users"."id"
+  INNER JOIN "groups" ON "groups"."id" = "groups_users"."group_id"
+  INNER JOIN "grouppermissions" ON "grouppermissions"."group_id" = "groups"."id"
+  INNER JOIN "media_resources" ON "media_resources"."id" = "grouppermissions"."media_resource_id"
+  WHERE "grouppermissions"."view" = 't'
   NOT IN ( SELECT "users".* FROM "users" INNER JOIN "userpermissions" ON "userpermissions"."user_id" = "users"."id" INNER JOIN "media_resources" ON "media_resources"."id" = "userpermissions"."media_resource_id" WHERE "userpermissions"."view" = 't' AND "media_resources"."id" = 1 AND "userpermissions"."view" = 'f' )
 
 SELECT "media_resources".* FROM "media_resources"  WHERE ( media_resources.id IN  (
-         SELECT media_resource_id FROM "userpermissions"  WHERE "userpermissions"."view" = 't' AND (user_id = 1 ) 
+         SELECT media_resource_id FROM "userpermissions"  WHERE "userpermissions"."view" = 't' AND (user_id = 1 )
         UNION
-         SELECT media_resource_id FROM "grouppermissions" INNER JOIN "groups" ON "groups"."id" = "grouppermissions"."group_id" INNER JOIN groups_users ON groups_users.group_id = grouppermissions.group_id WHERE "grouppermissions"."view" = 't' AND (groups_users.user_id = 1) AND ( media_resource_id NOT IN ( SELECT media_resource_id FROM "userpermissions"  WHERE "userpermissions"."view" = 'f' AND (user_id = 1 ) )) 
+         SELECT media_resource_id FROM "grouppermissions" INNER JOIN "groups" ON "groups"."id" = "grouppermissions"."group_id" INNER JOIN groups_users ON groups_users.group_id = grouppermissions.group_id WHERE "grouppermissions"."view" = 't' AND (groups_users.user_id = 1) AND ( media_resource_id NOT IN ( SELECT media_resource_id FROM "userpermissions"  WHERE "userpermissions"."view" = 'f' AND (user_id = 1 ) ))
               ))
 
- 
+
 
 SELECT media_resource_id FROM `userpermissions`  WHERE `userpermissions`.`view` = 1 AND (user_id = 2233 )
 UNION
@@ -834,78 +855,78 @@ SELECT users from users
 
 ---
 
-SELECT DISTINCT * FROM "media_resources" 
-  INNER JOIN "media_set_arcs" ON "media_resources"."id" = "media_set_arcs"."parent_id" 
-  INNER JOIN editable_media_resources_users ON media_resources.id = media_set_id 
+SELECT DISTINCT * FROM "media_resources"
+  INNER JOIN "media_set_arcs" ON "media_resources"."id" = "media_set_arcs"."parent_id"
+  INNER JOIN editable_media_resources_users ON media_resources.id = media_set_id
   WHERE "media_resources"."type" IN ('MediaSet') AND "media_set_arcs"."child_id" = 2
 
 
-SELECT "media_resources".* FROM "media_resources" 
-  INNER JOIN "media_set_arcs" ON "media_set_arcs"."parent_id" = "media_resources"."id" 
+SELECT "media_resources".* FROM "media_resources"
+  INNER JOIN "media_set_arcs" ON "media_set_arcs"."parent_id" = "media_resources"."id"
   INNER JOIN viewable_media_sets_users ON media_resources.id = media_set_id
-  WHERE "media_resources"."type" IN ('MediaSet') AND ( child_id = 2 ) 
+  WHERE "media_resources"."type" IN ('MediaSet') AND ( child_id = 2 )
 
 
 
-SELECT media_resource_id as media_resource_id, user_id as user_id 
-  FROM userpermissions 
+SELECT media_resource_id as media_resource_id, user_id as user_id
+  FROM userpermissions
   JOIN permissionsets ON permissionsets.id = userpermissions.permissionset_id
   WHERE permissionsets.view = true;
 
 
-SELECT media_resource_id as media_resource_id, user_id as user_id 
+SELECT media_resource_id as media_resource_id, user_id as user_id
   FROM grouppermissions
     JOIN permissionsets ON permissionsets.id = grouppermissions.permissionset_id
     JOIN groups_users ON groups_users.group_id = grouppermissions.group_id
-  WHERE permissionsets.view = true; 
+  WHERE permissionsets.view = true;
 
-SELECT media_resource_id as media_resource_id, user_id as user_id 
-        FROM userpermissions 
+SELECT media_resource_id as media_resource_id, user_id as user_id
+        FROM userpermissions
         JOIN permissionsets ON permissionsets.id = userpermissions.permissionset_id
         WHERE permissionsets.view = false);
-       
--- combined: 
 
-SELECT media_resource_id as media_resource_id, user_id as user_id 
+-- combined:
+
+SELECT media_resource_id as media_resource_id, user_id as user_id
   FROM grouppermissions
     JOIN permissionsets ON permissionsets.id = grouppermissions.permissionset_id
     JOIN groups_users ON groups_users.group_id = grouppermissions.group_id
-  WHERE permissionsets.view = true 
+  WHERE permissionsets.view = true
     AND (media_resource_id, user_id) NOT IN  (
-      SELECT media_resource_id as media_resource_id, user_id as user_id 
-        FROM userpermissions 
+      SELECT media_resource_id as media_resource_id, user_id as user_id
+        FROM userpermissions
         JOIN permissionsets ON permissionsets.id = userpermissions.permissionset_id
         WHERE permissionsets.view = false);
-       
-SELECT media_resources.id as media_resource_id, users.id as user_id 
+
+SELECT media_resources.id as media_resource_id, users.id as user_id
   FROM media_resources
   INNER JOIN permissionsets ON permissionsets.id = media_resources.permissionset_id
   CROSS JOIN users
   WHERE permissionsets.view = true;
-  
 
-  SELECT #{table_name}.id as #{ref_id model}, #{action}able_media_resources_users.user_id as user_id 
+
+  SELECT #{table_name}.id as #{ref_id model}, #{action}able_media_resources_users.user_id as user_id
   FROM #{table_name}
-  INNER JOIN #{action}able_media_resources_users 
+  INNER JOIN #{action}able_media_resources_users
   ON #{action}able_media_resources_users.media_resource_id = #{table_name}.media_resource_id;
 
 
 
 
 
-SELECT "userpermissions".* FROM "userpermissions" 
-  INNER JOIN "users" ON "users"."id" = "userpermissions"."user_id" 
-  INNER JOIN "permissionsets" ON "permissionsets"."id" = "userpermissions"."permissionset_id" 
-  INNER JOIN "media_resources" ON "media_resources"."id" = "userpermissions"."media_resource_id" 
-  WHERE "userpermissions"."user_id" = 1 
-  AND "userpermissions"."media_resource_id" = 1 
-  AND (permissionsets.view = false) 
+SELECT "userpermissions".* FROM "userpermissions"
+  INNER JOIN "users" ON "users"."id" = "userpermissions"."user_id"
+  INNER JOIN "permissionsets" ON "permissionsets"."id" = "userpermissions"."permissionset_id"
+  INNER JOIN "media_resources" ON "media_resources"."id" = "userpermissions"."media_resource_id"
+  WHERE "userpermissions"."user_id" = 1
+  AND "userpermissions"."media_resource_id" = 1
+  AND (permissionsets.view = false)
   LIMIT 1
 
 -- migrating owner data
 
 ALTER TABLE media_entries ADD COLUMN owner_id integer;
-UPDATE media_entries 
+UPDATE media_entries
 SET owner_id = (SELECT upload_sessions.user_id as user_id
   FROM upload_sessions
   INNER JOIN  media_entries as me ON  upload_sessions.id = me.upload_session_id
@@ -915,7 +936,7 @@ SET owner_id = (SELECT upload_sessions.user_id as user_id
 
 ---
 
-CREATE OR REPLACE FUNCTION del_SOURCETABLE_TARGETTABLE_referenced_fkey_KEYROW() 
+CREATE OR REPLACE FUNCTION del_SOURCETABLE_TARGETTABLE_referenced_fkey_KEYROW()
 RETURNS trigger
 AS $$
 DECLARE
@@ -932,7 +953,7 @@ CREATE TRIGGER del_SOURCETABLE_TARGETTABLE_referenced_fkey_KEYROW
 
 
 
-CREATE OR REPLACE FUNCTION update_v_m_u_sanspublic_on_mediaresource_owner_update() 
+CREATE OR REPLACE FUNCTION update_v_m_u_sanspublic_on_mediaresource_owner_update()
 RETURNS trigger
 AS $$
 DECLARE
@@ -948,7 +969,7 @@ END $$
 LANGUAGE PLPGSQL;
 
 
-CREATE FUNCTION delref_fkey_userperm2ba04ffd52973efb154726d2ed4bdc7973eec9f4() 
+CREATE FUNCTION delref_fkey_userperm2ba04ffd52973efb154726d2ed4bdc7973eec9f4()
 RETURNS trigger
 AS $$
 DECLARE
@@ -959,7 +980,7 @@ END $$
 LANGUAGE PLPGSQL;
 
 
-CREATE OR REPLACE FUNCTION delref_fkey_userperm2ba04ffd52973efb154726d2ed4bdc7973eec9f4() 
+CREATE OR REPLACE FUNCTION delref_fkey_userperm2ba04ffd52973efb154726d2ed4bdc7973eec9f4()
 RETURNS trigger
 AS $$
 DECLARE
@@ -980,15 +1001,15 @@ CREATE VIEW viewable_mediasets_by_userpermission AS
     WHERE userpermissions.may_view = true;
 
 
-  
-  
+
+
 SELECT media_sets.id as media_set_id
   FROM media_sets;
   INNER JOIN mediaset_userpermission_joins ON mediaset_userpermission_joins.media_set_id = media_sets.id
   INNER JOIN userpermissions ON userpermissions.id = mediaset_userpermission_joins.userpermission_id
   INNER JOIN users ON users.id = userpermissions.user_id
   WHERE userpermissions.may_view = true;
-  
+
 
 
 
