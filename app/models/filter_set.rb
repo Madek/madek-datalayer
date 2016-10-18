@@ -28,8 +28,11 @@ class FilterSet < ActiveRecord::Base
   # validate :validate_existence_of_meta_data_for_required_context_keys
 
   def self.joins_meta_data_title
-    joins('INNER JOIN meta_data ' \
-          'ON meta_data.filter_set_id = filter_sets.id ' \
-          "AND meta_data.meta_key_id = 'madek_core:title'")
+    joins_meta_data_title_by_classname
   end
+
+  def self.order_by_last_edit_session
+    order_by_last_edit_session_by_classname
+  end
+
 end

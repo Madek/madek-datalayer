@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.1
--- Dumped by pg_dump version 9.5.1
+-- Dumped from database version 9.5.0
+-- Dumped by pg_dump version 9.5.0
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -91,7 +91,8 @@ CREATE TYPE collection_sorting AS ENUM (
     'created_at ASC',
     'created_at DESC',
     'title ASC',
-    'title DESC'
+    'title DESC',
+    'last_change'
 );
 
 
@@ -4442,6 +4443,8 @@ INSERT INTO schema_migrations (version) VALUES ('310');
 INSERT INTO schema_migrations (version) VALUES ('311');
 
 INSERT INTO schema_migrations (version) VALUES ('312');
+
+INSERT INTO schema_migrations (version) VALUES ('313');
 
 INSERT INTO schema_migrations (version) VALUES ('32');
 

@@ -127,8 +127,11 @@ class Collection < ActiveRecord::Base
   end
 
   def self.joins_meta_data_title
-    joins('INNER JOIN meta_data ' \
-          'ON meta_data.collection_id = collections.id ' \
-          "AND meta_data.meta_key_id = 'madek_core:title'")
+    joins_meta_data_title_by_classname
   end
+
+  def self.order_by_last_edit_session
+    order_by_last_edit_session_by_classname
+  end
+
 end

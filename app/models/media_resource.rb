@@ -46,6 +46,37 @@ class MediaResource < ActiveRecord::Base
     SQL
   end
 
+  # rubocop:disable Metrics/MethodLength
+  def self.order_by_last_edit_session
+    select(
+      <<-SQL
+        vw_media_resources.*,
+        coalesce(
+          max(edit_sessions.created_at),
+          (vw_media_resources.created_at - INTERVAL '1900 years')
+        ) AS last_change
+      SQL
+    )
+      .joins(<<-SQL.strip_heredoc)
+        LEFT JOIN edit_sessions
+        ON edit_sessions.media_entry_id = vw_media_resources.id
+        OR edit_sessions.collection_id = vw_media_resources.id
+        OR edit_sessions.filter_set_id = vw_media_resources.id
+      SQL
+      .group(
+        <<-SQL
+          vw_media_resources.id,
+          vw_media_resources.get_metadata_and_previews,
+          vw_media_resources.responsible_user_id,
+          vw_media_resources.creator_id,
+          vw_media_resources.created_at,
+          vw_media_resources.updated_at,
+          vw_media_resources.type
+        SQL
+      )
+  end
+  # rubocop:enable Metrics/MethodLength
+
   #################################################################################
 
 end
