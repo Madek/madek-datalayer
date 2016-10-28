@@ -20,6 +20,8 @@ class MetaKey < ActiveRecord::Base
       .group('meta_keys.id')
   }
 
+  before_validation :sanitize_allowed_people_subtypes
+
   def self.object_types
     unscoped \
       .select(:meta_datum_object_type)
@@ -30,6 +32,10 @@ class MetaKey < ActiveRecord::Base
 
   def can_have_keywords?
     meta_datum_object_type == 'MetaDatum::Keywords'
+  end
+
+  def can_have_people_subtypes?
+    meta_datum_object_type == 'MetaDatum::People'
   end
 
   def self.viewable_by_user_or_public(user = nil)
@@ -48,5 +54,14 @@ class MetaKey < ActiveRecord::Base
 
   def move_down
     move :down, vocabulary_id: vocabulary.id
+  end
+
+  private
+
+  def sanitize_allowed_people_subtypes
+    # do not run for previous migrations
+    return unless respond_to?(:allowed_people_subtypes)
+    return unless allowed_people_subtypes.is_a?(Array)
+    self.allowed_people_subtypes = allowed_people_subtypes.reject(&:blank?)
   end
 end

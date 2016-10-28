@@ -5,6 +5,7 @@ class Person < ActiveRecord::Base
   self.inheritance_column = false
 
   default_scope { reorder(:last_name) }
+  scope :subtypes, -> { unscoped.select(:subtype).distinct }
 
   has_one :user
 
