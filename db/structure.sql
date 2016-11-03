@@ -709,6 +709,7 @@ CREATE TABLE app_settings (
     featured_set_subtitle character varying DEFAULT 'Highlights from this Archive'::character varying,
     contexts_for_entry_edit text[] DEFAULT '{}'::text[],
     contexts_for_collection_edit text[] DEFAULT '{}'::text[],
+    contexts_for_collection_extra text[] DEFAULT '{}'::text[],
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -4444,6 +4445,8 @@ INSERT INTO schema_migrations (version) VALUES ('312');
 INSERT INTO schema_migrations (version) VALUES ('313');
 
 INSERT INTO schema_migrations (version) VALUES ('314');
+
+INSERT INTO schema_migrations (version) VALUES ('315');
 
 INSERT INTO schema_migrations (version) VALUES ('32');
 

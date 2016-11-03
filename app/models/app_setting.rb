@@ -1,7 +1,23 @@
 class AppSetting < ActiveRecord::Base
-  validate :featured_set_existence, if: proc { |record|
-    record.featured_set_id.present?
-  }
+  def self.validate_set_existence(name)
+    validate :"#{name}_existence", if: proc { |record|
+      record.send("#{name}_id").present?
+    }
+
+    define_method :"#{name}_existence" do
+      unless Collection.find_by_id(send("#{name}_id"))
+        errors.add(
+          :base,
+          "The set with a given ID: #{send("#{name}_id")} doesn't exist!"
+        )
+      end
+    end
+
+    private :"#{name}_existence"
+  end
+
+  validate_set_existence(:featured_set)
+  validate_set_existence(:teaser_set)
 
   validate :catalog_context_keys_types
 
@@ -23,6 +39,7 @@ class AppSetting < ActiveRecord::Base
     context_for_entry_summary
     context_for_collection_summary
     contexts_for_entry_extra
+    contexts_for_collection_extra
     contexts_for_list_details
     contexts_for_validation
     contexts_for_dynamic_filters
@@ -45,15 +62,6 @@ class AppSetting < ActiveRecord::Base
     attributes[attr].respond_to?(:include?) && \
       attributes[attr].include?(context_id) || \
       attributes[attr] == context_id
-  end
-
-  def featured_set_existence
-    unless Collection.find_by_id(featured_set_id)
-      errors.add(
-        :base,
-        "The set with a given ID: #{featured_set_id} doesn't exist!"
-      )
-    end
   end
 
   def catalog_context_keys_types
