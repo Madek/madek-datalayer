@@ -18,6 +18,13 @@ describe Keyword do
     end
   end
 
+  pending 'trims whitespace when creating a kw' do
+    spaces = (Madek::Constants::SPECIAL_WHITESPACE_CHARS + ['', "\n"]).join
+    spaced_term = spaces + 'term' + spaces
+    expect(FactoryGirl.create(:keyword, term: spaced_term).term)
+      .to be == 'term'
+  end
+
   describe 'UTF8 NFC normalization' do
 
     it "confirm that ruby :nfd isn't equal to :nfc" do
