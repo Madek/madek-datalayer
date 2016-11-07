@@ -5,13 +5,15 @@ class UpdateZhdkLdapData < ActiveRecord::Migration
   end
 
   def change
-    if ( %w(nx-18122 madek-prod test-blank staging).include?(`hostname`.strip) \
+    if ( %w(nx-18122 madek-prod madek-test madek-test-blank madek-staging).include?(`hostname`.strip) \
         && ['', 'madek.zhdk.ch'].include?(domain_name) )
 
       ::InstitutionalGroup.reset_column_information
       InstitutionalGroup.first
 
-      data = JSON.parse(IO.read(Rails.root.join("db","ldap_2016-10-24.json"))).map(&:with_indifferent_access)
+      data = JSON.parse(IO.read(
+        Madek::Constants::DATALAYER_ROOT_DIR.join("db","ldap_2016-10-24.json")
+      )).map(&:with_indifferent_access)
 
       ### deleting db permission groups which have been removed from LDAP #####
 
