@@ -55,8 +55,11 @@ module Madek
                                 "\u200D",
                                 "\u200E",
                                 "\u200F"]
+    WHITESPACE_REGEXP_STRING = \
+      "[[:space:]]|#{Madek::Constants::SPECIAL_WHITESPACE_CHARS.join('|')}"
+
     VALUE_WITH_ONLY_WHITESPACE_REGEXP = \
-      /\A([[:space:]]|#{Madek::Constants::SPECIAL_WHITESPACE_CHARS.join('|')})\z/
+      /\A(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+\z/
 
     MADEK_V2_PERMISSION_ACTIONS = [:download, :edit, :manage, :view]
 
