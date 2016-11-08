@@ -58,8 +58,10 @@ module Madek
     WHITESPACE_REGEXP_STRING = \
       "[[:space:]]|#{Madek::Constants::SPECIAL_WHITESPACE_CHARS.join('|')}"
 
+    # rubocop:disable Metrics/LineLength
     TRIM_WHITESPACE_REGEXP = \
       /^(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+|(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+$/
+    # rubocop:enable Metrics/LineLength
 
     VALUE_WITH_ONLY_WHITESPACE_REGEXP = \
       /\A(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+\z/
