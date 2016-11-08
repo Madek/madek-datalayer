@@ -18,7 +18,7 @@ describe Keyword do
     end
   end
 
-  pending 'trims whitespace when creating a kw' do
+  it 'trims whitespace when creating a kw' do
     spaces = (Madek::Constants::SPECIAL_WHITESPACE_CHARS + ['', "\n"]).join
     spaced_term = spaces + 'term' + spaces
     expect(FactoryGirl.create(:keyword, term: spaced_term).term)
