@@ -12,6 +12,7 @@ class Keyword < ActiveRecord::Base
   end
 
   before_save do
+    self.term = self.term.gsub(Madek::Constants::TRIM_WHITESPACE_REGEXP, '')
     if self.term.present?
       self.term = self.term.unicode_normalize(:nfc)
     end
