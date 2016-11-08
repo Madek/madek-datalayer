@@ -4,17 +4,47 @@ class StripKeywordsTerms < ActiveRecord::Migration
     self.table_name = 'keywords'
   end
 
+  class ::MigrationMetaDatumKeyword < ActiveRecord::Base
+    self.table_name = 'meta_data_keywords'
+  end
+
   def change
-    remove_index :keywords, [:meta_key_id, :term]
+    ActiveRecord::Base.transaction do
+      execute "SET session_replication_role = REPLICA"
 
-    strip_regexp = /^(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+|(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+$/
+      strip_regexp = /^(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+|(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+$/
 
-    ::MigrationKeyword.all.each do |keyword|
-      if keyword.term =~ strip_regexp
-        keyword.update_attributes term: keyword.term.gsub(strip_regexp, '')
+      ::MigrationKeyword.all.each do |keyword|
+        if keyword.term =~ strip_regexp
+          new_term = keyword.term.gsub(strip_regexp, '')
+
+          # if there is already another keyword for the same meta_key and stripped term
+          if other_keyword = ::MigrationKeyword.find_by(meta_key_id: keyword.meta_key_id, term: new_term)
+            # change all rows in meta_data_keywords to point keyword_id to the other keyword
+            ::MigrationMetaDatumKeyword.where(keyword_id: keyword.id).each do |md|
+              # make a copy of the meta_datum
+              new_md = md.dup
+              # destroy the meta_datum for the stripped keyword
+              md.destroy
+              # point keyword_id for the new meta_datum to the other keyword
+              new_md.keyword_id = other_keyword.id
+              # create new meta_datum_keyword only if there is not one already for the same keyword and meta_datum
+              unless ::MigrationMetaDatumKeyword.find_by(keyword_id: new_md.keyword_id, meta_datum_id: new_md.meta_datum_id)
+                new_md.save
+              end
+            end
+
+            # delete the keyword
+            keyword.destroy
+
+          # else simply update term to the new stripped value
+          else
+            keyword.update_attributes term: new_term
+          end
+        end
       end
     end
 
-    add_index :keywords, [:meta_key_id, :term], unique: true
+    execute "SET session_replication_role = DEFAULT"
   end
 end
