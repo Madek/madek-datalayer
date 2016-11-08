@@ -58,6 +58,9 @@ module Madek
     WHITESPACE_REGEXP_STRING = \
       "[[:space:]]|#{Madek::Constants::SPECIAL_WHITESPACE_CHARS.join('|')}"
 
+    TRIM_WHITESPACE_REGEXP = \
+      /^(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+|(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+$/
+
     VALUE_WITH_ONLY_WHITESPACE_REGEXP = \
       /\A(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+\z/
 

@@ -12,11 +12,9 @@ class StripKeywordsTerms < ActiveRecord::Migration
     ActiveRecord::Base.transaction do
       execute "SET session_replication_role = REPLICA"
 
-      strip_regexp = /^(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+|(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+$/
-
       ::MigrationKeyword.all.each do |keyword|
-        if keyword.term =~ strip_regexp
-          new_term = keyword.term.gsub(strip_regexp, '')
+        if keyword.term =~ Madek::Constants::TRIM_WHITESPACE_REGEXP
+          new_term = keyword.term.gsub(Madek::Constants::TRIM_WHITESPACE_REGEXP, '')
 
           # if there is already another keyword for the same meta_key and stripped term
           if other_keyword = ::MigrationKeyword.find_by(meta_key_id: keyword.meta_key_id, term: new_term)
