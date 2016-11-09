@@ -1,5 +1,6 @@
 class ContextKey < ActiveRecord::Base
   include Concerns::Orderable
+  include Concerns::NullifyEmptyStrings
 
   belongs_to :context, foreign_key: :context_id
   belongs_to :meta_key
@@ -8,6 +9,8 @@ class ContextKey < ActiveRecord::Base
     input: 'input',
     textarea: 'textarea'
   }
+
+  nullify_empty :label, :description, :hint
 
   def multiline?
     return nil unless self.meta_key_string?

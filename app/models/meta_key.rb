@@ -2,6 +2,7 @@ class MetaKey < ActiveRecord::Base
 
   include Concerns::MetaKeys::Filters
   include Concerns::Orderable
+  include Concerns::NullifyEmptyStrings
 
   has_many :meta_data, dependent: :destroy
   has_many :keywords
@@ -20,6 +21,7 @@ class MetaKey < ActiveRecord::Base
       .group('meta_keys.id')
   }
 
+  nullify_empty :label, :description, :hint
   before_validation :sanitize_allowed_people_subtypes
 
   def self.object_types
