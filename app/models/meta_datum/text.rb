@@ -5,7 +5,7 @@ class MetaDatum::Text < MetaDatum
   before_save do
     self.string =
       if self.string.blank? \
-          || self.string.match(Madek::Constants::WHITESPACE_REGEXP)
+          || self.string.match(Madek::Constants::VALUE_WITH_ONLY_WHITESPACE_REGEXP)
         nil
       else
         self.string.unicode_normalize(:nfc)
@@ -43,8 +43,10 @@ class MetaDatum::Text < MetaDatum
   private
 
   def whitespace_sanitized(value)
-    if value
-      value.match(Madek::Constants::WHITESPACE_REGEXP) ? nil : value
+    if value.try(:match, Madek::Constants::VALUE_WITH_ONLY_WHITESPACE_REGEXP)
+      nil
+    else
+      value
     end
   end
 end

@@ -1216,7 +1216,7 @@ CREATE TABLE meta_data (
     collection_id uuid,
     filter_set_id uuid,
     created_by_id uuid,
-    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['MetaDatum::Keywords'::character varying, 'MetaDatum::Licenses'::character varying, 'MetaDatum::People'::character varying, 'MetaDatum::Text'::character varying, 'MetaDatum::TextDate'::character varying, 'MetaDatum::Users'::character varying, 'MetaDatum::Vocables'::character varying])::text[]))),
+    CONSTRAINT check_valid_type CHECK (((type)::text = ANY (ARRAY[('MetaDatum::Keywords'::character varying)::text, ('MetaDatum::Licenses'::character varying)::text, ('MetaDatum::People'::character varying)::text, ('MetaDatum::Text'::character varying)::text, ('MetaDatum::TextDate'::character varying)::text, ('MetaDatum::Users'::character varying)::text, ('MetaDatum::Vocables'::character varying)::text]))),
     CONSTRAINT meta_data_is_related CHECK ((((media_entry_id IS NULL) AND (collection_id IS NULL) AND (filter_set_id IS NOT NULL)) OR ((media_entry_id IS NULL) AND (collection_id IS NOT NULL) AND (filter_set_id IS NULL)) OR ((media_entry_id IS NOT NULL) AND (collection_id IS NULL) AND (filter_set_id IS NULL))))
 );
 
@@ -4453,6 +4453,8 @@ INSERT INTO schema_migrations (version) VALUES ('314');
 INSERT INTO schema_migrations (version) VALUES ('315');
 
 INSERT INTO schema_migrations (version) VALUES ('316');
+
+INSERT INTO schema_migrations (version) VALUES ('317');
 
 INSERT INTO schema_migrations (version) VALUES ('32');
 

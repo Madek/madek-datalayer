@@ -55,8 +55,16 @@ module Madek
                                 "\u200D",
                                 "\u200E",
                                 "\u200F"]
-    WHITESPACE_REGEXP = \
-      /\A([[:space:]]|#{Madek::Constants::SPECIAL_WHITESPACE_CHARS.join('|')})\z/
+    WHITESPACE_REGEXP_STRING = \
+      "[[:space:]]|#{Madek::Constants::SPECIAL_WHITESPACE_CHARS.join('|')}"
+
+    # rubocop:disable Metrics/LineLength
+    TRIM_WHITESPACE_REGEXP = \
+      /^(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+|(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+$/
+    # rubocop:enable Metrics/LineLength
+
+    VALUE_WITH_ONLY_WHITESPACE_REGEXP = \
+      /\A(#{Madek::Constants::WHITESPACE_REGEXP_STRING})+\z/
 
     MADEK_V2_PERMISSION_ACTIONS = [:download, :edit, :manage, :view]
 
