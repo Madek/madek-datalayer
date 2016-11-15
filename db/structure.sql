@@ -623,6 +623,219 @@ $$;
 
 
 --
+-- Name: propagate_edit_session_insert_to_collections(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION propagate_edit_session_insert_to_collections() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  UPDATE collections SET edit_session_updated_at = now()
+    FROM edit_sessions
+    WHERE edit_sessions.id = NEW.id
+    AND collections.id = edit_sessions.collection_id;
+  RETURN NULL;
+END;
+$$;
+
+
+--
+-- Name: propagate_edit_session_insert_to_filter_sets(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION propagate_edit_session_insert_to_filter_sets() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  UPDATE filter_sets SET edit_session_updated_at = now()
+    FROM edit_sessions
+    WHERE edit_sessions.id = NEW.id
+    AND filter_sets.id = edit_sessions.filter_set_id;
+  RETURN NULL;
+END;
+$$;
+
+
+--
+-- Name: propagate_edit_session_insert_to_media_entries(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION propagate_edit_session_insert_to_media_entries() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  UPDATE media_entries SET edit_session_updated_at = now()
+    FROM edit_sessions
+    WHERE edit_sessions.id = NEW.id
+    AND media_entries.id = edit_sessions.media_entry_id;
+  RETURN NULL;
+END;
+$$;
+
+
+--
+-- Name: propagate_keyword_updates_to_meta_data_keywords(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION propagate_keyword_updates_to_meta_data_keywords() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  UPDATE meta_data_keywords
+    SET meta_data_updated_at = now()
+    WHERE keyword_id = NEW.id;
+  RETURN NULL;
+END;
+$$;
+
+
+--
+-- Name: propagate_license_updates_to_meta_data_licenses(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION propagate_license_updates_to_meta_data_licenses() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  UPDATE meta_data_licenses
+    SET meta_data_updated_at = now()
+    WHERE license_id = NEW.id;
+  RETURN NULL;
+END;
+$$;
+
+
+--
+-- Name: propagate_meta_data_keyword_updates_to_meta_data(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION propagate_meta_data_keyword_updates_to_meta_data() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  md_id UUID;
+BEGIN
+  CASE
+    WHEN TG_OP = 'DELETE' THEN
+      md_id = OLD.meta_datum_id;
+    ELSE
+      md_id = NEW.meta_datum_id;
+  END CASE;
+
+  UPDATE meta_data
+    SET meta_data_updated_at = now()
+    WHERE meta_data.id = md_id;
+  RETURN NULL;
+END;
+$$;
+
+
+--
+-- Name: propagate_meta_data_license_updates_to_meta_data(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION propagate_meta_data_license_updates_to_meta_data() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  md_id UUID;
+BEGIN
+  CASE
+    WHEN TG_OP = 'DELETE' THEN
+      md_id = OLD.meta_datum_id;
+    ELSE
+      md_id = NEW.meta_datum_id;
+  END CASE;
+
+  UPDATE meta_data
+    SET meta_data_updated_at = now()
+    WHERE meta_data.id = md_id;
+  RETURN NULL;
+END;
+$$;
+
+
+--
+-- Name: propagate_meta_data_people_updates_to_meta_data(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION propagate_meta_data_people_updates_to_meta_data() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  md_id UUID;
+BEGIN
+  CASE
+    WHEN TG_OP = 'DELETE' THEN
+      md_id = OLD.meta_datum_id;
+    ELSE
+      md_id = NEW.meta_datum_id;
+  END CASE;
+
+  UPDATE meta_data
+    SET meta_data_updated_at = now()
+    WHERE meta_data.id = md_id;
+  RETURN NULL;
+END;
+$$;
+
+
+--
+-- Name: propagate_meta_data_updates_to_media_resource(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION propagate_meta_data_updates_to_media_resource() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  md_id UUID;
+BEGIN
+  CASE
+    WHEN TG_OP = 'DELETE' THEN
+      md_id = OLD.id;
+    ELSE
+      md_id = NEW.id;
+  END CASE;
+
+
+  UPDATE media_entries SET meta_data_updated_at = now()
+    FROM meta_data
+    WHERE meta_data.media_entry_id = media_entries.id
+    AND meta_data.id = md_id;
+
+  UPDATE collections SET meta_data_updated_at = now()
+    FROM meta_data
+    WHERE meta_data.collection_id = collections.id
+    AND meta_data.id = md_id;
+
+  UPDATE filter_sets SET meta_data_updated_at = now()
+    FROM meta_data
+    WHERE meta_data.media_entry_id = filter_sets.id
+    AND meta_data.id = md_id;
+
+
+  RETURN NULL;
+END;
+$$;
+
+
+--
+-- Name: propagate_people_updates_to_meta_data_people(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION propagate_people_updates_to_meta_data_people() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  UPDATE meta_data_people
+    SET meta_data_updated_at = now()
+    WHERE person_id = NEW.id;
+  RETURN NULL;
+END;
+$$;
+
+
+--
 -- Name: update_updated_at_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -816,7 +1029,9 @@ CREATE TABLE collections (
     layout collection_layout DEFAULT 'grid'::collection_layout NOT NULL,
     responsible_user_id uuid NOT NULL,
     creator_id uuid NOT NULL,
-    sorting collection_sorting DEFAULT 'created_at DESC'::collection_sorting NOT NULL
+    sorting collection_sorting DEFAULT 'created_at DESC'::collection_sorting NOT NULL,
+    edit_session_updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -886,7 +1101,6 @@ CREATE TABLE edit_sessions (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     media_entry_id uuid,
     collection_id uuid,
     filter_set_id uuid,
@@ -989,7 +1203,9 @@ CREATE TABLE filter_sets (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     definition jsonb DEFAULT '{}'::jsonb NOT NULL,
     responsible_user_id uuid NOT NULL,
-    creator_id uuid NOT NULL
+    creator_id uuid NOT NULL,
+    edit_session_updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -1125,7 +1341,9 @@ CREATE TABLE media_entries (
     get_full_size boolean DEFAULT false NOT NULL,
     responsible_user_id uuid NOT NULL,
     creator_id uuid NOT NULL,
-    is_published boolean DEFAULT false
+    is_published boolean DEFAULT false,
+    edit_session_updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -1216,6 +1434,7 @@ CREATE TABLE meta_data (
     collection_id uuid,
     filter_set_id uuid,
     created_by_id uuid,
+    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['MetaDatum::Keywords'::character varying, 'MetaDatum::Licenses'::character varying, 'MetaDatum::People'::character varying, 'MetaDatum::Text'::character varying, 'MetaDatum::TextDate'::character varying, 'MetaDatum::Users'::character varying, 'MetaDatum::Vocables'::character varying])::text[]))),
     CONSTRAINT meta_data_is_related CHECK ((((media_entry_id IS NULL) AND (collection_id IS NULL) AND (filter_set_id IS NOT NULL)) OR ((media_entry_id IS NULL) AND (collection_id IS NOT NULL) AND (filter_set_id IS NULL)) OR ((media_entry_id IS NOT NULL) AND (collection_id IS NULL) AND (filter_set_id IS NULL))))
 );
@@ -1231,7 +1450,8 @@ CREATE TABLE meta_data_keywords (
     meta_datum_id uuid NOT NULL,
     keyword_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -1242,7 +1462,8 @@ CREATE TABLE meta_data_keywords (
 CREATE TABLE meta_data_licenses (
     meta_datum_id uuid NOT NULL,
     license_id uuid NOT NULL,
-    created_by_id uuid
+    created_by_id uuid,
+    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -1263,7 +1484,8 @@ CREATE TABLE meta_data_meta_terms (
 CREATE TABLE meta_data_people (
     meta_datum_id uuid NOT NULL,
     person_id uuid NOT NULL,
-    created_by_id uuid
+    created_by_id uuid,
+    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -2996,6 +3218,76 @@ CREATE INDEX users_trgm_searchable_idx ON users USING gin (trgm_searchable gin_t
 
 
 --
+-- Name: propagate_edit_session_insert_to_collections; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER propagate_edit_session_insert_to_collections AFTER INSERT ON edit_sessions FOR EACH ROW EXECUTE PROCEDURE propagate_edit_session_insert_to_collections();
+
+
+--
+-- Name: propagate_edit_session_insert_to_filter_sets; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER propagate_edit_session_insert_to_filter_sets AFTER INSERT ON edit_sessions FOR EACH ROW EXECUTE PROCEDURE propagate_edit_session_insert_to_filter_sets();
+
+
+--
+-- Name: propagate_edit_session_insert_to_media_entries; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER propagate_edit_session_insert_to_media_entries AFTER INSERT ON edit_sessions FOR EACH ROW EXECUTE PROCEDURE propagate_edit_session_insert_to_media_entries();
+
+
+--
+-- Name: propagate_keyword_updates_to_meta_data_keywords; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER propagate_keyword_updates_to_meta_data_keywords AFTER INSERT OR UPDATE ON keywords FOR EACH ROW EXECUTE PROCEDURE propagate_keyword_updates_to_meta_data_keywords();
+
+
+--
+-- Name: propagate_license_updates_to_meta_data_licenses; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER propagate_license_updates_to_meta_data_licenses AFTER INSERT OR UPDATE ON licenses FOR EACH ROW EXECUTE PROCEDURE propagate_license_updates_to_meta_data_licenses();
+
+
+--
+-- Name: propagate_meta_data_keyword_updates_to_meta_data; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER propagate_meta_data_keyword_updates_to_meta_data AFTER INSERT OR DELETE OR UPDATE ON meta_data_keywords FOR EACH ROW EXECUTE PROCEDURE propagate_meta_data_keyword_updates_to_meta_data();
+
+
+--
+-- Name: propagate_meta_data_license_updates_to_meta_data; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER propagate_meta_data_license_updates_to_meta_data AFTER INSERT OR DELETE OR UPDATE ON meta_data_licenses FOR EACH ROW EXECUTE PROCEDURE propagate_meta_data_license_updates_to_meta_data();
+
+
+--
+-- Name: propagate_meta_data_people_updates_to_meta_data; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER propagate_meta_data_people_updates_to_meta_data AFTER INSERT OR DELETE OR UPDATE ON meta_data_people FOR EACH ROW EXECUTE PROCEDURE propagate_meta_data_people_updates_to_meta_data();
+
+
+--
+-- Name: propagate_meta_data_updates_to_media_resource; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER propagate_meta_data_updates_to_media_resource AFTER INSERT OR DELETE OR UPDATE ON meta_data FOR EACH ROW EXECUTE PROCEDURE propagate_meta_data_updates_to_media_resource();
+
+
+--
+-- Name: propagate_people_updates_to_meta_data_people; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER propagate_people_updates_to_meta_data_people AFTER INSERT OR UPDATE ON people FOR EACH ROW EXECUTE PROCEDURE propagate_people_updates_to_meta_data_people();
+
+
+--
 -- Name: trigger_check_collection_cover_uniqueness; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -4456,7 +4748,19 @@ INSERT INTO schema_migrations (version) VALUES ('316');
 
 INSERT INTO schema_migrations (version) VALUES ('317');
 
+INSERT INTO schema_migrations (version) VALUES ('318');
+
+INSERT INTO schema_migrations (version) VALUES ('319');
+
 INSERT INTO schema_migrations (version) VALUES ('32');
+
+INSERT INTO schema_migrations (version) VALUES ('320');
+
+INSERT INTO schema_migrations (version) VALUES ('321');
+
+INSERT INTO schema_migrations (version) VALUES ('322');
+
+INSERT INTO schema_migrations (version) VALUES ('323');
 
 INSERT INTO schema_migrations (version) VALUES ('33');
 
