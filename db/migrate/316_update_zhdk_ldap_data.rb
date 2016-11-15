@@ -5,8 +5,9 @@ class UpdateZhdkLdapData < ActiveRecord::Migration
   end
 
   def change
-    if ( %w(nx-18122 madek-prod madek-test madek-test-blank madek-staging).include?(`hostname`.strip) \
-        && ['', 'madek.zhdk.ch'].include?(domain_name) )
+    # applied and afterwards disabled
+    if (false && ( %w(nx-18122 madek-prod madek-test madek-test-blank madek-staging).include?(`hostname`.strip) \
+                  && ['', 'madek.zhdk.ch'].include?(domain_name)))
 
       ::InstitutionalGroup.reset_column_information
       InstitutionalGroup.first
