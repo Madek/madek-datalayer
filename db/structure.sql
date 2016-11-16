@@ -3547,13 +3547,6 @@ CREATE TRIGGER update_updated_at_column_of_custom_urls BEFORE UPDATE ON custom_u
 
 
 --
--- Name: update_updated_at_column_of_edit_sessions; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_edit_sessions BEFORE UPDATE ON edit_sessions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
-
-
---
 -- Name: update_updated_at_column_of_favorite_collections; Type: TRIGGER; Schema: public; Owner: -
 --
 
