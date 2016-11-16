@@ -2448,6 +2448,20 @@ CREATE INDEX index_collections_on_creator_id ON collections USING btree (creator
 
 
 --
+-- Name: index_collections_on_edit_session_updated_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_collections_on_edit_session_updated_at ON collections USING btree (edit_session_updated_at);
+
+
+--
+-- Name: index_collections_on_meta_data_updated_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_collections_on_meta_data_updated_at ON collections USING btree (meta_data_updated_at);
+
+
+--
 -- Name: index_collections_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2665,6 +2679,20 @@ CREATE INDEX index_filter_sets_on_creator_id ON filter_sets USING btree (creator
 
 
 --
+-- Name: index_filter_sets_on_edit_session_updated_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_filter_sets_on_edit_session_updated_at ON filter_sets USING btree (edit_session_updated_at);
+
+
+--
+-- Name: index_filter_sets_on_meta_data_updated_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_filter_sets_on_meta_data_updated_at ON filter_sets USING btree (meta_data_updated_at);
+
+
+--
 -- Name: index_filter_sets_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2784,10 +2812,24 @@ CREATE INDEX index_media_entries_on_creator_id ON media_entries USING btree (cre
 
 
 --
+-- Name: index_media_entries_on_edit_session_updated_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_media_entries_on_edit_session_updated_at ON media_entries USING btree (edit_session_updated_at);
+
+
+--
 -- Name: index_media_entries_on_is_published; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_media_entries_on_is_published ON media_entries USING btree (is_published);
+
+
+--
+-- Name: index_media_entries_on_meta_data_updated_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_media_entries_on_meta_data_updated_at ON media_entries USING btree (meta_data_updated_at);
 
 
 --
@@ -4754,6 +4796,8 @@ INSERT INTO schema_migrations (version) VALUES ('321');
 INSERT INTO schema_migrations (version) VALUES ('322');
 
 INSERT INTO schema_migrations (version) VALUES ('323');
+
+INSERT INTO schema_migrations (version) VALUES ('324');
 
 INSERT INTO schema_migrations (version) VALUES ('33');
 
