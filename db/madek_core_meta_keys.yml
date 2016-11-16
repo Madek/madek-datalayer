@@ -4,89 +4,89 @@ madek_core:authors:
   meta_datum_object_type: MetaDatum::People
   keywords_alphabetical_order: true
   label: Autor/in
-  description:
-  hint:
+  description: NULL
+  hint: NULL
   position: 0
   is_enabled_for_media_entries: true
   is_enabled_for_collections: true
   is_enabled_for_filter_sets: false
   vocabulary_id: madek_core
-  admin_comment:
+  admin_comment: NULL
 madek_core:copyright_notice:
   is_extensible_list: false
   meta_datum_object_type: MetaDatum::Text
   keywords_alphabetical_order: true
   label: Rechteinhaber/in
-  description:
-  hint:
+  description: NULL
+  hint: NULL
   position: 0
   is_enabled_for_media_entries: true
   is_enabled_for_collections: true
   is_enabled_for_filter_sets: false
   vocabulary_id: madek_core
-  admin_comment:
+  admin_comment: NULL
 madek_core:description:
   is_extensible_list: false
   meta_datum_object_type: MetaDatum::Text
   keywords_alphabetical_order: true
   label: Beschreibung
-  description:
-  hint:
+  description: NULL
+  hint: NULL
   position: 0
   is_enabled_for_media_entries: true
   is_enabled_for_collections: true
   is_enabled_for_filter_sets: true
   vocabulary_id: madek_core
-  admin_comment:
+  admin_comment: NULL
 madek_core:keywords:
   is_extensible_list: true
   meta_datum_object_type: MetaDatum::Keywords
   keywords_alphabetical_order: true
   label: Schlagworte
-  description:
-  hint:
+  description: NULL
+  hint: NULL
   position: 0
   is_enabled_for_media_entries: true
   is_enabled_for_collections: true
   is_enabled_for_filter_sets: true
   vocabulary_id: madek_core
-  admin_comment:
+  admin_comment: NULL
 madek_core:portrayed_object_date:
   is_extensible_list: false
   meta_datum_object_type: MetaDatum::TextDate
   keywords_alphabetical_order: true
   label: Datierung
-  description:
-  hint:
+  description: NULL
+  hint: NULL
   position: 0
   is_enabled_for_media_entries: true
   is_enabled_for_collections: true
   is_enabled_for_filter_sets: false
   vocabulary_id: madek_core
-  admin_comment:
+  admin_comment: NULL
 madek_core:subtitle:
   is_extensible_list: false
   meta_datum_object_type: MetaDatum::Text
   keywords_alphabetical_order: true
   label: Untertitel
-  description:
-  hint:
+  description: NULL
+  hint: NULL
   position: 0
   is_enabled_for_media_entries: true
   is_enabled_for_collections: true
   is_enabled_for_filter_sets: true
   vocabulary_id: madek_core
-  admin_comment:
+  admin_comment: NULL
 madek_core:title:
   is_extensible_list: false
   meta_datum_object_type: MetaDatum::Text
   keywords_alphabetical_order: true
   label: Titel
-  description:
-  hint:
+  description: NULL
+  hint: NULL
   position: 0
   is_enabled_for_media_entries: true
   is_enabled_for_collections: true
   is_enabled_for_filter_sets: true
   vocabulary_id: madek_core
-  admin_comment:
+  admin_comment: NULL
