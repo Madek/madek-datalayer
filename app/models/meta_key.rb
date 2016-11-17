@@ -5,9 +5,21 @@ class MetaKey < ActiveRecord::Base
   include Concerns::NullifyEmptyStrings
 
   has_many :meta_data, dependent: :destroy
-  has_many :keywords
   belongs_to :vocabulary
   has_many :context_keys
+
+  #################################################################################
+  # NOTE: order of statements is important here! ##################################
+  #################################################################################
+  # (1.)
+  has_many :keywords
+
+  # (2.) override one of the methods provided by (1.)
+  def keywords
+    ks = Keyword.where(meta_key_id: id)
+    keywords_alphabetical_order ? ks.order('keywords.term ASC') : ks
+  end
+  #################################################################################
 
   scope :order_by_name_part, lambda {
     reorder("substring(meta_keys.id FROM ':(.*)$') ASC, meta_keys.id")
