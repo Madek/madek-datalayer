@@ -15,6 +15,7 @@ madek_core:authors:
 madek_core:copyright_notice:
   is_extensible_list: false
   meta_datum_object_type: MetaDatum::Text
+  text_type: line
   keywords_alphabetical_order: true
   label: Rechteinhaber/in
   description: NULL
@@ -28,6 +29,7 @@ madek_core:copyright_notice:
 madek_core:description:
   is_extensible_list: false
   meta_datum_object_type: MetaDatum::Text
+  text_type: block
   keywords_alphabetical_order: true
   label: Beschreibung
   description: NULL
@@ -67,6 +69,7 @@ madek_core:portrayed_object_date:
 madek_core:subtitle:
   is_extensible_list: false
   meta_datum_object_type: MetaDatum::Text
+  text_type: line
   keywords_alphabetical_order: true
   label: Untertitel
   description: NULL
@@ -80,6 +83,7 @@ madek_core:subtitle:
 madek_core:title:
   is_extensible_list: false
   meta_datum_object_type: MetaDatum::Text
+  text_type: line
   keywords_alphabetical_order: true
   label: Titel
   description: NULL

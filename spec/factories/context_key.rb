@@ -12,7 +12,6 @@ FactoryGirl.define do
     is_required false
     length_min 16
     length_max 128
-    text_element 'input'
   end
 
 end
