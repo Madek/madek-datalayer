@@ -29,7 +29,7 @@ class Keyword < ActiveRecord::Base
       .joins('INNER JOIN meta_data_keywords ' \
              'ON meta_data_keywords.keyword_id = keywords.id')
       .group('keywords.id')
-      .order('usage_count DESC')
+      .reorder('usage_count DESC')
   end
 
   # used in explore catalog
