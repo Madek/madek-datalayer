@@ -7,15 +7,22 @@ class Keyword < ActiveRecord::Base
   belongs_to :creator, class_name: User
   has_and_belongs_to_many :meta_data, join_table: :meta_data_keywords
 
+  validate do
+    if self.term.blank? or
+        self.term.match(Madek::Constants::VALUE_WITH_ONLY_WHITESPACE_REGEXP)
+      errors.add(:base, "Term can't be blank")
+    end
+  end
+
   def to_s
     term
   end
 
   before_save do
     self.term = self.term.gsub(Madek::Constants::TRIM_WHITESPACE_REGEXP, '')
-    if self.term.present?
-      self.term = self.term.unicode_normalize(:nfc)
-    end
+    self.term = if self.term.present?
+                  self.term.unicode_normalize(:nfc)
+                end
   end
 
   def self.viewable_by_user_or_public(user = nil)

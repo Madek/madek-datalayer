@@ -19,10 +19,24 @@ describe Keyword do
   end
 
   it 'trims whitespace when creating a kw' do
-    spaces = (Madek::Constants::SPECIAL_WHITESPACE_CHARS + ['', "\n"]).join
+    spaces = (Madek::Constants::SPECIAL_WHITESPACE_CHARS + ['', "\n"]).shuffle.join
     spaced_term = spaces + 'term' + spaces
     expect(FactoryGirl.create(:keyword, term: spaced_term).term)
       .to be == 'term'
+  end
+
+  it 'term can\'t be empty or whitespace only' do
+    # NOTE: should be DB constraint, maybe raises something from PG?
+    expected_error = [ActiveRecord::RecordInvalid, /term can't be blank/i]
+
+    empty_string = ''
+    only_spaces = (
+      Madek::Constants::SPECIAL_WHITESPACE_CHARS + ['', "\n"]).shuffle.join
+
+    expect { FactoryGirl.create(:keyword, term: empty_string) }
+      .to raise_error(*expected_error)
+    expect { FactoryGirl.create(:keyword, term: only_spaces) }
+      .to raise_error(*expected_error)
   end
 
   describe 'UTF8 NFC normalization' do
