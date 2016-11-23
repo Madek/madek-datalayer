@@ -8,6 +8,8 @@ class MetaKey < ActiveRecord::Base
   belongs_to :vocabulary
   has_many :context_keys
 
+  enum text_type: { line: 'line', block: 'block' }
+
   #################################################################################
   # NOTE: order of statements is important here! ##################################
   #################################################################################
