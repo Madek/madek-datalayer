@@ -52,28 +52,30 @@ class MediaResource < ActiveRecord::Base
       <<-SQL
         vw_media_resources.*,
         coalesce(
-          max(edit_sessions.created_at),
-          (vw_media_resources.created_at - INTERVAL '1900 years')
+          media_entries.meta_data_updated_at,
+          collections.meta_data_updated_at,
+          filter_sets.meta_data_updated_at
         ) AS last_change
       SQL
     )
-      .joins(<<-SQL.strip_heredoc)
-        LEFT JOIN edit_sessions
-        ON edit_sessions.media_entry_id = vw_media_resources.id
-        OR edit_sessions.collection_id = vw_media_resources.id
-        OR edit_sessions.filter_set_id = vw_media_resources.id
+    .joins(
+      <<-SQL
+        LEFT JOIN media_entries
+        ON (media_entries.id = vw_media_resources.id AND vw_media_resources.type = 'MediaEntry')
       SQL
-      .group(
-        <<-SQL
-          vw_media_resources.id,
-          vw_media_resources.get_metadata_and_previews,
-          vw_media_resources.responsible_user_id,
-          vw_media_resources.creator_id,
-          vw_media_resources.created_at,
-          vw_media_resources.updated_at,
-          vw_media_resources.type
-        SQL
-      )
+    )
+    .joins(
+      <<-SQL
+        LEFT JOIN collections
+        ON (collections.id = vw_media_resources.id AND vw_media_resources.type = 'Collection')
+      SQL
+    )
+    .joins(
+      <<-SQL
+        LEFT JOIN filter_sets
+        ON (filter_sets.id = vw_media_resources.id AND vw_media_resources.type = 'FilterSet')
+      SQL
+    )
   end
   # rubocop:enable Metrics/MethodLength
 

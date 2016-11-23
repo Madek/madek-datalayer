@@ -27,6 +27,7 @@ class MediaEntry < ActiveRecord::Base
   include Concerns::MediaResources::Editability
   include Concerns::MediaResources::Highlight
   include Concerns::MediaResources::MetaDataArelConditions
+  include Concerns::SharedOrderBy
 
   has_one :media_file, dependent: :destroy
 

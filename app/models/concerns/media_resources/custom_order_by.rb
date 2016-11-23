@@ -22,31 +22,6 @@ module Concerns
             raise 'Invalid order spec! ' + order_spec
           end
         end
-
-        def joins_meta_data_title_by_classname
-          single = self.name.underscore
-          multiple = self.name.pluralize.underscore
-          joins('INNER JOIN meta_data ' \
-                'ON meta_data.' + single + '_id = ' + multiple + '.id ' \
-                "AND meta_data.meta_key_id = 'madek_core:title'")
-        end
-
-        def order_by_last_edit_session_by_classname
-          single = self.name.underscore
-          multiple = self.name.pluralize.underscore
-          select(
-            <<-SQL
-              #{multiple}.*,
-              coalesce(
-                max(edit_sessions.created_at),
-                (#{multiple}.created_at - INTERVAL '1900 years')
-              ) AS last_change
-            SQL
-          )
-            .joins('INNER JOIN edit_sessions ' \
-                  'ON edit_sessions.' + single + '_id = ' + multiple + '.id ')
-            .group('' + multiple + '.id')
-        end
       end
     end
   end

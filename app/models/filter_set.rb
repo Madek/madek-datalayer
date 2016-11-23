@@ -22,6 +22,7 @@ class FilterSet < ActiveRecord::Base
   include Concerns::MediaResources::CustomOrderBy
   include Concerns::MediaResources::Highlight
   include Concerns::MediaResources::MetaDataArelConditions
+  include Concerns::SharedOrderBy
 
   # NOTE: could possibly be made as a DB trigger
   # NOTE: disabled because there is no workflow yet
