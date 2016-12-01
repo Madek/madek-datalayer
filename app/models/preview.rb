@@ -2,7 +2,7 @@
 class Preview < ActiveRecord::Base
   include Concerns::MediaType
 
-  belongs_to :media_file
+  belongs_to :media_file, touch: true
 
   before_create :set_media_type
 

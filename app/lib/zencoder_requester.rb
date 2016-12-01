@@ -1,6 +1,7 @@
 class ZencoderRequester
-  def initialize(media_file)
+  def initialize(media_file, formats: [])
     @media_file = media_file
+    @formats = formats
   end
 
   def process
@@ -37,6 +38,7 @@ class ZencoderRequester
         state: 'failed',
         error: response.try(:body)
       )
+      false
     end
   end
 
@@ -79,11 +81,13 @@ class ZencoderRequester
   end
 
   def audio_output_settings
-    [
-      Settings.zencoder_audio_output_formats_defaults.first.to_hash.merge(
-        filename: "#{@media_file.id}.ogg"
-      )
-    ]
+    outputs = Settings.zencoder_audio_output_formats_defaults
+    unless @formats.empty?
+      outputs = outputs.select do |output|
+        @formats.include?(output[:audio_codec])
+      end
+    end
+    outputs
   end
 
   def video_thumbnails_settings

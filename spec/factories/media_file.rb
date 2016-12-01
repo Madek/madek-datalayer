@@ -136,6 +136,23 @@ FactoryGirl.define do
       QuickTime:TimeScale: 600 '
     association :media_entry
     association :uploader, factory: :user
+
+    factory :media_file_for_movie_with_zencoder_jobs do
+      transient do
+        states [:finished, :failed]
+      end
+
+      after(:create) do |media_file, evaluator|
+        create(:zencoder_job,
+               media_file: media_file,
+               state: evaluator.states[0],
+               created_at: 2.minutes.ago)
+        create(:zencoder_job,
+               media_file: media_file,
+               state: evaluator.states[1],
+               created_at: 1.minute.ago)
+      end
+    end
   end
 
   factory :media_file_for_audio, class: MediaFile do
@@ -148,6 +165,32 @@ FactoryGirl.define do
     access_hash { UUIDTools::UUID.random_create.to_s }
     association :media_entry
     association :uploader, factory: :user
+
+    factory :media_file_for_audio_with_zencoder_jobs do
+      transient do
+        previews_attrs []
+        zencoder_job_attrs {}
+      end
+
+      after(:create) do |media_file, evaluator|
+        create(
+          :zencoder_job,
+          {
+            media_file: media_file,
+            state: 'finished'
+          }.merge(evaluator.zencoder_job_attrs.presence || {})
+        )
+
+        evaluator.previews_attrs.each do |preview_attrs|
+          Preview.create!(
+            preview_attrs.merge(
+              media_file: media_file,
+              content_type: "audio/#{preview_attrs[:audio_codec]}"
+            )
+          )
+        end
+      end
+    end
   end
 
   factory :media_file_for_document, class: MediaFile do

@@ -3,6 +3,8 @@
 
 class MediaFile < ActiveRecord::Base
   include Concerns::MediaType
+  include Concerns::MediaFiles::Filters
+  include Concerns::MediaFiles::Sorters
 
   # include MediaFileModules::FileStorageManagement
   # include MediaFileModules::Previews
@@ -10,7 +12,8 @@ class MediaFile < ActiveRecord::Base
 
   belongs_to :media_entry, -> { where(is_published: false) },
              foreign_key: :media_entry_id
-  has_many :zencoder_jobs, dependent: :destroy
+  has_many :zencoder_jobs, -> { order(created_at: :desc) },
+           dependent: :destroy
   belongs_to :uploader, class_name: 'User'
 
   validates_presence_of :uploader
@@ -23,6 +26,8 @@ class MediaFile < ActiveRecord::Base
   before_create :set_media_type
 
   after_commit :delete_files, on: :destroy
+
+  after_touch :collect_audio_codecs, if: proc { |mf| mf.media_type == 'audio' }
 
   serialize :meta_data, Hash
 
@@ -118,7 +123,29 @@ class MediaFile < ActiveRecord::Base
     previews.find_by(thumbnail: size)
   end
 
+  def missing_formats
+    formats = []
+    if media_type == 'audio'
+      formats =
+        (Settings.zencoder_audio_output_formats_defaults.map do |format|
+          format[:audio_codec]
+        end) - audio_codecs
+    end
+    formats
+  end
+
   private
+
+  def collect_audio_codecs
+    codecs = [].tap do |result|
+      previews.where(media_type: :audio).each do |preview|
+        codec = preview.audio_codec
+        result << codec if codec
+      end
+    end
+    codecs = codecs.uniq.sort
+    update_column(:audio_codecs, codecs) unless codecs.blank?
+  end
 
   def path_for_env(path)
     return path.sub('admin-webapp', 'webapp') if Rails.env.development?

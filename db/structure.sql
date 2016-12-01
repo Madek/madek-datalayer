@@ -1402,7 +1402,8 @@ CREATE TABLE media_files (
     media_entry_id uuid,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    uploader_id uuid NOT NULL
+    uploader_id uuid NOT NULL,
+    audio_codecs character varying[] DEFAULT '{}'::character varying[]
 );
 
 
@@ -1544,7 +1545,8 @@ CREATE TABLE previews (
     thumbnail character varying,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    media_type character varying NOT NULL
+    media_type character varying NOT NULL,
+    audio_codec character varying
 );
 
 
@@ -2953,6 +2955,13 @@ CREATE INDEX index_media_files_on_extension ON media_files USING btree (extensio
 
 
 --
+-- Name: index_media_files_on_filename; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_media_files_on_filename ON media_files USING btree (filename);
+
+
+--
 -- Name: index_media_files_on_media_entry_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3132,6 +3141,20 @@ CREATE INDEX index_zencoder_jobs_on_created_at ON zencoder_jobs USING btree (cre
 --
 
 CREATE INDEX index_zencoder_jobs_on_media_file_id ON zencoder_jobs USING btree (media_file_id);
+
+
+--
+-- Name: index_zencoder_jobs_on_request; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_zencoder_jobs_on_request ON zencoder_jobs USING btree (request);
+
+
+--
+-- Name: index_zencoder_jobs_on_state; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_zencoder_jobs_on_state ON zencoder_jobs USING btree (state);
 
 
 --
@@ -4789,6 +4812,12 @@ INSERT INTO schema_migrations (version) VALUES ('324');
 INSERT INTO schema_migrations (version) VALUES ('325');
 
 INSERT INTO schema_migrations (version) VALUES ('326');
+
+INSERT INTO schema_migrations (version) VALUES ('327');
+
+INSERT INTO schema_migrations (version) VALUES ('328');
+
+INSERT INTO schema_migrations (version) VALUES ('329');
 
 INSERT INTO schema_migrations (version) VALUES ('33');
 
