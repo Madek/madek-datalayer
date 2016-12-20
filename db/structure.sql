@@ -1403,7 +1403,7 @@ CREATE TABLE media_files (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     uploader_id uuid NOT NULL,
-    audio_codecs character varying[] DEFAULT '{}'::character varying[]
+    conversion_profiles character varying[] DEFAULT '{}'::character varying[]
 );
 
 
@@ -1546,7 +1546,7 @@ CREATE TABLE previews (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     media_type character varying NOT NULL,
-    audio_codec character varying
+    conversion_profile character varying
 );
 
 
@@ -1717,7 +1717,8 @@ CREATE TABLE zencoder_jobs (
     response text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    progress double precision DEFAULT 0.0
+    progress double precision DEFAULT 0.0,
+    conversion_profiles character varying[] DEFAULT '{}'::character varying[]
 );
 
 
@@ -4820,6 +4821,12 @@ INSERT INTO schema_migrations (version) VALUES ('328');
 INSERT INTO schema_migrations (version) VALUES ('329');
 
 INSERT INTO schema_migrations (version) VALUES ('33');
+
+INSERT INTO schema_migrations (version) VALUES ('330');
+
+INSERT INTO schema_migrations (version) VALUES ('331');
+
+INSERT INTO schema_migrations (version) VALUES ('332');
 
 INSERT INTO schema_migrations (version) VALUES ('34');
 

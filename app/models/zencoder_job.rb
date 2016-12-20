@@ -11,13 +11,6 @@ class ZencoderJob < ActiveRecord::Base
     state == 'submitted'
   end
 
-  def extract_audio_codecs
-    request.scan(/"audio_codec"=>"([^"]+)"/).flatten
-  rescue => e
-    puts e.message
-    []
-  end
-
   def fetch_progress
     data = Zencoder::Job.progress(zencoder_id).body
     if data['state'] == 'processing'

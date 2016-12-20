@@ -185,7 +185,7 @@ FactoryGirl.define do
           Preview.create!(
             preview_attrs.merge(
               media_file: media_file,
-              content_type: "audio/#{preview_attrs[:audio_codec]}"
+              content_type: "audio/#{preview_attrs[:conversion_profile]}"
             )
           )
         end

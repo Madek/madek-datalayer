@@ -13,7 +13,7 @@ module Concerns
         scope :with_filename_like, lambda { |term|
           where('media_files.filename ILIKE ?', "%#{term}%")
         }
-        scope :with_missing_conversions, lambda { |codecs|
+        scope :with_missing_conversions, lambda { |profiles|
           joins(:zencoder_jobs)
             .where(
               %(zencoder_jobs.created_at = ( \
@@ -22,8 +22,10 @@ module Concerns
               )
             )
             .where(%(zencoder_jobs.state != 'submitted'))
-            .where.not(media_files: { audio_codecs: "{#{codecs.sort.join(',')}}" })
-            .where(media_files: { media_type: :audio })
+            .where.not(
+              media_files: { conversion_profiles: "{#{profiles.sort.join(',')}}" }
+            )
+            .where(media_files: { media_type: [:audio, :video] })
         }
         scope :with_failed_conversions, lambda {
           joins(:zencoder_jobs)

@@ -1,7 +1,7 @@
 class ZencoderRequester
-  def initialize(media_file, formats: [])
+  def initialize(media_file, only_profiles: [])
     @media_file = media_file
-    @formats = formats
+    @only_profiles = only_profiles
   end
 
   def process
@@ -23,9 +23,7 @@ class ZencoderRequester
   private
 
   def create_zencoder_job
-    @zencoder_job.update_attributes(
-      request: request_params
-    )
+    @zencoder_job.update_attributes(request: request_params)
 
     if (response = Zencoder::Job.create(request_params)).success?
       @zencoder_job.update_attributes(
@@ -71,23 +69,23 @@ class ZencoderRequester
   end
 
   def video_output_settings
-    Settings.zencoder_video_output_formats_defaults.map do |output|
+    Settings.zencoder_video_output_formats.to_h.map do |profile, output|
       config = output.to_h.deep_symbolize_keys
       if config[:thumbnails]
         config[:thumbnails] = video_thumbnails_settings
       end
-      config.merge(filename: "#{@media_file.id}.#{output.fetch(:format)}")
+      config
+        .merge(filename: "#{@media_file.id}.#{config.fetch(:format)}")
+        .merge(label: profile.to_s)
     end
   end
 
   def audio_output_settings
-    outputs = Settings.zencoder_audio_output_formats_defaults
-    unless @formats.empty?
-      outputs = outputs.select do |output|
-        @formats.include?(output[:audio_codec])
+    [].tap do |settings|
+      extract_profiles.each_pair do |profile, output|
+        settings << output.to_h.merge(label: profile.to_s)
       end
     end
-    outputs
   end
 
   def video_thumbnails_settings
@@ -117,5 +115,16 @@ class ZencoderRequester
 
   def zencoder_job_notification_path
     "/zencoder_jobs/#{@zencoder_job.id}/notification"
+  end
+
+  def extract_profiles
+    profiles = Settings.zencoder_audio_output_formats.to_h
+    unless @only_profiles.empty?
+      profiles.select do |profile, output|
+        @only_profiles.include?(profile)
+      end
+    else
+      profiles
+    end
   end
 end

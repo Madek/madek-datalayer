@@ -27,7 +27,9 @@ class MediaFile < ActiveRecord::Base
 
   after_commit :delete_files, on: :destroy
 
-  after_touch :collect_audio_codecs, if: proc { |mf| mf.media_type == 'audio' }
+  after_touch :collect_conversion_profiles, if: proc { |mf|
+    mf.audio? || mf.video?
+  }
 
   serialize :meta_data, Hash
 
@@ -96,6 +98,10 @@ class MediaFile < ActiveRecord::Base
 
   # helpers
 
+  def audio?
+    media_type == 'audio'
+  end
+
   def pdf?
     media_type == 'document' and extension == 'pdf'
   end
@@ -123,28 +129,28 @@ class MediaFile < ActiveRecord::Base
     previews.find_by(thumbnail: size)
   end
 
-  def missing_formats
-    formats = []
-    if media_type == 'audio'
-      formats =
-        (Settings.zencoder_audio_output_formats_defaults.map do |format|
-          format[:audio_codec]
-        end) - audio_codecs
+  def missing_profiles
+    if audio?
+      Settings
+        .zencoder_audio_output_formats
+        .to_h
+        .keys - conversion_profiles.map(&:to_sym)
+    else
+      []
     end
-    formats
   end
 
   private
 
-  def collect_audio_codecs
-    codecs = [].tap do |result|
-      previews.where(media_type: :audio).each do |preview|
-        codec = preview.audio_codec
-        result << codec if codec
+  def collect_conversion_profiles
+    profiles = [].tap do |result|
+      previews.where(media_type: [:audio, :video]).each do |preview|
+        profile = preview.conversion_profile
+        result << profile if profile
       end
     end
-    codecs = codecs.uniq.sort
-    update_column(:audio_codecs, codecs) unless codecs.blank?
+    profiles = profiles.uniq.sort
+    update_column(:conversion_profiles, profiles) unless profiles.blank?
   end
 
   def path_for_env(path)
