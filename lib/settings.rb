@@ -1,4 +1,5 @@
 require 'active_support/all'
+require_relative './pojo'
 
 module SettingsHelper
   class << self
@@ -15,7 +16,7 @@ module SettingsHelper
 
     def ostructify(d)
       if d.is_a? Hash
-        OpenStruct.new(d.map do |k, v|
+        Pojo.new(d.map do |k, v|
           [k, ostructify(v)]
         end.to_h)
       else
