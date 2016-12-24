@@ -131,9 +131,10 @@ class MediaFile < ActiveRecord::Base
 
   def missing_profiles
     if audio?
-      Settings
-        .zencoder_audio_output_formats
-        .to_h
+      Settings.zencoder_audio_output_formats.to_h
+        .keys - conversion_profiles.map(&:to_sym)
+    elsif video?
+      Settings.zencoder_video_output_formats.to_h
         .keys - conversion_profiles.map(&:to_sym)
     else
       []
