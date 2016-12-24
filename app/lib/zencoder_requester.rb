@@ -1,7 +1,9 @@
 class ZencoderRequester
-  def initialize(media_file, only_profiles: [])
+  def initialize(media_file, only_profiles: false)
     @media_file = media_file
     @only_profiles = only_profiles
+    @media_type = @media_file.media_type.to_sym
+    raise ArgumentError if @only_profiles and !@only_profiles.is_a?(Array)
   end
 
   def process
@@ -57,40 +59,20 @@ class ZencoderRequester
       speed: 2,
       width: width
     }
-
-    outputs =
-      case @media_file.content_type
-      when /video/ then video_output_settings
-      when /audio/ then audio_output_settings
-      else []
-      end
-
+    outputs = output_profiles.map do |profile, output|
+      filename = "#{@media_file.id}.profile_#{profile}.#{output[:format]}"
+      output
+        .merge(label: profile.to_s)
+        .merge(filename: filename)
+        .merge(video_thumbnails_settings(output))
+    end
     defaults.merge(outputs: outputs)
   end
 
-  def video_output_settings
-    Settings.zencoder_video_output_formats.to_h.map do |profile, output|
-      config = output.to_h.deep_symbolize_keys
-      if config[:thumbnails]
-        config[:thumbnails] = video_thumbnails_settings
-      end
-      config
-        .merge(filename: "#{@media_file.id}.#{config.fetch(:format)}")
-        .merge(label: profile.to_s)
-    end
-  end
-
-  def audio_output_settings
-    [].tap do |settings|
-      extract_profiles.each_pair do |profile, output|
-        settings << output.to_h.merge(label: profile.to_s)
-      end
-    end
-  end
-
-  def video_thumbnails_settings
+  def video_thumbnails_settings(output)
+    return {} unless @media_type == :video and output[:thumbnails]
     conf = Settings.zencoder_video_thumbnails_defaults.to_h.deep_symbolize_keys
-    (conf.presence or {}).merge(prefix: @media_file.id)
+    { thumbnails: (conf.presence or {}).merge(prefix: @media_file.id) }
   end
 
   def width
@@ -117,14 +99,28 @@ class ZencoderRequester
     "/zencoder_jobs/#{@zencoder_job.id}/notification"
   end
 
-  def extract_profiles
-    profiles = Settings.zencoder_audio_output_formats.to_h
-    unless @only_profiles.empty?
-      profiles.select do |profile, output|
-        @only_profiles.include?(profile)
-      end
-    else
-      profiles
+  def output_profiles
+    settings = case @media_type
+               when :audio then Settings.zencoder_audio_output_formats.to_h
+               when :video then Settings.zencoder_video_output_formats.to_h
+               else raise 'Unsupported media type!'
+               end
+    validate_configured_formats(settings)
+    if @only_profiles
+      validate_given_profiles(settings)
+      return settings.select { |k, v| @only_profiles.include?(k.to_sym) }.as_json
+    end
+    settings.as_json
+  end
+
+  def validate_configured_formats(settings)
+    settings.each { |k, v| raise 'missing format!' unless v[:format].present? }
+  end
+
+  def validate_given_profiles(settings)
+    unless (@only_profiles - settings.keys.map(&:to_sym)).empty?
+      raise 'Invalid profiles! possible values: ' + settings.keys.join(', ')
     end
   end
+
 end
