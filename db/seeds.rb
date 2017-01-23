@@ -1,36 +1,36 @@
+# load seed data from YAML file and apply it to DB
+####################################################################################
+
+DB_SEEDS ||= YAML.load_file(Rails.root.join('db','seeds_and_defaults.yml'))
+  .deep_symbolize_keys
+
+CORE_VOCAB = DB_SEEDS[:MADEK_CORE_VOCABULARY]
+
+####################################################################################
 ActiveRecord::Base.transaction do
-  ActiveRecord::Base.connection.execute <<-SQL.strip_heredoc
-    SET session_replication_role = replica;
-  SQL
 
-  Vocabulary.find_or_create_by(id: 'madek_core').update_attributes!  \
-    label: 'Madek Core',
-    description: 'This is the predefined and immutable Madek core vocabulary.'
+  # Core Vocab #####################################################################
 
-  Context.find_or_create_by(id: 'core').update_attributes! \
-    label: "Core",
-    description: "Die Metadaten dieses Kontextes sind in der ME-Detailansicht links neben dem Thumbnail sichtbar. Der Core-Kontext wird auch in der Listenansicht usw. verwendet."
+  # needs disabled triggers to temporarily make it mutable
+  ActiveRecord::Base.connection.execute 'SET session_replication_role = replica;'
 
-  YAML.load_file(Rails.root.join("db","madek_core_meta_keys.yml")).each do |id,attrs|
-    MetaKey.find_or_initialize_by(id: id).update_attributes! attrs
-    ContextKey.find_or_create_by(context_id: 'core', meta_key_id: id)
+  Vocabulary.find_or_create_by(id: CORE_VOCAB[:id]).update_attributes!(
+    CORE_VOCAB.slice(:label, :description, :admin_comment)
+      .map {|k, v| [k, v.try(:strip)] }.to_h)
+
+  CORE_VOCAB[:meta_keys].each do |id, attrs|
+    MetaKey.find_or_initialize_by(id: id).update_attributes!(attrs)
   end
+  # enable DB triggers!
+  ActiveRecord::Base.connection.execute 'SET session_replication_role = DEFAULT;'
 
-  if AppSetting.first.catalog_context_keys.empty?
-    ck = ContextKey.find_by(context_id: 'core', meta_key_id: 'madek_core:keywords')
-    AppSetting.first.update_attributes!(catalog_context_keys: [ck.id])
-  end
+  # NOTE: No default Context(s), as they are not needed as seeds
+  # for testing, there is personas; for prod stock defaults are applied on install
 
-  %w(madek_core:title madek_core:copyright_notice).each do |mkid|
-    ContextKey.find_by(meta_key_id: mkid, context_id: 'core') \
-      .update_attributes! is_required: true
-  end
+  # CLEANUP ########################################################################
 
-  ActiveRecord::Base.connection.execute <<-SQL.strip_heredoc
-    SET session_replication_role = DEFAULT;
-  SQL
-
-
+  # find ContextKeys that "overide" a string (like label)
+  # with the SAME string and delete those duplicated string(s)
   %w(label description hint).each do |column_name|
     ActiveRecord::Base.connection.execute <<-SQL.strip_heredoc
       UPDATE context_keys

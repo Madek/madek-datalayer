@@ -1,0 +1,182 @@
+# This file defines DB seeds (Core Vocab), as well as definitions for default settings applied on first installation
+#
+# to run it manually `bundle exec rake db:pg:terminate_connections db:drop db:create db:migrate db:seed db:defaults`
+
+---
+# Core Vocab #######################################################################
+#
+# - built-in vocabulary, guaranteed to be present in every Madek instance,
+#   therefore can't be edited (not even by admins)
+# - created on installation and OVERRIDDEN on each new deploy (upgrade/re-installation)
+# - needs disabled triggers to temporarily make it mutable
+#
+# NOTE: for major changes (like changing an id), existing data that references the core vocab (like MetaDatum) needs to be migrated as well!
+# For smaller changes (label, …), only ContextKeys need to migrated (e.g. if context_key.label is empty and the meta_key label changed, copy the old value).
+# Changing text atributes or adding MetaKeys does need a migration.
+
+MADEK_CORE_VOCABULARY:
+  id: madek_core
+  label: 'Madek Core'
+  description: >
+    Das Core-Vokabular ist fester Bestandteil der Software Madek.
+    Es enthält die wichtigsten Metadaten für die Verwaltung von Medieninhalten
+    und ist vordefiniert und unveränderbar.
+
+  meta_keys:
+    madek_core:title:
+      meta_datum_object_type: MetaDatum::Text
+      text_type: line
+      label: Titel
+      description: NULL
+      hint: NULL
+      position: 1
+      is_enabled_for_media_entries: true
+      is_enabled_for_collections: true
+      is_enabled_for_filter_sets: true
+      vocabulary_id: madek_core
+      admin_comment: NULL
+
+    madek_core:subtitle:
+      meta_datum_object_type: MetaDatum::Text
+      text_type: line
+      label: Untertitel
+      description: NULL
+      hint: NULL
+      position: 2
+      is_enabled_for_media_entries: true
+      is_enabled_for_collections: true
+      is_enabled_for_filter_sets: true
+      vocabulary_id: madek_core
+      admin_comment: NULL
+
+    madek_core:authors:
+      meta_datum_object_type: MetaDatum::People
+      label: Autor/in
+      description: NULL
+      hint: NULL
+      position: 3
+      is_enabled_for_media_entries: true
+      is_enabled_for_collections: true
+      is_enabled_for_filter_sets: false
+      vocabulary_id: madek_core
+      admin_comment: NULL
+
+    madek_core:portrayed_object_date:
+      meta_datum_object_type: MetaDatum::TextDate
+      label: Datierung
+      description: NULL
+      hint: NULL
+      position: 4
+      is_enabled_for_media_entries: true
+      is_enabled_for_collections: true
+      is_enabled_for_filter_sets: false
+      vocabulary_id: madek_core
+      admin_comment: NULL
+
+    madek_core:keywords:
+      is_extensible_list: true
+      meta_datum_object_type: MetaDatum::Keywords
+      keywords_alphabetical_order: false
+      label: Schlagworte
+      description: NULL
+      hint: NULL
+      position: 5
+      is_enabled_for_media_entries: true
+      is_enabled_for_collections: true
+      is_enabled_for_filter_sets: true
+      vocabulary_id: madek_core
+      admin_comment: NULL
+
+    madek_core:description:
+      meta_datum_object_type: MetaDatum::Text
+      text_type: block
+      label: Beschreibung
+      description: NULL
+      hint: NULL
+      position: 6
+      is_enabled_for_media_entries: true
+      is_enabled_for_collections: true
+      is_enabled_for_filter_sets: true
+      vocabulary_id: madek_core
+      admin_comment: NULL
+
+    madek_core:copyright_notice:
+      meta_datum_object_type: MetaDatum::Text
+      text_type: line
+      label: Rechteinhaber/in
+      description: NULL
+      hint: NULL
+      position: 7
+      is_enabled_for_media_entries: true
+      is_enabled_for_collections: true
+      is_enabled_for_filter_sets: false
+      vocabulary_id: madek_core
+      admin_comment: NULL
+
+# Default Contexts & Settings ######################################################
+#
+# created on first installation as a starting point/convenience for admins
+
+MADEK_DEFAULT_CONTEXTS:
+  - id: metadata
+    label: Metadaten
+    admin_comment: Dieser Kontext enthält initial alle MetaKeys aus dem Core-Vokabular.
+    meta_keys_where: {vocabulary_id: 'madek_core'}
+
+  - id: mandatory
+    label: Pflichtfelder
+    admin_comment: >
+      Metakeys, die in diesem Kontext enthalten sind,
+      werden im System als Pflichtfelder für Medieneinträge behandelt.
+      Sie dürfen keine leere Werte enthalten.
+    meta_keys_where: {id: ['madek_core:title', 'madek_core:copyright_notice']}
+
+  - id: media_entry_summary
+    label: Medieneintrag
+    admin_comment: >
+      Dieser Kontext fasst die wichtigsten Metakeys für einen Medieneintrag zusammen.
+      Er wird auf der Medieneintrag-Detailansicht links neben dem Thumbnail angezeigt.
+      Die Metakeys dieses Kontext sollten Madek Core entsprechen.
+    meta_keys_where: {vocabulary_id: 'madek_core', is_enabled_for_media_entries: true}
+
+  - id: set_summary
+    label: Set
+    admin_comment: >
+      Dieser Kontext fasst die Metakeys für ein Set zusammen
+      und wird als erstes Tab auf der Set-Detailseite angezeigt.
+      Auch beim Editieren der Metadaten eines Sets wird dieser Kontext als erster Tab angezeigt.
+    meta_keys_where: {vocabulary_id: 'madek_core', is_enabled_for_collections: true}
+
+MADEK_DEFAULT_SETTINGS:
+  CONTEXTS:
+    context_for_entry_summary: 'media_entry_summary'
+    context_for_collection_summary: 'set_summary'
+    contexts_for_entry_extra: []
+    contexts_for_collection_extra: []
+    contexts_for_entry_edit: ['mandatory', 'media_entry_summary']
+    contexts_for_collection_edit: ['set_summary']
+    contexts_for_validation: ['mandatory']
+    contexts_for_list_details: ['metadata']
+    contexts_for_dynamic_filters: ['metadata']
+
+  CONTEXT_KEYS:
+    # add all Keyword-type Core MetaKeys in Default Context to the Catalog:
+    catalog_context_keys:
+      meta_keys_where: {vocabulary_id: 'madek_core', meta_datum_object_type: 'MetaDatum::Keywords'}
+      context_id: 'metadata'
+
+  STRINGS:
+    site_title: '** Name des Systems **'
+    brand_text: '** Name des Anbieters **'
+    brand_logo_url: null
+    welcome_title: '** Wilkommen zum System **'
+    welcome_text: '** Informationen zum System **'
+
+    sitemap:
+      - "Madek Project on Github": "https://github.com/Madek"
+
+    featured_set_title: '** Sehenswerte Inhalte **'
+    featured_set_subtitle: '** Höhepunkte aus diesem Archiv. **'
+
+    catalog_title: '** Katalog **'
+    catalog_subtitle: '** Erkunden Sie Katalog. **'
