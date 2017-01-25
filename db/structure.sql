@@ -1267,7 +1267,8 @@ CREATE TABLE keywords (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     creator_id uuid,
-    meta_key_id character varying NOT NULL
+    meta_key_id character varying NOT NULL,
+    "position" integer
 );
 
 
@@ -2750,6 +2751,13 @@ CREATE INDEX index_keywords_on_meta_key_id ON keywords USING btree (meta_key_id)
 --
 
 CREATE UNIQUE INDEX index_keywords_on_meta_key_id_and_term ON keywords USING btree (meta_key_id, term);
+
+
+--
+-- Name: index_keywords_on_position; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_keywords_on_position ON keywords USING btree ("position");
 
 
 --
@@ -4827,6 +4835,8 @@ INSERT INTO schema_migrations (version) VALUES ('330');
 INSERT INTO schema_migrations (version) VALUES ('331');
 
 INSERT INTO schema_migrations (version) VALUES ('332');
+
+INSERT INTO schema_migrations (version) VALUES ('333');
 
 INSERT INTO schema_migrations (version) VALUES ('34');
 

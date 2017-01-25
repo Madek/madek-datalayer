@@ -19,7 +19,11 @@ class MetaKey < ActiveRecord::Base
   # (2.) override one of the methods provided by (1.)
   def keywords
     ks = Keyword.where(meta_key_id: id)
-    keywords_alphabetical_order ? ks.order('keywords.term ASC') : ks
+    if keywords_alphabetical_order
+      ks.order('keywords.term ASC')
+    else
+      ks.order('keywords.position ASC')
+    end
   end
   #################################################################################
 
@@ -35,6 +39,7 @@ class MetaKey < ActiveRecord::Base
       .group('meta_keys.id')
   }
 
+  enable_ordering
   nullify_empty :label, :description, :hint
   before_validation :sanitize_allowed_people_subtypes
 

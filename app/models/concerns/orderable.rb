@@ -3,7 +3,7 @@ module Concerns
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def enable_ordering
+      def enable_ordering(skip_default_scope: false)
         define_method :move do |direction, scope = {}|
           ActiveRecord::Base.transaction do
             regenerate_positions(scope)
@@ -20,12 +20,11 @@ module Concerns
             end
           end
         end
-      end
-    end
 
-    included do
-      enable_ordering
-      default_scope { order(:position) }
+        unless skip_default_scope
+          default_scope { order(:position) }
+        end
+      end
     end
 
     private

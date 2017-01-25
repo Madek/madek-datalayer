@@ -2,10 +2,14 @@ class Keyword < ActiveRecord::Base
 
   include Concerns::FindResource
   include Concerns::Keywords::Filters
+  include Concerns::Orderable
+
+  enable_ordering(skip_default_scope: true)
 
   belongs_to :meta_key
   belongs_to :creator, class_name: User
   has_and_belongs_to_many :meta_data, join_table: :meta_data_keywords
+  has_many :meta_data_keywords, class_name: '::MetaDatum::Keyword'
 
   validate do
     if self.term.blank? or
@@ -23,6 +27,42 @@ class Keyword < ActiveRecord::Base
     self.term = if self.term.present?
                   self.term.unicode_normalize(:nfc)
                 end
+  end
+
+  before_create do
+    begin
+      self.position = meta_key.keywords.maximum(:position) + 1
+    rescue
+      self.position = 0
+    end
+  end
+
+  def move_up
+    move :up, meta_key_id: meta_key.id
+  end
+
+  def move_down
+    move :down, meta_key_id: meta_key.id
+  end
+
+  def not_used?
+    meta_data.pluck(:media_entry_id).empty?
+  end
+
+  def usage_count
+    self[:usage_count].presence || meta_data_keywords.count
+  end
+
+  def merge_to(receiver)
+    ActiveRecord::Base.transaction do
+      meta_data_keywords.each do |mdk|
+        mdk.update_columns(
+          keyword_id: receiver.id,
+          created_by_id: receiver.creator_id
+        )
+      end
+      destroy!
+    end
   end
 
   def self.viewable_by_user_or_public(user = nil)

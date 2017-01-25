@@ -8,11 +8,13 @@ class Vocabulary < ActiveRecord::Base
   include Concerns::Vocabularies::Filters
   include Concerns::Orderable
 
+  enable_ordering
+
   has_many :meta_keys
   has_many :keywords,
            through: :meta_keys
 
-  scope :sorted, -> { order(:id) }
+  scope :sorted, -> { unscoped.order(:label) }
   scope :with_meta_keys_count, lambda {
     joins('LEFT OUTER JOIN meta_keys ON meta_keys.vocabulary_id = vocabularies.id')
       .select('vocabularies.*, count(meta_keys.id) AS meta_keys_count')
@@ -46,5 +48,9 @@ class Vocabulary < ActiveRecord::Base
 
   def move_down
     move :down
+  end
+
+  def can_have_keywords?
+    !meta_keys.where(meta_datum_object_type: 'MetaDatum::Keywords').empty?
   end
 end
