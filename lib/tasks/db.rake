@@ -23,13 +23,16 @@ namespace :db do
         # only create/override defaults if context does not exist:
         next if Context.find_by(id: ctx[:id])
 
-        attrs = ctx.slice(:id, :label, :description, :admin_comment)
+        context_attrs = ctx.slice(:id, :label, :description, :admin_comment)
           .map { |k, v| [k, v.try(:strip)] }.to_h
-        c = Context.create!(attrs)
+
+        key_attrs = ctx[:context_key_attr] || {}
+
+        c = Context.create!(context_attrs)
 
         meta_key_ids_from_config(ctx).each.with_index do |mkid, index|
           ContextKey.find_or_create_by(
-            context: c, meta_key_id: mkid, position: index)
+            key_attrs.merge(context: c, meta_key_id: mkid, position: index))
         end
 
       end
