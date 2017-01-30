@@ -1,6 +1,7 @@
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
+require 'webmock/rspec'
 
 # look here for simplecov config:
 # require Rails.root.join "config","initializers","000_simplecov"
