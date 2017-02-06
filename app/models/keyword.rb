@@ -46,7 +46,7 @@ class Keyword < ActiveRecord::Base
   end
 
   def not_used?
-    meta_data.pluck(:media_entry_id).empty?
+    self.class.usage_count_for(self).empty?
   end
 
   def usage_count
@@ -77,6 +77,30 @@ class Keyword < ActiveRecord::Base
              'ON meta_data_keywords.keyword_id = keywords.id')
       .group('keywords.id')
       .reorder('usage_count DESC')
+  end
+
+  def self.usage_count_for(record_or_relation)
+    ids = if record_or_relation.is_a?(ActiveRecord::Relation)
+            record_or_relation.pluck(:id)
+          else
+            record_or_relation.try!(:id)
+          end
+
+    scope = select('keywords.*, count(keywords.id) AS usage_count')
+              .joins('INNER JOIN meta_data_keywords ' \
+                     'ON meta_data_keywords.keyword_id = keywords.id')
+              .joins('INNER JOIN meta_data '\
+                     'ON meta_data.id = meta_data_keywords.meta_datum_id')
+              .joins('INNER JOIN media_entries ' \
+                     'ON media_entries.id = meta_data.media_entry_id')
+              .group('keywords.id')
+              .where(keywords: { id: ids })
+
+    {}.tap do |hash|
+      scope.each do |keyword|
+        hash[keyword.id] = keyword[:usage_count]
+      end
+    end
   end
 
   # used in explore catalog

@@ -39,6 +39,10 @@ module Concerns
 
           keywords
         end
+
+        def self.of_vocabulary(vocabulary_id)
+          joins(:meta_key).where(meta_keys: { vocabulary_id: vocabulary_id })
+        end
       end
     end
   end
