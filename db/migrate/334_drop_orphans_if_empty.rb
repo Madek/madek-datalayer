@@ -8,7 +8,7 @@ class DropOrphansIfEmpty < ActiveRecord::Migration
 
   # NOTE: created in migration #151, we drop it here if its empty/wasnt needed
   def up
-    orphan_vocabulary = MigrationVocabulary.find('madek_orphans')
+    orphan_vocabulary = MigrationVocabulary.find_by(id: 'madek_orphans')
     if orphan_vocabulary && orphan_vocabulary.meta_keys.blank?
       orphan_vocabulary.destroy!
     end
