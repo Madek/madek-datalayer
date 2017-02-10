@@ -39,9 +39,25 @@ class MetaKey < ActiveRecord::Base
       .group('meta_keys.id')
   }
 
-  enable_ordering
+  enable_ordering parent_scope: :vocabulary
   nullify_empty :label, :description, :hint
   before_validation :sanitize_allowed_people_subtypes
+
+  after_save do
+    if keywords_alphabetical_order_changed?
+      unless keywords.empty?
+        keywords.first.regenerate_positions parent_scope: :meta_key
+      end
+    end
+  end
+
+  before_create do
+    self.position = vocabulary.meta_keys.last.position + 1 rescue 0
+  end
+
+  after_create do
+    regenerate_positions parent_scope: :vocabulary
+  end
 
   def self.object_types
     unscoped \

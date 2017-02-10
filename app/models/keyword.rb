@@ -4,7 +4,8 @@ class Keyword < ActiveRecord::Base
   include Concerns::Keywords::Filters
   include Concerns::Orderable
 
-  enable_ordering(skip_default_scope: true)
+  enable_ordering skip_default_scope: true,
+                  parent_scope: :meta_key
 
   belongs_to :meta_key
   belongs_to :creator, class_name: User
@@ -29,12 +30,8 @@ class Keyword < ActiveRecord::Base
                 end
   end
 
-  before_create do
-    begin
-      self.position = meta_key.keywords.maximum(:position) + 1
-    rescue
-      self.position = 0
-    end
+  after_create do
+    regenerate_positions parent_scope: :meta_key
   end
 
   def move_up
