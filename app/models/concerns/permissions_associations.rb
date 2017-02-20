@@ -31,7 +31,7 @@ module Concerns
     end
 
     def permission_types_for_user(user)
-      if responsible_user == user
+      if user.is_a?(User) && try(:responsible_user) == user
         "Permissions::Modules::#{self.class.name}::PERMISSION_TYPES".constantize
       else
         (user_permission_types_for(user) + group_permission_types_for(user))
