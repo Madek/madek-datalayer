@@ -4,9 +4,10 @@ module Concerns
 
     module ClassMethods
       def enable_ordering(skip_default_scope: false, parent_scope: nil)
+        @_parent_scope = parent_scope
         define_method :move do |direction, scope = {}|
           ActiveRecord::Base.transaction do
-            regenerate_positions(scope: scope, parent_scope: parent_scope)
+            regenerate_positions(scope: scope)
             new_position =
               case direction
               when :up then position - 1
@@ -25,11 +26,32 @@ module Concerns
           default_scope { order(:position) }
         end
       end
+
+      def parent_scope
+        @_parent_scope
+      end
     end
 
-    def regenerate_positions(scope: {}, parent_scope: nil)
+    included do
+      before_create do
+        self.position =
+          begin
+            if parent_scope = self.class.parent_scope
+              compute_parent_scope(parent_scope).maximum(:position) + 1
+            else
+              self.class.maximum(:position) + 1
+            end
+          rescue
+            0
+          end
+      end
+
+      after_create :regenerate_positions
+    end
+
+    def regenerate_positions(scope: {})
       siblings =
-        if parent_scope
+        if parent_scope = self.class.parent_scope
           compute_parent_scope(parent_scope)
         else
           self.class.where(scope)

@@ -46,17 +46,9 @@ class MetaKey < ActiveRecord::Base
   after_save do
     if keywords_alphabetical_order_changed?
       unless keywords.empty?
-        keywords.first.regenerate_positions parent_scope: :meta_key
+        keywords.first.regenerate_positions
       end
     end
-  end
-
-  before_create do
-    self.position = vocabulary.meta_keys.last.position + 1 rescue 0
-  end
-
-  after_create do
-    regenerate_positions parent_scope: :vocabulary
   end
 
   def self.object_types

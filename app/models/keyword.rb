@@ -30,10 +30,6 @@ class Keyword < ActiveRecord::Base
                 end
   end
 
-  after_create do
-    regenerate_positions parent_scope: :meta_key
-  end
-
   def move_up
     move :up, meta_key_id: meta_key.id
   end
