@@ -13,7 +13,7 @@ FactoryGirl.define do
       app_setting = AppSetting.first.presence || create(:app_setting)
       # NOTE: default in personas for historical reasons,
       # needs to be disabled when using factories
-      app_setting.update_attributes!(contexts_for_validation: [])
+      app_setting.update_attributes!(contexts_for_entry_validation: [])
     end
 
     factory :media_entry_with_title do

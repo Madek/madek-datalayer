@@ -16,7 +16,7 @@ describe AppSetting do
           contexts_for_collection_extra
           contexts_for_collection_edit
           contexts_for_list_details
-          contexts_for_validation
+          contexts_for_entry_validation
           contexts_for_dynamic_filters
         ).each do |attr|
           hash[attr] = [context.id]
@@ -37,7 +37,7 @@ describe AppSetting do
         contexts_for_collection_extra
         contexts_for_collection_edit
         contexts_for_list_details
-        contexts_for_validation
+        contexts_for_entry_validation
         contexts_for_dynamic_filters
       ).sort
     end
@@ -59,7 +59,7 @@ describe AppSetting do
         expect(app_setting.contexts_for_collection_extra).to eq []
         expect(app_setting.contexts_for_collection_edit).to eq []
         expect(app_setting.contexts_for_list_details).to eq []
-        expect(app_setting.contexts_for_validation).to eq []
+        expect(app_setting.contexts_for_entry_validation).to eq []
         expect(app_setting.contexts_for_dynamic_filters).to eq []
       end
     end
@@ -71,7 +71,7 @@ describe AppSetting do
         expect(app_setting.contexts_for_entry_extra).to eq [context]
         expect(app_setting.contexts_for_collection_extra).to eq [context]
         expect(app_setting.contexts_for_list_details).to eq [context]
-        expect(app_setting.contexts_for_validation).to eq [context]
+        expect(app_setting.contexts_for_entry_validation).to eq [context]
         expect(app_setting.contexts_for_dynamic_filters).to eq [context]
       end
     end
@@ -91,7 +91,7 @@ describe AppSetting do
         expect(app_setting.contexts_for_entry_extra).to eq [valid_context]
         expect(app_setting.contexts_for_collection_extra).to eq [valid_context]
         expect(app_setting.contexts_for_list_details).to eq [valid_context]
-        expect(app_setting.contexts_for_validation).to eq [valid_context]
+        expect(app_setting.contexts_for_entry_validation).to eq [valid_context]
         expect(app_setting.contexts_for_dynamic_filters).to eq [valid_context]
       end
     end

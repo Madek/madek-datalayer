@@ -14,7 +14,7 @@ FactoryGirl.define do
     contexts_for_collection_extra []
     contexts_for_collection_edit []
     contexts_for_list_details []
-    contexts_for_validation []
+    contexts_for_entry_validation []
     contexts_for_dynamic_filters []
   end
 
@@ -26,7 +26,7 @@ FactoryGirl.define do
     contexts_for_collection_extra %w(core foo)
     contexts_for_collection_edit %w(core foo)
     contexts_for_list_details %w(core foo)
-    contexts_for_validation %w(foo core)
+    contexts_for_entry_validation %w(foo core)
     contexts_for_dynamic_filters %w(core foo)
   end
 end

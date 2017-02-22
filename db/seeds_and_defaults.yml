@@ -156,7 +156,7 @@ MADEK_DEFAULT_SETTINGS:
     contexts_for_collection_extra: []
     contexts_for_entry_edit: ['mandatory', 'media_entry_summary']
     contexts_for_collection_edit: ['set_summary']
-    contexts_for_validation: ['mandatory']
+    contexts_for_entry_validation: ['mandatory']
     contexts_for_list_details: ['metadata']
     contexts_for_dynamic_filters: ['metadata']
 

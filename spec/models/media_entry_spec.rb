@@ -70,7 +70,7 @@ describe MediaEntry do
     Context.find_by_id(validation_context_id) \
       or FactoryGirl.create(:context, id: validation_context_id)
     AppSetting.first.update_attributes! \
-      contexts_for_validation: [validation_context_id]
+      contexts_for_entry_validation: [validation_context_id]
     FactoryGirl.create(:context_key,
                        context_id: validation_context_id,
                        is_required: true)

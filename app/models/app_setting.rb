@@ -41,7 +41,7 @@ class AppSetting < ActiveRecord::Base
     contexts_for_entry_extra
     contexts_for_collection_extra
     contexts_for_list_details
-    contexts_for_validation
+    contexts_for_entry_validation
     contexts_for_dynamic_filters
     contexts_for_entry_edit
     contexts_for_collection_edit
