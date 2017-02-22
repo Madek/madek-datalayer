@@ -126,7 +126,7 @@ MADEK_DEFAULT_CONTEXTS:
   - id: mandatory
     label: Pflichtfelder
     admin_comment: >
-      Metakeys, die in diesem Kontext enthalten sind,
+      Metakeys, die in diesem Kontext als required festgelegt sind,
       werden im System als Pflichtfelder für Medieneinträge behandelt.
       Sie dürfen keine leere Werte enthalten.
     meta_keys_where: {id: ['madek_core:title', 'madek_core:copyright_notice']}
@@ -174,10 +174,11 @@ MADEK_DEFAULT_SETTINGS:
     welcome_text: '** Informationen zum System **'
 
     sitemap:
+      - "Software Madek": "https://zhdk.ch/madek"
       - "Madek Project on Github": "https://github.com/Madek"
 
     featured_set_title: '** Sehenswerte Inhalte **'
     featured_set_subtitle: '** Höhepunkte aus diesem Archiv. **'
 
     catalog_title: '** Katalog **'
-    catalog_subtitle: '** Erkunden Sie Katalog. **'
+    catalog_subtitle: '** Erkunden Sie den Katalog. **'
