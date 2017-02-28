@@ -73,5 +73,7 @@ module Madek
     MADEK_SESSION_VALIDITY_DURATION =
       ChronicDuration.parse(Settings.madek_session_validity_duration).seconds
 
+    # only for testing:
+    MADEK_DISABLE_HTTPS = ENV['DISABLE_HTTPS_THIS_IS_A_BAD_IDEA'].present?
   end
 end
