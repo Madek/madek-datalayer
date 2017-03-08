@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -eu
+
+# check if your tree still contains the current commit from master
+git fetch --all 1>&2 # print stdout to stderr
+git rev-list --children HEAD | grep -q "$(git rev-parse origin/master)"
+
+echo "OK"

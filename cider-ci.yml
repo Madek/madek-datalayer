@@ -3,35 +3,18 @@ jobs:
   all-tests:
     name: All Tests
     description: |
-      This job depends on all other tests and checks
-      and it will pass if and only if all dependencies have passed.
+      This job depends on all unit jobs that need to pass.
+      It is depended upon by the super-project(s)!
     priority: 999 # "empty" job = high priority
     depends_on:
-      rspec tests:
-        type: job
-        job_key: rspec-tests
-        states: [passed]
-      code checks:
-        type: job
-        job_key: code-checks
-        states: [passed]
+      rspec-tests: { job_key: rspec-tests, states: [passed], type: job }
+      lint: { job_key: lint, states: [passed], type: job }
     run_when: &DEFAULT_TRIGGERS
       any branch matches:
         type: branch
         include_match: ^.+$
     context:
-      task: |
-        echo 'Yay, all dependencies have passed!'
-        exit 0
-
-  code-checks:
-    name: Code-Checks
-    description: |
-      Run static checks and metrics: complexity, duplication, and code format.
-    priority: 1
-    run_when: *DEFAULT_TRIGGERS
-    context:
-      include: cider-ci/contexts/code-checks.yml
+      task: "echo '✔︎ All dependencies have passed' ; exit 0"
 
   rspec-tests:
     name: RSpec Tests
@@ -39,31 +22,39 @@ jobs:
     priority: 1
     run_when: *DEFAULT_TRIGGERS
     context:
-      include: cider-ci/contexts/rspec.yml
+      include: cider-ci/context-components/rspec.yml
 
-  meta-checks:
-    name: Meta
+  lint:
+    name: "Linting"
     description: |
-      Tasks that rely on external (out-of-repository) state.
-      Their state is not as fixed as in the other Jobs, so it might change over time.
-    priority: 3 # "I don't always run this, but when I do, it should be fast"
+      Code checks: static checks and metrics: complexity, duplication, and format,
+      also other consistency checks.
+    priority: 3
     run_when: *DEFAULT_TRIGGERS
     context:
-      include: cider-ci/contexts/meta-checks.yml
       task_defaults:
         environment_variables:
           GIT_LINEAR_HISTORY_CHECK_START_SHA: ec23e77651c3b80d4343ead339514512aff946c1
+      contexts:
+        include:
+          - path: cider-ci/context-components/lint/git-lint.yml
+          - path: cider-ci/context-components/lint/rspec-lint.yml
+          - path: cider-ci/context-components/lint/ruby-lint.yml
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# GITHUB BRANCH PROTECTION                                                        #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
   good-to-merge:
-    name: "Good To Merge"
+    name: "⚑ Good To Merge"
     description: |
       This job depends on all jobs that need to pass for "Delivery".
       It is depended upon by GitHub's branch protection (for `master`)!
-    priority: 999 # "empty" job = high priority
+    priority: 999 # "delivery" job = high priority
+    # NOTE: no submodules! no need to run merge-check, also should auto-trigger
+    run_when: *DEFAULT_TRIGGERS
     context:
-      task: "echo '✔︎ All dependencies have passed' ; exit 0"
+      task: "echo '✔︎ All dependencies have passed and there are no submodules to check' ; exit 0"
     run_when: *DEFAULT_TRIGGERS
     depends_on:
       all-tests: {job_key: all-tests, type: job, states: [passed]}
-      meta-checks: {job_key: meta-checks, type: job, states: [passed]}
-

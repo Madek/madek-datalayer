@@ -9,8 +9,8 @@ tasks:
 task_defaults:
 
   include:
-    - cider-ci/task_components/bundle.yml
-    - cider-ci/task_components/database.yml
+    - cider-ci/task-components/bundle.yml
+    - cider-ci/task-components/database.yml
 
   eager_trials: 1
   max_trials: 1
