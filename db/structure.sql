@@ -179,6 +179,9 @@ CREATE FUNCTION check_madek_core_meta_key_immutability() RETURNS trigger
               IF (OLD.id ilike 'madek_core:%') THEN
                 RAISE EXCEPTION 'The madek_core meta_key % may not be modified', OLD.id;
               END IF;
+              IF (NEW.id ilike 'madek_core:%') THEN
+                RAISE EXCEPTION 'The madek_core meta_key namespace may not be extended by %', NEW.id;
+              END IF;
             ELSIF  (TG_OP = 'INSERT') THEN
               IF (NEW.id ilike 'madek_core:%') THEN
                 RAISE EXCEPTION 'The madek_core meta_key namespace may not be extended by %', NEW.id;
@@ -4853,6 +4856,8 @@ INSERT INTO schema_migrations (version) VALUES ('336');
 INSERT INTO schema_migrations (version) VALUES ('337');
 
 INSERT INTO schema_migrations (version) VALUES ('338');
+
+INSERT INTO schema_migrations (version) VALUES ('339');
 
 INSERT INTO schema_migrations (version) VALUES ('34');
 
