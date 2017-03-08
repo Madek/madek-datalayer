@@ -2,7 +2,7 @@ require 'spec_helper'
 require Rails.root.join('spec',
                         'models',
                         'keyword',
-                        'terms_for_sorting.rb')
+                        'terms_for_sorting_shared_context.rb')
 
 describe 'sorting of the associated keywords' do
 
