@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.1
--- Dumped by pg_dump version 9.6.1
+-- Dumped from database version 9.6.2
+-- Dumped by pg_dump version 9.6.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -4131,7 +4131,7 @@ ALTER TABLE ONLY filter_sets
 --
 
 ALTER TABLE ONLY context_keys
-    ADD CONSTRAINT fk_rails_2957e036b5 FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_rails_2957e036b5 FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -4167,6 +4167,30 @@ ALTER TABLE ONLY context_keys
 
 
 --
+-- Name: io_mappings fk_rails_dbf6e7c067; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY io_mappings
+    ADD CONSTRAINT fk_rails_dbf6e7c067 FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: meta_data fk_rails_ee76aad01f; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY meta_data
+    ADD CONSTRAINT fk_rails_ee76aad01f FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: keywords fk_rails_f3e1612c9e; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY keywords
+    ADD CONSTRAINT fk_rails_f3e1612c9e FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: groups_users groups-users_groups_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4188,22 +4212,6 @@ ALTER TABLE ONLY groups_users
 
 ALTER TABLE ONLY io_mappings
     ADD CONSTRAINT "io-mappings_io-interfaces_fkey" FOREIGN KEY (io_interface_id) REFERENCES io_interfaces(id) ON DELETE CASCADE;
-
-
---
--- Name: io_mappings io-mappings_meta-keys_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY io_mappings
-    ADD CONSTRAINT "io-mappings_meta-keys_fkey" FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON DELETE CASCADE;
-
-
---
--- Name: keywords keywords_meta-keys_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY keywords
-    ADD CONSTRAINT "keywords_meta-keys_fkey" FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON DELETE CASCADE;
 
 
 --
@@ -4404,14 +4412,6 @@ ALTER TABLE ONLY meta_data
 
 ALTER TABLE ONLY meta_data
     ADD CONSTRAINT "meta-data_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id) ON DELETE CASCADE;
-
-
---
--- Name: meta_data meta-data_meta-keys_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY meta_data
-    ADD CONSTRAINT "meta-data_meta-keys_fkey" FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON DELETE CASCADE;
 
 
 --
@@ -4851,6 +4851,8 @@ INSERT INTO schema_migrations (version) VALUES ('335');
 INSERT INTO schema_migrations (version) VALUES ('336');
 
 INSERT INTO schema_migrations (version) VALUES ('337');
+
+INSERT INTO schema_migrations (version) VALUES ('338');
 
 INSERT INTO schema_migrations (version) VALUES ('34');
 
