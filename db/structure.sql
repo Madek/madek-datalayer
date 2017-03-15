@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.2
--- Dumped by pg_dump version 9.6.2
+-- Dumped from database version 9.6.1
+-- Dumped by pg_dump version 9.6.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1025,7 +1025,8 @@ CREATE TABLE collections (
     creator_id uuid NOT NULL,
     sorting collection_sorting DEFAULT 'created_at DESC'::collection_sorting NOT NULL,
     edit_session_updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL
+    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    clipboard_user_id character varying
 );
 
 
@@ -2433,6 +2434,13 @@ CREATE INDEX index_collection_user_permissions_on_updator_id ON collection_user_
 --
 
 CREATE INDEX index_collection_user_permissions_on_user_id ON collection_user_permissions USING btree (user_id);
+
+
+--
+-- Name: index_collections_on_clipboard_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_collections_on_clipboard_user_id ON collections USING btree (clipboard_user_id);
 
 
 --
@@ -4864,6 +4872,8 @@ INSERT INTO schema_migrations (version) VALUES ('339');
 INSERT INTO schema_migrations (version) VALUES ('34');
 
 INSERT INTO schema_migrations (version) VALUES ('340');
+
+INSERT INTO schema_migrations (version) VALUES ('341');
 
 INSERT INTO schema_migrations (version) VALUES ('35');
 
