@@ -68,7 +68,7 @@ class Collection < ActiveRecord::Base
       .order(:created_at, :id)
   }
 
-  default_scope { reorder(:created_at, :id) }
+  default_scope { where(clipboard_user_id: nil).reorder(:created_at, :id) }
 
   # NOTE: could possibly be made as a DB trigger
   # NOTE: disabled because there is no workflow yet
@@ -78,6 +78,13 @@ class Collection < ActiveRecord::Base
     MediaResource.unified_scope(media_entries,
                                 collections,
                                 filter_sets)
+  end
+
+  def child_media_resources_with_unpublished
+    MediaResourceWithUnpublished.unified_scope(
+      media_entries,
+      collections,
+      filter_sets)
   end
 
   def highlighted_media_resources
