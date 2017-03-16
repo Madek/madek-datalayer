@@ -5,4 +5,4 @@ bundle exec rake db:pg:truncate_tables db:pg:data:restore FILE=db/personas.340.p
 bundle exec rake db:migrate
 bundle exec rake db:seed
 rm -f db/personas.pgbin
-bundle exec rake db:pg:data:dump FILE=db/personas.pgbin
+bundle exec rake db:pg:structure_and_data:dump FILE=db/personas.pgbin

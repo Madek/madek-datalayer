@@ -5,7 +5,8 @@ gem 'rails', '>= 4.2.7.1', '< 5'
 gem 'activerecord-jdbcpostgresql-adapter', platform: :jruby
 gem 'jdbc-postgres', platform: :jruby
 gem 'pg', platform: :mri
-gem 'pg_tasks', '>= 1.3.3', '< 2.0.0'
+gem 'pg_tasks', '= 2.2.0.pre.0'
+#gem 'pg_tasks', path: '/Users/thomas/Programming/ROR/pg_tasks'
 
 gem 'drtom-textacular', '= 4.0.0.alpha.20160302'
 
