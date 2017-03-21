@@ -9,22 +9,46 @@ module Concerns
       end
 
       def title
-        meta_data.find_by(meta_key_id: 'madek_core:title').try(:value)
+        @_md_title ||= (
+          meta_data.find_by(meta_key_id: 'madek_core:title').try(:to_s).presence \
+            || title_fallback)
+      end
+
+      def subtitle
+        @_md_subtitle ||= \
+          meta_data.find_by(meta_key_id: 'madek_core:subtitle').try(:to_s)
       end
 
       def description
-        meta_data.find_by(meta_key_id: 'madek_core:description').try(:value)
+        @_md_description ||= \
+          meta_data.find_by(meta_key_id: 'madek_core:description').try(:to_s)
+      end
+
+      def authors
+        @_md_authors ||= \
+          meta_data.find_by(meta_key_id: 'madek_core:authors').try(:to_s)
+      end
+
+      def copyright_notice
+        @_md_copyright_notice ||= \
+          meta_data.find_by(meta_key_id: 'madek_core:copyright_notice').try(:to_s)
       end
 
       def keywords
-        Keyword
-          .joins(:meta_data)
-          .where(meta_data: Hash[
-        :meta_key_id, 'madek_core:keywords',
-        "#{self.class.model_name.singular}_id".to_sym, id])
+        @_md_keywords ||= \
+          meta_data.find_by(meta_key_id: 'madek_core:keywords').try(:keywords)
       end
 
       private
+
+      def title_fallback
+        if self.is_a?(MediaEntry)
+          self.try(:media_file).try(:filename) \
+            || "(Upload from #{self.try(:created_at).try(:iso8601)})"
+        else
+          "<#{self.class} has no title>"
+        end
+      end
 
       def validate_existence_of_meta_data_for_required_context_keys
         context_ids = context_ids_for_required_context_keys_validation
