@@ -1,3 +1,5 @@
+# shared config (relies on env vars for params)
+
 "git Lint":
   tasks:
 
@@ -17,6 +19,7 @@
 
     git-branch-current:
       name: "git: tree contains latest commit from origin/master"
+      aggregate_state: satisfy-last # relies on external state!
       scripts:
         test:
           body:
@@ -24,6 +27,7 @@
 
     git-submodules-current:
       name: "git: submodules trees all contain latest commit from origin/master"
+      aggregate_state: satisfy-last # relies on external state!
       git_options: { submodules: { include_match: ^.*$ } }
       scripts:
         test:
