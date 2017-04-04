@@ -24,6 +24,11 @@ ActiveRecord::Base.transaction do
   # enable DB triggers!
   ActiveRecord::Base.connection.execute 'SET session_replication_role = DEFAULT;'
 
+  # RDF Classes
+  ['Keyword', 'License'].each do |name|
+    RdfClass.find_or_create_by!(id: name)
+  end
+
   # NOTE: No default Context(s), as they are not needed as seeds
   # for testing, there is personas; for prod stock defaults are applied on install
 

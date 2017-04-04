@@ -49,14 +49,17 @@ RSpec.shared_context 'search in all meta data shared context' do
 
   let(:media_entry_6) do
     media_entry = \
-      FactoryGirl.create(:media_entry,
-                         get_metadata_and_previews: true)
-    meta_datum_licenses = \
-      FactoryGirl.create(:meta_datum_licenses,
-                         licenses: [FactoryGirl.create(:license),
-                                    FactoryGirl.create(:license,
-                                                       label: 'gaura nitai bol')])
-    media_entry.meta_data << meta_datum_licenses
+      FactoryGirl.create(
+        :media_entry, get_metadata_and_previews: true)
+    meta_key = MetaKey.find_by(id: 'test:licenses') \
+             || FactoryGirl.create(:meta_key_keywords_license)
+    licenses = FactoryGirl.create(
+      :meta_datum_keywords,
+      meta_key: meta_key,
+      keywords: [
+        FactoryGirl.create(:keyword, :license),
+        FactoryGirl.create(:keyword, :license, term: 'gaura nitai bol')])
+    media_entry.meta_data << licenses
     media_entry
   end
 end

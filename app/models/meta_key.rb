@@ -67,6 +67,10 @@ class MetaKey < ActiveRecord::Base
     meta_datum_object_type == 'MetaDatum::People'
   end
 
+  def can_have_allowed_rdf_class?
+    meta_datum_object_type == 'MetaDatum::Keywords'
+  end
+
   def can_have_text_type?
     meta_datum_object_type == 'MetaDatum::Text'
   end

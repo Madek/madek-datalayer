@@ -67,16 +67,20 @@ RSpec.shared_context 'meta data shared context' do
     meta_datum_keywords_2
   end
 
+  let(:meta_datum_keywords_licenses) do
+    meta_key = MetaKey.find_by(id: 'test:licenses') \
+             || FactoryGirl.create(:meta_key_keywords_license)
+    FactoryGirl.create(
+      :meta_datum_keywords,
+      media_entry: media_entry,
+      meta_key: meta_key,
+      keywords: [FactoryGirl.create(:keyword, :license)])
+  end
+
   let(:meta_datum_people) do
     meta_datum_people = FactoryGirl.create(:meta_datum_people)
     media_entry.meta_data << meta_datum_people
     meta_datum_people
-  end
-
-  let(:meta_datum_licenses) do
-    meta_datum_licenses = FactoryGirl.create(:meta_datum_licenses)
-    media_entry.meta_data << meta_datum_licenses
-    meta_datum_licenses
   end
 
   let(:meta_data_1) do
@@ -84,9 +88,10 @@ RSpec.shared_context 'meta data shared context' do
        match: 'par tial' },
      { key: meta_datum_keywords_1.meta_key_id,
        value: meta_datum_keywords_1.value.sample.id },
-     { key: meta_datum_licenses.meta_key.id },
+     { key: meta_datum_keywords_licenses.meta_key.id },
      { not_key: not_meta_key.id }]
   end
+
   let(:meta_data_2) do
     [{ key: meta_datum_people.meta_key_id,
        value: meta_datum_people.value.sample.id },

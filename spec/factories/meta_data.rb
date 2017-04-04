@@ -66,19 +66,6 @@ FactoryGirl.define do
       end
     end
 
-    factory :meta_datum_licenses, class: MetaDatum::Licenses do
-      meta_key do
-        MetaKey.find_by(id: 'test:licenses') \
-          || FactoryGirl.create(:meta_key_licenses)
-      end
-      licenses { (1..3).map { FactoryGirl.create :license } }
-      after(:build) do |md|
-        md.meta_data_licenses.map do |mdl|
-          mdl.created_by = create(:user)
-        end
-      end
-    end
-
     factory :meta_datum_people, class: MetaDatum::People do
       meta_key do
         MetaKey.find_by(id: 'test:people') \

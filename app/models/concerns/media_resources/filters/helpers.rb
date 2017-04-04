@@ -46,8 +46,6 @@ module Concerns
               matching_meta_data_exists_condition(match, meta_key_ids)
                 .or(matching_meta_data_keywords_exists_conditition(match,
                                                                    meta_key_ids))
-                .or(matching_meta_data_licenses_exists_conditition(match,
-                                                                   meta_key_ids))
                 .or(matching_meta_data_people_exists_conditition(match,
                                                                  meta_key_ids))
           end

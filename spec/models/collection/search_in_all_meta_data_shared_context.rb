@@ -61,11 +61,12 @@ RSpec.shared_context 'search in all meta data shared context' do
     collection = \
       FactoryGirl.create(:collection,
                          get_metadata_and_previews: true)
-    FactoryGirl.create(:meta_datum_licenses,
-                       licenses: [FactoryGirl.create(:license),
-                                  FactoryGirl.create(:license,
-                                                     label: 'gaura nitai bol')],
-                       collection: collection)
+    FactoryGirl.create(
+      :meta_datum_keywords,
+      keywords: [
+        FactoryGirl.create(:keyword, :license),
+        FactoryGirl.create(:keyword, :license, :license, term: 'gaura nitai bol')],
+      collection: collection)
     collection
   end
 end

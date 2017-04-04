@@ -4,7 +4,7 @@
 # and for each MetaKey a list of the "used" Values,
 # along with and sorted by "usage count".
 # - "used" refers to the related MetaData of the Resources in `Scope`
-# - "Values" can be Keywords, People and Licenses
+# - "Values" can be Keywords and People
 #
 # NOTES:
 # - USE WITH CARE - never use this with user input (SQL injection 👻)
@@ -46,17 +46,6 @@ FROM
    INNER JOIN meta_data_keywords ON meta_data_keywords.meta_datum_id = with_joined_data.meta_data_id
    INNER JOIN keywords ON meta_data_keywords.keyword_id = keywords.id
    GROUP BY keywords.id,
-            with_joined_data.context_key_id,
-            with_joined_data.context_id
-   UNION SELECT with_joined_data.context_id,
-                with_joined_data.context_key_id,
-                COUNT(with_joined_data.media_entry_id) AS count,
-                licenses.id AS uuid,
-                licenses.label AS label
-   FROM with_joined_data
-   INNER JOIN meta_data_licenses ON meta_data_licenses.meta_datum_id = with_joined_data.meta_data_id
-   INNER JOIN licenses ON meta_data_licenses.license_id = licenses.id
-   GROUP BY licenses.id,
             with_joined_data.context_key_id,
             with_joined_data.context_id
    UNION SELECT with_joined_data.context_id,

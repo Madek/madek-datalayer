@@ -29,13 +29,16 @@ FactoryGirl.define do
       meta_datum_object_type 'MetaDatum::Text'
     end
 
-    factory :meta_key_licenses, class: MetaKey do
-      id { 'test:licenses' }
-      meta_datum_object_type 'MetaDatum::Licenses'
-    end
-
     factory :meta_key_keywords, class: MetaKey do
       id { 'test:keywords' }
+      meta_datum_object_type 'MetaDatum::Keywords'
+    end
+
+    factory :meta_key_keywords_license, class: MetaKey do
+      id { 'test:licenses' }
+      allowed_rdf_class do
+        RdfClass.find_by(id: 'License') || create(:rdf_class, id: 'License')
+      end
       meta_datum_object_type 'MetaDatum::Keywords'
     end
 

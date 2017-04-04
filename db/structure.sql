@@ -1298,50 +1298,10 @@ CREATE TABLE keywords (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     creator_id uuid,
     meta_key_id character varying NOT NULL,
-    "position" integer
-);
-
-
---
--- Name: license_groups; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE license_groups (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    name text NOT NULL,
+    "position" integer,
+    rdf_class character varying DEFAULT 'Keyword'::character varying NOT NULL,
     description text,
-    "position" double precision,
-    parent_id uuid,
-    created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now()
-);
-
-
---
--- Name: licenses; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE licenses (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    is_default boolean DEFAULT false,
-    is_custom boolean DEFAULT false,
-    label character varying,
-    usage character varying,
-    url character varying,
-    "position" double precision,
-    searchable text DEFAULT ''::text NOT NULL
-);
-
-
---
--- Name: licenses_license_groups; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE licenses_license_groups (
-    license_id uuid,
-    license_group_id uuid,
-    created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now()
+    external_uri character varying
 );
 
 
@@ -1473,18 +1433,6 @@ CREATE TABLE meta_data_keywords (
 
 
 --
--- Name: meta_data_licenses; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE meta_data_licenses (
-    meta_datum_id uuid NOT NULL,
-    license_id uuid NOT NULL,
-    created_by_id uuid,
-    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
 -- Name: meta_data_meta_terms; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1526,6 +1474,7 @@ CREATE TABLE meta_keys (
     admin_comment text,
     allowed_people_subtypes text[],
     text_type text DEFAULT 'line'::text NOT NULL,
+    allowed_rdf_class character varying,
     CONSTRAINT check_allowed_people_subtypes_not_empty_for_meta_datum_people CHECK ((((allowed_people_subtypes IS NOT NULL) AND (COALESCE(array_length(allowed_people_subtypes, 1), 0) > 0)) OR (meta_datum_object_type <> 'MetaDatum::People'::text))),
     CONSTRAINT check_description_not_blank CHECK ((description !~ '^\s*$'::text)),
     CONSTRAINT check_hint_not_blank CHECK ((hint !~ '^\s*$'::text)),
@@ -1580,6 +1529,20 @@ CREATE TABLE previews (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     media_type character varying NOT NULL,
     conversion_profile character varying
+);
+
+
+--
+-- Name: rdf_classes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE rdf_classes (
+    id character varying NOT NULL,
+    description text,
+    admin_comment text,
+    "position" integer DEFAULT 0 NOT NULL,
+    CONSTRAINT rdf_class_id_chars CHECK (((id)::text ~* '^[A-Za-z0-9]+$'::text)),
+    CONSTRAINT rdf_class_id_start_uppercase CHECK (((id)::text ~ '^[A-Z]'::text))
 );
 
 
@@ -1846,14 +1809,6 @@ ALTER TABLE ONLY contexts
 
 
 --
--- Name: licenses copyrights_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY licenses
-    ADD CONSTRAINT copyrights_pkey PRIMARY KEY (id);
-
-
---
 -- Name: custom_urls custom_urls_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1950,14 +1905,6 @@ ALTER TABLE ONLY meta_data_keywords
 
 
 --
--- Name: license_groups license_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY license_groups
-    ADD CONSTRAINT license_groups_pkey PRIMARY KEY (id);
-
-
---
 -- Name: media_entries media_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2035,6 +1982,14 @@ ALTER TABLE ONLY people
 
 ALTER TABLE ONLY previews
     ADD CONSTRAINT previews_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rdf_classes rdf_classes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rdf_classes
+    ADD CONSTRAINT rdf_classes_pkey PRIMARY KEY (id);
 
 
 --
@@ -2802,27 +2757,6 @@ CREATE INDEX index_keywords_on_position ON keywords USING btree ("position");
 
 
 --
--- Name: index_licenses_on_label; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_licenses_on_label ON licenses USING btree (label);
-
-
---
--- Name: index_licenses_on_url; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_licenses_on_url ON licenses USING btree (url);
-
-
---
--- Name: index_md_licenses_on_md_id_and_license_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_md_licenses_on_md_id_and_license_id ON meta_data_licenses USING btree (meta_datum_id, license_id);
-
-
---
 -- Name: index_md_people_on_md_id_and_person_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3222,34 +3156,6 @@ CREATE INDEX keyword_terms_to_tsvector_idx ON keywords USING gin (to_tsvector('e
 
 
 --
--- Name: licenses_label_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX licenses_label_idx ON licenses USING gin (label gin_trgm_ops);
-
-
---
--- Name: licenses_searchable_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX licenses_searchable_idx ON licenses USING gin (searchable gin_trgm_ops);
-
-
---
--- Name: licenses_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX licenses_to_tsvector_idx ON licenses USING gin (to_tsvector('english'::regconfig, (label)::text));
-
-
---
--- Name: licenses_to_tsvector_idx1; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX licenses_to_tsvector_idx1 ON licenses USING gin (to_tsvector('english'::regconfig, searchable));
-
-
---
 -- Name: meta_data_string_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3348,24 +3254,10 @@ CREATE TRIGGER propagate_keyword_updates_to_meta_data_keywords AFTER INSERT OR U
 
 
 --
--- Name: licenses propagate_license_updates_to_meta_data_licenses; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER propagate_license_updates_to_meta_data_licenses AFTER INSERT OR UPDATE ON licenses FOR EACH ROW EXECUTE PROCEDURE propagate_license_updates_to_meta_data_licenses();
-
-
---
 -- Name: meta_data_keywords propagate_meta_data_keyword_updates_to_meta_data; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER propagate_meta_data_keyword_updates_to_meta_data AFTER INSERT OR DELETE OR UPDATE ON meta_data_keywords FOR EACH ROW EXECUTE PROCEDURE propagate_meta_data_keyword_updates_to_meta_data();
-
-
---
--- Name: meta_data_licenses propagate_meta_data_license_updates_to_meta_data; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER propagate_meta_data_license_updates_to_meta_data AFTER INSERT OR DELETE OR UPDATE ON meta_data_licenses FOR EACH ROW EXECUTE PROCEDURE propagate_meta_data_license_updates_to_meta_data();
 
 
 --
@@ -3432,13 +3324,6 @@ CREATE TRIGGER trigger_check_meta_data_keywords_created_by AFTER INSERT ON meta_
 
 
 --
--- Name: meta_data_licenses trigger_check_meta_data_licenses_created_by; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER trigger_check_meta_data_licenses_created_by AFTER INSERT ON meta_data_licenses FOR EACH ROW EXECUTE PROCEDURE check_meta_data_licenses_created_by();
-
-
---
 -- Name: meta_data_people trigger_check_meta_data_people_created_by; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -3502,13 +3387,6 @@ CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_keywords_after_insert A
 
 
 --
--- Name: meta_data_licenses trigger_delete_empty_meta_data_licenses_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_licenses_after_delete_join AFTER DELETE ON meta_data_licenses DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_empty_meta_data_licenses_after_delete_join();
-
-
---
 -- Name: meta_data trigger_delete_empty_meta_data_licenses_after_insert; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -3569,13 +3447,6 @@ CREATE CONSTRAINT TRIGGER trigger_meta_key_meta_data_type_consistency AFTER INSE
 --
 
 CREATE TRIGGER update_searchable_column_of_groups BEFORE INSERT OR UPDATE ON groups FOR EACH ROW EXECUTE PROCEDURE groups_update_searchable_column();
-
-
---
--- Name: licenses update_searchable_column_of_licenses; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_searchable_column_of_licenses BEFORE INSERT OR UPDATE ON licenses FOR EACH ROW EXECUTE PROCEDURE licenses_update_searchable_column();
 
 
 --
@@ -3723,20 +3594,6 @@ CREATE TRIGGER update_updated_at_column_of_io_mappings BEFORE UPDATE ON io_mappi
 --
 
 CREATE TRIGGER update_updated_at_column_of_keywords BEFORE UPDATE ON keywords FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
-
-
---
--- Name: license_groups update_updated_at_column_of_license_groups; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_license_groups BEFORE UPDATE ON license_groups FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
-
-
---
--- Name: licenses_license_groups update_updated_at_column_of_licenses_license_groups; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_licenses_license_groups BEFORE UPDATE ON licenses_license_groups FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
@@ -4177,22 +4034,6 @@ ALTER TABLE ONLY groups_users
 
 
 --
--- Name: meta_data_licenses fk_rails_67eb3c60e8; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY meta_data_licenses
-    ADD CONSTRAINT fk_rails_67eb3c60e8 FOREIGN KEY (license_id) REFERENCES licenses(id);
-
-
---
--- Name: meta_data_licenses fk_rails_6f33d95dfc; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY meta_data_licenses
-    ADD CONSTRAINT fk_rails_6f33d95dfc FOREIGN KEY (meta_datum_id) REFERENCES meta_data(id) ON DELETE CASCADE;
-
-
---
 -- Name: vocabulary_group_permissions fk_rails_8550647b84; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4273,19 +4114,11 @@ ALTER TABLE ONLY io_mappings
 
 
 --
--- Name: licenses_license_groups licenses-license-groups_license-groups_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: keywords keywords_rdf_class_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY licenses_license_groups
-    ADD CONSTRAINT "licenses-license-groups_license-groups_fkey" FOREIGN KEY (license_group_id) REFERENCES license_groups(id);
-
-
---
--- Name: licenses_license_groups licenses-license-groups_licenses_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY licenses_license_groups
-    ADD CONSTRAINT "licenses-license-groups_licenses_fkey" FOREIGN KEY (license_id) REFERENCES licenses(id);
+ALTER TABLE ONLY keywords
+    ADD CONSTRAINT keywords_rdf_class_fkey FOREIGN KEY (rdf_class) REFERENCES rdf_classes(id) ON UPDATE CASCADE;
 
 
 --
@@ -4401,14 +4234,6 @@ ALTER TABLE ONLY meta_data_keywords
 
 
 --
--- Name: meta_data_licenses meta-data-licenses_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY meta_data_licenses
-    ADD CONSTRAINT "meta-data-licenses_users_fkey" FOREIGN KEY (created_by_id) REFERENCES users(id);
-
-
---
 -- Name: meta_data_meta_terms meta-data-meta-terms_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4489,11 +4314,11 @@ ALTER TABLE ONLY meta_data_keywords
 
 
 --
--- Name: license_groups parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_keys meta_keys_allowed_rdf_class_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY license_groups
-    ADD CONSTRAINT parent_id_fkey FOREIGN KEY (parent_id) REFERENCES license_groups(id);
+ALTER TABLE ONLY meta_keys
+    ADD CONSTRAINT meta_keys_allowed_rdf_class_fkey FOREIGN KEY (allowed_rdf_class) REFERENCES rdf_classes(id) ON UPDATE CASCADE;
 
 
 --
@@ -4911,6 +4736,14 @@ INSERT INTO schema_migrations (version) VALUES ('343');
 INSERT INTO schema_migrations (version) VALUES ('344');
 
 INSERT INTO schema_migrations (version) VALUES ('345');
+
+INSERT INTO schema_migrations (version) VALUES ('346');
+
+INSERT INTO schema_migrations (version) VALUES ('347');
+
+INSERT INTO schema_migrations (version) VALUES ('348');
+
+INSERT INTO schema_migrations (version) VALUES ('349');
 
 INSERT INTO schema_migrations (version) VALUES ('35');
 

@@ -8,7 +8,7 @@ module Concerns
           include Concerns::MediaResources::Filters::MetaData::Helpers
 
           included do
-            [:person, :license, :keyword].each do |actor_type|
+            [:person, :keyword].each do |actor_type|
               method_name = "filter_by_meta_datum_#{actor_type.to_s.pluralize}"
               scope method_name,
                     lambda { |meta_datum|
