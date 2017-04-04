@@ -14,6 +14,8 @@ module SettingsHelper
                           ['..', '..', 'config', 'settings.yml'],
                           ['..', '..', 'config', 'settings.local.yml']]
 
+    DEV_SETTINGS = ['..', 'config', 'settings.dev.yml']
+
     def ostructify(d)
       if d.is_a? Hash
         Pojo.new(d.map do |k, v|
@@ -25,8 +27,10 @@ module SettingsHelper
     end
 
     def load_settings
+      settings_locations = SETTINGS_LOCATIONS
+      settings_locations.push(DEV_SETTINGS) if Rails.env.development?
       conf = {}.with_indifferent_access
-      SETTINGS_LOCATIONS.each do |rel_location|
+      settings_locations.each do |rel_location|
         if File.exists? (conf_file = DATALAYER_PATHNAME.join(*rel_location))
           conf.deep_merge! YAML.load_file conf_file
         end
