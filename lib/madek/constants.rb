@@ -1,5 +1,6 @@
 require 'settings'
 require 'chronic_duration'
+require 'uuidtools'
 ChronicDuration.raise_exceptions = true
 
 module Madek
@@ -13,6 +14,12 @@ module Madek
     WEBAPP_ROOT_DIR = MADEK_ROOT_DIR.join('webapp')
 
     ADMIN_ROOT_DIR = MADEK_ROOT_DIR.join('admin-webapp')
+
+    # never ever change the following properties; some pkeys depend on them
+    MADEK_UUID_NS =
+      UUIDTools::UUID.sha1_create UUIDTools::UUID.parse_int(0), 'Madek'
+    SIGNED_IN_USERS_GROUP_ID =
+      UUIDTools::UUID.sha1_create MADEK_UUID_NS, 'signed-in users'
 
     def self.env_path_or_nil(env_var)
       ENV[env_var].present? && Pathname(ENV[env_var]).realpath

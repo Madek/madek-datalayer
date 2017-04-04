@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.1
--- Dumped by pg_dump version 9.6.1
+-- Dumped from database version 9.6.2
+-- Dumped by pg_dump version 9.6.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -3860,14 +3860,6 @@ ALTER TABLE ONLY collection_group_permissions
 
 
 --
--- Name: collection_group_permissions collection-group-permissions_groups_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY collection_group_permissions
-    ADD CONSTRAINT "collection-group-permissions_groups_fkey" FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE;
-
-
---
 -- Name: collection_group_permissions collection-group-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4084,14 +4076,6 @@ ALTER TABLE ONLY filter_set_group_permissions
 
 
 --
--- Name: filter_set_group_permissions filter-set-group-permissions_groups_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY filter_set_group_permissions
-    ADD CONSTRAINT "filter-set-group-permissions_groups_fkey" FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE;
-
-
---
 -- Name: filter_set_group_permissions filter-set-group-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4156,6 +4140,14 @@ ALTER TABLE ONLY api_clients
 
 
 --
+-- Name: groups_users fk_rails_4e63edbd27; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY groups_users
+    ADD CONSTRAINT fk_rails_4e63edbd27 FOREIGN KEY (group_id) REFERENCES groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: meta_data_licenses fk_rails_67eb3c60e8; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4172,11 +4164,43 @@ ALTER TABLE ONLY meta_data_licenses
 
 
 --
+-- Name: vocabulary_group_permissions fk_rails_8550647b84; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY vocabulary_group_permissions
+    ADD CONSTRAINT fk_rails_8550647b84 FOREIGN KEY (group_id) REFERENCES groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: filter_set_group_permissions fk_rails_9cf683b9d3; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY filter_set_group_permissions
+    ADD CONSTRAINT fk_rails_9cf683b9d3 FOREIGN KEY (group_id) REFERENCES groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: context_keys fk_rails_b297363c89; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY context_keys
     ADD CONSTRAINT fk_rails_b297363c89 FOREIGN KEY (context_id) REFERENCES contexts(id);
+
+
+--
+-- Name: collection_group_permissions fk_rails_b88fcbe505; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY collection_group_permissions
+    ADD CONSTRAINT fk_rails_b88fcbe505 FOREIGN KEY (group_id) REFERENCES groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: media_entry_group_permissions fk_rails_c5e91a50bb; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY media_entry_group_permissions
+    ADD CONSTRAINT fk_rails_c5e91a50bb FOREIGN KEY (group_id) REFERENCES groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -4201,14 +4225,6 @@ ALTER TABLE ONLY meta_data
 
 ALTER TABLE ONLY keywords
     ADD CONSTRAINT fk_rails_f3e1612c9e FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: groups_users groups-users_groups_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY groups_users
-    ADD CONSTRAINT "groups-users_groups_fkey" FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE;
 
 
 --
@@ -4281,14 +4297,6 @@ ALTER TABLE ONLY media_entry_api_client_permissions
 
 ALTER TABLE ONLY media_entry_api_client_permissions
     ADD CONSTRAINT "media-entry-api-client-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES users(id);
-
-
---
--- Name: media_entry_group_permissions media-entry-group-permissions_groups_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY media_entry_group_permissions
-    ADD CONSTRAINT "media-entry-group-permissions_groups_fkey" FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE;
 
 
 --
@@ -4497,14 +4505,6 @@ ALTER TABLE ONLY vocabulary_api_client_permissions
 
 ALTER TABLE ONLY vocabulary_api_client_permissions
     ADD CONSTRAINT "vocabulary-api-client-permissions_vocabularies_fkey" FOREIGN KEY (vocabulary_id) REFERENCES vocabularies(id) ON DELETE CASCADE;
-
-
---
--- Name: vocabulary_group_permissions vocabulary-group-permissions_groups_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY vocabulary_group_permissions
-    ADD CONSTRAINT "vocabulary-group-permissions_groups_fkey" FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE;
 
 
 --
@@ -4874,6 +4874,8 @@ INSERT INTO schema_migrations (version) VALUES ('34');
 INSERT INTO schema_migrations (version) VALUES ('340');
 
 INSERT INTO schema_migrations (version) VALUES ('341');
+
+INSERT INTO schema_migrations (version) VALUES ('342');
 
 INSERT INTO schema_migrations (version) VALUES ('35');
 
