@@ -9,10 +9,15 @@ jobs:
     depends_on:
       rspec-tests: { job_key: rspec-tests, states: [passed], type: job }
       lint: { job_key: lint, states: [passed], type: job }
-    run_when: &DEFAULT_TRIGGERS
-      any branch matches:
-        type: branch
-        include_match: ^.+$
+    run_when:
+      'rspec-tests passed':
+        type: job
+        job_key: rspec-tests
+        states: [passed]
+      'lint passed':
+        type: job
+        job_key: lint
+        states: [passed]
     context:
       task: "echo '✔︎ All dependencies have passed' ; exit 0"
 
@@ -20,7 +25,10 @@ jobs:
     name: RSpec Tests
     description: Run all specs.
     priority: 1
-    run_when: *DEFAULT_TRIGGERS
+    run_when: &DEFAULT_TRIGGERS
+      any branch matches:
+        type: branch
+        include_match: ^.+$
     context:
       include: cider-ci/context-components/rspec.yml
 
@@ -51,10 +59,10 @@ jobs:
       This job depends on all jobs that need to pass for "Delivery".
       It is depended upon by GitHub's branch protection (for `master`)!
     priority: 999 # "delivery" job = high priority
-    # NOTE: no submodules! no need to run merge-check, also should auto-trigger
-    run_when: *DEFAULT_TRIGGERS
     context:
       task: "echo '✔︎ All dependencies have passed and there are no submodules to check' ; exit 0"
-    run_when: *DEFAULT_TRIGGERS
-    depends_on:
-      all-tests: {job_key: all-tests, type: job, states: [passed]}
+    # NOTE: no submodules, so we *want* to auto-trigger this!
+    # Having this job is just for consistency (also easier to add a submodule later)
+    depends_on: &ALL_PASSED
+      'all tests passed': {type: job, job_key: 'all-tests', states: [passed]}
+    run_when: *ALL_PASSED
