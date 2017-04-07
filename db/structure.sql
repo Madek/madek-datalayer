@@ -2,11 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.5
--- Dumped by pg_dump version 9.5.5
+-- Dumped from database version 9.6.1
+-- Dumped by pg_dump version 9.6.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
@@ -937,6 +938,10 @@ CREATE TABLE app_settings (
     contexts_for_entry_edit text[] DEFAULT '{}'::text[] NOT NULL,
     contexts_for_collection_edit text[] DEFAULT '{}'::text[] NOT NULL,
     contexts_for_collection_extra text[] DEFAULT '{}'::text[] NOT NULL,
+    media_entry_default_license_id uuid,
+    media_entry_default_license_meta_key text,
+    media_entry_default_license_usage_text text,
+    media_entry_default_license_usage_meta_key text,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -1753,7 +1758,7 @@ CREATE TABLE zencoder_jobs (
 
 
 --
--- Name: admin_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: admins admin_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY admins
@@ -1761,7 +1766,7 @@ ALTER TABLE ONLY admins
 
 
 --
--- Name: api_clients_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: api_clients api_clients_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY api_clients
@@ -1769,7 +1774,7 @@ ALTER TABLE ONLY api_clients
 
 
 --
--- Name: app_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: app_settings app_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY app_settings
@@ -1777,7 +1782,7 @@ ALTER TABLE ONLY app_settings
 
 
 --
--- Name: collection_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_api_client_permissions collection_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_api_client_permissions
@@ -1785,7 +1790,7 @@ ALTER TABLE ONLY collection_api_client_permissions
 
 
 --
--- Name: collection_collection_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_collection_arcs collection_collection_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_collection_arcs
@@ -1793,7 +1798,7 @@ ALTER TABLE ONLY collection_collection_arcs
 
 
 --
--- Name: collection_filter_set_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_filter_set_arcs collection_filter_set_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_filter_set_arcs
@@ -1801,7 +1806,7 @@ ALTER TABLE ONLY collection_filter_set_arcs
 
 
 --
--- Name: collection_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_group_permissions collection_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_group_permissions
@@ -1809,7 +1814,7 @@ ALTER TABLE ONLY collection_group_permissions
 
 
 --
--- Name: collection_media_entry_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_media_entry_arcs collection_media_entry_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_media_entry_arcs
@@ -1817,7 +1822,7 @@ ALTER TABLE ONLY collection_media_entry_arcs
 
 
 --
--- Name: collection_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_user_permissions collection_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_user_permissions
@@ -1825,7 +1830,7 @@ ALTER TABLE ONLY collection_user_permissions
 
 
 --
--- Name: collections_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: collections collections_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collections
@@ -1833,7 +1838,7 @@ ALTER TABLE ONLY collections
 
 
 --
--- Name: contexts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: contexts contexts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY contexts
@@ -1841,7 +1846,7 @@ ALTER TABLE ONLY contexts
 
 
 --
--- Name: copyrights_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: licenses copyrights_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY licenses
@@ -1849,7 +1854,7 @@ ALTER TABLE ONLY licenses
 
 
 --
--- Name: custom_urls_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: custom_urls custom_urls_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY custom_urls
@@ -1857,7 +1862,7 @@ ALTER TABLE ONLY custom_urls
 
 
 --
--- Name: edit_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: edit_sessions edit_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY edit_sessions
@@ -1865,7 +1870,7 @@ ALTER TABLE ONLY edit_sessions
 
 
 --
--- Name: filter_set_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_api_client_permissions filter_set_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_set_api_client_permissions
@@ -1873,7 +1878,7 @@ ALTER TABLE ONLY filter_set_api_client_permissions
 
 
 --
--- Name: filter_set_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_group_permissions filter_set_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_set_group_permissions
@@ -1881,7 +1886,7 @@ ALTER TABLE ONLY filter_set_group_permissions
 
 
 --
--- Name: filter_set_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_user_permissions filter_set_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_set_user_permissions
@@ -1889,7 +1894,7 @@ ALTER TABLE ONLY filter_set_user_permissions
 
 
 --
--- Name: filter_sets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_sets filter_sets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_sets
@@ -1897,7 +1902,7 @@ ALTER TABLE ONLY filter_sets
 
 
 --
--- Name: full_texts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: full_texts full_texts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY full_texts
@@ -1905,7 +1910,7 @@ ALTER TABLE ONLY full_texts
 
 
 --
--- Name: groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: groups groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY groups
@@ -1913,7 +1918,7 @@ ALTER TABLE ONLY groups
 
 
 --
--- Name: io_interfaces_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: io_interfaces io_interfaces_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY io_interfaces
@@ -1921,7 +1926,7 @@ ALTER TABLE ONLY io_interfaces
 
 
 --
--- Name: io_mappings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: io_mappings io_mappings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY io_mappings
@@ -1929,7 +1934,7 @@ ALTER TABLE ONLY io_mappings
 
 
 --
--- Name: keyword_terms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: keywords keyword_terms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY keywords
@@ -1937,7 +1942,7 @@ ALTER TABLE ONLY keywords
 
 
 --
--- Name: keywords_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data_keywords keywords_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data_keywords
@@ -1945,7 +1950,7 @@ ALTER TABLE ONLY meta_data_keywords
 
 
 --
--- Name: license_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: license_groups license_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY license_groups
@@ -1953,7 +1958,7 @@ ALTER TABLE ONLY license_groups
 
 
 --
--- Name: media_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entries media_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entries
@@ -1961,7 +1966,7 @@ ALTER TABLE ONLY media_entries
 
 
 --
--- Name: media_entry_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_api_client_permissions media_entry_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entry_api_client_permissions
@@ -1969,7 +1974,7 @@ ALTER TABLE ONLY media_entry_api_client_permissions
 
 
 --
--- Name: media_entry_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_group_permissions media_entry_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entry_group_permissions
@@ -1977,7 +1982,7 @@ ALTER TABLE ONLY media_entry_group_permissions
 
 
 --
--- Name: media_entry_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_user_permissions media_entry_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entry_user_permissions
@@ -1985,7 +1990,7 @@ ALTER TABLE ONLY media_entry_user_permissions
 
 
 --
--- Name: media_files_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: media_files media_files_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_files
@@ -1993,7 +1998,7 @@ ALTER TABLE ONLY media_files
 
 
 --
--- Name: meta_data_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data meta_data_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data
@@ -2001,7 +2006,7 @@ ALTER TABLE ONLY meta_data
 
 
 --
--- Name: meta_key_definitions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: context_keys meta_key_definitions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY context_keys
@@ -2009,7 +2014,7 @@ ALTER TABLE ONLY context_keys
 
 
 --
--- Name: meta_keys_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_keys meta_keys_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_keys
@@ -2017,7 +2022,7 @@ ALTER TABLE ONLY meta_keys
 
 
 --
--- Name: people_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: people people_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY people
@@ -2025,7 +2030,7 @@ ALTER TABLE ONLY people
 
 
 --
--- Name: previews_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: previews previews_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY previews
@@ -2033,7 +2038,7 @@ ALTER TABLE ONLY previews
 
 
 --
--- Name: usage_terms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: usage_terms usage_terms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY usage_terms
@@ -2041,7 +2046,7 @@ ALTER TABLE ONLY usage_terms
 
 
 --
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY users
@@ -2049,7 +2054,7 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: visualizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: visualizations visualizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY visualizations
@@ -2057,7 +2062,7 @@ ALTER TABLE ONLY visualizations
 
 
 --
--- Name: vocabularies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: vocabularies vocabularies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY vocabularies
@@ -2065,7 +2070,7 @@ ALTER TABLE ONLY vocabularies
 
 
 --
--- Name: vocabulary_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: vocabulary_api_client_permissions vocabulary_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY vocabulary_api_client_permissions
@@ -2073,7 +2078,7 @@ ALTER TABLE ONLY vocabulary_api_client_permissions
 
 
 --
--- Name: vocabulary_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: vocabulary_group_permissions vocabulary_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY vocabulary_group_permissions
@@ -2081,7 +2086,7 @@ ALTER TABLE ONLY vocabulary_group_permissions
 
 
 --
--- Name: vocabulary_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: vocabulary_user_permissions vocabulary_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY vocabulary_user_permissions
@@ -2089,7 +2094,7 @@ ALTER TABLE ONLY vocabulary_user_permissions
 
 
 --
--- Name: zencoder_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: zencoder_jobs zencoder_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zencoder_jobs
@@ -3315,504 +3320,504 @@ CREATE INDEX users_trgm_searchable_idx ON users USING gin (trgm_searchable gin_t
 
 
 --
--- Name: propagate_edit_session_insert_to_collections; Type: TRIGGER; Schema: public; Owner: -
+-- Name: edit_sessions propagate_edit_session_insert_to_collections; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER propagate_edit_session_insert_to_collections AFTER INSERT ON edit_sessions FOR EACH ROW EXECUTE PROCEDURE propagate_edit_session_insert_to_collections();
 
 
 --
--- Name: propagate_edit_session_insert_to_filter_sets; Type: TRIGGER; Schema: public; Owner: -
+-- Name: edit_sessions propagate_edit_session_insert_to_filter_sets; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER propagate_edit_session_insert_to_filter_sets AFTER INSERT ON edit_sessions FOR EACH ROW EXECUTE PROCEDURE propagate_edit_session_insert_to_filter_sets();
 
 
 --
--- Name: propagate_edit_session_insert_to_media_entries; Type: TRIGGER; Schema: public; Owner: -
+-- Name: edit_sessions propagate_edit_session_insert_to_media_entries; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER propagate_edit_session_insert_to_media_entries AFTER INSERT ON edit_sessions FOR EACH ROW EXECUTE PROCEDURE propagate_edit_session_insert_to_media_entries();
 
 
 --
--- Name: propagate_keyword_updates_to_meta_data_keywords; Type: TRIGGER; Schema: public; Owner: -
+-- Name: keywords propagate_keyword_updates_to_meta_data_keywords; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER propagate_keyword_updates_to_meta_data_keywords AFTER INSERT OR UPDATE ON keywords FOR EACH ROW EXECUTE PROCEDURE propagate_keyword_updates_to_meta_data_keywords();
 
 
 --
--- Name: propagate_license_updates_to_meta_data_licenses; Type: TRIGGER; Schema: public; Owner: -
+-- Name: licenses propagate_license_updates_to_meta_data_licenses; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER propagate_license_updates_to_meta_data_licenses AFTER INSERT OR UPDATE ON licenses FOR EACH ROW EXECUTE PROCEDURE propagate_license_updates_to_meta_data_licenses();
 
 
 --
--- Name: propagate_meta_data_keyword_updates_to_meta_data; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data_keywords propagate_meta_data_keyword_updates_to_meta_data; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER propagate_meta_data_keyword_updates_to_meta_data AFTER INSERT OR DELETE OR UPDATE ON meta_data_keywords FOR EACH ROW EXECUTE PROCEDURE propagate_meta_data_keyword_updates_to_meta_data();
 
 
 --
--- Name: propagate_meta_data_license_updates_to_meta_data; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data_licenses propagate_meta_data_license_updates_to_meta_data; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER propagate_meta_data_license_updates_to_meta_data AFTER INSERT OR DELETE OR UPDATE ON meta_data_licenses FOR EACH ROW EXECUTE PROCEDURE propagate_meta_data_license_updates_to_meta_data();
 
 
 --
--- Name: propagate_meta_data_people_updates_to_meta_data; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data_people propagate_meta_data_people_updates_to_meta_data; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER propagate_meta_data_people_updates_to_meta_data AFTER INSERT OR DELETE OR UPDATE ON meta_data_people FOR EACH ROW EXECUTE PROCEDURE propagate_meta_data_people_updates_to_meta_data();
 
 
 --
--- Name: propagate_meta_data_updates_to_media_resource; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data propagate_meta_data_updates_to_media_resource; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER propagate_meta_data_updates_to_media_resource AFTER INSERT OR DELETE OR UPDATE ON meta_data FOR EACH ROW EXECUTE PROCEDURE propagate_meta_data_updates_to_media_resource();
 
 
 --
--- Name: propagate_people_updates_to_meta_data_people; Type: TRIGGER; Schema: public; Owner: -
+-- Name: people propagate_people_updates_to_meta_data_people; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER propagate_people_updates_to_meta_data_people AFTER INSERT OR UPDATE ON people FOR EACH ROW EXECUTE PROCEDURE propagate_people_updates_to_meta_data_people();
 
 
 --
--- Name: trigger_check_collection_cover_uniqueness; Type: TRIGGER; Schema: public; Owner: -
+-- Name: collection_media_entry_arcs trigger_check_collection_cover_uniqueness; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_check_collection_cover_uniqueness AFTER INSERT OR UPDATE ON collection_media_entry_arcs DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_collection_cover_uniqueness();
 
 
 --
--- Name: trigger_check_collection_primary_uniqueness; Type: TRIGGER; Schema: public; Owner: -
+-- Name: custom_urls trigger_check_collection_primary_uniqueness; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_check_collection_primary_uniqueness AFTER INSERT OR UPDATE ON custom_urls DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_collection_primary_uniqueness();
 
 
 --
--- Name: trigger_check_filter_set_primary_uniqueness; Type: TRIGGER; Schema: public; Owner: -
+-- Name: custom_urls trigger_check_filter_set_primary_uniqueness; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_check_filter_set_primary_uniqueness AFTER INSERT OR UPDATE ON custom_urls DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_filter_set_primary_uniqueness();
 
 
 --
--- Name: trigger_check_media_entry_primary_uniqueness; Type: TRIGGER; Schema: public; Owner: -
+-- Name: custom_urls trigger_check_media_entry_primary_uniqueness; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_check_media_entry_primary_uniqueness AFTER INSERT OR UPDATE ON custom_urls DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_media_entry_primary_uniqueness();
 
 
 --
--- Name: trigger_check_meta_data_created_by; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data trigger_check_meta_data_created_by; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_check_meta_data_created_by AFTER INSERT ON meta_data FOR EACH ROW EXECUTE PROCEDURE check_meta_data_created_by();
 
 
 --
--- Name: trigger_check_meta_data_keywords_created_by; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data_keywords trigger_check_meta_data_keywords_created_by; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_check_meta_data_keywords_created_by AFTER INSERT ON meta_data_keywords FOR EACH ROW EXECUTE PROCEDURE check_meta_data_keywords_created_by();
 
 
 --
--- Name: trigger_check_meta_data_licenses_created_by; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data_licenses trigger_check_meta_data_licenses_created_by; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_check_meta_data_licenses_created_by AFTER INSERT ON meta_data_licenses FOR EACH ROW EXECUTE PROCEDURE check_meta_data_licenses_created_by();
 
 
 --
--- Name: trigger_check_meta_data_people_created_by; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data_people trigger_check_meta_data_people_created_by; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER trigger_check_meta_data_people_created_by AFTER INSERT ON meta_data_people FOR EACH ROW EXECUTE PROCEDURE check_meta_data_people_created_by();
 
 
 --
--- Name: trigger_check_no_drafts_in_collections; Type: TRIGGER; Schema: public; Owner: -
+-- Name: collection_media_entry_arcs trigger_check_no_drafts_in_collections; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_check_no_drafts_in_collections AFTER INSERT OR UPDATE ON collection_media_entry_arcs DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_no_drafts_in_collections();
 
 
 --
--- Name: trigger_check_users_apiclients_login_uniqueness_on_apiclients; Type: TRIGGER; Schema: public; Owner: -
+-- Name: api_clients trigger_check_users_apiclients_login_uniqueness_on_apiclients; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_check_users_apiclients_login_uniqueness_on_apiclients AFTER INSERT OR UPDATE ON api_clients DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_users_apiclients_login_uniqueness();
 
 
 --
--- Name: trigger_check_users_apiclients_login_uniqueness_on_users; Type: TRIGGER; Schema: public; Owner: -
+-- Name: users trigger_check_users_apiclients_login_uniqueness_on_users; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_check_users_apiclients_login_uniqueness_on_users AFTER INSERT OR UPDATE ON users DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_users_apiclients_login_uniqueness();
 
 
 --
--- Name: trigger_collection_may_not_be_its_own_parent; Type: TRIGGER; Schema: public; Owner: -
+-- Name: collection_collection_arcs trigger_collection_may_not_be_its_own_parent; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_collection_may_not_be_its_own_parent AFTER INSERT OR UPDATE ON collection_collection_arcs DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE collection_may_not_be_its_own_parent();
 
 
 --
--- Name: trigger_delete_empty_group_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
+-- Name: groups_users trigger_delete_empty_group_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_delete_empty_group_after_delete_join AFTER DELETE ON groups_users DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_empty_group_after_delete_join();
 
 
 --
--- Name: trigger_delete_empty_meta_data_groups_after_insert; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data trigger_delete_empty_meta_data_groups_after_insert; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_groups_after_insert AFTER INSERT ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::Groups'::text)) EXECUTE PROCEDURE delete_empty_meta_data_groups_after_insert();
 
 
 --
--- Name: trigger_delete_empty_meta_data_keywords_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data_keywords trigger_delete_empty_meta_data_keywords_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_keywords_after_delete_join AFTER DELETE ON meta_data_keywords DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_empty_meta_data_keywords_after_delete_join();
 
 
 --
--- Name: trigger_delete_empty_meta_data_keywords_after_insert; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data trigger_delete_empty_meta_data_keywords_after_insert; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_keywords_after_insert AFTER INSERT ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::Keywords'::text)) EXECUTE PROCEDURE delete_empty_meta_data_keywords_after_insert();
 
 
 --
--- Name: trigger_delete_empty_meta_data_licenses_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data_licenses trigger_delete_empty_meta_data_licenses_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_licenses_after_delete_join AFTER DELETE ON meta_data_licenses DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_empty_meta_data_licenses_after_delete_join();
 
 
 --
--- Name: trigger_delete_empty_meta_data_licenses_after_insert; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data trigger_delete_empty_meta_data_licenses_after_insert; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_licenses_after_insert AFTER INSERT ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::Licenses'::text)) EXECUTE PROCEDURE delete_empty_meta_data_licenses_after_insert();
 
 
 --
--- Name: trigger_delete_empty_meta_data_people_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data_people trigger_delete_empty_meta_data_people_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_people_after_delete_join AFTER DELETE ON meta_data_people DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_empty_meta_data_people_after_delete_join();
 
 
 --
--- Name: trigger_delete_empty_meta_data_people_after_insert; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data trigger_delete_empty_meta_data_people_after_insert; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_people_after_insert AFTER INSERT ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::People'::text)) EXECUTE PROCEDURE delete_empty_meta_data_people_after_insert();
 
 
 --
--- Name: trigger_delete_meta_datum_text_string_null; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data trigger_delete_meta_datum_text_string_null; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_delete_meta_datum_text_string_null AFTER INSERT OR UPDATE ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_meta_datum_text_string_null();
 
 
 --
--- Name: trigger_madek_core_meta_key_immutability; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_keys trigger_madek_core_meta_key_immutability; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_madek_core_meta_key_immutability AFTER INSERT OR DELETE OR UPDATE ON meta_keys DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_madek_core_meta_key_immutability();
 
 
 --
--- Name: trigger_meta_data_meta_key_type_consistency; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data trigger_meta_data_meta_key_type_consistency; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_meta_data_meta_key_type_consistency AFTER INSERT OR UPDATE ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_meta_data_meta_key_type_consistency();
 
 
 --
--- Name: trigger_meta_key_id_for_keyword_consistency; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data_keywords trigger_meta_key_id_for_keyword_consistency; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_meta_key_id_for_keyword_consistency AFTER INSERT OR UPDATE ON meta_data_keywords DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_meta_key_id_consistency_for_keywords();
 
 
 --
--- Name: trigger_meta_key_meta_data_type_consistency; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_keys trigger_meta_key_meta_data_type_consistency; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE CONSTRAINT TRIGGER trigger_meta_key_meta_data_type_consistency AFTER INSERT OR UPDATE ON meta_keys DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_meta_key_meta_data_type_consistency();
 
 
 --
--- Name: update_searchable_column_of_groups; Type: TRIGGER; Schema: public; Owner: -
+-- Name: groups update_searchable_column_of_groups; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_searchable_column_of_groups BEFORE INSERT OR UPDATE ON groups FOR EACH ROW EXECUTE PROCEDURE groups_update_searchable_column();
 
 
 --
--- Name: update_searchable_column_of_licenses; Type: TRIGGER; Schema: public; Owner: -
+-- Name: licenses update_searchable_column_of_licenses; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_searchable_column_of_licenses BEFORE INSERT OR UPDATE ON licenses FOR EACH ROW EXECUTE PROCEDURE licenses_update_searchable_column();
 
 
 --
--- Name: update_searchable_column_of_people; Type: TRIGGER; Schema: public; Owner: -
+-- Name: people update_searchable_column_of_people; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_searchable_column_of_people BEFORE INSERT OR UPDATE ON people FOR EACH ROW EXECUTE PROCEDURE people_update_searchable_column();
 
 
 --
--- Name: update_searchable_column_of_users; Type: TRIGGER; Schema: public; Owner: -
+-- Name: users update_searchable_column_of_users; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_searchable_column_of_users BEFORE INSERT OR UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE users_update_searchable_column();
 
 
 --
--- Name: update_updated_at_column_of_admins; Type: TRIGGER; Schema: public; Owner: -
+-- Name: admins update_updated_at_column_of_admins; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_admins BEFORE UPDATE ON admins FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_api_clients; Type: TRIGGER; Schema: public; Owner: -
+-- Name: api_clients update_updated_at_column_of_api_clients; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_api_clients BEFORE UPDATE ON api_clients FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_app_settings; Type: TRIGGER; Schema: public; Owner: -
+-- Name: app_settings update_updated_at_column_of_app_settings; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_app_settings BEFORE UPDATE ON app_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_collection_api_client_permissions; Type: TRIGGER; Schema: public; Owner: -
+-- Name: collection_api_client_permissions update_updated_at_column_of_collection_api_client_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_collection_api_client_permissions BEFORE UPDATE ON collection_api_client_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_collection_group_permissions; Type: TRIGGER; Schema: public; Owner: -
+-- Name: collection_group_permissions update_updated_at_column_of_collection_group_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_collection_group_permissions BEFORE UPDATE ON collection_group_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_collection_user_permissions; Type: TRIGGER; Schema: public; Owner: -
+-- Name: collection_user_permissions update_updated_at_column_of_collection_user_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_collection_user_permissions BEFORE UPDATE ON collection_user_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_collections; Type: TRIGGER; Schema: public; Owner: -
+-- Name: collections update_updated_at_column_of_collections; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_collections BEFORE UPDATE ON collections FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_context_keys; Type: TRIGGER; Schema: public; Owner: -
+-- Name: context_keys update_updated_at_column_of_context_keys; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_context_keys BEFORE UPDATE ON context_keys FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_custom_urls; Type: TRIGGER; Schema: public; Owner: -
+-- Name: custom_urls update_updated_at_column_of_custom_urls; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_custom_urls BEFORE UPDATE ON custom_urls FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_favorite_collections; Type: TRIGGER; Schema: public; Owner: -
+-- Name: favorite_collections update_updated_at_column_of_favorite_collections; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_favorite_collections BEFORE UPDATE ON favorite_collections FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_favorite_filter_sets; Type: TRIGGER; Schema: public; Owner: -
+-- Name: favorite_filter_sets update_updated_at_column_of_favorite_filter_sets; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_favorite_filter_sets BEFORE UPDATE ON favorite_filter_sets FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_favorite_media_entries; Type: TRIGGER; Schema: public; Owner: -
+-- Name: favorite_media_entries update_updated_at_column_of_favorite_media_entries; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_favorite_media_entries BEFORE UPDATE ON favorite_media_entries FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_filter_set_api_client_permissions; Type: TRIGGER; Schema: public; Owner: -
+-- Name: filter_set_api_client_permissions update_updated_at_column_of_filter_set_api_client_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_filter_set_api_client_permissions BEFORE UPDATE ON filter_set_api_client_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_filter_set_group_permissions; Type: TRIGGER; Schema: public; Owner: -
+-- Name: filter_set_group_permissions update_updated_at_column_of_filter_set_group_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_filter_set_group_permissions BEFORE UPDATE ON filter_set_group_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_filter_set_user_permissions; Type: TRIGGER; Schema: public; Owner: -
+-- Name: filter_set_user_permissions update_updated_at_column_of_filter_set_user_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_filter_set_user_permissions BEFORE UPDATE ON filter_set_user_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_filter_sets; Type: TRIGGER; Schema: public; Owner: -
+-- Name: filter_sets update_updated_at_column_of_filter_sets; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_filter_sets BEFORE UPDATE ON filter_sets FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_io_interfaces; Type: TRIGGER; Schema: public; Owner: -
+-- Name: io_interfaces update_updated_at_column_of_io_interfaces; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_io_interfaces BEFORE UPDATE ON io_interfaces FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_io_mappings; Type: TRIGGER; Schema: public; Owner: -
+-- Name: io_mappings update_updated_at_column_of_io_mappings; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_io_mappings BEFORE UPDATE ON io_mappings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_keywords; Type: TRIGGER; Schema: public; Owner: -
+-- Name: keywords update_updated_at_column_of_keywords; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_keywords BEFORE UPDATE ON keywords FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_license_groups; Type: TRIGGER; Schema: public; Owner: -
+-- Name: license_groups update_updated_at_column_of_license_groups; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_license_groups BEFORE UPDATE ON license_groups FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_licenses_license_groups; Type: TRIGGER; Schema: public; Owner: -
+-- Name: licenses_license_groups update_updated_at_column_of_licenses_license_groups; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_licenses_license_groups BEFORE UPDATE ON licenses_license_groups FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_media_entries; Type: TRIGGER; Schema: public; Owner: -
+-- Name: media_entries update_updated_at_column_of_media_entries; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_media_entries BEFORE UPDATE ON media_entries FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_media_entry_api_client_permissions; Type: TRIGGER; Schema: public; Owner: -
+-- Name: media_entry_api_client_permissions update_updated_at_column_of_media_entry_api_client_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_media_entry_api_client_permissions BEFORE UPDATE ON media_entry_api_client_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_media_entry_group_permissions; Type: TRIGGER; Schema: public; Owner: -
+-- Name: media_entry_group_permissions update_updated_at_column_of_media_entry_group_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_media_entry_group_permissions BEFORE UPDATE ON media_entry_group_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_media_entry_user_permissions; Type: TRIGGER; Schema: public; Owner: -
+-- Name: media_entry_user_permissions update_updated_at_column_of_media_entry_user_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_media_entry_user_permissions BEFORE UPDATE ON media_entry_user_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_media_files; Type: TRIGGER; Schema: public; Owner: -
+-- Name: media_files update_updated_at_column_of_media_files; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_media_files BEFORE UPDATE ON media_files FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_meta_data_keywords; Type: TRIGGER; Schema: public; Owner: -
+-- Name: meta_data_keywords update_updated_at_column_of_meta_data_keywords; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_meta_data_keywords BEFORE UPDATE ON meta_data_keywords FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_people; Type: TRIGGER; Schema: public; Owner: -
+-- Name: people update_updated_at_column_of_people; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_people BEFORE UPDATE ON people FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_previews; Type: TRIGGER; Schema: public; Owner: -
+-- Name: previews update_updated_at_column_of_previews; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_previews BEFORE UPDATE ON previews FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_usage_terms; Type: TRIGGER; Schema: public; Owner: -
+-- Name: usage_terms update_updated_at_column_of_usage_terms; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_usage_terms BEFORE UPDATE ON usage_terms FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_users; Type: TRIGGER; Schema: public; Owner: -
+-- Name: users update_updated_at_column_of_users; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_users BEFORE UPDATE ON users FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: update_updated_at_column_of_zencoder_jobs; Type: TRIGGER; Schema: public; Owner: -
+-- Name: zencoder_jobs update_updated_at_column_of_zencoder_jobs; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_zencoder_jobs BEFORE UPDATE ON zencoder_jobs FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
--- Name: admins_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: admins admins_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY admins
@@ -3820,7 +3825,7 @@ ALTER TABLE ONLY admins
 
 
 --
--- Name: collection-api-client-permissions_api-clients_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_api_client_permissions collection-api-client-permissions_api-clients_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_api_client_permissions
@@ -3828,7 +3833,7 @@ ALTER TABLE ONLY collection_api_client_permissions
 
 
 --
--- Name: collection-api-client-permissions_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_api_client_permissions collection-api-client-permissions_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_api_client_permissions
@@ -3836,7 +3841,7 @@ ALTER TABLE ONLY collection_api_client_permissions
 
 
 --
--- Name: collection-api-client-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_api_client_permissions collection-api-client-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_api_client_permissions
@@ -3844,7 +3849,7 @@ ALTER TABLE ONLY collection_api_client_permissions
 
 
 --
--- Name: collection-collection-arcs_children_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_collection_arcs collection-collection-arcs_children_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_collection_arcs
@@ -3852,7 +3857,7 @@ ALTER TABLE ONLY collection_collection_arcs
 
 
 --
--- Name: collection-collection-arcs_parents_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_collection_arcs collection-collection-arcs_parents_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_collection_arcs
@@ -3860,7 +3865,7 @@ ALTER TABLE ONLY collection_collection_arcs
 
 
 --
--- Name: collection-filter-set-arcs_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_filter_set_arcs collection-filter-set-arcs_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_filter_set_arcs
@@ -3868,7 +3873,7 @@ ALTER TABLE ONLY collection_filter_set_arcs
 
 
 --
--- Name: collection-filter-set-arcs_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_filter_set_arcs collection-filter-set-arcs_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_filter_set_arcs
@@ -3876,7 +3881,7 @@ ALTER TABLE ONLY collection_filter_set_arcs
 
 
 --
--- Name: collection-group-permissions_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_group_permissions collection-group-permissions_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_group_permissions
@@ -3884,7 +3889,7 @@ ALTER TABLE ONLY collection_group_permissions
 
 
 --
--- Name: collection-group-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_group_permissions collection-group-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_group_permissions
@@ -3892,7 +3897,7 @@ ALTER TABLE ONLY collection_group_permissions
 
 
 --
--- Name: collection-media-entry-arcs_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_media_entry_arcs collection-media-entry-arcs_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_media_entry_arcs
@@ -3900,7 +3905,7 @@ ALTER TABLE ONLY collection_media_entry_arcs
 
 
 --
--- Name: collection-media-entry-arcs_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_media_entry_arcs collection-media-entry-arcs_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_media_entry_arcs
@@ -3908,7 +3913,7 @@ ALTER TABLE ONLY collection_media_entry_arcs
 
 
 --
--- Name: collection-user-permissions-updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_user_permissions collection-user-permissions-updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_user_permissions
@@ -3916,7 +3921,7 @@ ALTER TABLE ONLY collection_user_permissions
 
 
 --
--- Name: collection-user-permissions_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_user_permissions collection-user-permissions_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_user_permissions
@@ -3924,7 +3929,7 @@ ALTER TABLE ONLY collection_user_permissions
 
 
 --
--- Name: collection-user-permissions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_user_permissions collection-user-permissions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_user_permissions
@@ -3932,7 +3937,7 @@ ALTER TABLE ONLY collection_user_permissions
 
 
 --
--- Name: collections_creators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collections collections_creators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collections
@@ -3940,7 +3945,7 @@ ALTER TABLE ONLY collections
 
 
 --
--- Name: collections_responsible-users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collections collections_responsible-users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collections
@@ -3948,7 +3953,7 @@ ALTER TABLE ONLY collections
 
 
 --
--- Name: custom-urls_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: custom_urls custom-urls_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY custom_urls
@@ -3956,7 +3961,7 @@ ALTER TABLE ONLY custom_urls
 
 
 --
--- Name: custom-urls_creators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: custom_urls custom-urls_creators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY custom_urls
@@ -3964,7 +3969,7 @@ ALTER TABLE ONLY custom_urls
 
 
 --
--- Name: custom-urls_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: custom_urls custom-urls_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY custom_urls
@@ -3972,7 +3977,7 @@ ALTER TABLE ONLY custom_urls
 
 
 --
--- Name: custom-urls_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: custom_urls custom-urls_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY custom_urls
@@ -3980,7 +3985,7 @@ ALTER TABLE ONLY custom_urls
 
 
 --
--- Name: custom-urls_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: custom_urls custom-urls_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY custom_urls
@@ -3988,7 +3993,7 @@ ALTER TABLE ONLY custom_urls
 
 
 --
--- Name: edit-sessions_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: edit_sessions edit-sessions_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY edit_sessions
@@ -3996,7 +4001,7 @@ ALTER TABLE ONLY edit_sessions
 
 
 --
--- Name: edit-sessions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: edit_sessions edit-sessions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY edit_sessions
@@ -4004,7 +4009,7 @@ ALTER TABLE ONLY edit_sessions
 
 
 --
--- Name: edit-sessions_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: edit_sessions edit-sessions_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY edit_sessions
@@ -4012,7 +4017,7 @@ ALTER TABLE ONLY edit_sessions
 
 
 --
--- Name: edit-sessions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: edit_sessions edit-sessions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY edit_sessions
@@ -4020,7 +4025,7 @@ ALTER TABLE ONLY edit_sessions
 
 
 --
--- Name: favorite-collections_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: favorite_collections favorite-collections_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY favorite_collections
@@ -4028,7 +4033,7 @@ ALTER TABLE ONLY favorite_collections
 
 
 --
--- Name: favorite-collections_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: favorite_collections favorite-collections_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY favorite_collections
@@ -4036,7 +4041,7 @@ ALTER TABLE ONLY favorite_collections
 
 
 --
--- Name: favorite-filter-sets_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: favorite_filter_sets favorite-filter-sets_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY favorite_filter_sets
@@ -4044,7 +4049,7 @@ ALTER TABLE ONLY favorite_filter_sets
 
 
 --
--- Name: favorite-filter-sets_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: favorite_filter_sets favorite-filter-sets_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY favorite_filter_sets
@@ -4052,7 +4057,7 @@ ALTER TABLE ONLY favorite_filter_sets
 
 
 --
--- Name: favorite-media-entries_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: favorite_media_entries favorite-media-entries_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY favorite_media_entries
@@ -4060,7 +4065,7 @@ ALTER TABLE ONLY favorite_media_entries
 
 
 --
--- Name: favorite-media-entries_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: favorite_media_entries favorite-media-entries_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY favorite_media_entries
@@ -4068,7 +4073,7 @@ ALTER TABLE ONLY favorite_media_entries
 
 
 --
--- Name: filter-set-api-client-permissions-updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_api_client_permissions filter-set-api-client-permissions-updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_set_api_client_permissions
@@ -4076,7 +4081,7 @@ ALTER TABLE ONLY filter_set_api_client_permissions
 
 
 --
--- Name: filter-set-api-client-permissions_api-clients_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_api_client_permissions filter-set-api-client-permissions_api-clients_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_set_api_client_permissions
@@ -4084,7 +4089,7 @@ ALTER TABLE ONLY filter_set_api_client_permissions
 
 
 --
--- Name: filter-set-api-client-permissions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_api_client_permissions filter-set-api-client-permissions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_set_api_client_permissions
@@ -4092,7 +4097,7 @@ ALTER TABLE ONLY filter_set_api_client_permissions
 
 
 --
--- Name: filter-set-group-permissions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_group_permissions filter-set-group-permissions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_set_group_permissions
@@ -4100,7 +4105,7 @@ ALTER TABLE ONLY filter_set_group_permissions
 
 
 --
--- Name: filter-set-group-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_group_permissions filter-set-group-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_set_group_permissions
@@ -4108,7 +4113,7 @@ ALTER TABLE ONLY filter_set_group_permissions
 
 
 --
--- Name: filter-set-user-permissions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_user_permissions filter-set-user-permissions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_set_user_permissions
@@ -4116,7 +4121,7 @@ ALTER TABLE ONLY filter_set_user_permissions
 
 
 --
--- Name: filter-set-user-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_user_permissions filter-set-user-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_set_user_permissions
@@ -4124,7 +4129,7 @@ ALTER TABLE ONLY filter_set_user_permissions
 
 
 --
--- Name: filter-set-user-permissions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_user_permissions filter-set-user-permissions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_set_user_permissions
@@ -4132,7 +4137,7 @@ ALTER TABLE ONLY filter_set_user_permissions
 
 
 --
--- Name: filter-sets_creators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_sets filter-sets_creators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_sets
@@ -4140,7 +4145,7 @@ ALTER TABLE ONLY filter_sets
 
 
 --
--- Name: filter-sets_responsible-users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_sets filter-sets_responsible-users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_sets
@@ -4148,7 +4153,7 @@ ALTER TABLE ONLY filter_sets
 
 
 --
--- Name: fk_rails_2957e036b5; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: context_keys fk_rails_2957e036b5; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY context_keys
@@ -4156,7 +4161,7 @@ ALTER TABLE ONLY context_keys
 
 
 --
--- Name: fk_rails_45043d2037; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: api_clients fk_rails_45043d2037; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY api_clients
@@ -4164,7 +4169,7 @@ ALTER TABLE ONLY api_clients
 
 
 --
--- Name: fk_rails_4e63edbd27; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: groups_users fk_rails_4e63edbd27; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY groups_users
@@ -4172,7 +4177,7 @@ ALTER TABLE ONLY groups_users
 
 
 --
--- Name: fk_rails_67eb3c60e8; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data_licenses fk_rails_67eb3c60e8; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data_licenses
@@ -4180,7 +4185,7 @@ ALTER TABLE ONLY meta_data_licenses
 
 
 --
--- Name: fk_rails_6f33d95dfc; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data_licenses fk_rails_6f33d95dfc; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data_licenses
@@ -4188,7 +4193,7 @@ ALTER TABLE ONLY meta_data_licenses
 
 
 --
--- Name: fk_rails_8550647b84; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: vocabulary_group_permissions fk_rails_8550647b84; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY vocabulary_group_permissions
@@ -4196,7 +4201,7 @@ ALTER TABLE ONLY vocabulary_group_permissions
 
 
 --
--- Name: fk_rails_9cf683b9d3; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: filter_set_group_permissions fk_rails_9cf683b9d3; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY filter_set_group_permissions
@@ -4204,7 +4209,7 @@ ALTER TABLE ONLY filter_set_group_permissions
 
 
 --
--- Name: fk_rails_b297363c89; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: context_keys fk_rails_b297363c89; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY context_keys
@@ -4212,7 +4217,7 @@ ALTER TABLE ONLY context_keys
 
 
 --
--- Name: fk_rails_b88fcbe505; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: collection_group_permissions fk_rails_b88fcbe505; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY collection_group_permissions
@@ -4220,7 +4225,7 @@ ALTER TABLE ONLY collection_group_permissions
 
 
 --
--- Name: fk_rails_c5e91a50bb; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_group_permissions fk_rails_c5e91a50bb; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entry_group_permissions
@@ -4228,7 +4233,7 @@ ALTER TABLE ONLY media_entry_group_permissions
 
 
 --
--- Name: fk_rails_dbf6e7c067; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: io_mappings fk_rails_dbf6e7c067; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY io_mappings
@@ -4236,7 +4241,7 @@ ALTER TABLE ONLY io_mappings
 
 
 --
--- Name: fk_rails_ee76aad01f; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data fk_rails_ee76aad01f; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data
@@ -4244,7 +4249,7 @@ ALTER TABLE ONLY meta_data
 
 
 --
--- Name: fk_rails_f3e1612c9e; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: keywords fk_rails_f3e1612c9e; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY keywords
@@ -4252,7 +4257,7 @@ ALTER TABLE ONLY keywords
 
 
 --
--- Name: groups-users_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: groups_users groups-users_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY groups_users
@@ -4260,7 +4265,7 @@ ALTER TABLE ONLY groups_users
 
 
 --
--- Name: io-mappings_io-interfaces_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: io_mappings io-mappings_io-interfaces_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY io_mappings
@@ -4268,7 +4273,7 @@ ALTER TABLE ONLY io_mappings
 
 
 --
--- Name: licenses-license-groups_license-groups_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: licenses_license_groups licenses-license-groups_license-groups_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY licenses_license_groups
@@ -4276,7 +4281,7 @@ ALTER TABLE ONLY licenses_license_groups
 
 
 --
--- Name: licenses-license-groups_licenses_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: licenses_license_groups licenses-license-groups_licenses_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY licenses_license_groups
@@ -4284,7 +4289,7 @@ ALTER TABLE ONLY licenses_license_groups
 
 
 --
--- Name: media-entries_creators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entries media-entries_creators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entries
@@ -4292,7 +4297,7 @@ ALTER TABLE ONLY media_entries
 
 
 --
--- Name: media-entries_responsible-users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entries media-entries_responsible-users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entries
@@ -4300,7 +4305,7 @@ ALTER TABLE ONLY media_entries
 
 
 --
--- Name: media-entry-api-client-permissions_api-clients_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_api_client_permissions media-entry-api-client-permissions_api-clients_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entry_api_client_permissions
@@ -4308,7 +4313,7 @@ ALTER TABLE ONLY media_entry_api_client_permissions
 
 
 --
--- Name: media-entry-api-client-permissions_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_api_client_permissions media-entry-api-client-permissions_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entry_api_client_permissions
@@ -4316,7 +4321,7 @@ ALTER TABLE ONLY media_entry_api_client_permissions
 
 
 --
--- Name: media-entry-api-client-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_api_client_permissions media-entry-api-client-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entry_api_client_permissions
@@ -4324,7 +4329,7 @@ ALTER TABLE ONLY media_entry_api_client_permissions
 
 
 --
--- Name: media-entry-group-permissions_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_group_permissions media-entry-group-permissions_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entry_group_permissions
@@ -4332,7 +4337,7 @@ ALTER TABLE ONLY media_entry_group_permissions
 
 
 --
--- Name: media-entry-group-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_group_permissions media-entry-group-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entry_group_permissions
@@ -4340,7 +4345,7 @@ ALTER TABLE ONLY media_entry_group_permissions
 
 
 --
--- Name: media-entry-user-permissions_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_user_permissions media-entry-user-permissions_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entry_user_permissions
@@ -4348,7 +4353,7 @@ ALTER TABLE ONLY media_entry_user_permissions
 
 
 --
--- Name: media-entry-user-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_user_permissions media-entry-user-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entry_user_permissions
@@ -4356,7 +4361,7 @@ ALTER TABLE ONLY media_entry_user_permissions
 
 
 --
--- Name: media-entry-user-permissions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: media_entry_user_permissions media-entry-user-permissions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_entry_user_permissions
@@ -4364,7 +4369,7 @@ ALTER TABLE ONLY media_entry_user_permissions
 
 
 --
--- Name: media-files_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: media_files media-files_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_files
@@ -4372,7 +4377,7 @@ ALTER TABLE ONLY media_files
 
 
 --
--- Name: media-files_uploaders_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: media_files media-files_uploaders_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY media_files
@@ -4380,7 +4385,7 @@ ALTER TABLE ONLY media_files
 
 
 --
--- Name: meta-data-keywords_keywords_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data_keywords meta-data-keywords_keywords_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data_keywords
@@ -4388,7 +4393,7 @@ ALTER TABLE ONLY meta_data_keywords
 
 
 --
--- Name: meta-data-keywords_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data_keywords meta-data-keywords_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data_keywords
@@ -4396,7 +4401,7 @@ ALTER TABLE ONLY meta_data_keywords
 
 
 --
--- Name: meta-data-licenses_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data_licenses meta-data-licenses_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data_licenses
@@ -4404,7 +4409,7 @@ ALTER TABLE ONLY meta_data_licenses
 
 
 --
--- Name: meta-data-meta-terms_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data_meta_terms meta-data-meta-terms_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data_meta_terms
@@ -4412,7 +4417,7 @@ ALTER TABLE ONLY meta_data_meta_terms
 
 
 --
--- Name: meta-data-people_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data_people meta-data-people_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data_people
@@ -4420,7 +4425,7 @@ ALTER TABLE ONLY meta_data_people
 
 
 --
--- Name: meta-data-people_people_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data_people meta-data-people_people_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data_people
@@ -4428,7 +4433,7 @@ ALTER TABLE ONLY meta_data_people
 
 
 --
--- Name: meta-data-people_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data_people meta-data-people_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data_people
@@ -4436,7 +4441,7 @@ ALTER TABLE ONLY meta_data_people
 
 
 --
--- Name: meta-data_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data meta-data_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data
@@ -4444,7 +4449,7 @@ ALTER TABLE ONLY meta_data
 
 
 --
--- Name: meta-data_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data meta-data_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data
@@ -4452,7 +4457,7 @@ ALTER TABLE ONLY meta_data
 
 
 --
--- Name: meta-data_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data meta-data_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data
@@ -4460,7 +4465,7 @@ ALTER TABLE ONLY meta_data
 
 
 --
--- Name: meta-data_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data meta-data_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data
@@ -4468,7 +4473,7 @@ ALTER TABLE ONLY meta_data
 
 
 --
--- Name: meta-keys_vocabularies_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_keys meta-keys_vocabularies_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_keys
@@ -4476,7 +4481,7 @@ ALTER TABLE ONLY meta_keys
 
 
 --
--- Name: meta_data_keywords_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: meta_data_keywords meta_data_keywords_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY meta_data_keywords
@@ -4484,7 +4489,7 @@ ALTER TABLE ONLY meta_data_keywords
 
 
 --
--- Name: parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: license_groups parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY license_groups
@@ -4492,7 +4497,7 @@ ALTER TABLE ONLY license_groups
 
 
 --
--- Name: previews_media-files_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: previews previews_media-files_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY previews
@@ -4500,7 +4505,7 @@ ALTER TABLE ONLY previews
 
 
 --
--- Name: users_people_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_people_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY users
@@ -4508,7 +4513,7 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: visualizations_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: visualizations visualizations_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY visualizations
@@ -4516,7 +4521,7 @@ ALTER TABLE ONLY visualizations
 
 
 --
--- Name: vocabulary-api-client-permissions_api-clients_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: vocabulary_api_client_permissions vocabulary-api-client-permissions_api-clients_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY vocabulary_api_client_permissions
@@ -4524,7 +4529,7 @@ ALTER TABLE ONLY vocabulary_api_client_permissions
 
 
 --
--- Name: vocabulary-api-client-permissions_vocabularies_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: vocabulary_api_client_permissions vocabulary-api-client-permissions_vocabularies_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY vocabulary_api_client_permissions
@@ -4532,7 +4537,7 @@ ALTER TABLE ONLY vocabulary_api_client_permissions
 
 
 --
--- Name: vocabulary-group-permissions_vocabularies_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: vocabulary_group_permissions vocabulary-group-permissions_vocabularies_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY vocabulary_group_permissions
@@ -4540,7 +4545,7 @@ ALTER TABLE ONLY vocabulary_group_permissions
 
 
 --
--- Name: vocabulary-user-permissions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: vocabulary_user_permissions vocabulary-user-permissions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY vocabulary_user_permissions
@@ -4548,7 +4553,7 @@ ALTER TABLE ONLY vocabulary_user_permissions
 
 
 --
--- Name: vocabulary-user-permissions_vocabularies_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: vocabulary_user_permissions vocabulary-user-permissions_vocabularies_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY vocabulary_user_permissions
@@ -4556,7 +4561,7 @@ ALTER TABLE ONLY vocabulary_user_permissions
 
 
 --
--- Name: zencoder-jobs_media-files_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: zencoder_jobs zencoder-jobs_media-files_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zencoder_jobs
@@ -4904,6 +4909,8 @@ INSERT INTO schema_migrations (version) VALUES ('342');
 INSERT INTO schema_migrations (version) VALUES ('343');
 
 INSERT INTO schema_migrations (version) VALUES ('344');
+
+INSERT INTO schema_migrations (version) VALUES ('345');
 
 INSERT INTO schema_migrations (version) VALUES ('35');
 

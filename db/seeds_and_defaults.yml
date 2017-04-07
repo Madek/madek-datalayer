@@ -182,3 +182,6 @@ MADEK_DEFAULT_SETTINGS:
 
     catalog_title: '** Katalog **'
     catalog_subtitle: '** Erkunden Sie den Katalog. **'
+
+    media_entry_default_license_usage_meta_key: 'madek_core:copyright_notice'
+    media_entry_default_license_usage_text: 'All Rights reserved.'
