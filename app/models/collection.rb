@@ -80,13 +80,6 @@ class Collection < ActiveRecord::Base
                                 filter_sets)
   end
 
-  def child_media_resources_with_unpublished
-    MediaResourceWithUnpublished.unified_scope(
-      media_entries,
-      collections,
-      filter_sets)
-  end
-
   def highlighted_media_resources
     MediaResource.unified_scope(highlighted_media_entries,
                                 highlighted_collections,
