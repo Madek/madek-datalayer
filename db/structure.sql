@@ -1623,6 +1623,7 @@ CREATE TABLE users (
     searchable text DEFAULT ''::text NOT NULL,
     accepted_usage_terms_id uuid,
     last_signed_in_at timestamp with time zone,
+    settings jsonb DEFAULT '{}'::jsonb NOT NULL,
     CONSTRAINT email_format CHECK ((((email)::text ~ '\S+@\S+'::text) OR (email IS NULL))),
     CONSTRAINT users_login_simple CHECK ((login ~* '^[a-z0-9\.\-\_]+$'::text))
 );
@@ -4901,6 +4902,8 @@ INSERT INTO schema_migrations (version) VALUES ('341');
 INSERT INTO schema_migrations (version) VALUES ('342');
 
 INSERT INTO schema_migrations (version) VALUES ('343');
+
+INSERT INTO schema_migrations (version) VALUES ('344');
 
 INSERT INTO schema_migrations (version) VALUES ('35');
 
