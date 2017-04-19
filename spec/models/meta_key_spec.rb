@@ -12,6 +12,15 @@ describe MetaKey do
     end
   end
 
+  describe '#enabled_for' do
+    it 'returns an array' do
+      meta_key = create(:meta_key_text)
+
+      expect(meta_key.enabled_for).to be_an(Array)
+      expect(meta_key.enabled_for).to eq %w(Entries Sets Filtersets)
+    end
+  end
+
   it_ensures 'saving empty strings' do
     let(:model) { create :meta_key_text }
   end

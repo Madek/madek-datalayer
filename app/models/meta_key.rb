@@ -89,6 +89,15 @@ class MetaKey < ActiveRecord::Base
     move :down, vocabulary_id: vocabulary.id
   end
 
+  def enabled_for
+    [
+      [:media_entries, 'Entries'], # [[class, name]]
+      [:collections, 'Sets'],
+      [:filter_sets, 'Filtersets']
+    ].select { |type| send("is_enabled_for_#{type[0]}") }
+    .map(&:second)
+  end
+
   private
 
   def sanitize_allowed_people_subtypes

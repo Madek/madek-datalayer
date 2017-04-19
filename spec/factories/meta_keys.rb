@@ -10,6 +10,7 @@ FactoryGirl.define do
 
     is_enabled_for_media_entries true
     is_enabled_for_collections true
+    is_enabled_for_filter_sets true
 
     label { Faker::Lorem.characters(10) }
 
