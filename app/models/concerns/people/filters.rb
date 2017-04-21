@@ -6,7 +6,7 @@ module Concerns
       included do
         scope :with_user, -> { joins(:user) }
         scope :search_by_term, lambda { |term|
-          where('searchable ILIKE :t', t: "%#{term}%")
+          where('people.searchable ILIKE :t', t: "%#{term}%")
         }
       end
 
