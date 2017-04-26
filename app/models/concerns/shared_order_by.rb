@@ -15,9 +15,8 @@ module Concerns
         multiple = self.name.pluralize.underscore
         select(
           <<-SQL
-            coalesce(
-              #{multiple}.meta_data_updated_at
-            ) AS last_change
+            #{multiple}.*,
+            #{multiple}.meta_data_updated_at AS last_change
           SQL
         )
       end
