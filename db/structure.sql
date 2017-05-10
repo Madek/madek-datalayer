@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.1
--- Dumped by pg_dump version 9.6.1
+-- Dumped from database version 9.6.2
+-- Dumped by pg_dump version 9.6.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -606,6 +606,22 @@ $$;
 
 
 --
+-- Name: hash_api_token_id(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION hash_api_token_id() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  -- do not hash v5 uuids; we assume they are already hashed
+  IF NEW.id::TEXT !~ '[a-f0-9]{8}-[a-f0-9]{4}-5[a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}' THEN
+    NEW.id = uuid_generate_v5(uuid_nil(), NEW.id::TEXT);
+  END IF;
+  RETURN NEW;
+END; $$;
+
+
+--
 -- Name: licenses_update_searchable_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -903,6 +919,22 @@ CREATE TABLE api_clients (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT name_format CHECK (((login)::text ~ '^[a-z][a-z0-9\-\_]+$'::text))
+);
+
+
+--
+-- Name: api_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE api_tokens (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    user_id uuid NOT NULL,
+    revoked boolean DEFAULT false NOT NULL,
+    scope_read boolean DEFAULT true NOT NULL,
+    scope_write boolean DEFAULT false NOT NULL,
+    description text,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
 );
 
 
@@ -1734,6 +1766,14 @@ ALTER TABLE ONLY admins
 
 ALTER TABLE ONLY api_clients
     ADD CONSTRAINT api_clients_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: api_tokens api_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY api_tokens
+    ADD CONSTRAINT api_tokens_pkey PRIMARY KEY (id);
 
 
 --
@@ -3226,6 +3266,13 @@ CREATE INDEX users_trgm_searchable_idx ON users USING gin (trgm_searchable gin_t
 
 
 --
+-- Name: api_tokens hash_api_token_id; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER hash_api_token_id BEFORE INSERT ON api_tokens FOR EACH ROW EXECUTE PROCEDURE hash_api_token_id();
+
+
+--
 -- Name: edit_sessions propagate_edit_session_insert_to_collections; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -3475,6 +3522,13 @@ CREATE TRIGGER update_updated_at_column_of_admins BEFORE UPDATE ON admins FOR EA
 --
 
 CREATE TRIGGER update_updated_at_column_of_api_clients BEFORE UPDATE ON api_clients FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+
+
+--
+-- Name: api_tokens update_updated_at_column_of_api_tokens; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_api_tokens BEFORE UPDATE ON api_tokens FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
 
 
 --
@@ -4087,6 +4141,14 @@ ALTER TABLE ONLY io_mappings
 
 ALTER TABLE ONLY meta_data
     ADD CONSTRAINT fk_rails_ee76aad01f FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: api_tokens fk_rails_f16b5e0447; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY api_tokens
+    ADD CONSTRAINT fk_rails_f16b5e0447 FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -4748,6 +4810,8 @@ INSERT INTO schema_migrations (version) VALUES ('349');
 INSERT INTO schema_migrations (version) VALUES ('35');
 
 INSERT INTO schema_migrations (version) VALUES ('350');
+
+INSERT INTO schema_migrations (version) VALUES ('351');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 
