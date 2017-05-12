@@ -606,22 +606,6 @@ $$;
 
 
 --
--- Name: hash_api_token_id(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION hash_api_token_id() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  -- do not hash v5 uuids; we assume they are already hashed
-  IF NEW.id::TEXT !~ '[a-f0-9]{8}-[a-f0-9]{4}-5[a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}' THEN
-    NEW.id = uuid_generate_v5(uuid_nil(), NEW.id::TEXT);
-  END IF;
-  RETURN NEW;
-END; $$;
-
-
---
 -- Name: licenses_update_searchable_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -927,7 +911,7 @@ CREATE TABLE api_clients (
 --
 
 CREATE TABLE api_tokens (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id text NOT NULL,
     user_id uuid NOT NULL,
     revoked boolean DEFAULT false NOT NULL,
     scope_read boolean DEFAULT true NOT NULL,
@@ -3263,13 +3247,6 @@ CREATE INDEX users_to_tsvector_idx ON users USING gin (to_tsvector('english'::re
 --
 
 CREATE INDEX users_trgm_searchable_idx ON users USING gin (trgm_searchable gin_trgm_ops);
-
-
---
--- Name: api_tokens hash_api_token_id; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER hash_api_token_id BEFORE INSERT ON api_tokens FOR EACH ROW EXECUTE PROCEDURE hash_api_token_id();
 
 
 --

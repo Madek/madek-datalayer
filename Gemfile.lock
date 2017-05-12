@@ -45,6 +45,7 @@ GEM
       public_suffix (~> 2.0, >= 2.0.2)
     arel (6.0.4)
     ast (2.2.0)
+    base32-crockford (0.1.0)
     bcrypt (3.1.11)
     bcrypt (3.1.11-java)
     builder (3.2.3)
@@ -204,6 +205,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord-jdbcpostgresql-adapter
+  base32-crockford
   bcrypt
   chronic_duration
   cider_ci-support (= 3.2)

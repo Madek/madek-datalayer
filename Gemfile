@@ -10,6 +10,7 @@ gem 'pg_tasks', '= 2.2.0.pre.0'
 
 gem 'drtom-textacular', '= 4.0.0.alpha.20160302'
 
+gem 'base32-crockford'
 gem 'bcrypt'
 gem 'chronic_duration'
 gem 'rspec-rails', '~> 3.1', group: [:test, :development]
