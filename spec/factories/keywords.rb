@@ -21,6 +21,9 @@ FactoryGirl.define do
         MetaKey.find_by(id: 'test:licenses') \
                  || FactoryGirl.create(:meta_key_keywords_license)
       end
+      description do
+        Faker::Hipster.sentence
+      end
       external_uri do
         Faker::Internet.url('example.com', "/licenses/#{SecureRandom.uuid}")
       end
