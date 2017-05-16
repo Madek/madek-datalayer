@@ -911,14 +911,17 @@ CREATE TABLE api_clients (
 --
 
 CREATE TABLE api_tokens (
-    id text NOT NULL,
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
     user_id uuid NOT NULL,
+    token_hash character varying(45) NOT NULL,
+    token_part character varying(5) NOT NULL,
     revoked boolean DEFAULT false NOT NULL,
     scope_read boolean DEFAULT true NOT NULL,
     scope_write boolean DEFAULT false NOT NULL,
     description text,
     created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now()
+    updated_at timestamp with time zone DEFAULT now(),
+    expires_at timestamp with time zone DEFAULT (now() + '1 year'::interval) NOT NULL
 );
 
 
