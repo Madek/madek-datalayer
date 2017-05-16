@@ -23,6 +23,7 @@ class AddApiTokens < ActiveRecord::Migration
     reversible do |dir|
       dir.up do
         execute "ALTER TABLE api_tokens ALTER COLUMN expires_at SET DEFAULT now() + interval '1 year'"
+        execute 'ALTER TABLE api_tokens ADD UNIQUE ("token_hash")'
       end
     end
 
