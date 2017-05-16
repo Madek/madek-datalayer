@@ -15,31 +15,57 @@
 # rubocop:disable all
 class FilterBarQuery < ActiveRecord::Base
 
-  def self.meta_data_sql_query(init_scope, context_ids)
+  def self.meta_data_sql_query(type, init_scope, context_ids, user_id)
 
-    <<SQL
-WITH with_media_entries AS
+    singular = type.name.underscore
+    plural = singular.pluralize
+
+    permissions_part = ''
+    if user_id
+      permissions_part = <<-SQL
+        OR EXISTS (
+          SELECT * FROM vocabulary_user_permissions
+          WHERE vocabulary_user_permissions.vocabulary_id = vocabularies.id
+          AND vocabulary_user_permissions.user_id = '#{user_id}'
+          AND vocabulary_user_permissions.view = true
+        )
+        OR EXISTS(
+          SELECT * FROM vocabulary_group_permissions, groups_users
+          WHERE vocabulary_group_permissions.vocabulary_id = vocabularies.id
+          AND vocabulary_group_permissions.group_id = groups_users.group_id
+          AND vocabulary_group_permissions.view = true
+          AND groups_users.user_id = '#{user_id}'
+        )
+      SQL
+    end
+
+
+    <<-SQL
+WITH with_#{plural} AS
   (#{init_scope.reorder(nil).to_sql}),
      with_joined_data AS
   (SELECT contexts.id AS context_id,
           context_keys.id AS context_key_id,
           meta_keys.meta_datum_object_type AS meta_datum_type,
           meta_data.id AS meta_data_id,
-          meta_data.media_entry_id AS media_entry_id
+          meta_data.#{singular}_id AS #{singular}_id
    FROM contexts
    INNER JOIN context_keys ON context_keys.context_id = contexts.id
    INNER JOIN meta_keys ON context_keys.meta_key_id = meta_keys.id
    INNER JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
    AND meta_data.string IS NULL
    INNER JOIN vocabularies ON meta_keys.vocabulary_id = vocabularies.id
-   AND vocabularies.enabled_for_public_view IS TRUE
-   WHERE meta_data.media_entry_id IN (SELECT id FROM with_media_entries)
+   AND (
+     vocabularies.enabled_for_public_view IS TRUE
+     #{permissions_part}
+   )
+   WHERE meta_data.#{singular}_id IN (SELECT id FROM with_#{plural})
      AND contexts.id IN (#{context_ids.map { |s| "'#{s}'" }.join(', ')}))
 SELECT *
 FROM
   (SELECT with_joined_data.context_id,
           with_joined_data.context_key_id,
-          COUNT(with_joined_data.media_entry_id) AS count,
+          COUNT(with_joined_data.#{singular}_id) AS count,
           keywords.id AS uuid,
           keywords.term AS label
    FROM with_joined_data
@@ -50,7 +76,7 @@ FROM
             with_joined_data.context_id
    UNION SELECT with_joined_data.context_id,
                 with_joined_data.context_key_id,
-                COUNT(with_joined_data.media_entry_id) AS count,
+                COUNT(with_joined_data.#{singular}_id) AS count,
                 people.id AS uuid,
                 people.searchable AS label
    FROM with_joined_data
@@ -65,7 +91,6 @@ SQL
   end
 
   def self.media_types_sql_query(init_scope)
-
     <<SQL
 SELECT media_files.media_type AS label,
        media_files.media_type AS uuid,
@@ -94,8 +119,9 @@ SQL
 
   end
 
-  def self.get_metadata_unsafe(init_scope, context_ids)
-    run meta_data_sql_query(init_scope, context_ids)
+  def self.get_metadata_unsafe(type, init_scope, context_ids, user)
+    user_id = user ? user.id : nil
+    run meta_data_sql_query(type, init_scope, context_ids, user_id)
   end
 
   def self.get_extensions_unsafe(init_scope)
