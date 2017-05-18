@@ -98,7 +98,13 @@ module Concerns
           end
 
           def filter_by_media_file_helper(key: nil, value: nil)
-            joins(:media_file).where(media_files: Hash[key, value])
+            if key == 'filename'
+              joins(:media_file).where(
+                'media_files.filename ILIKE :filename', filename: "%#{value}%")
+            else
+              joins(:media_file).where(
+                media_files: Hash[key, value])
+            end
           end
 
           def filter_by_permission_helper(key: nil, value: nil)
