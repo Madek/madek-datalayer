@@ -108,17 +108,35 @@ module Concerns
           end
 
           def filter_by_permission_helper(key: nil, value: nil)
+            # NOTE: Both public and visibility allow to filter for public
+            # resources. The latter is newer and not in the API but used
+            # in the side filter.
             case key
             when 'responsible_user'
               filter_by_responsible_user(value)
             when 'public'
               filter_by_public_view(value)
+            when 'visibility'
+              filter_by_permission_visibility(value)
             when 'entrusted_to_group'
               entrusted_to_group Group.find(value)
             when 'entrusted_to_user'
               entrusted_to_user User.find(value)
             else
               raise 'Unrecognized permission key'
+            end
+          end
+
+          def filter_by_permission_visibility(value)
+            case value
+            when 'public'
+              filter_by_visibility_public
+            when 'shared'
+              filter_by_visibility_shared
+            when 'private'
+              filter_by_visibility_private
+            else
+              throw 'Unexpected visibility value: ' + value.to_s
             end
           end
         end

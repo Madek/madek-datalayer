@@ -28,6 +28,7 @@ class Collection < ActiveRecord::Base
   include Concerns::MediaResources::Highlight
   include Concerns::MediaResources::MetaDataArelConditions
   include Concerns::SharedOrderBy
+  include Concerns::SharedScopes
 
   #################################################################################
 
@@ -134,5 +135,4 @@ class Collection < ActiveRecord::Base
   def self.order_by_last_edit_session
     order_by_last_edit_session_by_classname
   end
-
 end
