@@ -96,8 +96,7 @@ class MetaKey < ActiveRecord::Base
   def enabled_for
     [
       [:media_entries, 'Entries'], # [[class, name]]
-      [:collections, 'Sets'],
-      [:filter_sets, 'Filtersets']
+      [:collections, 'Sets']
     ].select { |type| send("is_enabled_for_#{type[0]}") }
     .map(&:second)
   end

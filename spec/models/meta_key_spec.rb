@@ -17,7 +17,7 @@ describe MetaKey do
       meta_key = create(:meta_key_text)
 
       expect(meta_key.enabled_for).to be_an(Array)
-      expect(meta_key.enabled_for).to eq %w(Entries Sets Filtersets)
+      expect(meta_key.enabled_for).to eq %w(Entries Sets)
     end
   end
 
