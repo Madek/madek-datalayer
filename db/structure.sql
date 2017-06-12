@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.1
--- Dumped by pg_dump version 9.6.1
+-- Dumped from database version 9.6.2
+-- Dumped by pg_dump version 9.6.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1606,7 +1606,6 @@ CREATE TABLE users (
     zhdkid integer,
     trgm_searchable text DEFAULT ''::text NOT NULL,
     autocomplete text DEFAULT ''::text NOT NULL,
-    contrast_mode boolean DEFAULT false NOT NULL,
     searchable text DEFAULT ''::text NOT NULL,
     accepted_usage_terms_id uuid,
     last_signed_in_at timestamp with time zone,
@@ -4800,6 +4799,8 @@ INSERT INTO schema_migrations (version) VALUES ('35');
 INSERT INTO schema_migrations (version) VALUES ('350');
 
 INSERT INTO schema_migrations (version) VALUES ('351');
+
+INSERT INTO schema_migrations (version) VALUES ('352');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 
