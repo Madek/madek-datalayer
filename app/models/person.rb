@@ -28,4 +28,21 @@ class Person < ActiveRecord::Base
       pseudonym.strip
     end
   end
+
+  # used in explore catalog
+  def self.for_meta_key_and_used_in_visible_entries_with_previews(meta_key,
+                                                                  user,
+                                                                  limit)
+    joins(meta_data: :meta_key)
+      .where(meta_keys: { id: meta_key.id })
+      .where(
+        meta_data: {
+          media_entry_id: MediaEntry
+                          .viewable_by_user_or_public(user)
+                          .joins(media_file: :previews)
+                          .where(previews: { media_type: 'image' })
+        }
+      )
+      .limit(limit)
+  end
 end
