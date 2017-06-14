@@ -71,12 +71,19 @@ class AppSetting < ActiveRecord::Base
       catalog_context_keys.each do |ck_id|
         context_key = ContextKey.find_by_id(ck_id)
         meta_key_type = context_key.try(:meta_key).try(:meta_datum_object_type)
-        next if not meta_key_type or meta_key_type == 'MetaDatum::Keywords'
+        next if not meta_key_type or allowed_key_type?(meta_key_type)
         errors.add \
           :base,
           "The meta_key for context_key #{ck_id} " \
           "is not of type 'MetaDatum::Keywords'"
       end
     end
+  end
+
+  def allowed_key_type?(type)
+    %w(
+      MetaDatum::Keywords
+      MetaDatum::People
+    ).include?(type)
   end
 end

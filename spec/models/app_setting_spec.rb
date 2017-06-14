@@ -149,8 +149,6 @@ describe AppSetting do
       ["The meta_key for context_key #{context_key_text.id} " \
        "is not of type 'MetaDatum::Keywords'",
        "The meta_key for context_key #{context_key_text_date.id} " \
-       "is not of type 'MetaDatum::Keywords'",
-       "The meta_key for context_key #{context_key_people.id} " \
        "is not of type 'MetaDatum::Keywords'"]
   end
 
