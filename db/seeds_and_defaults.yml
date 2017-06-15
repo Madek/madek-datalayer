@@ -76,7 +76,7 @@ MADEK_CORE_VOCABULARY:
     madek_core:keywords:
       is_extensible_list: true
       meta_datum_object_type: MetaDatum::Keywords
-      keywords_alphabetical_order: false
+      keywords_alphabetical_order: true
       label: Schlagworte
       description: NULL
       hint: NULL
