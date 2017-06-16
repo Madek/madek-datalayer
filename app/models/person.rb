@@ -45,4 +45,11 @@ class Person < ActiveRecord::Base
       )
       .limit(limit)
   end
+
+  def self.with_usage_count
+    select('people.*, count(people.id) AS usage_count')
+      .joins(:meta_data)
+      .group('people.id')
+      .reorder('usage_count DESC')
+  end
 end
