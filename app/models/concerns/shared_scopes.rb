@@ -7,22 +7,44 @@ module Concerns
         where(get_metadata_and_previews: true)
       }
 
-      scope :filter_by_visibility_shared, lambda {
+      scope :filter_by_visibility_user_or_group, lambda {
         where(get_metadata_and_previews: false).where(
-          sql_for_any_permissions
+          sql_for_user_or_group_permission
+        )
+      }
+
+      scope :filter_by_visibility_api, lambda {
+        where(get_metadata_and_previews: false).where(
+          sql_for_api_permission
         )
       }
 
       scope :filter_by_visibility_private, lambda {
         where(get_metadata_and_previews: false).where.not(
-          sql_for_any_permissions
+          sql_for_user_or_group_permission
+        ).where.not(
+          sql_for_api_permission
         )
       }
 
       private
 
-      # rubocop:disable Metrics/MethodLength
-      def self.sql_for_any_permissions
+      def self.sql_for_api_permission
+        singular = name.underscore
+        plural = singular.pluralize
+        <<-SQL
+          exists (
+            select
+              *
+            from
+              #{singular}_api_client_permissions
+            where
+              #{singular}_api_client_permissions.#{singular}_id = #{plural}.id
+          )
+        SQL
+      end
+
+      def self.sql_for_user_or_group_permission
         singular = name.underscore
         plural = singular.pluralize
         <<-SQL
@@ -43,18 +65,8 @@ module Concerns
             where
               #{singular}_user_permissions.#{singular}_id = #{plural}.id
           )
-          or
-          exists (
-            select
-              *
-            from
-              #{singular}_api_client_permissions
-            where
-              #{singular}_api_client_permissions.#{singular}_id = #{plural}.id
-          )
         SQL
       end
-      # rubocop:enable Metrics/MethodLength
     end
   end
 end

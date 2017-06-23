@@ -131,8 +131,10 @@ module Concerns
             case value
             when 'public'
               filter_by_visibility_public
-            when 'shared'
-              filter_by_visibility_shared
+            when 'user_or_group'
+              filter_by_visibility_user_or_group
+            when 'api'
+              filter_by_visibility_api
             when 'private'
               filter_by_visibility_private
             else
