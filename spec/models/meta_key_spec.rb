@@ -1,5 +1,6 @@
 require 'spec_helper'
-require Rails.root.join 'spec', 'models', 'shared', 'saving_empty_strings.rb'
+require 'models/shared/saving_empty_strings'
+require 'models/shared/orderable'
 
 describe MetaKey do
   describe '.object_types' do
@@ -23,5 +24,9 @@ describe MetaKey do
 
   it_ensures 'saving empty strings' do
     let(:model) { create :meta_key_text }
+  end
+
+  it_behaves_like 'orderable' do
+    let(:parent_scope) { :vocabulary }
   end
 end

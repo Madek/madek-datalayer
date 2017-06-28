@@ -85,14 +85,6 @@ class MetaKey < ActiveRecord::Base
     viewable_meta_keys.include? self
   end
 
-  def move_up
-    move :up, vocabulary_id: vocabulary.id
-  end
-
-  def move_down
-    move :down, vocabulary_id: vocabulary.id
-  end
-
   def enabled_for
     [
       [:media_entries, 'Entries'], # [[class, name]]

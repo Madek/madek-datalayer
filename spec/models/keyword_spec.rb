@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'models/shared/orderable'
 
 describe Keyword do
   describe '#creator' do
@@ -60,6 +61,10 @@ describe Keyword do
       expect(kw.term).to be == 'Überweiß'.unicode_normalize(:nfc)
     end
 
+  end
+
+  it_behaves_like 'orderable' do
+    let(:parent_scope) { :meta_key }
   end
 
 end

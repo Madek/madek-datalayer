@@ -1,26 +1,15 @@
 module Concerns
   module Orderable
     extend ActiveSupport::Concern
+    include Concerns::OrderMethods
 
     module ClassMethods
       def enable_ordering(skip_default_scope: false, parent_scope: nil)
         @_parent_scope = parent_scope
-        define_method :move do |direction, scope = {}|
-          ActiveRecord::Base.transaction do
-            regenerate_positions(scope: scope)
-            new_position =
-              case direction
-              when :up then position - 1
-              when :down then position + 1
-              end
-            if new_position && \
-               (sibling = \
-                  self.class.find_by({ position: new_position }.merge(scope)))
-              sibling.update_attribute(:position, position)
-              update_attribute(:position, new_position)
-            end
-          end
-        end
+
+        define_up_and_down
+        define_to_top
+        define_to_bottom
 
         unless skip_default_scope
           default_scope { order(:position) }
@@ -49,12 +38,12 @@ module Concerns
       after_create :regenerate_positions
     end
 
-    def regenerate_positions(scope: {})
+    def regenerate_positions
       siblings =
         if parent_scope = self.class.parent_scope
           compute_parent_scope(parent_scope)
         else
-          self.class.where(scope)
+          self.class.all
         end
       siblings.each_with_index do |obj, i|
         obj.update_attribute :position, i

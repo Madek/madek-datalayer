@@ -30,14 +30,6 @@ class Keyword < ActiveRecord::Base
                 end
   end
 
-  def move_up
-    move :up, meta_key_id: meta_key.id
-  end
-
-  def move_down
-    move :down, meta_key_id: meta_key.id
-  end
-
   def not_used?
     self.class.usage_count_for(self).empty?
   end

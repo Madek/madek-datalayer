@@ -42,14 +42,6 @@ class Vocabulary < ActiveRecord::Base
       .group_permission_for_user_exists_condition(perm_type, user)
   end
 
-  def move_up
-    move :up
-  end
-
-  def move_down
-    move :down
-  end
-
   def can_have_keywords?
     !meta_keys.where(meta_datum_object_type: 'MetaDatum::Keywords').empty?
   end
