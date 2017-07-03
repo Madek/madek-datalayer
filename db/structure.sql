@@ -961,6 +961,7 @@ CREATE TABLE app_settings (
     media_entry_default_license_meta_key text,
     media_entry_default_license_usage_text text,
     media_entry_default_license_usage_meta_key text,
+    ignored_keyword_keys_for_browsing text,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -4803,6 +4804,8 @@ INSERT INTO schema_migrations (version) VALUES ('351');
 INSERT INTO schema_migrations (version) VALUES ('352');
 
 INSERT INTO schema_migrations (version) VALUES ('353');
+
+INSERT INTO schema_migrations (version) VALUES ('354');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 
