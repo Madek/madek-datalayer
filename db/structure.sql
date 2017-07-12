@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.4
--- Dumped by pg_dump version 9.6.4
+-- Dumped from database version 9.6.6
+-- Dumped by pg_dump version 9.6.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1608,6 +1608,7 @@ CREATE TABLE users (
     accepted_usage_terms_id uuid,
     last_signed_in_at timestamp with time zone,
     settings jsonb DEFAULT '{}'::jsonb NOT NULL,
+    is_deactivated boolean DEFAULT false,
     CONSTRAINT email_format CHECK ((((email)::text ~ '\S+@\S+'::text) OR (email IS NULL))),
     CONSTRAINT users_login_simple CHECK ((login ~* '^[a-z0-9\.\-\_]+$'::text))
 );
@@ -4819,6 +4820,8 @@ INSERT INTO schema_migrations (version) VALUES ('356');
 INSERT INTO schema_migrations (version) VALUES ('357');
 
 INSERT INTO schema_migrations (version) VALUES ('358');
+
+INSERT INTO schema_migrations (version) VALUES ('359');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 
