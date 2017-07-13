@@ -16,7 +16,7 @@ module Concerns
         select(
           <<-SQL
             #{multiple}.*,
-            #{multiple}.meta_data_updated_at AS last_change
+            #{multiple}.edit_session_updated_at AS last_change
           SQL
         )
       end

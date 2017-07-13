@@ -51,9 +51,9 @@ class MediaResource < ActiveRecord::Base
       <<-SQL
         vw_media_resources.*,
         coalesce(
-          media_entries.meta_data_updated_at,
-          collections.meta_data_updated_at,
-          filter_sets.meta_data_updated_at
+          media_entries.edit_session_updated_at,
+          collections.edit_session_updated_at,
+          filter_sets.edit_session_updated_at
         ) AS last_change
       SQL
     )
