@@ -56,6 +56,18 @@ class AppSetting < ActiveRecord::Base
     end
   end
 
+  def ignored_keyword_keys_for_browsing
+    if (ids = self[:ignored_keyword_keys_for_browsing]).present?
+      ids = ids.split(',').map(&:strip)
+      MetaKey
+        .with_type('MetaDatum::Keywords')
+        .where(id: ids)
+        .sort_by { |mk| ids.index(mk.id) }
+    else
+      []
+    end
+  end
+
   private
 
   def include_context?(attr, context_id)

@@ -97,6 +97,33 @@ describe AppSetting do
     end
   end
 
+  describe '#ignored_keyword_keys_for_browsing getter' do
+    let(:valid_meta_key) { create :meta_key_keywords }
+    let(:invalid_meta_key) { create :meta_key_text }
+
+    it 'returns only valid meta key' do
+      app_setting.assign_attributes(
+        ignored_keyword_keys_for_browsing: \
+          "#{valid_meta_key.id}, #{invalid_meta_key.id}"
+      )
+
+      expect(app_setting.ignored_keyword_keys_for_browsing).to be_an Array
+      expect(app_setting.ignored_keyword_keys_for_browsing).to eq [valid_meta_key]
+    end
+
+    context 'when value is empty' do
+      it 'returns an empty array' do
+        app_setting.assign_attributes(ignored_keyword_keys_for_browsing: '')
+
+        expect(app_setting.ignored_keyword_keys_for_browsing).to eq []
+
+        app_setting.assign_attributes(ignored_keyword_keys_for_browsing: nil)
+
+        expect(app_setting.ignored_keyword_keys_for_browsing).to eq []
+      end
+    end
+  end
+
   describe 'featured set id validation' do
     context 'when set with the id exists' do
       it 'is valid' do
