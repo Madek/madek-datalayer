@@ -44,7 +44,7 @@ module Concerns
           self.class.all
         end
       siblings.each_with_index do |obj, i|
-        obj.update_attribute :position, i
+        obj.update_column :position, i
       end
       reload
     end

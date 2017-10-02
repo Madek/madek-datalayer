@@ -42,14 +42,7 @@ class MetaKey < ActiveRecord::Base
   enable_ordering parent_scope: :vocabulary
   nullify_empty :label, :description, :hint
   before_validation :sanitize_allowed_people_subtypes
-
-  after_save do
-    if keywords_alphabetical_order_changed?
-      unless keywords.empty?
-        keywords.first.regenerate_positions
-      end
-    end
-  end
+  after_save :order_keywords_if_necessary
 
   def self.object_types
     unscoped \
@@ -94,6 +87,16 @@ class MetaKey < ActiveRecord::Base
   end
 
   private
+
+  def order_keywords_if_necessary
+    if keywords_alphabetical_order_changed? && !keywords_alphabetical_order
+      unless keywords.empty?
+        keywords.reorder('term ASC').each_with_index do |keyword, index|
+          keyword.update_column :position, index
+        end
+      end
+    end
+  end
 
   def sanitize_allowed_people_subtypes
     # do not run for previous migrations
