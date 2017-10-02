@@ -34,8 +34,6 @@ module Concerns
             0
           end
       end
-
-      after_create :regenerate_positions
     end
 
     def regenerate_positions
