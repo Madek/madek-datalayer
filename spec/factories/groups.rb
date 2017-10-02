@@ -1,7 +1,7 @@
 FactoryGirl.define do
 
   factory :group do
-    name { Faker::Lorem.words(3).join(' ') }
+    name { Faker::Lorem.words(7).join(' ') }
 
     trait :with_user do
       after(:create) do |group|
@@ -10,7 +10,6 @@ FactoryGirl.define do
     end
 
     factory :institutional_group do
-      institutional_group_name { Faker::Lorem.words(3).join(' ') }
       type 'InstitutionalGroup'
     end
 

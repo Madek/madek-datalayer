@@ -5,8 +5,7 @@ class InstitutionalGroup < Group
   scope :by_string, lambda {|s|
     a = /(.*) \((.*)\)/.match(s)
     name = a[1]
-    institutional_group_name = a[2]
-    where(name: name, institutional_group_name: institutional_group_name)
+    where(name: name)
   }
 
   # the scope :selectable is meant to be overwritten, i.e. monkey patched, on a
@@ -15,9 +14,7 @@ class InstitutionalGroup < Group
   scope :selectable, -> {}
 
   # this is also to be overwritten!
-  def to_s
-    "#{name} (#{institutional_group_name})"
-  end
+  delegate :to_s, to: :name
 
   def to_limited_s(n = 80)
     n = n.to_i

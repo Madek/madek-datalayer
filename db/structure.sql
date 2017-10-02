@@ -599,7 +599,7 @@ CREATE FUNCTION groups_update_searchable_column() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-   NEW.searchable = COALESCE(NEW.name::text, '') || ' ' || COALESCE(NEW.institutional_group_name::text, '') ;
+   NEW.searchable = COALESCE(NEW.name::text, '') || ' ' || COALESCE(NEW.institutional_name::text, '') ;
    RETURN NEW;
 END;
 $$;
@@ -1260,13 +1260,12 @@ CREATE TABLE full_texts (
 
 CREATE TABLE groups (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    previous_id integer,
-    name character varying,
-    institutional_group_id character varying,
-    institutional_group_name character varying,
+    name text NOT NULL,
+    institutional_id character varying,
+    institutional_name character varying,
     type character varying DEFAULT 'Group'::character varying NOT NULL,
-    searchable text DEFAULT ''::text NOT NULL,
     person_id uuid,
+    searchable text DEFAULT ''::text NOT NULL,
     CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['AuthenticationGroup'::character varying, 'InstitutionalGroup'::character varying, 'Group'::character varying])::text[])))
 );
 
@@ -1433,7 +1432,7 @@ CREATE TABLE meta_data (
     filter_set_id uuid,
     created_by_id uuid,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT check_valid_type CHECK (((type)::text = ANY (ARRAY[('MetaDatum::Keywords'::character varying)::text, ('MetaDatum::Licenses'::character varying)::text, ('MetaDatum::People'::character varying)::text, ('MetaDatum::Text'::character varying)::text, ('MetaDatum::TextDate'::character varying)::text, ('MetaDatum::Users'::character varying)::text, ('MetaDatum::Vocables'::character varying)::text]))),
+    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['MetaDatum::Keywords'::character varying, 'MetaDatum::Licenses'::character varying, 'MetaDatum::People'::character varying, 'MetaDatum::Text'::character varying, 'MetaDatum::TextDate'::character varying, 'MetaDatum::Users'::character varying, 'MetaDatum::Vocables'::character varying])::text[]))),
     CONSTRAINT meta_data_is_related CHECK ((((media_entry_id IS NULL) AND (collection_id IS NULL) AND (filter_set_id IS NOT NULL)) OR ((media_entry_id IS NULL) AND (collection_id IS NOT NULL) AND (filter_set_id IS NULL)) OR ((media_entry_id IS NOT NULL) AND (collection_id IS NULL) AND (filter_set_id IS NULL))))
 );
 
@@ -1515,8 +1514,6 @@ CREATE TABLE meta_keys (
 
 CREATE TABLE people (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    date_of_birth date,
-    date_of_death date,
     first_name character varying,
     last_name character varying,
     pseudonym character varying,
@@ -2730,17 +2727,17 @@ CREATE INDEX index_filter_sets_on_updated_at ON filter_sets USING btree (updated
 
 
 --
--- Name: index_groups_on_institutional_group_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_groups_on_institutional_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_groups_on_institutional_group_id ON groups USING btree (institutional_group_id);
+CREATE UNIQUE INDEX index_groups_on_institutional_id ON groups USING btree (institutional_id);
 
 
 --
--- Name: index_groups_on_institutional_group_name; Type: INDEX; Schema: public; Owner: -
+-- Name: index_groups_on_institutional_name; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_groups_on_institutional_group_name ON groups USING btree (institutional_group_name);
+CREATE INDEX index_groups_on_institutional_name ON groups USING btree (institutional_name);
 
 
 --
@@ -3091,6 +3088,13 @@ CREATE INDEX index_meta_data_on_type ON meta_data USING btree (type);
 --
 
 CREATE INDEX index_people_on_first_name ON people USING btree (first_name);
+
+
+--
+-- Name: index_people_on_institutional_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_people_on_institutional_id ON people USING btree (institutional_id);
 
 
 --
@@ -4809,6 +4813,8 @@ INSERT INTO schema_migrations (version) VALUES ('353');
 INSERT INTO schema_migrations (version) VALUES ('354');
 
 INSERT INTO schema_migrations (version) VALUES ('355');
+
+INSERT INTO schema_migrations (version) VALUES ('356');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 
