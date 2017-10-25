@@ -10,6 +10,7 @@ class Person < ActiveRecord::Base
   has_one :user
 
   has_and_belongs_to_many :meta_data, join_table: :meta_data_people
+  has_many :meta_data_people, class_name: '::MetaDatum::Person'
 
   validate do
     if [first_name, last_name, pseudonym].all?(&:blank?)
@@ -26,6 +27,19 @@ class Person < ActiveRecord::Base
       "#{first_name} #{last_name}".strip
     else
       pseudonym.strip
+    end
+  end
+
+  def merge_to(receiver, creator_fallback)
+    ActiveRecord::Base.transaction do
+      meta_data_people.each do |mdp|
+        mdp.update_columns(
+          person_id: receiver.id,
+          created_by_id: receiver.user.try(:id) || creator_fallback.id
+        )
+      end
+      user.update!(:person_id, receiver.id) if user
+      destroy!
     end
   end
 
@@ -51,5 +65,19 @@ class Person < ActiveRecord::Base
       .joins(:meta_data)
       .group('people.id')
       .reorder('usage_count DESC')
+  end
+
+  # used in admin
+  def self.admin_with_usage_count
+    select('people.*, count(people.id) AS usage_count')
+      .joins(
+        'LEFT OUTER JOIN meta_data_people ON
+         meta_data_people.person_id = people.id'
+      )
+      .joins(
+        'LEFT JOIN meta_data ON
+         meta_data.id = meta_data_people.meta_datum_id'
+      )
+      .group('people.id')
   end
 end

@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.4
--- Dumped by pg_dump version 9.6.4
+-- Dumped from database version 9.6.2
+-- Dumped by pg_dump version 9.6.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1470,7 +1470,8 @@ CREATE TABLE meta_data_people (
     meta_datum_id uuid NOT NULL,
     person_id uuid NOT NULL,
     created_by_id uuid,
-    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL
+    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL
 );
 
 
@@ -1975,6 +1976,14 @@ ALTER TABLE ONLY media_entry_user_permissions
 
 ALTER TABLE ONLY media_files
     ADD CONSTRAINT media_files_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: meta_data_people meta_data_people_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY meta_data_people
+    ADD CONSTRAINT meta_data_people_pkey PRIMARY KEY (id);
 
 
 --
@@ -4815,6 +4824,8 @@ INSERT INTO schema_migrations (version) VALUES ('354');
 INSERT INTO schema_migrations (version) VALUES ('355');
 
 INSERT INTO schema_migrations (version) VALUES ('356');
+
+INSERT INTO schema_migrations (version) VALUES ('357');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 
