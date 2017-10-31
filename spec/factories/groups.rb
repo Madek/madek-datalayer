@@ -11,6 +11,7 @@ FactoryGirl.define do
 
     factory :institutional_group do
       type 'InstitutionalGroup'
+      institutional_id { SecureRandom.uuid }
     end
 
     factory :authentication_group do

@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.2
--- Dumped by pg_dump version 9.6.2
+-- Dumped from database version 9.6.4
+-- Dumped by pg_dump version 9.6.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1595,7 +1595,6 @@ CREATE TABLE usage_terms (
 
 CREATE TABLE users (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    previous_id integer,
     email character varying,
     login text,
     notes text,
@@ -1603,8 +1602,7 @@ CREATE TABLE users (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     password_digest character varying,
     person_id uuid NOT NULL,
-    zhdkid integer,
-    trgm_searchable text DEFAULT ''::text NOT NULL,
+    institutional_id text,
     autocomplete text DEFAULT ''::text NOT NULL,
     searchable text DEFAULT ''::text NOT NULL,
     accepted_usage_terms_id uuid,
@@ -3142,17 +3140,17 @@ CREATE INDEX index_users_on_autocomplete ON users USING btree (autocomplete);
 
 
 --
+-- Name: index_users_on_institutional_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_institutional_id ON users USING btree (institutional_id);
+
+
+--
 -- Name: index_users_on_login; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_users_on_login ON users USING btree (login);
-
-
---
--- Name: index_users_on_zhdkid; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_users_on_zhdkid ON users USING btree (zhdkid);
 
 
 --
@@ -3265,13 +3263,6 @@ CREATE INDEX users_searchable_idx ON users USING gin (searchable gin_trgm_ops);
 --
 
 CREATE INDEX users_to_tsvector_idx ON users USING gin (to_tsvector('english'::regconfig, searchable));
-
-
---
--- Name: users_trgm_searchable_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX users_trgm_searchable_idx ON users USING gin (trgm_searchable gin_trgm_ops);
 
 
 --
@@ -4826,6 +4817,8 @@ INSERT INTO schema_migrations (version) VALUES ('355');
 INSERT INTO schema_migrations (version) VALUES ('356');
 
 INSERT INTO schema_migrations (version) VALUES ('357');
+
+INSERT INTO schema_migrations (version) VALUES ('358');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 

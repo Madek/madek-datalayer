@@ -1,4 +1,5 @@
 # -*- encoding : utf-8 -*-
+
 # user is the system oriented representation of a User
 
 class User < ActiveRecord::Base
@@ -41,7 +42,9 @@ class User < ActiveRecord::Base
 
   #############################################################
 
-  validates_format_of :email, with: /@/, message: "Email must contain a '@' sign."
+  validates_format_of \
+    :email,
+    with: /@/, message: "The email must contain a '@' sign."
 
   #############################################################
 
