@@ -2,7 +2,7 @@ class MetaKey < ActiveRecord::Base
 
   include Concerns::MetaKeys::Filters
   include Concerns::Orderable
-  include Concerns::NullifyEmptyStrings
+  include Concerns::LocalizedFields
 
   has_many :meta_data, dependent: :destroy
   belongs_to :vocabulary
@@ -40,7 +40,7 @@ class MetaKey < ActiveRecord::Base
   }
 
   enable_ordering parent_scope: :vocabulary
-  nullify_empty :label, :description, :hint
+  localize_fields :labels, :descriptions, :hints
   before_validation :sanitize_allowed_people_subtypes
   after_save :order_keywords_if_necessary
 

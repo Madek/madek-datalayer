@@ -5,6 +5,7 @@ DB_SEEDS ||= YAML.load_file(Rails.root.join('db','seeds_and_defaults.yml'))
   .deep_symbolize_keys
 
 CORE_VOCAB = DB_SEEDS[:MADEK_CORE_VOCABULARY]
+DEFAULT_LOCALE = Settings.madek_default_locale
 
 ####################################################################################
 ActiveRecord::Base.transaction do
@@ -44,6 +45,18 @@ ActiveRecord::Base.transaction do
         WHERE meta_key_id = meta_keys.id
         AND meta_keys.#{column_name} = context_keys.#{column_name}
     SQL
+
+    ContextKey.includes(:meta_key).find_each do |ck|
+      if ck.labels[DEFAULT_LOCALE] == ck.meta_key.labels[DEFAULT_LOCALE]
+        ck.update_column(:labels, { DEFAULT_LOCALE => nil })
+      end
+      if ck.descriptions[DEFAULT_LOCALE] == ck.meta_key.descriptions[DEFAULT_LOCALE]
+        ck.update_column(:descriptions, { DEFAULT_LOCALE => nil })
+      end
+      if ck.hints[DEFAULT_LOCALE] == ck.meta_key.hints[DEFAULT_LOCALE]
+        ck.update_column(:hints, { DEFAULT_LOCALE => nil })
+      end
+    end
   end
 
 end

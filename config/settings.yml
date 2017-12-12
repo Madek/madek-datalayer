@@ -1,5 +1,9 @@
 # the dirs are evaluated from the 'root' of the datalayer
 
 madek_session_validity_duration: 7 days
+madek_default_locale: de
+madek_available_locales:
+- de
+- en
 
 default_storage_dir: 'tmp'

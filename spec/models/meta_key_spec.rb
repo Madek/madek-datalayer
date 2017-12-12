@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'models/shared/saving_empty_strings'
 require 'models/shared/orderable'
+require 'models/shared/assigning_localized_fields'
 
 describe MetaKey do
   describe '.object_types' do
@@ -29,4 +30,6 @@ describe MetaKey do
   it_behaves_like 'orderable' do
     let(:parent_scope) { :vocabulary }
   end
+
+  it_ensures 'assigning localized fields'
 end

@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.6
--- Dumped by pg_dump version 9.6.6
+-- Dumped from database version 9.6.5
+-- Dumped by pg_dump version 9.6.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -26,6 +26,20 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- Name: hstore; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS hstore WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION hstore; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION hstore IS 'data type for storing sets of (key, value) pairs';
 
 
 --
@@ -1089,6 +1103,9 @@ CREATE TABLE context_keys (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     admin_comment text,
+    labels hstore DEFAULT ''::hstore NOT NULL,
+    descriptions hstore DEFAULT ''::hstore NOT NULL,
+    hints hstore DEFAULT ''::hstore NOT NULL,
     CONSTRAINT check_description_not_blank CHECK ((description !~ '^\s*$'::text)),
     CONSTRAINT check_hint_not_blank CHECK ((hint !~ '^\s*$'::text)),
     CONSTRAINT check_label_not_blank CHECK ((label !~ '^\s*$'::text))
@@ -1496,6 +1513,9 @@ CREATE TABLE meta_keys (
     allowed_people_subtypes text[],
     text_type text DEFAULT 'line'::text NOT NULL,
     allowed_rdf_class character varying,
+    labels hstore DEFAULT ''::hstore NOT NULL,
+    descriptions hstore DEFAULT ''::hstore NOT NULL,
+    hints hstore DEFAULT ''::hstore NOT NULL,
     CONSTRAINT check_allowed_people_subtypes_not_empty_for_meta_datum_people CHECK ((((allowed_people_subtypes IS NOT NULL) AND (COALESCE(array_length(allowed_people_subtypes, 1), 0) > 0)) OR (meta_datum_object_type <> 'MetaDatum::People'::text))),
     CONSTRAINT check_description_not_blank CHECK ((description !~ '^\s*$'::text)),
     CONSTRAINT check_hint_not_blank CHECK ((hint !~ '^\s*$'::text)),
@@ -4822,6 +4842,18 @@ INSERT INTO schema_migrations (version) VALUES ('357');
 INSERT INTO schema_migrations (version) VALUES ('358');
 
 INSERT INTO schema_migrations (version) VALUES ('359');
+
+INSERT INTO schema_migrations (version) VALUES ('360');
+
+INSERT INTO schema_migrations (version) VALUES ('361');
+
+INSERT INTO schema_migrations (version) VALUES ('362');
+
+INSERT INTO schema_migrations (version) VALUES ('363');
+
+INSERT INTO schema_migrations (version) VALUES ('364');
+
+INSERT INTO schema_migrations (version) VALUES ('365');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 

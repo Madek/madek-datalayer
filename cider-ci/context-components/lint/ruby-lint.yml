@@ -31,7 +31,8 @@
             bundle exec cider-ci_flog -m app/ \
             -e app/models/permissions/modules/arel_conditions.rb \
             -e app/models/concerns/media_resources/meta_data_arel_conditions.rb \
-            -e app/models/concerns/media_resources/filters/meta_keys.rb
+            -e app/models/concerns/media_resources/filters/meta_keys.rb \
+            -e app/models/concerns/localized_fields.rb
 
     code-similarity:
       name: Code similarity with flay
