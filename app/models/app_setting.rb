@@ -17,7 +17,6 @@ class AppSetting < ActiveRecord::Base
   end
 
   validate_set_existence(:featured_set)
-  validate_set_existence(:teaser_set)
 
   validate :catalog_context_keys_types
 
