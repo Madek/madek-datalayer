@@ -37,6 +37,9 @@ class MediaEntry < ActiveRecord::Base
            through: :collection_media_entry_arcs,
            source: :collection
 
+  has_many :confidential_links, as: :resource
+  attr_accessor :accessed_by_confidential_link
+
   scope :ordered, -> { reorder(:created_at, :id) }
   scope :published, -> { where(is_published: true) }
   scope :not_published, -> { where(is_published: false) }

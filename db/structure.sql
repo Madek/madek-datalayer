@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.10
--- Dumped by pg_dump version 10.5
+-- Dumped from database version 9.6.8
+-- Dumped by pg_dump version 9.6.8
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1120,6 +1120,24 @@ CREATE TABLE public.collections (
 
 
 --
+-- Name: confidential_links; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.confidential_links (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    user_id uuid NOT NULL,
+    resource_id uuid,
+    resource_type character varying,
+    token character varying(45) NOT NULL,
+    revoked boolean DEFAULT false NOT NULL,
+    description text,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    expires_at timestamp with time zone
+);
+
+
+--
 -- Name: context_keys; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1919,6 +1937,14 @@ ALTER TABLE ONLY public.collections
 
 
 --
+-- Name: confidential_links confidential_links_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.confidential_links
+    ADD CONSTRAINT confidential_links_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: contexts contexts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2602,6 +2628,13 @@ CREATE INDEX index_collections_on_responsible_user_id ON public.collections USIN
 --
 
 CREATE INDEX index_collections_on_updated_at ON public.collections USING btree (updated_at);
+
+
+--
+-- Name: index_confidential_links_on_resource_type_and_resource_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_confidential_links_on_resource_type_and_resource_id ON public.confidential_links USING btree (resource_type, resource_id);
 
 
 --
@@ -3711,6 +3744,13 @@ CREATE TRIGGER update_updated_at_column_of_collections BEFORE UPDATE ON public.c
 
 
 --
+-- Name: confidential_links update_updated_at_column_of_confidential_links; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_confidential_links BEFORE UPDATE ON public.confidential_links FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
+
+
+--
 -- Name: context_keys update_updated_at_column_of_context_keys; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -4237,6 +4277,14 @@ ALTER TABLE ONLY public.groups_users
 
 ALTER TABLE ONLY public.vocabulary_group_permissions
     ADD CONSTRAINT fk_rails_8550647b84 FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: confidential_links fk_rails_8c2cb96882; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.confidential_links
+    ADD CONSTRAINT fk_rails_8c2cb96882 FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -5022,6 +5070,8 @@ INSERT INTO schema_migrations (version) VALUES ('370');
 INSERT INTO schema_migrations (version) VALUES ('371');
 
 INSERT INTO schema_migrations (version) VALUES ('372');
+
+INSERT INTO schema_migrations (version) VALUES ('373');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 
