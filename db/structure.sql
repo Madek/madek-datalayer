@@ -2,14 +2,15 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.5
--- Dumped by pg_dump version 9.6.1
+-- Dumped from database version 9.6.8
+-- Dumped by pg_dump version 9.6.8
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
@@ -84,13 +85,11 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
 
 
-SET search_path = public, pg_catalog;
-
 --
 -- Name: collection_layout; Type: TYPE; Schema: public; Owner: -
 --
 
-CREATE TYPE collection_layout AS ENUM (
+CREATE TYPE public.collection_layout AS ENUM (
     'grid',
     'list',
     'miniature',
@@ -102,7 +101,7 @@ CREATE TYPE collection_layout AS ENUM (
 -- Name: collection_sorting; Type: TYPE; Schema: public; Owner: -
 --
 
-CREATE TYPE collection_sorting AS ENUM (
+CREATE TYPE public.collection_sorting AS ENUM (
     'created_at ASC',
     'created_at DESC',
     'title ASC',
@@ -115,7 +114,7 @@ CREATE TYPE collection_sorting AS ENUM (
 -- Name: check_collection_cover_uniqueness(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION check_collection_cover_uniqueness() RETURNS trigger
+CREATE FUNCTION public.check_collection_cover_uniqueness() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
           BEGIN
@@ -137,7 +136,7 @@ CREATE FUNCTION check_collection_cover_uniqueness() RETURNS trigger
 -- Name: check_collection_primary_uniqueness(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION check_collection_primary_uniqueness() RETURNS trigger
+CREATE FUNCTION public.check_collection_primary_uniqueness() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
         BEGIN
@@ -159,7 +158,7 @@ CREATE FUNCTION check_collection_primary_uniqueness() RETURNS trigger
 -- Name: check_filter_set_primary_uniqueness(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION check_filter_set_primary_uniqueness() RETURNS trigger
+CREATE FUNCTION public.check_filter_set_primary_uniqueness() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
         BEGIN
@@ -181,7 +180,7 @@ CREATE FUNCTION check_filter_set_primary_uniqueness() RETURNS trigger
 -- Name: check_madek_core_meta_key_immutability(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION check_madek_core_meta_key_immutability() RETURNS trigger
+CREATE FUNCTION public.check_madek_core_meta_key_immutability() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
           BEGIN
@@ -210,7 +209,7 @@ CREATE FUNCTION check_madek_core_meta_key_immutability() RETURNS trigger
 -- Name: check_media_entry_primary_uniqueness(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION check_media_entry_primary_uniqueness() RETURNS trigger
+CREATE FUNCTION public.check_media_entry_primary_uniqueness() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
         BEGIN
@@ -232,7 +231,7 @@ CREATE FUNCTION check_media_entry_primary_uniqueness() RETURNS trigger
 -- Name: check_meta_data_created_by(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION check_meta_data_created_by() RETURNS trigger
+CREATE FUNCTION public.check_meta_data_created_by() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -248,7 +247,7 @@ $$;
 -- Name: check_meta_data_keywords_created_by(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION check_meta_data_keywords_created_by() RETURNS trigger
+CREATE FUNCTION public.check_meta_data_keywords_created_by() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -264,7 +263,7 @@ $$;
 -- Name: check_meta_data_licenses_created_by(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION check_meta_data_licenses_created_by() RETURNS trigger
+CREATE FUNCTION public.check_meta_data_licenses_created_by() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -280,7 +279,7 @@ $$;
 -- Name: check_meta_data_meta_key_type_consistency(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION check_meta_data_meta_key_type_consistency() RETURNS trigger
+CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
           BEGIN
@@ -301,7 +300,7 @@ CREATE FUNCTION check_meta_data_meta_key_type_consistency() RETURNS trigger
 -- Name: check_meta_data_people_created_by(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION check_meta_data_people_created_by() RETURNS trigger
+CREATE FUNCTION public.check_meta_data_people_created_by() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -317,7 +316,7 @@ $$;
 -- Name: check_meta_key_id_consistency_for_keywords(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION check_meta_key_id_consistency_for_keywords() RETURNS trigger
+CREATE FUNCTION public.check_meta_key_id_consistency_for_keywords() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
           BEGIN
@@ -341,7 +340,7 @@ CREATE FUNCTION check_meta_key_id_consistency_for_keywords() RETURNS trigger
 -- Name: check_meta_key_meta_data_type_consistency(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION check_meta_key_meta_data_type_consistency() RETURNS trigger
+CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
           BEGIN
@@ -362,7 +361,7 @@ CREATE FUNCTION check_meta_key_meta_data_type_consistency() RETURNS trigger
 -- Name: check_no_drafts_in_collections(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION check_no_drafts_in_collections() RETURNS trigger
+CREATE FUNCTION public.check_no_drafts_in_collections() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
           BEGIN
@@ -379,7 +378,7 @@ CREATE FUNCTION check_no_drafts_in_collections() RETURNS trigger
 -- Name: check_users_apiclients_login_uniqueness(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION check_users_apiclients_login_uniqueness() RETURNS trigger
+CREATE FUNCTION public.check_users_apiclients_login_uniqueness() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
       BEGIN
@@ -397,7 +396,7 @@ CREATE FUNCTION check_users_apiclients_login_uniqueness() RETURNS trigger
 -- Name: collection_may_not_be_its_own_parent(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION collection_may_not_be_its_own_parent() RETURNS trigger
+CREATE FUNCTION public.collection_may_not_be_its_own_parent() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
           BEGIN
@@ -419,7 +418,7 @@ CREATE FUNCTION collection_may_not_be_its_own_parent() RETURNS trigger
 -- Name: delete_empty_group_after_delete_join(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION delete_empty_group_after_delete_join() RETURNS trigger
+CREATE FUNCTION public.delete_empty_group_after_delete_join() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
           BEGIN
@@ -440,7 +439,7 @@ CREATE FUNCTION delete_empty_group_after_delete_join() RETURNS trigger
 -- Name: delete_empty_meta_data_groups_after_delete_join(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION delete_empty_meta_data_groups_after_delete_join() RETURNS trigger
+CREATE FUNCTION public.delete_empty_meta_data_groups_after_delete_join() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
                     BEGIN
@@ -460,7 +459,7 @@ CREATE FUNCTION delete_empty_meta_data_groups_after_delete_join() RETURNS trigge
 -- Name: delete_empty_meta_data_groups_after_insert(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION delete_empty_meta_data_groups_after_insert() RETURNS trigger
+CREATE FUNCTION public.delete_empty_meta_data_groups_after_insert() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
                     BEGIN
@@ -478,7 +477,7 @@ CREATE FUNCTION delete_empty_meta_data_groups_after_insert() RETURNS trigger
 -- Name: delete_empty_meta_data_keywords_after_delete_join(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION delete_empty_meta_data_keywords_after_delete_join() RETURNS trigger
+CREATE FUNCTION public.delete_empty_meta_data_keywords_after_delete_join() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
                     BEGIN
@@ -498,7 +497,7 @@ CREATE FUNCTION delete_empty_meta_data_keywords_after_delete_join() RETURNS trig
 -- Name: delete_empty_meta_data_keywords_after_insert(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION delete_empty_meta_data_keywords_after_insert() RETURNS trigger
+CREATE FUNCTION public.delete_empty_meta_data_keywords_after_insert() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
                     BEGIN
@@ -516,7 +515,7 @@ CREATE FUNCTION delete_empty_meta_data_keywords_after_insert() RETURNS trigger
 -- Name: delete_empty_meta_data_licenses_after_delete_join(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION delete_empty_meta_data_licenses_after_delete_join() RETURNS trigger
+CREATE FUNCTION public.delete_empty_meta_data_licenses_after_delete_join() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
                     BEGIN
@@ -536,7 +535,7 @@ CREATE FUNCTION delete_empty_meta_data_licenses_after_delete_join() RETURNS trig
 -- Name: delete_empty_meta_data_licenses_after_insert(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION delete_empty_meta_data_licenses_after_insert() RETURNS trigger
+CREATE FUNCTION public.delete_empty_meta_data_licenses_after_insert() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
                     BEGIN
@@ -554,7 +553,7 @@ CREATE FUNCTION delete_empty_meta_data_licenses_after_insert() RETURNS trigger
 -- Name: delete_empty_meta_data_people_after_delete_join(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION delete_empty_meta_data_people_after_delete_join() RETURNS trigger
+CREATE FUNCTION public.delete_empty_meta_data_people_after_delete_join() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
                     BEGIN
@@ -574,7 +573,7 @@ CREATE FUNCTION delete_empty_meta_data_people_after_delete_join() RETURNS trigge
 -- Name: delete_empty_meta_data_people_after_insert(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION delete_empty_meta_data_people_after_insert() RETURNS trigger
+CREATE FUNCTION public.delete_empty_meta_data_people_after_insert() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
                     BEGIN
@@ -592,7 +591,7 @@ CREATE FUNCTION delete_empty_meta_data_people_after_insert() RETURNS trigger
 -- Name: delete_meta_datum_text_string_null(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION delete_meta_datum_text_string_null() RETURNS trigger
+CREATE FUNCTION public.delete_meta_datum_text_string_null() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
           BEGIN
@@ -609,7 +608,7 @@ CREATE FUNCTION delete_meta_datum_text_string_null() RETURNS trigger
 -- Name: groups_update_searchable_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION groups_update_searchable_column() RETURNS trigger
+CREATE FUNCTION public.groups_update_searchable_column() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -623,7 +622,7 @@ $$;
 -- Name: licenses_update_searchable_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION licenses_update_searchable_column() RETURNS trigger
+CREATE FUNCTION public.licenses_update_searchable_column() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -637,7 +636,7 @@ $$;
 -- Name: people_update_searchable_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION people_update_searchable_column() RETURNS trigger
+CREATE FUNCTION public.people_update_searchable_column() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -651,7 +650,7 @@ $$;
 -- Name: propagate_edit_session_insert_to_collections(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION propagate_edit_session_insert_to_collections() RETURNS trigger
+CREATE FUNCTION public.propagate_edit_session_insert_to_collections() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -668,7 +667,7 @@ $$;
 -- Name: propagate_edit_session_insert_to_filter_sets(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION propagate_edit_session_insert_to_filter_sets() RETURNS trigger
+CREATE FUNCTION public.propagate_edit_session_insert_to_filter_sets() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -685,7 +684,7 @@ $$;
 -- Name: propagate_edit_session_insert_to_media_entries(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION propagate_edit_session_insert_to_media_entries() RETURNS trigger
+CREATE FUNCTION public.propagate_edit_session_insert_to_media_entries() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -702,7 +701,7 @@ $$;
 -- Name: propagate_keyword_updates_to_meta_data_keywords(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION propagate_keyword_updates_to_meta_data_keywords() RETURNS trigger
+CREATE FUNCTION public.propagate_keyword_updates_to_meta_data_keywords() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -718,7 +717,7 @@ $$;
 -- Name: propagate_license_updates_to_meta_data_licenses(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION propagate_license_updates_to_meta_data_licenses() RETURNS trigger
+CREATE FUNCTION public.propagate_license_updates_to_meta_data_licenses() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -734,7 +733,7 @@ $$;
 -- Name: propagate_meta_data_keyword_updates_to_meta_data(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION propagate_meta_data_keyword_updates_to_meta_data() RETURNS trigger
+CREATE FUNCTION public.propagate_meta_data_keyword_updates_to_meta_data() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 DECLARE
@@ -759,7 +758,7 @@ $$;
 -- Name: propagate_meta_data_license_updates_to_meta_data(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION propagate_meta_data_license_updates_to_meta_data() RETURNS trigger
+CREATE FUNCTION public.propagate_meta_data_license_updates_to_meta_data() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 DECLARE
@@ -784,7 +783,7 @@ $$;
 -- Name: propagate_meta_data_people_updates_to_meta_data(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION propagate_meta_data_people_updates_to_meta_data() RETURNS trigger
+CREATE FUNCTION public.propagate_meta_data_people_updates_to_meta_data() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 DECLARE
@@ -809,7 +808,7 @@ $$;
 -- Name: propagate_meta_data_updates_to_media_resource(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION propagate_meta_data_updates_to_media_resource() RETURNS trigger
+CREATE FUNCTION public.propagate_meta_data_updates_to_media_resource() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 DECLARE
@@ -848,7 +847,7 @@ $$;
 -- Name: propagate_people_updates_to_meta_data_people(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION propagate_people_updates_to_meta_data_people() RETURNS trigger
+CREATE FUNCTION public.propagate_people_updates_to_meta_data_people() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -864,7 +863,7 @@ $$;
 -- Name: update_updated_at_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION update_updated_at_column() RETURNS trigger
+CREATE FUNCTION public.update_updated_at_column() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -878,7 +877,7 @@ $$;
 -- Name: users_update_searchable_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION users_update_searchable_column() RETURNS trigger
+CREATE FUNCTION public.users_update_searchable_column() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -896,8 +895,8 @@ SET default_with_oids = false;
 -- Name: admins; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE admins (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.admins (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
@@ -908,8 +907,8 @@ CREATE TABLE admins (
 -- Name: api_clients; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE api_clients (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.api_clients (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
     login character varying NOT NULL,
     description text,
@@ -924,8 +923,8 @@ CREATE TABLE api_clients (
 -- Name: api_tokens; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE api_tokens (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.api_tokens (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     user_id uuid NOT NULL,
     token_hash character varying(45) NOT NULL,
     token_part character varying(5) NOT NULL,
@@ -943,7 +942,7 @@ CREATE TABLE api_tokens (
 -- Name: app_settings; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE app_settings (
+CREATE TABLE public.app_settings (
     id integer DEFAULT 0 NOT NULL,
     featured_set_id uuid,
     splashscreen_slideshow_set_id uuid,
@@ -984,8 +983,8 @@ CREATE TABLE app_settings (
 -- Name: collection_api_client_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE collection_api_client_permissions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.collection_api_client_permissions (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     edit_metadata_and_relations boolean DEFAULT false NOT NULL,
     collection_id uuid NOT NULL,
@@ -1000,8 +999,8 @@ CREATE TABLE collection_api_client_permissions (
 -- Name: collection_collection_arcs; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE collection_collection_arcs (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.collection_collection_arcs (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     child_id uuid NOT NULL,
     parent_id uuid NOT NULL,
     highlight boolean DEFAULT false
@@ -1012,8 +1011,8 @@ CREATE TABLE collection_collection_arcs (
 -- Name: collection_filter_set_arcs; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE collection_filter_set_arcs (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.collection_filter_set_arcs (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     filter_set_id uuid NOT NULL,
     collection_id uuid NOT NULL,
     highlight boolean DEFAULT false
@@ -1024,8 +1023,8 @@ CREATE TABLE collection_filter_set_arcs (
 -- Name: collection_group_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE collection_group_permissions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.collection_group_permissions (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     edit_metadata_and_relations boolean DEFAULT false NOT NULL,
     collection_id uuid NOT NULL,
@@ -1040,8 +1039,8 @@ CREATE TABLE collection_group_permissions (
 -- Name: collection_media_entry_arcs; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE collection_media_entry_arcs (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.collection_media_entry_arcs (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     media_entry_id uuid NOT NULL,
     collection_id uuid NOT NULL,
     highlight boolean DEFAULT false,
@@ -1053,8 +1052,8 @@ CREATE TABLE collection_media_entry_arcs (
 -- Name: collection_user_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE collection_user_permissions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.collection_user_permissions (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     edit_metadata_and_relations boolean DEFAULT false NOT NULL,
     edit_permissions boolean DEFAULT false NOT NULL,
@@ -1070,15 +1069,15 @@ CREATE TABLE collection_user_permissions (
 -- Name: collections; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE collections (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.collections (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    layout collection_layout DEFAULT 'grid'::collection_layout NOT NULL,
+    layout public.collection_layout DEFAULT 'grid'::public.collection_layout NOT NULL,
     responsible_user_id uuid NOT NULL,
     creator_id uuid NOT NULL,
-    sorting collection_sorting DEFAULT 'created_at DESC'::collection_sorting NOT NULL,
+    sorting public.collection_sorting DEFAULT 'created_at DESC'::public.collection_sorting NOT NULL,
     edit_session_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     clipboard_user_id character varying
@@ -1089,8 +1088,8 @@ CREATE TABLE collections (
 -- Name: context_keys; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE context_keys (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.context_keys (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     description text,
     hint text,
     label text,
@@ -1103,9 +1102,9 @@ CREATE TABLE context_keys (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     admin_comment text,
-    labels hstore DEFAULT ''::hstore NOT NULL,
-    descriptions hstore DEFAULT ''::hstore NOT NULL,
-    hints hstore DEFAULT ''::hstore NOT NULL,
+    labels public.hstore DEFAULT ''::public.hstore NOT NULL,
+    descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
+    hints public.hstore DEFAULT ''::public.hstore NOT NULL,
     CONSTRAINT check_description_not_blank CHECK ((description !~ '^\s*$'::text)),
     CONSTRAINT check_hint_not_blank CHECK ((hint !~ '^\s*$'::text)),
     CONSTRAINT check_label_not_blank CHECK ((label !~ '^\s*$'::text))
@@ -1116,7 +1115,7 @@ CREATE TABLE context_keys (
 -- Name: contexts; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE contexts (
+CREATE TABLE public.contexts (
     id character varying NOT NULL,
     label character varying DEFAULT ''::character varying NOT NULL,
     description text DEFAULT ''::text NOT NULL,
@@ -1129,7 +1128,7 @@ CREATE TABLE contexts (
 -- Name: custom_urls; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE custom_urls (
+CREATE TABLE public.custom_urls (
     id character varying NOT NULL,
     is_primary boolean DEFAULT false NOT NULL,
     creator_id uuid NOT NULL,
@@ -1149,8 +1148,8 @@ CREATE TABLE custom_urls (
 -- Name: edit_sessions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE edit_sessions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.edit_sessions (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     media_entry_id uuid,
@@ -1164,7 +1163,7 @@ CREATE TABLE edit_sessions (
 -- Name: favorite_collections; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE favorite_collections (
+CREATE TABLE public.favorite_collections (
     user_id uuid NOT NULL,
     collection_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
@@ -1176,7 +1175,7 @@ CREATE TABLE favorite_collections (
 -- Name: favorite_filter_sets; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE favorite_filter_sets (
+CREATE TABLE public.favorite_filter_sets (
     user_id uuid NOT NULL,
     filter_set_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
@@ -1188,7 +1187,7 @@ CREATE TABLE favorite_filter_sets (
 -- Name: favorite_media_entries; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE favorite_media_entries (
+CREATE TABLE public.favorite_media_entries (
     user_id uuid NOT NULL,
     media_entry_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
@@ -1200,8 +1199,8 @@ CREATE TABLE favorite_media_entries (
 -- Name: filter_set_api_client_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE filter_set_api_client_permissions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.filter_set_api_client_permissions (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     edit_metadata_and_filter boolean DEFAULT false NOT NULL,
     filter_set_id uuid NOT NULL,
@@ -1216,8 +1215,8 @@ CREATE TABLE filter_set_api_client_permissions (
 -- Name: filter_set_group_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE filter_set_group_permissions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.filter_set_group_permissions (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     filter_set_id uuid NOT NULL,
     group_id uuid NOT NULL,
@@ -1231,8 +1230,8 @@ CREATE TABLE filter_set_group_permissions (
 -- Name: filter_set_user_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE filter_set_user_permissions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.filter_set_user_permissions (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     edit_metadata_and_filter boolean DEFAULT false NOT NULL,
     edit_permissions boolean DEFAULT false NOT NULL,
@@ -1248,8 +1247,8 @@ CREATE TABLE filter_set_user_permissions (
 -- Name: filter_sets; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE filter_sets (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.filter_sets (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
@@ -1265,7 +1264,7 @@ CREATE TABLE filter_sets (
 -- Name: full_texts; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE full_texts (
+CREATE TABLE public.full_texts (
     media_resource_id uuid NOT NULL,
     text text
 );
@@ -1275,8 +1274,8 @@ CREATE TABLE full_texts (
 -- Name: groups; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE groups (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.groups (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     name text NOT NULL,
     institutional_id character varying,
     institutional_name character varying,
@@ -1291,7 +1290,7 @@ CREATE TABLE groups (
 -- Name: groups_users; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE groups_users (
+CREATE TABLE public.groups_users (
     group_id uuid NOT NULL,
     user_id uuid NOT NULL
 );
@@ -1301,7 +1300,7 @@ CREATE TABLE groups_users (
 -- Name: io_interfaces; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE io_interfaces (
+CREATE TABLE public.io_interfaces (
     id character varying NOT NULL,
     description character varying,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
@@ -1313,14 +1312,14 @@ CREATE TABLE io_interfaces (
 -- Name: io_mappings; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE io_mappings (
+CREATE TABLE public.io_mappings (
     io_interface_id character varying NOT NULL,
     meta_key_id character varying NOT NULL,
     key_map character varying,
     key_map_type character varying,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
-    id uuid DEFAULT gen_random_uuid() NOT NULL
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL
 );
 
 
@@ -1328,8 +1327,8 @@ CREATE TABLE io_mappings (
 -- Name: keywords; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE keywords (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.keywords (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     term character varying DEFAULT ''::character varying NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
@@ -1346,8 +1345,8 @@ CREATE TABLE keywords (
 -- Name: media_entries; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE media_entries (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.media_entries (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
@@ -1364,8 +1363,8 @@ CREATE TABLE media_entries (
 -- Name: media_entry_api_client_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE media_entry_api_client_permissions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.media_entry_api_client_permissions (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     get_full_size boolean DEFAULT false NOT NULL,
     media_entry_id uuid NOT NULL,
@@ -1380,8 +1379,8 @@ CREATE TABLE media_entry_api_client_permissions (
 -- Name: media_entry_group_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE media_entry_group_permissions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.media_entry_group_permissions (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     get_full_size boolean DEFAULT false NOT NULL,
     edit_metadata boolean DEFAULT false NOT NULL,
@@ -1397,8 +1396,8 @@ CREATE TABLE media_entry_group_permissions (
 -- Name: media_entry_user_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE media_entry_user_permissions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.media_entry_user_permissions (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     get_full_size boolean DEFAULT false NOT NULL,
     edit_metadata boolean DEFAULT false NOT NULL,
@@ -1415,8 +1414,8 @@ CREATE TABLE media_entry_user_permissions (
 -- Name: media_files; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE media_files (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.media_files (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     height integer,
     size bigint,
     width integer,
@@ -1439,8 +1438,8 @@ CREATE TABLE media_files (
 -- Name: meta_data; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE meta_data (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.meta_data (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     meta_key_id character varying NOT NULL,
     type character varying,
     string text,
@@ -1458,8 +1457,8 @@ CREATE TABLE meta_data (
 -- Name: meta_data_keywords; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE meta_data_keywords (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.meta_data_keywords (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     created_by_id uuid,
     meta_datum_id uuid NOT NULL,
     keyword_id uuid NOT NULL,
@@ -1473,7 +1472,7 @@ CREATE TABLE meta_data_keywords (
 -- Name: meta_data_meta_terms; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE meta_data_meta_terms (
+CREATE TABLE public.meta_data_meta_terms (
     meta_datum_id uuid NOT NULL,
     meta_term_id uuid NOT NULL
 );
@@ -1483,12 +1482,12 @@ CREATE TABLE meta_data_meta_terms (
 -- Name: meta_data_people; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE meta_data_people (
+CREATE TABLE public.meta_data_people (
     meta_datum_id uuid NOT NULL,
     person_id uuid NOT NULL,
     created_by_id uuid,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    id uuid DEFAULT gen_random_uuid() NOT NULL
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL
 );
 
 
@@ -1496,7 +1495,7 @@ CREATE TABLE meta_data_people (
 -- Name: meta_keys; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE meta_keys (
+CREATE TABLE public.meta_keys (
     id character varying NOT NULL,
     is_extensible_list boolean DEFAULT false NOT NULL,
     meta_datum_object_type text DEFAULT 'MetaDatum::Text'::text NOT NULL,
@@ -1513,9 +1512,9 @@ CREATE TABLE meta_keys (
     allowed_people_subtypes text[],
     text_type text DEFAULT 'line'::text NOT NULL,
     allowed_rdf_class character varying,
-    labels hstore DEFAULT ''::hstore NOT NULL,
-    descriptions hstore DEFAULT ''::hstore NOT NULL,
-    hints hstore DEFAULT ''::hstore NOT NULL,
+    labels public.hstore DEFAULT ''::public.hstore NOT NULL,
+    descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
+    hints public.hstore DEFAULT ''::public.hstore NOT NULL,
     CONSTRAINT check_allowed_people_subtypes_not_empty_for_meta_datum_people CHECK ((((allowed_people_subtypes IS NOT NULL) AND (COALESCE(array_length(allowed_people_subtypes, 1), 0) > 0)) OR (meta_datum_object_type <> 'MetaDatum::People'::text))),
     CONSTRAINT check_description_not_blank CHECK ((description !~ '^\s*$'::text)),
     CONSTRAINT check_hint_not_blank CHECK ((hint !~ '^\s*$'::text)),
@@ -1533,8 +1532,8 @@ CREATE TABLE meta_keys (
 -- Name: people; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE people (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.people (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     first_name character varying,
     last_name character varying,
     pseudonym character varying,
@@ -1543,6 +1542,8 @@ CREATE TABLE people (
     searchable text DEFAULT ''::text NOT NULL,
     institutional_id text,
     subtype text NOT NULL,
+    description text,
+    external_uri character varying,
     CONSTRAINT check_presence_of_first_name_or_last_name_or_pseudonym CHECK (((first_name IS NOT NULL) OR (last_name IS NOT NULL) OR (pseudonym IS NOT NULL))),
     CONSTRAINT check_valid_people_subtype CHECK ((subtype = ANY (ARRAY['Person'::text, 'PeopleGroup'::text, 'PeopleInstitutionalGroup'::text]))),
     CONSTRAINT first_name_is_not_blank CHECK (((first_name)::text !~ '^\s*$'::text)),
@@ -1556,8 +1557,8 @@ CREATE TABLE people (
 -- Name: previews; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE previews (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.previews (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     media_file_id uuid NOT NULL,
     height integer,
     width integer,
@@ -1575,7 +1576,7 @@ CREATE TABLE previews (
 -- Name: rdf_classes; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE rdf_classes (
+CREATE TABLE public.rdf_classes (
     id character varying NOT NULL,
     description text,
     admin_comment text,
@@ -1589,7 +1590,7 @@ CREATE TABLE rdf_classes (
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE schema_migrations (
+CREATE TABLE public.schema_migrations (
     version character varying NOT NULL
 );
 
@@ -1598,8 +1599,8 @@ CREATE TABLE schema_migrations (
 -- Name: usage_terms; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE usage_terms (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.usage_terms (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     title character varying,
     version character varying,
     intro text,
@@ -1613,8 +1614,8 @@ CREATE TABLE usage_terms (
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE users (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.users (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     email character varying,
     login text,
     notes text,
@@ -1638,8 +1639,8 @@ CREATE TABLE users (
 -- Name: visualizations; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE visualizations (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.visualizations (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
     resource_identifier character varying NOT NULL,
     control_settings text,
@@ -1651,7 +1652,7 @@ CREATE TABLE visualizations (
 -- Name: vocabularies; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE vocabularies (
+CREATE TABLE public.vocabularies (
     id character varying NOT NULL,
     label text,
     description text,
@@ -1668,8 +1669,8 @@ CREATE TABLE vocabularies (
 -- Name: vocabulary_api_client_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE vocabulary_api_client_permissions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.vocabulary_api_client_permissions (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     api_client_id uuid NOT NULL,
     vocabulary_id character varying NOT NULL,
     use boolean DEFAULT false NOT NULL,
@@ -1681,8 +1682,8 @@ CREATE TABLE vocabulary_api_client_permissions (
 -- Name: vocabulary_group_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE vocabulary_group_permissions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.vocabulary_group_permissions (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     group_id uuid NOT NULL,
     vocabulary_id character varying NOT NULL,
     use boolean DEFAULT false NOT NULL,
@@ -1694,8 +1695,8 @@ CREATE TABLE vocabulary_group_permissions (
 -- Name: vocabulary_user_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE vocabulary_user_permissions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.vocabulary_user_permissions (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
     vocabulary_id character varying NOT NULL,
     use boolean DEFAULT false NOT NULL,
@@ -1707,7 +1708,7 @@ CREATE TABLE vocabulary_user_permissions (
 -- Name: vw_media_resources; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW vw_media_resources AS
+CREATE VIEW public.vw_media_resources AS
  SELECT media_entries.id,
     media_entries.get_metadata_and_previews,
     media_entries.responsible_user_id,
@@ -1715,7 +1716,7 @@ CREATE VIEW vw_media_resources AS
     media_entries.created_at,
     media_entries.updated_at,
     'MediaEntry'::text AS type
-   FROM media_entries
+   FROM public.media_entries
 UNION
  SELECT collections.id,
     collections.get_metadata_and_previews,
@@ -1724,7 +1725,7 @@ UNION
     collections.created_at,
     collections.updated_at,
     'Collection'::text AS type
-   FROM collections
+   FROM public.collections
 UNION
  SELECT filter_sets.id,
     filter_sets.get_metadata_and_previews,
@@ -1733,15 +1734,15 @@ UNION
     filter_sets.created_at,
     filter_sets.updated_at,
     'FilterSet'::text AS type
-   FROM filter_sets;
+   FROM public.filter_sets;
 
 
 --
 -- Name: zencoder_jobs; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE zencoder_jobs (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.zencoder_jobs (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     media_file_id uuid NOT NULL,
     zencoder_id integer,
     comment text,
@@ -1761,7 +1762,7 @@ CREATE TABLE zencoder_jobs (
 -- Name: admins admin_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY admins
+ALTER TABLE ONLY public.admins
     ADD CONSTRAINT admin_users_pkey PRIMARY KEY (id);
 
 
@@ -1769,7 +1770,7 @@ ALTER TABLE ONLY admins
 -- Name: api_clients api_clients_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY api_clients
+ALTER TABLE ONLY public.api_clients
     ADD CONSTRAINT api_clients_pkey PRIMARY KEY (id);
 
 
@@ -1777,7 +1778,7 @@ ALTER TABLE ONLY api_clients
 -- Name: api_tokens api_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY api_tokens
+ALTER TABLE ONLY public.api_tokens
     ADD CONSTRAINT api_tokens_pkey PRIMARY KEY (id);
 
 
@@ -1785,7 +1786,7 @@ ALTER TABLE ONLY api_tokens
 -- Name: api_tokens api_tokens_token_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY api_tokens
+ALTER TABLE ONLY public.api_tokens
     ADD CONSTRAINT api_tokens_token_hash_key UNIQUE (token_hash);
 
 
@@ -1793,7 +1794,7 @@ ALTER TABLE ONLY api_tokens
 -- Name: app_settings app_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY app_settings
+ALTER TABLE ONLY public.app_settings
     ADD CONSTRAINT app_settings_pkey PRIMARY KEY (id);
 
 
@@ -1801,7 +1802,7 @@ ALTER TABLE ONLY app_settings
 -- Name: collection_api_client_permissions collection_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_api_client_permissions
+ALTER TABLE ONLY public.collection_api_client_permissions
     ADD CONSTRAINT collection_api_client_permissions_pkey PRIMARY KEY (id);
 
 
@@ -1809,7 +1810,7 @@ ALTER TABLE ONLY collection_api_client_permissions
 -- Name: collection_collection_arcs collection_collection_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_collection_arcs
+ALTER TABLE ONLY public.collection_collection_arcs
     ADD CONSTRAINT collection_collection_arcs_pkey PRIMARY KEY (id);
 
 
@@ -1817,7 +1818,7 @@ ALTER TABLE ONLY collection_collection_arcs
 -- Name: collection_filter_set_arcs collection_filter_set_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_filter_set_arcs
+ALTER TABLE ONLY public.collection_filter_set_arcs
     ADD CONSTRAINT collection_filter_set_arcs_pkey PRIMARY KEY (id);
 
 
@@ -1825,7 +1826,7 @@ ALTER TABLE ONLY collection_filter_set_arcs
 -- Name: collection_group_permissions collection_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_group_permissions
+ALTER TABLE ONLY public.collection_group_permissions
     ADD CONSTRAINT collection_group_permissions_pkey PRIMARY KEY (id);
 
 
@@ -1833,7 +1834,7 @@ ALTER TABLE ONLY collection_group_permissions
 -- Name: collection_media_entry_arcs collection_media_entry_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_media_entry_arcs
+ALTER TABLE ONLY public.collection_media_entry_arcs
     ADD CONSTRAINT collection_media_entry_arcs_pkey PRIMARY KEY (id);
 
 
@@ -1841,7 +1842,7 @@ ALTER TABLE ONLY collection_media_entry_arcs
 -- Name: collection_user_permissions collection_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_user_permissions
+ALTER TABLE ONLY public.collection_user_permissions
     ADD CONSTRAINT collection_user_permissions_pkey PRIMARY KEY (id);
 
 
@@ -1849,7 +1850,7 @@ ALTER TABLE ONLY collection_user_permissions
 -- Name: collections collections_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collections
+ALTER TABLE ONLY public.collections
     ADD CONSTRAINT collections_pkey PRIMARY KEY (id);
 
 
@@ -1857,7 +1858,7 @@ ALTER TABLE ONLY collections
 -- Name: contexts contexts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY contexts
+ALTER TABLE ONLY public.contexts
     ADD CONSTRAINT contexts_pkey PRIMARY KEY (id);
 
 
@@ -1865,7 +1866,7 @@ ALTER TABLE ONLY contexts
 -- Name: custom_urls custom_urls_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY custom_urls
+ALTER TABLE ONLY public.custom_urls
     ADD CONSTRAINT custom_urls_pkey PRIMARY KEY (id);
 
 
@@ -1873,7 +1874,7 @@ ALTER TABLE ONLY custom_urls
 -- Name: edit_sessions edit_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY edit_sessions
+ALTER TABLE ONLY public.edit_sessions
     ADD CONSTRAINT edit_sessions_pkey PRIMARY KEY (id);
 
 
@@ -1881,7 +1882,7 @@ ALTER TABLE ONLY edit_sessions
 -- Name: filter_set_api_client_permissions filter_set_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_set_api_client_permissions
+ALTER TABLE ONLY public.filter_set_api_client_permissions
     ADD CONSTRAINT filter_set_api_client_permissions_pkey PRIMARY KEY (id);
 
 
@@ -1889,7 +1890,7 @@ ALTER TABLE ONLY filter_set_api_client_permissions
 -- Name: filter_set_group_permissions filter_set_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_set_group_permissions
+ALTER TABLE ONLY public.filter_set_group_permissions
     ADD CONSTRAINT filter_set_group_permissions_pkey PRIMARY KEY (id);
 
 
@@ -1897,7 +1898,7 @@ ALTER TABLE ONLY filter_set_group_permissions
 -- Name: filter_set_user_permissions filter_set_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_set_user_permissions
+ALTER TABLE ONLY public.filter_set_user_permissions
     ADD CONSTRAINT filter_set_user_permissions_pkey PRIMARY KEY (id);
 
 
@@ -1905,7 +1906,7 @@ ALTER TABLE ONLY filter_set_user_permissions
 -- Name: filter_sets filter_sets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_sets
+ALTER TABLE ONLY public.filter_sets
     ADD CONSTRAINT filter_sets_pkey PRIMARY KEY (id);
 
 
@@ -1913,7 +1914,7 @@ ALTER TABLE ONLY filter_sets
 -- Name: full_texts full_texts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY full_texts
+ALTER TABLE ONLY public.full_texts
     ADD CONSTRAINT full_texts_pkey PRIMARY KEY (media_resource_id);
 
 
@@ -1921,7 +1922,7 @@ ALTER TABLE ONLY full_texts
 -- Name: groups groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY groups
+ALTER TABLE ONLY public.groups
     ADD CONSTRAINT groups_pkey PRIMARY KEY (id);
 
 
@@ -1929,7 +1930,7 @@ ALTER TABLE ONLY groups
 -- Name: io_interfaces io_interfaces_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY io_interfaces
+ALTER TABLE ONLY public.io_interfaces
     ADD CONSTRAINT io_interfaces_pkey PRIMARY KEY (id);
 
 
@@ -1937,7 +1938,7 @@ ALTER TABLE ONLY io_interfaces
 -- Name: io_mappings io_mappings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY io_mappings
+ALTER TABLE ONLY public.io_mappings
     ADD CONSTRAINT io_mappings_pkey PRIMARY KEY (id);
 
 
@@ -1945,7 +1946,7 @@ ALTER TABLE ONLY io_mappings
 -- Name: keywords keyword_terms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY keywords
+ALTER TABLE ONLY public.keywords
     ADD CONSTRAINT keyword_terms_pkey PRIMARY KEY (id);
 
 
@@ -1953,7 +1954,7 @@ ALTER TABLE ONLY keywords
 -- Name: meta_data_keywords keywords_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data_keywords
+ALTER TABLE ONLY public.meta_data_keywords
     ADD CONSTRAINT keywords_pkey PRIMARY KEY (id);
 
 
@@ -1961,7 +1962,7 @@ ALTER TABLE ONLY meta_data_keywords
 -- Name: media_entries media_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entries
+ALTER TABLE ONLY public.media_entries
     ADD CONSTRAINT media_entries_pkey PRIMARY KEY (id);
 
 
@@ -1969,7 +1970,7 @@ ALTER TABLE ONLY media_entries
 -- Name: media_entry_api_client_permissions media_entry_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entry_api_client_permissions
+ALTER TABLE ONLY public.media_entry_api_client_permissions
     ADD CONSTRAINT media_entry_api_client_permissions_pkey PRIMARY KEY (id);
 
 
@@ -1977,7 +1978,7 @@ ALTER TABLE ONLY media_entry_api_client_permissions
 -- Name: media_entry_group_permissions media_entry_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entry_group_permissions
+ALTER TABLE ONLY public.media_entry_group_permissions
     ADD CONSTRAINT media_entry_group_permissions_pkey PRIMARY KEY (id);
 
 
@@ -1985,7 +1986,7 @@ ALTER TABLE ONLY media_entry_group_permissions
 -- Name: media_entry_user_permissions media_entry_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entry_user_permissions
+ALTER TABLE ONLY public.media_entry_user_permissions
     ADD CONSTRAINT media_entry_user_permissions_pkey PRIMARY KEY (id);
 
 
@@ -1993,7 +1994,7 @@ ALTER TABLE ONLY media_entry_user_permissions
 -- Name: media_files media_files_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_files
+ALTER TABLE ONLY public.media_files
     ADD CONSTRAINT media_files_pkey PRIMARY KEY (id);
 
 
@@ -2001,7 +2002,7 @@ ALTER TABLE ONLY media_files
 -- Name: meta_data_people meta_data_people_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data_people
+ALTER TABLE ONLY public.meta_data_people
     ADD CONSTRAINT meta_data_people_pkey PRIMARY KEY (id);
 
 
@@ -2009,7 +2010,7 @@ ALTER TABLE ONLY meta_data_people
 -- Name: meta_data meta_data_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data
+ALTER TABLE ONLY public.meta_data
     ADD CONSTRAINT meta_data_pkey PRIMARY KEY (id);
 
 
@@ -2017,7 +2018,7 @@ ALTER TABLE ONLY meta_data
 -- Name: context_keys meta_key_definitions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY context_keys
+ALTER TABLE ONLY public.context_keys
     ADD CONSTRAINT meta_key_definitions_pkey PRIMARY KEY (id);
 
 
@@ -2025,7 +2026,7 @@ ALTER TABLE ONLY context_keys
 -- Name: meta_keys meta_keys_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_keys
+ALTER TABLE ONLY public.meta_keys
     ADD CONSTRAINT meta_keys_pkey PRIMARY KEY (id);
 
 
@@ -2033,7 +2034,7 @@ ALTER TABLE ONLY meta_keys
 -- Name: people people_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY people
+ALTER TABLE ONLY public.people
     ADD CONSTRAINT people_pkey PRIMARY KEY (id);
 
 
@@ -2041,7 +2042,7 @@ ALTER TABLE ONLY people
 -- Name: previews previews_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY previews
+ALTER TABLE ONLY public.previews
     ADD CONSTRAINT previews_pkey PRIMARY KEY (id);
 
 
@@ -2049,7 +2050,7 @@ ALTER TABLE ONLY previews
 -- Name: rdf_classes rdf_classes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY rdf_classes
+ALTER TABLE ONLY public.rdf_classes
     ADD CONSTRAINT rdf_classes_pkey PRIMARY KEY (id);
 
 
@@ -2057,7 +2058,7 @@ ALTER TABLE ONLY rdf_classes
 -- Name: usage_terms usage_terms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY usage_terms
+ALTER TABLE ONLY public.usage_terms
     ADD CONSTRAINT usage_terms_pkey PRIMARY KEY (id);
 
 
@@ -2065,7 +2066,7 @@ ALTER TABLE ONLY usage_terms
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY users
+ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
@@ -2073,7 +2074,7 @@ ALTER TABLE ONLY users
 -- Name: visualizations visualizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY visualizations
+ALTER TABLE ONLY public.visualizations
     ADD CONSTRAINT visualizations_pkey PRIMARY KEY (id);
 
 
@@ -2081,7 +2082,7 @@ ALTER TABLE ONLY visualizations
 -- Name: vocabularies vocabularies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY vocabularies
+ALTER TABLE ONLY public.vocabularies
     ADD CONSTRAINT vocabularies_pkey PRIMARY KEY (id);
 
 
@@ -2089,7 +2090,7 @@ ALTER TABLE ONLY vocabularies
 -- Name: vocabulary_api_client_permissions vocabulary_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY vocabulary_api_client_permissions
+ALTER TABLE ONLY public.vocabulary_api_client_permissions
     ADD CONSTRAINT vocabulary_api_client_permissions_pkey PRIMARY KEY (id);
 
 
@@ -2097,7 +2098,7 @@ ALTER TABLE ONLY vocabulary_api_client_permissions
 -- Name: vocabulary_group_permissions vocabulary_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY vocabulary_group_permissions
+ALTER TABLE ONLY public.vocabulary_group_permissions
     ADD CONSTRAINT vocabulary_group_permissions_pkey PRIMARY KEY (id);
 
 
@@ -2105,7 +2106,7 @@ ALTER TABLE ONLY vocabulary_group_permissions
 -- Name: vocabulary_user_permissions vocabulary_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY vocabulary_user_permissions
+ALTER TABLE ONLY public.vocabulary_user_permissions
     ADD CONSTRAINT vocabulary_user_permissions_pkey PRIMARY KEY (id);
 
 
@@ -2113,7 +2114,7 @@ ALTER TABLE ONLY vocabulary_user_permissions
 -- Name: zencoder_jobs zencoder_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY zencoder_jobs
+ALTER TABLE ONLY public.zencoder_jobs
     ADD CONSTRAINT zencoder_jobs_pkey PRIMARY KEY (id);
 
 
@@ -2121,2352 +2122,2352 @@ ALTER TABLE ONLY zencoder_jobs
 -- Name: full_texts_text_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX full_texts_text_idx ON full_texts USING gin (text gin_trgm_ops);
+CREATE INDEX full_texts_text_idx ON public.full_texts USING gin (text public.gin_trgm_ops);
 
 
 --
 -- Name: full_texts_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX full_texts_to_tsvector_idx ON full_texts USING gin (to_tsvector('english'::regconfig, text));
+CREATE INDEX full_texts_to_tsvector_idx ON public.full_texts USING gin (to_tsvector('english'::regconfig, text));
 
 
 --
 -- Name: groups_searchable_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX groups_searchable_idx ON groups USING gin (searchable gin_trgm_ops);
+CREATE INDEX groups_searchable_idx ON public.groups USING gin (searchable public.gin_trgm_ops);
 
 
 --
 -- Name: groups_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX groups_to_tsvector_idx ON groups USING gin (to_tsvector('english'::regconfig, searchable));
+CREATE INDEX groups_to_tsvector_idx ON public.groups USING gin (to_tsvector('english'::regconfig, searchable));
 
 
 --
 -- Name: idx_colgrpp_edit_mdata_and_relations; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_colgrpp_edit_mdata_and_relations ON collection_group_permissions USING btree (edit_metadata_and_relations);
+CREATE INDEX idx_colgrpp_edit_mdata_and_relations ON public.collection_group_permissions USING btree (edit_metadata_and_relations);
 
 
 --
 -- Name: idx_colgrpp_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_colgrpp_get_mdata_and_previews ON collection_group_permissions USING btree (get_metadata_and_previews);
+CREATE INDEX idx_colgrpp_get_mdata_and_previews ON public.collection_group_permissions USING btree (get_metadata_and_previews);
 
 
 --
 -- Name: idx_colgrpp_on_collection_id_and_group_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_colgrpp_on_collection_id_and_group_id ON collection_group_permissions USING btree (collection_id, group_id);
+CREATE UNIQUE INDEX idx_colgrpp_on_collection_id_and_group_id ON public.collection_group_permissions USING btree (collection_id, group_id);
 
 
 --
 -- Name: idx_colgrpp_on_filter_set_id_and_group_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_colgrpp_on_filter_set_id_and_group_id ON filter_set_group_permissions USING btree (filter_set_id, group_id);
+CREATE UNIQUE INDEX idx_colgrpp_on_filter_set_id_and_group_id ON public.filter_set_group_permissions USING btree (filter_set_id, group_id);
 
 
 --
 -- Name: idx_collapiclp_edit_mdata_and_relations; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_collapiclp_edit_mdata_and_relations ON collection_api_client_permissions USING btree (edit_metadata_and_relations);
+CREATE INDEX idx_collapiclp_edit_mdata_and_relations ON public.collection_api_client_permissions USING btree (edit_metadata_and_relations);
 
 
 --
 -- Name: idx_collapiclp_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_collapiclp_get_mdata_and_previews ON collection_api_client_permissions USING btree (get_metadata_and_previews);
+CREATE INDEX idx_collapiclp_get_mdata_and_previews ON public.collection_api_client_permissions USING btree (get_metadata_and_previews);
 
 
 --
 -- Name: idx_collapiclp_on_collection_id_and_api_client_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_collapiclp_on_collection_id_and_api_client_id ON collection_api_client_permissions USING btree (collection_id, api_client_id);
+CREATE UNIQUE INDEX idx_collapiclp_on_collection_id_and_api_client_id ON public.collection_api_client_permissions USING btree (collection_id, api_client_id);
 
 
 --
 -- Name: idx_collection_user_permission; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_collection_user_permission ON collection_user_permissions USING btree (collection_id, user_id);
+CREATE UNIQUE INDEX idx_collection_user_permission ON public.collection_user_permissions USING btree (collection_id, user_id);
 
 
 --
 -- Name: idx_colluserperm_edit_metadata_and_relations; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_colluserperm_edit_metadata_and_relations ON collection_user_permissions USING btree (edit_metadata_and_relations);
+CREATE INDEX idx_colluserperm_edit_metadata_and_relations ON public.collection_user_permissions USING btree (edit_metadata_and_relations);
 
 
 --
 -- Name: idx_colluserperm_edit_permissions; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_colluserperm_edit_permissions ON collection_user_permissions USING btree (edit_permissions);
+CREATE INDEX idx_colluserperm_edit_permissions ON public.collection_user_permissions USING btree (edit_permissions);
 
 
 --
 -- Name: idx_colluserperm_get_metadata_and_previews; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_colluserperm_get_metadata_and_previews ON collection_user_permissions USING btree (get_metadata_and_previews);
+CREATE INDEX idx_colluserperm_get_metadata_and_previews ON public.collection_user_permissions USING btree (get_metadata_and_previews);
 
 
 --
 -- Name: idx_fsetapiclp_edit_mdata_and_filter; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_fsetapiclp_edit_mdata_and_filter ON filter_set_api_client_permissions USING btree (edit_metadata_and_filter);
+CREATE INDEX idx_fsetapiclp_edit_mdata_and_filter ON public.filter_set_api_client_permissions USING btree (edit_metadata_and_filter);
 
 
 --
 -- Name: idx_fsetapiclp_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_fsetapiclp_get_mdata_and_previews ON filter_set_api_client_permissions USING btree (get_metadata_and_previews);
+CREATE INDEX idx_fsetapiclp_get_mdata_and_previews ON public.filter_set_api_client_permissions USING btree (get_metadata_and_previews);
 
 
 --
 -- Name: idx_fsetapiclp_on_filter_set_id_and_api_client_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_fsetapiclp_on_filter_set_id_and_api_client_id ON filter_set_api_client_permissions USING btree (filter_set_id, api_client_id);
+CREATE UNIQUE INDEX idx_fsetapiclp_on_filter_set_id_and_api_client_id ON public.filter_set_api_client_permissions USING btree (filter_set_id, api_client_id);
 
 
 --
 -- Name: idx_fsetusrp_on_filter_set_id_and_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_fsetusrp_on_filter_set_id_and_user_id ON filter_set_user_permissions USING btree (filter_set_id, user_id);
+CREATE UNIQUE INDEX idx_fsetusrp_on_filter_set_id_and_user_id ON public.filter_set_user_permissions USING btree (filter_set_id, user_id);
 
 
 --
 -- Name: idx_me_apicl_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_me_apicl_get_mdata_and_previews ON media_entry_api_client_permissions USING btree (get_metadata_and_previews);
+CREATE INDEX idx_me_apicl_get_mdata_and_previews ON public.media_entry_api_client_permissions USING btree (get_metadata_and_previews);
 
 
 --
 -- Name: idx_media_entry_user_permission; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_media_entry_user_permission ON media_entry_user_permissions USING btree (media_entry_id, user_id);
+CREATE UNIQUE INDEX idx_media_entry_user_permission ON public.media_entry_user_permissions USING btree (media_entry_id, user_id);
 
 
 --
 -- Name: idx_megrpp_get_full_size; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_megrpp_get_full_size ON media_entry_api_client_permissions USING btree (get_full_size);
+CREATE INDEX idx_megrpp_get_full_size ON public.media_entry_api_client_permissions USING btree (get_full_size);
 
 
 --
 -- Name: idx_megrpp_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_megrpp_get_mdata_and_previews ON media_entry_group_permissions USING btree (get_metadata_and_previews);
+CREATE INDEX idx_megrpp_get_mdata_and_previews ON public.media_entry_group_permissions USING btree (get_metadata_and_previews);
 
 
 --
 -- Name: idx_megrpp_on_media_entry_id_and_api_client_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_megrpp_on_media_entry_id_and_api_client_id ON media_entry_api_client_permissions USING btree (media_entry_id, api_client_id);
+CREATE UNIQUE INDEX idx_megrpp_on_media_entry_id_and_api_client_id ON public.media_entry_api_client_permissions USING btree (media_entry_id, api_client_id);
 
 
 --
 -- Name: idx_megrpp_on_media_entry_id_and_group_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_megrpp_on_media_entry_id_and_group_id ON media_entry_group_permissions USING btree (media_entry_id, group_id);
+CREATE UNIQUE INDEX idx_megrpp_on_media_entry_id_and_group_id ON public.media_entry_group_permissions USING btree (media_entry_id, group_id);
 
 
 --
 -- Name: idx_vocabulary_api_client; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_vocabulary_api_client ON vocabulary_api_client_permissions USING btree (api_client_id, vocabulary_id);
+CREATE UNIQUE INDEX idx_vocabulary_api_client ON public.vocabulary_api_client_permissions USING btree (api_client_id, vocabulary_id);
 
 
 --
 -- Name: idx_vocabulary_group; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_vocabulary_group ON vocabulary_group_permissions USING btree (group_id, vocabulary_id);
+CREATE UNIQUE INDEX idx_vocabulary_group ON public.vocabulary_group_permissions USING btree (group_id, vocabulary_id);
 
 
 --
 -- Name: idx_vocabulary_user; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_vocabulary_user ON vocabulary_user_permissions USING btree (user_id, vocabulary_id);
+CREATE UNIQUE INDEX idx_vocabulary_user ON public.vocabulary_user_permissions USING btree (user_id, vocabulary_id);
 
 
 --
 -- Name: index_admins_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_admins_on_user_id ON admins USING btree (user_id);
+CREATE UNIQUE INDEX index_admins_on_user_id ON public.admins USING btree (user_id);
 
 
 --
 -- Name: index_api_clients_on_login; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_api_clients_on_login ON api_clients USING btree (login);
+CREATE UNIQUE INDEX index_api_clients_on_login ON public.api_clients USING btree (login);
 
 
 --
 -- Name: index_collection_api_client_permissions_on_api_client_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_api_client_permissions_on_api_client_id ON collection_api_client_permissions USING btree (api_client_id);
+CREATE INDEX index_collection_api_client_permissions_on_api_client_id ON public.collection_api_client_permissions USING btree (api_client_id);
 
 
 --
 -- Name: index_collection_api_client_permissions_on_collection_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_api_client_permissions_on_collection_id ON collection_api_client_permissions USING btree (collection_id);
+CREATE INDEX index_collection_api_client_permissions_on_collection_id ON public.collection_api_client_permissions USING btree (collection_id);
 
 
 --
 -- Name: index_collection_api_client_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_api_client_permissions_on_updator_id ON collection_api_client_permissions USING btree (updator_id);
+CREATE INDEX index_collection_api_client_permissions_on_updator_id ON public.collection_api_client_permissions USING btree (updator_id);
 
 
 --
 -- Name: index_collection_collection_arcs_on_child_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_collection_arcs_on_child_id ON collection_collection_arcs USING btree (child_id);
+CREATE INDEX index_collection_collection_arcs_on_child_id ON public.collection_collection_arcs USING btree (child_id);
 
 
 --
 -- Name: index_collection_collection_arcs_on_child_id_and_parent_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_collection_arcs_on_child_id_and_parent_id ON collection_collection_arcs USING btree (child_id, parent_id);
+CREATE INDEX index_collection_collection_arcs_on_child_id_and_parent_id ON public.collection_collection_arcs USING btree (child_id, parent_id);
 
 
 --
 -- Name: index_collection_collection_arcs_on_parent_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_collection_arcs_on_parent_id ON collection_collection_arcs USING btree (parent_id);
+CREATE INDEX index_collection_collection_arcs_on_parent_id ON public.collection_collection_arcs USING btree (parent_id);
 
 
 --
 -- Name: index_collection_collection_arcs_on_parent_id_and_child_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_collection_collection_arcs_on_parent_id_and_child_id ON collection_collection_arcs USING btree (parent_id, child_id);
+CREATE UNIQUE INDEX index_collection_collection_arcs_on_parent_id_and_child_id ON public.collection_collection_arcs USING btree (parent_id, child_id);
 
 
 --
 -- Name: index_collection_filter_set_arcs_on_collection_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_filter_set_arcs_on_collection_id ON collection_filter_set_arcs USING btree (collection_id);
+CREATE INDEX index_collection_filter_set_arcs_on_collection_id ON public.collection_filter_set_arcs USING btree (collection_id);
 
 
 --
 -- Name: index_collection_filter_set_arcs_on_collection_id_and_filter_se; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_collection_filter_set_arcs_on_collection_id_and_filter_se ON collection_filter_set_arcs USING btree (collection_id, filter_set_id);
+CREATE UNIQUE INDEX index_collection_filter_set_arcs_on_collection_id_and_filter_se ON public.collection_filter_set_arcs USING btree (collection_id, filter_set_id);
 
 
 --
 -- Name: index_collection_filter_set_arcs_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_filter_set_arcs_on_filter_set_id ON collection_filter_set_arcs USING btree (filter_set_id);
+CREATE INDEX index_collection_filter_set_arcs_on_filter_set_id ON public.collection_filter_set_arcs USING btree (filter_set_id);
 
 
 --
 -- Name: index_collection_filter_set_arcs_on_filter_set_id_and_collectio; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_filter_set_arcs_on_filter_set_id_and_collectio ON collection_filter_set_arcs USING btree (filter_set_id, collection_id);
+CREATE INDEX index_collection_filter_set_arcs_on_filter_set_id_and_collectio ON public.collection_filter_set_arcs USING btree (filter_set_id, collection_id);
 
 
 --
 -- Name: index_collection_group_permissions_on_collection_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_group_permissions_on_collection_id ON collection_group_permissions USING btree (collection_id);
+CREATE INDEX index_collection_group_permissions_on_collection_id ON public.collection_group_permissions USING btree (collection_id);
 
 
 --
 -- Name: index_collection_group_permissions_on_group_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_group_permissions_on_group_id ON collection_group_permissions USING btree (group_id);
+CREATE INDEX index_collection_group_permissions_on_group_id ON public.collection_group_permissions USING btree (group_id);
 
 
 --
 -- Name: index_collection_group_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_group_permissions_on_updator_id ON collection_group_permissions USING btree (updator_id);
+CREATE INDEX index_collection_group_permissions_on_updator_id ON public.collection_group_permissions USING btree (updator_id);
 
 
 --
 -- Name: index_collection_media_entry_arcs_on_collection_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_media_entry_arcs_on_collection_id ON collection_media_entry_arcs USING btree (collection_id);
+CREATE INDEX index_collection_media_entry_arcs_on_collection_id ON public.collection_media_entry_arcs USING btree (collection_id);
 
 
 --
 -- Name: index_collection_media_entry_arcs_on_collection_id_and_media_en; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_collection_media_entry_arcs_on_collection_id_and_media_en ON collection_media_entry_arcs USING btree (collection_id, media_entry_id);
+CREATE UNIQUE INDEX index_collection_media_entry_arcs_on_collection_id_and_media_en ON public.collection_media_entry_arcs USING btree (collection_id, media_entry_id);
 
 
 --
 -- Name: index_collection_media_entry_arcs_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_media_entry_arcs_on_media_entry_id ON collection_media_entry_arcs USING btree (media_entry_id);
+CREATE INDEX index_collection_media_entry_arcs_on_media_entry_id ON public.collection_media_entry_arcs USING btree (media_entry_id);
 
 
 --
 -- Name: index_collection_media_entry_arcs_on_media_entry_id_and_collect; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_media_entry_arcs_on_media_entry_id_and_collect ON collection_media_entry_arcs USING btree (media_entry_id, collection_id);
+CREATE INDEX index_collection_media_entry_arcs_on_media_entry_id_and_collect ON public.collection_media_entry_arcs USING btree (media_entry_id, collection_id);
 
 
 --
 -- Name: index_collection_user_permissions_on_collection_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_user_permissions_on_collection_id ON collection_user_permissions USING btree (collection_id);
+CREATE INDEX index_collection_user_permissions_on_collection_id ON public.collection_user_permissions USING btree (collection_id);
 
 
 --
 -- Name: index_collection_user_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_user_permissions_on_updator_id ON collection_user_permissions USING btree (updator_id);
+CREATE INDEX index_collection_user_permissions_on_updator_id ON public.collection_user_permissions USING btree (updator_id);
 
 
 --
 -- Name: index_collection_user_permissions_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collection_user_permissions_on_user_id ON collection_user_permissions USING btree (user_id);
+CREATE INDEX index_collection_user_permissions_on_user_id ON public.collection_user_permissions USING btree (user_id);
 
 
 --
 -- Name: index_collections_on_clipboard_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_collections_on_clipboard_user_id ON collections USING btree (clipboard_user_id);
+CREATE UNIQUE INDEX index_collections_on_clipboard_user_id ON public.collections USING btree (clipboard_user_id);
 
 
 --
 -- Name: index_collections_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collections_on_created_at ON collections USING btree (created_at);
+CREATE INDEX index_collections_on_created_at ON public.collections USING btree (created_at);
 
 
 --
 -- Name: index_collections_on_creator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collections_on_creator_id ON collections USING btree (creator_id);
+CREATE INDEX index_collections_on_creator_id ON public.collections USING btree (creator_id);
 
 
 --
 -- Name: index_collections_on_edit_session_updated_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collections_on_edit_session_updated_at ON collections USING btree (edit_session_updated_at);
+CREATE INDEX index_collections_on_edit_session_updated_at ON public.collections USING btree (edit_session_updated_at);
 
 
 --
 -- Name: index_collections_on_meta_data_updated_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collections_on_meta_data_updated_at ON collections USING btree (meta_data_updated_at);
+CREATE INDEX index_collections_on_meta_data_updated_at ON public.collections USING btree (meta_data_updated_at);
 
 
 --
 -- Name: index_collections_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collections_on_responsible_user_id ON collections USING btree (responsible_user_id);
+CREATE INDEX index_collections_on_responsible_user_id ON public.collections USING btree (responsible_user_id);
 
 
 --
 -- Name: index_collections_on_updated_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_collections_on_updated_at ON collections USING btree (updated_at);
+CREATE INDEX index_collections_on_updated_at ON public.collections USING btree (updated_at);
 
 
 --
 -- Name: index_context_keys_on_context_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_context_keys_on_context_id ON context_keys USING btree (context_id);
+CREATE INDEX index_context_keys_on_context_id ON public.context_keys USING btree (context_id);
 
 
 --
 -- Name: index_context_keys_on_meta_key_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_context_keys_on_meta_key_id ON context_keys USING btree (meta_key_id);
+CREATE INDEX index_context_keys_on_meta_key_id ON public.context_keys USING btree (meta_key_id);
 
 
 --
 -- Name: index_custom_urls_on_creator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_custom_urls_on_creator_id ON custom_urls USING btree (creator_id);
+CREATE INDEX index_custom_urls_on_creator_id ON public.custom_urls USING btree (creator_id);
 
 
 --
 -- Name: index_custom_urls_on_updator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_custom_urls_on_updator_id ON custom_urls USING btree (updator_id);
+CREATE INDEX index_custom_urls_on_updator_id ON public.custom_urls USING btree (updator_id);
 
 
 --
 -- Name: index_edit_sessions_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_edit_sessions_on_user_id ON edit_sessions USING btree (user_id);
+CREATE INDEX index_edit_sessions_on_user_id ON public.edit_sessions USING btree (user_id);
 
 
 --
 -- Name: index_favorite_collections_on_collection_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_favorite_collections_on_collection_id ON favorite_collections USING btree (collection_id);
+CREATE INDEX index_favorite_collections_on_collection_id ON public.favorite_collections USING btree (collection_id);
 
 
 --
 -- Name: index_favorite_collections_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_favorite_collections_on_user_id ON favorite_collections USING btree (user_id);
+CREATE INDEX index_favorite_collections_on_user_id ON public.favorite_collections USING btree (user_id);
 
 
 --
 -- Name: index_favorite_collections_on_user_id_and_collection_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_favorite_collections_on_user_id_and_collection_id ON favorite_collections USING btree (user_id, collection_id);
+CREATE UNIQUE INDEX index_favorite_collections_on_user_id_and_collection_id ON public.favorite_collections USING btree (user_id, collection_id);
 
 
 --
 -- Name: index_favorite_filter_sets_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_favorite_filter_sets_on_filter_set_id ON favorite_filter_sets USING btree (filter_set_id);
+CREATE INDEX index_favorite_filter_sets_on_filter_set_id ON public.favorite_filter_sets USING btree (filter_set_id);
 
 
 --
 -- Name: index_favorite_filter_sets_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_favorite_filter_sets_on_user_id ON favorite_filter_sets USING btree (user_id);
+CREATE INDEX index_favorite_filter_sets_on_user_id ON public.favorite_filter_sets USING btree (user_id);
 
 
 --
 -- Name: index_favorite_filter_sets_on_user_id_and_filter_set_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_favorite_filter_sets_on_user_id_and_filter_set_id ON favorite_filter_sets USING btree (user_id, filter_set_id);
+CREATE UNIQUE INDEX index_favorite_filter_sets_on_user_id_and_filter_set_id ON public.favorite_filter_sets USING btree (user_id, filter_set_id);
 
 
 --
 -- Name: index_favorite_media_entries_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_favorite_media_entries_on_media_entry_id ON favorite_media_entries USING btree (media_entry_id);
+CREATE INDEX index_favorite_media_entries_on_media_entry_id ON public.favorite_media_entries USING btree (media_entry_id);
 
 
 --
 -- Name: index_favorite_media_entries_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_favorite_media_entries_on_user_id ON favorite_media_entries USING btree (user_id);
+CREATE INDEX index_favorite_media_entries_on_user_id ON public.favorite_media_entries USING btree (user_id);
 
 
 --
 -- Name: index_favorite_media_entries_on_user_id_and_media_entry_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_favorite_media_entries_on_user_id_and_media_entry_id ON favorite_media_entries USING btree (user_id, media_entry_id);
+CREATE UNIQUE INDEX index_favorite_media_entries_on_user_id_and_media_entry_id ON public.favorite_media_entries USING btree (user_id, media_entry_id);
 
 
 --
 -- Name: index_filter_set_api_client_permissions_on_api_client_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_set_api_client_permissions_on_api_client_id ON filter_set_api_client_permissions USING btree (api_client_id);
+CREATE INDEX index_filter_set_api_client_permissions_on_api_client_id ON public.filter_set_api_client_permissions USING btree (api_client_id);
 
 
 --
 -- Name: index_filter_set_api_client_permissions_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_set_api_client_permissions_on_filter_set_id ON filter_set_api_client_permissions USING btree (filter_set_id);
+CREATE INDEX index_filter_set_api_client_permissions_on_filter_set_id ON public.filter_set_api_client_permissions USING btree (filter_set_id);
 
 
 --
 -- Name: index_filter_set_api_client_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_set_api_client_permissions_on_updator_id ON filter_set_api_client_permissions USING btree (updator_id);
+CREATE INDEX index_filter_set_api_client_permissions_on_updator_id ON public.filter_set_api_client_permissions USING btree (updator_id);
 
 
 --
 -- Name: index_filter_set_group_permissions_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_set_group_permissions_on_filter_set_id ON filter_set_group_permissions USING btree (filter_set_id);
+CREATE INDEX index_filter_set_group_permissions_on_filter_set_id ON public.filter_set_group_permissions USING btree (filter_set_id);
 
 
 --
 -- Name: index_filter_set_group_permissions_on_get_metadata_and_previews; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_set_group_permissions_on_get_metadata_and_previews ON filter_set_group_permissions USING btree (get_metadata_and_previews);
+CREATE INDEX index_filter_set_group_permissions_on_get_metadata_and_previews ON public.filter_set_group_permissions USING btree (get_metadata_and_previews);
 
 
 --
 -- Name: index_filter_set_group_permissions_on_group_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_set_group_permissions_on_group_id ON filter_set_group_permissions USING btree (group_id);
+CREATE INDEX index_filter_set_group_permissions_on_group_id ON public.filter_set_group_permissions USING btree (group_id);
 
 
 --
 -- Name: index_filter_set_group_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_set_group_permissions_on_updator_id ON filter_set_group_permissions USING btree (updator_id);
+CREATE INDEX index_filter_set_group_permissions_on_updator_id ON public.filter_set_group_permissions USING btree (updator_id);
 
 
 --
 -- Name: index_filter_set_user_permissions_on_edit_metadata_and_filter; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_set_user_permissions_on_edit_metadata_and_filter ON filter_set_user_permissions USING btree (edit_metadata_and_filter);
+CREATE INDEX index_filter_set_user_permissions_on_edit_metadata_and_filter ON public.filter_set_user_permissions USING btree (edit_metadata_and_filter);
 
 
 --
 -- Name: index_filter_set_user_permissions_on_edit_permissions; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_set_user_permissions_on_edit_permissions ON filter_set_user_permissions USING btree (edit_permissions);
+CREATE INDEX index_filter_set_user_permissions_on_edit_permissions ON public.filter_set_user_permissions USING btree (edit_permissions);
 
 
 --
 -- Name: index_filter_set_user_permissions_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_set_user_permissions_on_filter_set_id ON filter_set_user_permissions USING btree (filter_set_id);
+CREATE INDEX index_filter_set_user_permissions_on_filter_set_id ON public.filter_set_user_permissions USING btree (filter_set_id);
 
 
 --
 -- Name: index_filter_set_user_permissions_on_get_metadata_and_previews; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_set_user_permissions_on_get_metadata_and_previews ON filter_set_user_permissions USING btree (get_metadata_and_previews);
+CREATE INDEX index_filter_set_user_permissions_on_get_metadata_and_previews ON public.filter_set_user_permissions USING btree (get_metadata_and_previews);
 
 
 --
 -- Name: index_filter_set_user_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_set_user_permissions_on_updator_id ON filter_set_user_permissions USING btree (updator_id);
+CREATE INDEX index_filter_set_user_permissions_on_updator_id ON public.filter_set_user_permissions USING btree (updator_id);
 
 
 --
 -- Name: index_filter_set_user_permissions_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_set_user_permissions_on_user_id ON filter_set_user_permissions USING btree (user_id);
+CREATE INDEX index_filter_set_user_permissions_on_user_id ON public.filter_set_user_permissions USING btree (user_id);
 
 
 --
 -- Name: index_filter_sets_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_sets_on_created_at ON filter_sets USING btree (created_at);
+CREATE INDEX index_filter_sets_on_created_at ON public.filter_sets USING btree (created_at);
 
 
 --
 -- Name: index_filter_sets_on_creator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_sets_on_creator_id ON filter_sets USING btree (creator_id);
+CREATE INDEX index_filter_sets_on_creator_id ON public.filter_sets USING btree (creator_id);
 
 
 --
 -- Name: index_filter_sets_on_edit_session_updated_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_sets_on_edit_session_updated_at ON filter_sets USING btree (edit_session_updated_at);
+CREATE INDEX index_filter_sets_on_edit_session_updated_at ON public.filter_sets USING btree (edit_session_updated_at);
 
 
 --
 -- Name: index_filter_sets_on_meta_data_updated_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_sets_on_meta_data_updated_at ON filter_sets USING btree (meta_data_updated_at);
+CREATE INDEX index_filter_sets_on_meta_data_updated_at ON public.filter_sets USING btree (meta_data_updated_at);
 
 
 --
 -- Name: index_filter_sets_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_sets_on_responsible_user_id ON filter_sets USING btree (responsible_user_id);
+CREATE INDEX index_filter_sets_on_responsible_user_id ON public.filter_sets USING btree (responsible_user_id);
 
 
 --
 -- Name: index_filter_sets_on_updated_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_filter_sets_on_updated_at ON filter_sets USING btree (updated_at);
+CREATE INDEX index_filter_sets_on_updated_at ON public.filter_sets USING btree (updated_at);
 
 
 --
 -- Name: index_groups_on_institutional_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_groups_on_institutional_id ON groups USING btree (institutional_id);
+CREATE UNIQUE INDEX index_groups_on_institutional_id ON public.groups USING btree (institutional_id);
 
 
 --
 -- Name: index_groups_on_institutional_name; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_groups_on_institutional_name ON groups USING btree (institutional_name);
+CREATE INDEX index_groups_on_institutional_name ON public.groups USING btree (institutional_name);
 
 
 --
 -- Name: index_groups_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_groups_on_name ON groups USING btree (name);
+CREATE INDEX index_groups_on_name ON public.groups USING btree (name);
 
 
 --
 -- Name: index_groups_on_type; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_groups_on_type ON groups USING btree (type);
+CREATE INDEX index_groups_on_type ON public.groups USING btree (type);
 
 
 --
 -- Name: index_groups_users_on_group_id_and_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_groups_users_on_group_id_and_user_id ON groups_users USING btree (group_id, user_id);
+CREATE INDEX index_groups_users_on_group_id_and_user_id ON public.groups_users USING btree (group_id, user_id);
 
 
 --
 -- Name: index_groups_users_on_user_id_and_group_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_groups_users_on_user_id_and_group_id ON groups_users USING btree (user_id, group_id);
+CREATE UNIQUE INDEX index_groups_users_on_user_id_and_group_id ON public.groups_users USING btree (user_id, group_id);
 
 
 --
 -- Name: index_keywords_on_meta_key_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_keywords_on_meta_key_id ON keywords USING btree (meta_key_id);
+CREATE INDEX index_keywords_on_meta_key_id ON public.keywords USING btree (meta_key_id);
 
 
 --
 -- Name: index_keywords_on_meta_key_id_and_term; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_keywords_on_meta_key_id_and_term ON keywords USING btree (meta_key_id, term);
+CREATE UNIQUE INDEX index_keywords_on_meta_key_id_and_term ON public.keywords USING btree (meta_key_id, term);
 
 
 --
 -- Name: index_keywords_on_position; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_keywords_on_position ON keywords USING btree ("position");
+CREATE INDEX index_keywords_on_position ON public.keywords USING btree ("position");
 
 
 --
 -- Name: index_md_people_on_md_id_and_person_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_md_people_on_md_id_and_person_id ON meta_data_people USING btree (meta_datum_id, person_id);
+CREATE UNIQUE INDEX index_md_people_on_md_id_and_person_id ON public.meta_data_people USING btree (meta_datum_id, person_id);
 
 
 --
 -- Name: index_md_users_on_md_id_and_keyword_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_md_users_on_md_id_and_keyword_id ON meta_data_keywords USING btree (meta_datum_id, keyword_id);
+CREATE UNIQUE INDEX index_md_users_on_md_id_and_keyword_id ON public.meta_data_keywords USING btree (meta_datum_id, keyword_id);
 
 
 --
 -- Name: index_media_entries_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entries_on_created_at ON media_entries USING btree (created_at);
+CREATE INDEX index_media_entries_on_created_at ON public.media_entries USING btree (created_at);
 
 
 --
 -- Name: index_media_entries_on_creator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entries_on_creator_id ON media_entries USING btree (creator_id);
+CREATE INDEX index_media_entries_on_creator_id ON public.media_entries USING btree (creator_id);
 
 
 --
 -- Name: index_media_entries_on_edit_session_updated_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entries_on_edit_session_updated_at ON media_entries USING btree (edit_session_updated_at);
+CREATE INDEX index_media_entries_on_edit_session_updated_at ON public.media_entries USING btree (edit_session_updated_at);
 
 
 --
 -- Name: index_media_entries_on_is_published; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entries_on_is_published ON media_entries USING btree (is_published);
+CREATE INDEX index_media_entries_on_is_published ON public.media_entries USING btree (is_published);
 
 
 --
 -- Name: index_media_entries_on_meta_data_updated_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entries_on_meta_data_updated_at ON media_entries USING btree (meta_data_updated_at);
+CREATE INDEX index_media_entries_on_meta_data_updated_at ON public.media_entries USING btree (meta_data_updated_at);
 
 
 --
 -- Name: index_media_entries_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entries_on_responsible_user_id ON media_entries USING btree (responsible_user_id);
+CREATE INDEX index_media_entries_on_responsible_user_id ON public.media_entries USING btree (responsible_user_id);
 
 
 --
 -- Name: index_media_entries_on_updated_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entries_on_updated_at ON media_entries USING btree (updated_at);
+CREATE INDEX index_media_entries_on_updated_at ON public.media_entries USING btree (updated_at);
 
 
 --
 -- Name: index_media_entry_api_client_permissions_on_api_client_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_api_client_permissions_on_api_client_id ON media_entry_api_client_permissions USING btree (api_client_id);
+CREATE INDEX index_media_entry_api_client_permissions_on_api_client_id ON public.media_entry_api_client_permissions USING btree (api_client_id);
 
 
 --
 -- Name: index_media_entry_api_client_permissions_on_get_full_size; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_api_client_permissions_on_get_full_size ON media_entry_api_client_permissions USING btree (get_full_size);
+CREATE INDEX index_media_entry_api_client_permissions_on_get_full_size ON public.media_entry_api_client_permissions USING btree (get_full_size);
 
 
 --
 -- Name: index_media_entry_api_client_permissions_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_api_client_permissions_on_media_entry_id ON media_entry_api_client_permissions USING btree (media_entry_id);
+CREATE INDEX index_media_entry_api_client_permissions_on_media_entry_id ON public.media_entry_api_client_permissions USING btree (media_entry_id);
 
 
 --
 -- Name: index_media_entry_api_client_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_api_client_permissions_on_updator_id ON media_entry_api_client_permissions USING btree (updator_id);
+CREATE INDEX index_media_entry_api_client_permissions_on_updator_id ON public.media_entry_api_client_permissions USING btree (updator_id);
 
 
 --
 -- Name: index_media_entry_group_permissions_on_edit_metadata; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_group_permissions_on_edit_metadata ON media_entry_group_permissions USING btree (edit_metadata);
+CREATE INDEX index_media_entry_group_permissions_on_edit_metadata ON public.media_entry_group_permissions USING btree (edit_metadata);
 
 
 --
 -- Name: index_media_entry_group_permissions_on_get_full_size; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_group_permissions_on_get_full_size ON media_entry_group_permissions USING btree (get_full_size);
+CREATE INDEX index_media_entry_group_permissions_on_get_full_size ON public.media_entry_group_permissions USING btree (get_full_size);
 
 
 --
 -- Name: index_media_entry_group_permissions_on_group_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_group_permissions_on_group_id ON media_entry_group_permissions USING btree (group_id);
+CREATE INDEX index_media_entry_group_permissions_on_group_id ON public.media_entry_group_permissions USING btree (group_id);
 
 
 --
 -- Name: index_media_entry_group_permissions_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_group_permissions_on_media_entry_id ON media_entry_group_permissions USING btree (media_entry_id);
+CREATE INDEX index_media_entry_group_permissions_on_media_entry_id ON public.media_entry_group_permissions USING btree (media_entry_id);
 
 
 --
 -- Name: index_media_entry_group_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_group_permissions_on_updator_id ON media_entry_group_permissions USING btree (updator_id);
+CREATE INDEX index_media_entry_group_permissions_on_updator_id ON public.media_entry_group_permissions USING btree (updator_id);
 
 
 --
 -- Name: index_media_entry_user_permissions_on_edit_metadata; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_user_permissions_on_edit_metadata ON media_entry_user_permissions USING btree (edit_metadata);
+CREATE INDEX index_media_entry_user_permissions_on_edit_metadata ON public.media_entry_user_permissions USING btree (edit_metadata);
 
 
 --
 -- Name: index_media_entry_user_permissions_on_edit_permissions; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_user_permissions_on_edit_permissions ON media_entry_user_permissions USING btree (edit_permissions);
+CREATE INDEX index_media_entry_user_permissions_on_edit_permissions ON public.media_entry_user_permissions USING btree (edit_permissions);
 
 
 --
 -- Name: index_media_entry_user_permissions_on_get_full_size; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_user_permissions_on_get_full_size ON media_entry_user_permissions USING btree (get_full_size);
+CREATE INDEX index_media_entry_user_permissions_on_get_full_size ON public.media_entry_user_permissions USING btree (get_full_size);
 
 
 --
 -- Name: index_media_entry_user_permissions_on_get_metadata_and_previews; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_user_permissions_on_get_metadata_and_previews ON media_entry_user_permissions USING btree (get_metadata_and_previews);
+CREATE INDEX index_media_entry_user_permissions_on_get_metadata_and_previews ON public.media_entry_user_permissions USING btree (get_metadata_and_previews);
 
 
 --
 -- Name: index_media_entry_user_permissions_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_user_permissions_on_media_entry_id ON media_entry_user_permissions USING btree (media_entry_id);
+CREATE INDEX index_media_entry_user_permissions_on_media_entry_id ON public.media_entry_user_permissions USING btree (media_entry_id);
 
 
 --
 -- Name: index_media_entry_user_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_user_permissions_on_updator_id ON media_entry_user_permissions USING btree (updator_id);
+CREATE INDEX index_media_entry_user_permissions_on_updator_id ON public.media_entry_user_permissions USING btree (updator_id);
 
 
 --
 -- Name: index_media_entry_user_permissions_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_entry_user_permissions_on_user_id ON media_entry_user_permissions USING btree (user_id);
+CREATE INDEX index_media_entry_user_permissions_on_user_id ON public.media_entry_user_permissions USING btree (user_id);
 
 
 --
 -- Name: index_media_files_on_extension; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_files_on_extension ON media_files USING btree (extension);
+CREATE INDEX index_media_files_on_extension ON public.media_files USING btree (extension);
 
 
 --
 -- Name: index_media_files_on_filename; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_files_on_filename ON media_files USING btree (filename);
+CREATE INDEX index_media_files_on_filename ON public.media_files USING btree (filename);
 
 
 --
 -- Name: index_media_files_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_files_on_media_entry_id ON media_files USING btree (media_entry_id);
+CREATE INDEX index_media_files_on_media_entry_id ON public.media_files USING btree (media_entry_id);
 
 
 --
 -- Name: index_media_files_on_media_type; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_media_files_on_media_type ON media_files USING btree (media_type);
+CREATE INDEX index_media_files_on_media_type ON public.media_files USING btree (media_type);
 
 
 --
 -- Name: index_meta_data_keywords_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_meta_data_keywords_on_created_at ON meta_data_keywords USING btree (created_at);
+CREATE INDEX index_meta_data_keywords_on_created_at ON public.meta_data_keywords USING btree (created_at);
 
 
 --
 -- Name: index_meta_data_keywords_on_created_by_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_meta_data_keywords_on_created_by_id ON meta_data_keywords USING btree (created_by_id);
+CREATE INDEX index_meta_data_keywords_on_created_by_id ON public.meta_data_keywords USING btree (created_by_id);
 
 
 --
 -- Name: index_meta_data_keywords_on_keyword_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_meta_data_keywords_on_keyword_id ON meta_data_keywords USING btree (keyword_id);
+CREATE INDEX index_meta_data_keywords_on_keyword_id ON public.meta_data_keywords USING btree (keyword_id);
 
 
 --
 -- Name: index_meta_data_keywords_on_meta_datum_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_meta_data_keywords_on_meta_datum_id ON meta_data_keywords USING btree (meta_datum_id);
+CREATE INDEX index_meta_data_keywords_on_meta_datum_id ON public.meta_data_keywords USING btree (meta_datum_id);
 
 
 --
 -- Name: index_meta_data_meta_terms_on_meta_datum_id_and_meta_term_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_meta_data_meta_terms_on_meta_datum_id_and_meta_term_id ON meta_data_meta_terms USING btree (meta_datum_id, meta_term_id);
+CREATE UNIQUE INDEX index_meta_data_meta_terms_on_meta_datum_id_and_meta_term_id ON public.meta_data_meta_terms USING btree (meta_datum_id, meta_term_id);
 
 
 --
 -- Name: index_meta_data_on_collection_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_meta_data_on_collection_id ON meta_data USING btree (collection_id);
+CREATE INDEX index_meta_data_on_collection_id ON public.meta_data USING btree (collection_id);
 
 
 --
 -- Name: index_meta_data_on_collection_id_and_meta_key_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_meta_data_on_collection_id_and_meta_key_id ON meta_data USING btree (collection_id, meta_key_id);
+CREATE UNIQUE INDEX index_meta_data_on_collection_id_and_meta_key_id ON public.meta_data USING btree (collection_id, meta_key_id);
 
 
 --
 -- Name: index_meta_data_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_meta_data_on_filter_set_id ON meta_data USING btree (filter_set_id);
+CREATE INDEX index_meta_data_on_filter_set_id ON public.meta_data USING btree (filter_set_id);
 
 
 --
 -- Name: index_meta_data_on_filter_set_id_and_meta_key_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_meta_data_on_filter_set_id_and_meta_key_id ON meta_data USING btree (filter_set_id, meta_key_id);
+CREATE UNIQUE INDEX index_meta_data_on_filter_set_id_and_meta_key_id ON public.meta_data USING btree (filter_set_id, meta_key_id);
 
 
 --
 -- Name: index_meta_data_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_meta_data_on_media_entry_id ON meta_data USING btree (media_entry_id);
+CREATE INDEX index_meta_data_on_media_entry_id ON public.meta_data USING btree (media_entry_id);
 
 
 --
 -- Name: index_meta_data_on_media_entry_id_and_meta_key_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_meta_data_on_media_entry_id_and_meta_key_id ON meta_data USING btree (media_entry_id, meta_key_id);
+CREATE UNIQUE INDEX index_meta_data_on_media_entry_id_and_meta_key_id ON public.meta_data USING btree (media_entry_id, meta_key_id);
 
 
 --
 -- Name: index_meta_data_on_meta_key_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_meta_data_on_meta_key_id ON meta_data USING btree (meta_key_id);
+CREATE INDEX index_meta_data_on_meta_key_id ON public.meta_data USING btree (meta_key_id);
 
 
 --
 -- Name: index_meta_data_on_type; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_meta_data_on_type ON meta_data USING btree (type);
+CREATE INDEX index_meta_data_on_type ON public.meta_data USING btree (type);
 
 
 --
 -- Name: index_people_on_first_name; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_people_on_first_name ON people USING btree (first_name);
+CREATE INDEX index_people_on_first_name ON public.people USING btree (first_name);
 
 
 --
 -- Name: index_people_on_institutional_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_people_on_institutional_id ON people USING btree (institutional_id);
+CREATE UNIQUE INDEX index_people_on_institutional_id ON public.people USING btree (institutional_id);
 
 
 --
 -- Name: index_people_on_last_name; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_people_on_last_name ON people USING btree (last_name);
+CREATE INDEX index_people_on_last_name ON public.people USING btree (last_name);
 
 
 --
 -- Name: index_previews_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_previews_on_created_at ON previews USING btree (created_at);
+CREATE INDEX index_previews_on_created_at ON public.previews USING btree (created_at);
 
 
 --
 -- Name: index_previews_on_media_file_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_previews_on_media_file_id ON previews USING btree (media_file_id);
+CREATE INDEX index_previews_on_media_file_id ON public.previews USING btree (media_file_id);
 
 
 --
 -- Name: index_previews_on_media_type; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_previews_on_media_type ON previews USING btree (media_type);
+CREATE INDEX index_previews_on_media_type ON public.previews USING btree (media_type);
 
 
 --
 -- Name: index_users_on_autocomplete; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_users_on_autocomplete ON users USING btree (autocomplete);
+CREATE INDEX index_users_on_autocomplete ON public.users USING btree (autocomplete);
 
 
 --
 -- Name: index_users_on_institutional_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_users_on_institutional_id ON users USING btree (institutional_id);
+CREATE UNIQUE INDEX index_users_on_institutional_id ON public.users USING btree (institutional_id);
 
 
 --
 -- Name: index_users_on_login; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_users_on_login ON users USING btree (login);
+CREATE INDEX index_users_on_login ON public.users USING btree (login);
 
 
 --
 -- Name: index_vocabularies_on_position; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_vocabularies_on_position ON vocabularies USING btree ("position");
+CREATE INDEX index_vocabularies_on_position ON public.vocabularies USING btree ("position");
 
 
 --
 -- Name: index_zencoder_jobs_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_zencoder_jobs_on_created_at ON zencoder_jobs USING btree (created_at);
+CREATE INDEX index_zencoder_jobs_on_created_at ON public.zencoder_jobs USING btree (created_at);
 
 
 --
 -- Name: index_zencoder_jobs_on_media_file_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_zencoder_jobs_on_media_file_id ON zencoder_jobs USING btree (media_file_id);
+CREATE INDEX index_zencoder_jobs_on_media_file_id ON public.zencoder_jobs USING btree (media_file_id);
 
 
 --
 -- Name: index_zencoder_jobs_on_request; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_zencoder_jobs_on_request ON zencoder_jobs USING btree (request);
+CREATE INDEX index_zencoder_jobs_on_request ON public.zencoder_jobs USING btree (request);
 
 
 --
 -- Name: index_zencoder_jobs_on_state; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_zencoder_jobs_on_state ON zencoder_jobs USING btree (state);
+CREATE INDEX index_zencoder_jobs_on_state ON public.zencoder_jobs USING btree (state);
 
 
 --
 -- Name: keyword_terms_term_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX keyword_terms_term_idx ON keywords USING gin (term gin_trgm_ops);
+CREATE INDEX keyword_terms_term_idx ON public.keywords USING gin (term public.gin_trgm_ops);
 
 
 --
 -- Name: keyword_terms_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX keyword_terms_to_tsvector_idx ON keywords USING gin (to_tsvector('english'::regconfig, (term)::text));
+CREATE INDEX keyword_terms_to_tsvector_idx ON public.keywords USING gin (to_tsvector('english'::regconfig, (term)::text));
 
 
 --
 -- Name: meta_data_string_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX meta_data_string_idx ON meta_data USING gin (string gin_trgm_ops);
+CREATE INDEX meta_data_string_idx ON public.meta_data USING gin (string public.gin_trgm_ops);
 
 
 --
 -- Name: meta_data_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX meta_data_to_tsvector_idx ON meta_data USING gin (to_tsvector('english'::regconfig, string));
+CREATE INDEX meta_data_to_tsvector_idx ON public.meta_data USING gin (to_tsvector('english'::regconfig, string));
 
 
 --
 -- Name: people_searchable_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX people_searchable_idx ON people USING gin (searchable gin_trgm_ops);
+CREATE INDEX people_searchable_idx ON public.people USING gin (searchable public.gin_trgm_ops);
 
 
 --
 -- Name: people_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX people_to_tsvector_idx ON people USING gin (to_tsvector('english'::regconfig, searchable));
+CREATE INDEX people_to_tsvector_idx ON public.people USING gin (to_tsvector('english'::regconfig, searchable));
 
 
 --
 -- Name: unique_email_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX unique_email_idx ON users USING btree (lower((email)::text));
+CREATE UNIQUE INDEX unique_email_idx ON public.users USING btree (lower((email)::text));
 
 
 --
 -- Name: unique_login_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX unique_login_idx ON users USING btree (login);
+CREATE UNIQUE INDEX unique_login_idx ON public.users USING btree (login);
 
 
 --
 -- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (version);
+CREATE UNIQUE INDEX unique_schema_migrations ON public.schema_migrations USING btree (version);
 
 
 --
 -- Name: users_searchable_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX users_searchable_idx ON users USING gin (searchable gin_trgm_ops);
+CREATE INDEX users_searchable_idx ON public.users USING gin (searchable public.gin_trgm_ops);
 
 
 --
 -- Name: users_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX users_to_tsvector_idx ON users USING gin (to_tsvector('english'::regconfig, searchable));
+CREATE INDEX users_to_tsvector_idx ON public.users USING gin (to_tsvector('english'::regconfig, searchable));
 
 
 --
 -- Name: edit_sessions propagate_edit_session_insert_to_collections; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER propagate_edit_session_insert_to_collections AFTER INSERT ON edit_sessions FOR EACH ROW EXECUTE PROCEDURE propagate_edit_session_insert_to_collections();
+CREATE TRIGGER propagate_edit_session_insert_to_collections AFTER INSERT ON public.edit_sessions FOR EACH ROW EXECUTE PROCEDURE public.propagate_edit_session_insert_to_collections();
 
 
 --
 -- Name: edit_sessions propagate_edit_session_insert_to_filter_sets; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER propagate_edit_session_insert_to_filter_sets AFTER INSERT ON edit_sessions FOR EACH ROW EXECUTE PROCEDURE propagate_edit_session_insert_to_filter_sets();
+CREATE TRIGGER propagate_edit_session_insert_to_filter_sets AFTER INSERT ON public.edit_sessions FOR EACH ROW EXECUTE PROCEDURE public.propagate_edit_session_insert_to_filter_sets();
 
 
 --
 -- Name: edit_sessions propagate_edit_session_insert_to_media_entries; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER propagate_edit_session_insert_to_media_entries AFTER INSERT ON edit_sessions FOR EACH ROW EXECUTE PROCEDURE propagate_edit_session_insert_to_media_entries();
+CREATE TRIGGER propagate_edit_session_insert_to_media_entries AFTER INSERT ON public.edit_sessions FOR EACH ROW EXECUTE PROCEDURE public.propagate_edit_session_insert_to_media_entries();
 
 
 --
 -- Name: keywords propagate_keyword_updates_to_meta_data_keywords; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER propagate_keyword_updates_to_meta_data_keywords AFTER INSERT OR UPDATE ON keywords FOR EACH ROW EXECUTE PROCEDURE propagate_keyword_updates_to_meta_data_keywords();
+CREATE TRIGGER propagate_keyword_updates_to_meta_data_keywords AFTER INSERT OR UPDATE ON public.keywords FOR EACH ROW EXECUTE PROCEDURE public.propagate_keyword_updates_to_meta_data_keywords();
 
 
 --
 -- Name: meta_data_keywords propagate_meta_data_keyword_updates_to_meta_data; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER propagate_meta_data_keyword_updates_to_meta_data AFTER INSERT OR DELETE OR UPDATE ON meta_data_keywords FOR EACH ROW EXECUTE PROCEDURE propagate_meta_data_keyword_updates_to_meta_data();
+CREATE TRIGGER propagate_meta_data_keyword_updates_to_meta_data AFTER INSERT OR DELETE OR UPDATE ON public.meta_data_keywords FOR EACH ROW EXECUTE PROCEDURE public.propagate_meta_data_keyword_updates_to_meta_data();
 
 
 --
 -- Name: meta_data_people propagate_meta_data_people_updates_to_meta_data; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER propagate_meta_data_people_updates_to_meta_data AFTER INSERT OR DELETE OR UPDATE ON meta_data_people FOR EACH ROW EXECUTE PROCEDURE propagate_meta_data_people_updates_to_meta_data();
+CREATE TRIGGER propagate_meta_data_people_updates_to_meta_data AFTER INSERT OR DELETE OR UPDATE ON public.meta_data_people FOR EACH ROW EXECUTE PROCEDURE public.propagate_meta_data_people_updates_to_meta_data();
 
 
 --
 -- Name: meta_data propagate_meta_data_updates_to_media_resource; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER propagate_meta_data_updates_to_media_resource AFTER INSERT OR DELETE OR UPDATE ON meta_data FOR EACH ROW EXECUTE PROCEDURE propagate_meta_data_updates_to_media_resource();
+CREATE TRIGGER propagate_meta_data_updates_to_media_resource AFTER INSERT OR DELETE OR UPDATE ON public.meta_data FOR EACH ROW EXECUTE PROCEDURE public.propagate_meta_data_updates_to_media_resource();
 
 
 --
 -- Name: people propagate_people_updates_to_meta_data_people; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER propagate_people_updates_to_meta_data_people AFTER INSERT OR UPDATE ON people FOR EACH ROW EXECUTE PROCEDURE propagate_people_updates_to_meta_data_people();
+CREATE TRIGGER propagate_people_updates_to_meta_data_people AFTER INSERT OR UPDATE ON public.people FOR EACH ROW EXECUTE PROCEDURE public.propagate_people_updates_to_meta_data_people();
 
 
 --
 -- Name: collection_media_entry_arcs trigger_check_collection_cover_uniqueness; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_check_collection_cover_uniqueness AFTER INSERT OR UPDATE ON collection_media_entry_arcs DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_collection_cover_uniqueness();
+CREATE CONSTRAINT TRIGGER trigger_check_collection_cover_uniqueness AFTER INSERT OR UPDATE ON public.collection_media_entry_arcs DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.check_collection_cover_uniqueness();
 
 
 --
 -- Name: custom_urls trigger_check_collection_primary_uniqueness; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_check_collection_primary_uniqueness AFTER INSERT OR UPDATE ON custom_urls DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_collection_primary_uniqueness();
+CREATE CONSTRAINT TRIGGER trigger_check_collection_primary_uniqueness AFTER INSERT OR UPDATE ON public.custom_urls DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.check_collection_primary_uniqueness();
 
 
 --
 -- Name: custom_urls trigger_check_filter_set_primary_uniqueness; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_check_filter_set_primary_uniqueness AFTER INSERT OR UPDATE ON custom_urls DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_filter_set_primary_uniqueness();
+CREATE CONSTRAINT TRIGGER trigger_check_filter_set_primary_uniqueness AFTER INSERT OR UPDATE ON public.custom_urls DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.check_filter_set_primary_uniqueness();
 
 
 --
 -- Name: custom_urls trigger_check_media_entry_primary_uniqueness; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_check_media_entry_primary_uniqueness AFTER INSERT OR UPDATE ON custom_urls DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_media_entry_primary_uniqueness();
+CREATE CONSTRAINT TRIGGER trigger_check_media_entry_primary_uniqueness AFTER INSERT OR UPDATE ON public.custom_urls DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.check_media_entry_primary_uniqueness();
 
 
 --
 -- Name: meta_data trigger_check_meta_data_created_by; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER trigger_check_meta_data_created_by AFTER INSERT ON meta_data FOR EACH ROW EXECUTE PROCEDURE check_meta_data_created_by();
+CREATE TRIGGER trigger_check_meta_data_created_by AFTER INSERT ON public.meta_data FOR EACH ROW EXECUTE PROCEDURE public.check_meta_data_created_by();
 
 
 --
 -- Name: meta_data_keywords trigger_check_meta_data_keywords_created_by; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER trigger_check_meta_data_keywords_created_by AFTER INSERT ON meta_data_keywords FOR EACH ROW EXECUTE PROCEDURE check_meta_data_keywords_created_by();
+CREATE TRIGGER trigger_check_meta_data_keywords_created_by AFTER INSERT ON public.meta_data_keywords FOR EACH ROW EXECUTE PROCEDURE public.check_meta_data_keywords_created_by();
 
 
 --
 -- Name: meta_data_people trigger_check_meta_data_people_created_by; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER trigger_check_meta_data_people_created_by AFTER INSERT ON meta_data_people FOR EACH ROW EXECUTE PROCEDURE check_meta_data_people_created_by();
+CREATE TRIGGER trigger_check_meta_data_people_created_by AFTER INSERT ON public.meta_data_people FOR EACH ROW EXECUTE PROCEDURE public.check_meta_data_people_created_by();
 
 
 --
 -- Name: collection_media_entry_arcs trigger_check_no_drafts_in_collections; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_check_no_drafts_in_collections AFTER INSERT OR UPDATE ON collection_media_entry_arcs DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_no_drafts_in_collections();
+CREATE CONSTRAINT TRIGGER trigger_check_no_drafts_in_collections AFTER INSERT OR UPDATE ON public.collection_media_entry_arcs DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.check_no_drafts_in_collections();
 
 
 --
 -- Name: api_clients trigger_check_users_apiclients_login_uniqueness_on_apiclients; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_check_users_apiclients_login_uniqueness_on_apiclients AFTER INSERT OR UPDATE ON api_clients DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_users_apiclients_login_uniqueness();
+CREATE CONSTRAINT TRIGGER trigger_check_users_apiclients_login_uniqueness_on_apiclients AFTER INSERT OR UPDATE ON public.api_clients DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.check_users_apiclients_login_uniqueness();
 
 
 --
 -- Name: users trigger_check_users_apiclients_login_uniqueness_on_users; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_check_users_apiclients_login_uniqueness_on_users AFTER INSERT OR UPDATE ON users DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_users_apiclients_login_uniqueness();
+CREATE CONSTRAINT TRIGGER trigger_check_users_apiclients_login_uniqueness_on_users AFTER INSERT OR UPDATE ON public.users DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.check_users_apiclients_login_uniqueness();
 
 
 --
 -- Name: collection_collection_arcs trigger_collection_may_not_be_its_own_parent; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_collection_may_not_be_its_own_parent AFTER INSERT OR UPDATE ON collection_collection_arcs DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE collection_may_not_be_its_own_parent();
+CREATE CONSTRAINT TRIGGER trigger_collection_may_not_be_its_own_parent AFTER INSERT OR UPDATE ON public.collection_collection_arcs DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.collection_may_not_be_its_own_parent();
 
 
 --
 -- Name: groups_users trigger_delete_empty_group_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_delete_empty_group_after_delete_join AFTER DELETE ON groups_users DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_empty_group_after_delete_join();
+CREATE CONSTRAINT TRIGGER trigger_delete_empty_group_after_delete_join AFTER DELETE ON public.groups_users DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.delete_empty_group_after_delete_join();
 
 
 --
 -- Name: meta_data trigger_delete_empty_meta_data_groups_after_insert; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_groups_after_insert AFTER INSERT ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::Groups'::text)) EXECUTE PROCEDURE delete_empty_meta_data_groups_after_insert();
+CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_groups_after_insert AFTER INSERT ON public.meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::Groups'::text)) EXECUTE PROCEDURE public.delete_empty_meta_data_groups_after_insert();
 
 
 --
 -- Name: meta_data_keywords trigger_delete_empty_meta_data_keywords_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_keywords_after_delete_join AFTER DELETE ON meta_data_keywords DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_empty_meta_data_keywords_after_delete_join();
+CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_keywords_after_delete_join AFTER DELETE ON public.meta_data_keywords DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.delete_empty_meta_data_keywords_after_delete_join();
 
 
 --
 -- Name: meta_data trigger_delete_empty_meta_data_keywords_after_insert; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_keywords_after_insert AFTER INSERT ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::Keywords'::text)) EXECUTE PROCEDURE delete_empty_meta_data_keywords_after_insert();
+CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_keywords_after_insert AFTER INSERT ON public.meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::Keywords'::text)) EXECUTE PROCEDURE public.delete_empty_meta_data_keywords_after_insert();
 
 
 --
 -- Name: meta_data trigger_delete_empty_meta_data_licenses_after_insert; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_licenses_after_insert AFTER INSERT ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::Licenses'::text)) EXECUTE PROCEDURE delete_empty_meta_data_licenses_after_insert();
+CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_licenses_after_insert AFTER INSERT ON public.meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::Licenses'::text)) EXECUTE PROCEDURE public.delete_empty_meta_data_licenses_after_insert();
 
 
 --
 -- Name: meta_data_people trigger_delete_empty_meta_data_people_after_delete_join; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_people_after_delete_join AFTER DELETE ON meta_data_people DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_empty_meta_data_people_after_delete_join();
+CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_people_after_delete_join AFTER DELETE ON public.meta_data_people DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.delete_empty_meta_data_people_after_delete_join();
 
 
 --
 -- Name: meta_data trigger_delete_empty_meta_data_people_after_insert; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_people_after_insert AFTER INSERT ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::People'::text)) EXECUTE PROCEDURE delete_empty_meta_data_people_after_insert();
+CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_people_after_insert AFTER INSERT ON public.meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (((new.type)::text = 'MetaDatum::People'::text)) EXECUTE PROCEDURE public.delete_empty_meta_data_people_after_insert();
 
 
 --
 -- Name: meta_data trigger_delete_meta_datum_text_string_null; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_delete_meta_datum_text_string_null AFTER INSERT OR UPDATE ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE delete_meta_datum_text_string_null();
+CREATE CONSTRAINT TRIGGER trigger_delete_meta_datum_text_string_null AFTER INSERT OR UPDATE ON public.meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.delete_meta_datum_text_string_null();
 
 
 --
 -- Name: meta_keys trigger_madek_core_meta_key_immutability; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_madek_core_meta_key_immutability AFTER INSERT OR DELETE OR UPDATE ON meta_keys DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_madek_core_meta_key_immutability();
+CREATE CONSTRAINT TRIGGER trigger_madek_core_meta_key_immutability AFTER INSERT OR DELETE OR UPDATE ON public.meta_keys DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.check_madek_core_meta_key_immutability();
 
 
 --
 -- Name: meta_data trigger_meta_data_meta_key_type_consistency; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_meta_data_meta_key_type_consistency AFTER INSERT OR UPDATE ON meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_meta_data_meta_key_type_consistency();
+CREATE CONSTRAINT TRIGGER trigger_meta_data_meta_key_type_consistency AFTER INSERT OR UPDATE ON public.meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.check_meta_data_meta_key_type_consistency();
 
 
 --
 -- Name: meta_data_keywords trigger_meta_key_id_for_keyword_consistency; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_meta_key_id_for_keyword_consistency AFTER INSERT OR UPDATE ON meta_data_keywords DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_meta_key_id_consistency_for_keywords();
+CREATE CONSTRAINT TRIGGER trigger_meta_key_id_for_keyword_consistency AFTER INSERT OR UPDATE ON public.meta_data_keywords DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.check_meta_key_id_consistency_for_keywords();
 
 
 --
 -- Name: meta_keys trigger_meta_key_meta_data_type_consistency; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER trigger_meta_key_meta_data_type_consistency AFTER INSERT OR UPDATE ON meta_keys DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE check_meta_key_meta_data_type_consistency();
+CREATE CONSTRAINT TRIGGER trigger_meta_key_meta_data_type_consistency AFTER INSERT OR UPDATE ON public.meta_keys DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.check_meta_key_meta_data_type_consistency();
 
 
 --
 -- Name: groups update_searchable_column_of_groups; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_searchable_column_of_groups BEFORE INSERT OR UPDATE ON groups FOR EACH ROW EXECUTE PROCEDURE groups_update_searchable_column();
+CREATE TRIGGER update_searchable_column_of_groups BEFORE INSERT OR UPDATE ON public.groups FOR EACH ROW EXECUTE PROCEDURE public.groups_update_searchable_column();
 
 
 --
 -- Name: people update_searchable_column_of_people; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_searchable_column_of_people BEFORE INSERT OR UPDATE ON people FOR EACH ROW EXECUTE PROCEDURE people_update_searchable_column();
+CREATE TRIGGER update_searchable_column_of_people BEFORE INSERT OR UPDATE ON public.people FOR EACH ROW EXECUTE PROCEDURE public.people_update_searchable_column();
 
 
 --
 -- Name: users update_searchable_column_of_users; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_searchable_column_of_users BEFORE INSERT OR UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE users_update_searchable_column();
+CREATE TRIGGER update_searchable_column_of_users BEFORE INSERT OR UPDATE ON public.users FOR EACH ROW EXECUTE PROCEDURE public.users_update_searchable_column();
 
 
 --
 -- Name: admins update_updated_at_column_of_admins; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_admins BEFORE UPDATE ON admins FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_admins BEFORE UPDATE ON public.admins FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: api_clients update_updated_at_column_of_api_clients; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_api_clients BEFORE UPDATE ON api_clients FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_api_clients BEFORE UPDATE ON public.api_clients FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: api_tokens update_updated_at_column_of_api_tokens; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_api_tokens BEFORE UPDATE ON api_tokens FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_api_tokens BEFORE UPDATE ON public.api_tokens FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: app_settings update_updated_at_column_of_app_settings; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_app_settings BEFORE UPDATE ON app_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_app_settings BEFORE UPDATE ON public.app_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: collection_api_client_permissions update_updated_at_column_of_collection_api_client_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_collection_api_client_permissions BEFORE UPDATE ON collection_api_client_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_collection_api_client_permissions BEFORE UPDATE ON public.collection_api_client_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: collection_group_permissions update_updated_at_column_of_collection_group_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_collection_group_permissions BEFORE UPDATE ON collection_group_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_collection_group_permissions BEFORE UPDATE ON public.collection_group_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: collection_user_permissions update_updated_at_column_of_collection_user_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_collection_user_permissions BEFORE UPDATE ON collection_user_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_collection_user_permissions BEFORE UPDATE ON public.collection_user_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: collections update_updated_at_column_of_collections; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_collections BEFORE UPDATE ON collections FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_collections BEFORE UPDATE ON public.collections FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: context_keys update_updated_at_column_of_context_keys; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_context_keys BEFORE UPDATE ON context_keys FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_context_keys BEFORE UPDATE ON public.context_keys FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: custom_urls update_updated_at_column_of_custom_urls; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_custom_urls BEFORE UPDATE ON custom_urls FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_custom_urls BEFORE UPDATE ON public.custom_urls FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: favorite_collections update_updated_at_column_of_favorite_collections; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_favorite_collections BEFORE UPDATE ON favorite_collections FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_favorite_collections BEFORE UPDATE ON public.favorite_collections FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: favorite_filter_sets update_updated_at_column_of_favorite_filter_sets; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_favorite_filter_sets BEFORE UPDATE ON favorite_filter_sets FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_favorite_filter_sets BEFORE UPDATE ON public.favorite_filter_sets FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: favorite_media_entries update_updated_at_column_of_favorite_media_entries; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_favorite_media_entries BEFORE UPDATE ON favorite_media_entries FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_favorite_media_entries BEFORE UPDATE ON public.favorite_media_entries FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: filter_set_api_client_permissions update_updated_at_column_of_filter_set_api_client_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_filter_set_api_client_permissions BEFORE UPDATE ON filter_set_api_client_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_filter_set_api_client_permissions BEFORE UPDATE ON public.filter_set_api_client_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: filter_set_group_permissions update_updated_at_column_of_filter_set_group_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_filter_set_group_permissions BEFORE UPDATE ON filter_set_group_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_filter_set_group_permissions BEFORE UPDATE ON public.filter_set_group_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: filter_set_user_permissions update_updated_at_column_of_filter_set_user_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_filter_set_user_permissions BEFORE UPDATE ON filter_set_user_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_filter_set_user_permissions BEFORE UPDATE ON public.filter_set_user_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: filter_sets update_updated_at_column_of_filter_sets; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_filter_sets BEFORE UPDATE ON filter_sets FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_filter_sets BEFORE UPDATE ON public.filter_sets FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: io_interfaces update_updated_at_column_of_io_interfaces; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_io_interfaces BEFORE UPDATE ON io_interfaces FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_io_interfaces BEFORE UPDATE ON public.io_interfaces FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: io_mappings update_updated_at_column_of_io_mappings; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_io_mappings BEFORE UPDATE ON io_mappings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_io_mappings BEFORE UPDATE ON public.io_mappings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: keywords update_updated_at_column_of_keywords; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_keywords BEFORE UPDATE ON keywords FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_keywords BEFORE UPDATE ON public.keywords FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: media_entries update_updated_at_column_of_media_entries; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_media_entries BEFORE UPDATE ON media_entries FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_media_entries BEFORE UPDATE ON public.media_entries FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: media_entry_api_client_permissions update_updated_at_column_of_media_entry_api_client_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_media_entry_api_client_permissions BEFORE UPDATE ON media_entry_api_client_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_media_entry_api_client_permissions BEFORE UPDATE ON public.media_entry_api_client_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: media_entry_group_permissions update_updated_at_column_of_media_entry_group_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_media_entry_group_permissions BEFORE UPDATE ON media_entry_group_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_media_entry_group_permissions BEFORE UPDATE ON public.media_entry_group_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: media_entry_user_permissions update_updated_at_column_of_media_entry_user_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_media_entry_user_permissions BEFORE UPDATE ON media_entry_user_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_media_entry_user_permissions BEFORE UPDATE ON public.media_entry_user_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: media_files update_updated_at_column_of_media_files; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_media_files BEFORE UPDATE ON media_files FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_media_files BEFORE UPDATE ON public.media_files FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: meta_data_keywords update_updated_at_column_of_meta_data_keywords; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_meta_data_keywords BEFORE UPDATE ON meta_data_keywords FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_meta_data_keywords BEFORE UPDATE ON public.meta_data_keywords FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: people update_updated_at_column_of_people; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_people BEFORE UPDATE ON people FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_people BEFORE UPDATE ON public.people FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: previews update_updated_at_column_of_previews; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_previews BEFORE UPDATE ON previews FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_previews BEFORE UPDATE ON public.previews FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: usage_terms update_updated_at_column_of_usage_terms; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_usage_terms BEFORE UPDATE ON usage_terms FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_usage_terms BEFORE UPDATE ON public.usage_terms FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: users update_updated_at_column_of_users; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_users BEFORE UPDATE ON users FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_users BEFORE UPDATE ON public.users FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: zencoder_jobs update_updated_at_column_of_zencoder_jobs; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_zencoder_jobs BEFORE UPDATE ON zencoder_jobs FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_zencoder_jobs BEFORE UPDATE ON public.zencoder_jobs FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
 -- Name: admins admins_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY admins
-    ADD CONSTRAINT admins_users_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+ALTER TABLE ONLY public.admins
+    ADD CONSTRAINT admins_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
 -- Name: collection_api_client_permissions collection-api-client-permissions_api-clients_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_api_client_permissions
-    ADD CONSTRAINT "collection-api-client-permissions_api-clients_fkey" FOREIGN KEY (api_client_id) REFERENCES api_clients(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.collection_api_client_permissions
+    ADD CONSTRAINT "collection-api-client-permissions_api-clients_fkey" FOREIGN KEY (api_client_id) REFERENCES public.api_clients(id) ON DELETE CASCADE;
 
 
 --
 -- Name: collection_api_client_permissions collection-api-client-permissions_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_api_client_permissions
-    ADD CONSTRAINT "collection-api-client-permissions_collections_fkey" FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.collection_api_client_permissions
+    ADD CONSTRAINT "collection-api-client-permissions_collections_fkey" FOREIGN KEY (collection_id) REFERENCES public.collections(id) ON DELETE CASCADE;
 
 
 --
 -- Name: collection_api_client_permissions collection-api-client-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_api_client_permissions
-    ADD CONSTRAINT "collection-api-client-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES users(id);
+ALTER TABLE ONLY public.collection_api_client_permissions
+    ADD CONSTRAINT "collection-api-client-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES public.users(id);
 
 
 --
 -- Name: collection_collection_arcs collection-collection-arcs_children_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_collection_arcs
-    ADD CONSTRAINT "collection-collection-arcs_children_fkey" FOREIGN KEY (child_id) REFERENCES collections(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.collection_collection_arcs
+    ADD CONSTRAINT "collection-collection-arcs_children_fkey" FOREIGN KEY (child_id) REFERENCES public.collections(id) ON DELETE CASCADE;
 
 
 --
 -- Name: collection_collection_arcs collection-collection-arcs_parents_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_collection_arcs
-    ADD CONSTRAINT "collection-collection-arcs_parents_fkey" FOREIGN KEY (parent_id) REFERENCES collections(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.collection_collection_arcs
+    ADD CONSTRAINT "collection-collection-arcs_parents_fkey" FOREIGN KEY (parent_id) REFERENCES public.collections(id) ON DELETE CASCADE;
 
 
 --
 -- Name: collection_filter_set_arcs collection-filter-set-arcs_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_filter_set_arcs
-    ADD CONSTRAINT "collection-filter-set-arcs_collections_fkey" FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.collection_filter_set_arcs
+    ADD CONSTRAINT "collection-filter-set-arcs_collections_fkey" FOREIGN KEY (collection_id) REFERENCES public.collections(id) ON DELETE CASCADE;
 
 
 --
 -- Name: collection_filter_set_arcs collection-filter-set-arcs_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_filter_set_arcs
-    ADD CONSTRAINT "collection-filter-set-arcs_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES filter_sets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.collection_filter_set_arcs
+    ADD CONSTRAINT "collection-filter-set-arcs_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
 
 
 --
 -- Name: collection_group_permissions collection-group-permissions_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_group_permissions
-    ADD CONSTRAINT "collection-group-permissions_collections_fkey" FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.collection_group_permissions
+    ADD CONSTRAINT "collection-group-permissions_collections_fkey" FOREIGN KEY (collection_id) REFERENCES public.collections(id) ON DELETE CASCADE;
 
 
 --
 -- Name: collection_group_permissions collection-group-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_group_permissions
-    ADD CONSTRAINT "collection-group-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES users(id);
+ALTER TABLE ONLY public.collection_group_permissions
+    ADD CONSTRAINT "collection-group-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES public.users(id);
 
 
 --
 -- Name: collection_media_entry_arcs collection-media-entry-arcs_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_media_entry_arcs
-    ADD CONSTRAINT "collection-media-entry-arcs_collections_fkey" FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.collection_media_entry_arcs
+    ADD CONSTRAINT "collection-media-entry-arcs_collections_fkey" FOREIGN KEY (collection_id) REFERENCES public.collections(id) ON DELETE CASCADE;
 
 
 --
 -- Name: collection_media_entry_arcs collection-media-entry-arcs_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_media_entry_arcs
-    ADD CONSTRAINT "collection-media-entry-arcs_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.collection_media_entry_arcs
+    ADD CONSTRAINT "collection-media-entry-arcs_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES public.media_entries(id) ON DELETE CASCADE;
 
 
 --
 -- Name: collection_user_permissions collection-user-permissions-updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_user_permissions
-    ADD CONSTRAINT "collection-user-permissions-updators_fkey" FOREIGN KEY (updator_id) REFERENCES users(id);
+ALTER TABLE ONLY public.collection_user_permissions
+    ADD CONSTRAINT "collection-user-permissions-updators_fkey" FOREIGN KEY (updator_id) REFERENCES public.users(id);
 
 
 --
 -- Name: collection_user_permissions collection-user-permissions_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_user_permissions
-    ADD CONSTRAINT "collection-user-permissions_collections_fkey" FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.collection_user_permissions
+    ADD CONSTRAINT "collection-user-permissions_collections_fkey" FOREIGN KEY (collection_id) REFERENCES public.collections(id) ON DELETE CASCADE;
 
 
 --
 -- Name: collection_user_permissions collection-user-permissions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_user_permissions
-    ADD CONSTRAINT "collection-user-permissions_users_fkey" FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.collection_user_permissions
+    ADD CONSTRAINT "collection-user-permissions_users_fkey" FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
 -- Name: collections collections_creators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collections
-    ADD CONSTRAINT collections_creators_fkey FOREIGN KEY (creator_id) REFERENCES users(id);
+ALTER TABLE ONLY public.collections
+    ADD CONSTRAINT collections_creators_fkey FOREIGN KEY (creator_id) REFERENCES public.users(id);
 
 
 --
 -- Name: collections collections_responsible-users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collections
-    ADD CONSTRAINT "collections_responsible-users_fkey" FOREIGN KEY (responsible_user_id) REFERENCES users(id);
+ALTER TABLE ONLY public.collections
+    ADD CONSTRAINT "collections_responsible-users_fkey" FOREIGN KEY (responsible_user_id) REFERENCES public.users(id);
 
 
 --
 -- Name: custom_urls custom-urls_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY custom_urls
-    ADD CONSTRAINT "custom-urls_collections_fkey" FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.custom_urls
+    ADD CONSTRAINT "custom-urls_collections_fkey" FOREIGN KEY (collection_id) REFERENCES public.collections(id) ON DELETE CASCADE;
 
 
 --
 -- Name: custom_urls custom-urls_creators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY custom_urls
-    ADD CONSTRAINT "custom-urls_creators_fkey" FOREIGN KEY (creator_id) REFERENCES users(id);
+ALTER TABLE ONLY public.custom_urls
+    ADD CONSTRAINT "custom-urls_creators_fkey" FOREIGN KEY (creator_id) REFERENCES public.users(id);
 
 
 --
 -- Name: custom_urls custom-urls_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY custom_urls
-    ADD CONSTRAINT "custom-urls_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES filter_sets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.custom_urls
+    ADD CONSTRAINT "custom-urls_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
 
 
 --
 -- Name: custom_urls custom-urls_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY custom_urls
-    ADD CONSTRAINT "custom-urls_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.custom_urls
+    ADD CONSTRAINT "custom-urls_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES public.media_entries(id) ON DELETE CASCADE;
 
 
 --
 -- Name: custom_urls custom-urls_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY custom_urls
-    ADD CONSTRAINT "custom-urls_updators_fkey" FOREIGN KEY (updator_id) REFERENCES users(id);
+ALTER TABLE ONLY public.custom_urls
+    ADD CONSTRAINT "custom-urls_updators_fkey" FOREIGN KEY (updator_id) REFERENCES public.users(id);
 
 
 --
 -- Name: edit_sessions edit-sessions_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY edit_sessions
-    ADD CONSTRAINT "edit-sessions_collections_fkey" FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.edit_sessions
+    ADD CONSTRAINT "edit-sessions_collections_fkey" FOREIGN KEY (collection_id) REFERENCES public.collections(id) ON DELETE CASCADE;
 
 
 --
 -- Name: edit_sessions edit-sessions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY edit_sessions
-    ADD CONSTRAINT "edit-sessions_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES filter_sets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.edit_sessions
+    ADD CONSTRAINT "edit-sessions_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
 
 
 --
 -- Name: edit_sessions edit-sessions_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY edit_sessions
-    ADD CONSTRAINT "edit-sessions_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.edit_sessions
+    ADD CONSTRAINT "edit-sessions_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES public.media_entries(id) ON DELETE CASCADE;
 
 
 --
 -- Name: edit_sessions edit-sessions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY edit_sessions
-    ADD CONSTRAINT "edit-sessions_users_fkey" FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.edit_sessions
+    ADD CONSTRAINT "edit-sessions_users_fkey" FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
 -- Name: favorite_collections favorite-collections_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY favorite_collections
-    ADD CONSTRAINT "favorite-collections_collections_fkey" FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.favorite_collections
+    ADD CONSTRAINT "favorite-collections_collections_fkey" FOREIGN KEY (collection_id) REFERENCES public.collections(id) ON DELETE CASCADE;
 
 
 --
 -- Name: favorite_collections favorite-collections_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY favorite_collections
-    ADD CONSTRAINT "favorite-collections_users_fkey" FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.favorite_collections
+    ADD CONSTRAINT "favorite-collections_users_fkey" FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
 -- Name: favorite_filter_sets favorite-filter-sets_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY favorite_filter_sets
-    ADD CONSTRAINT "favorite-filter-sets_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES filter_sets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.favorite_filter_sets
+    ADD CONSTRAINT "favorite-filter-sets_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
 
 
 --
 -- Name: favorite_filter_sets favorite-filter-sets_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY favorite_filter_sets
-    ADD CONSTRAINT "favorite-filter-sets_users_fkey" FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.favorite_filter_sets
+    ADD CONSTRAINT "favorite-filter-sets_users_fkey" FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
 -- Name: favorite_media_entries favorite-media-entries_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY favorite_media_entries
-    ADD CONSTRAINT "favorite-media-entries_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.favorite_media_entries
+    ADD CONSTRAINT "favorite-media-entries_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES public.media_entries(id) ON DELETE CASCADE;
 
 
 --
 -- Name: favorite_media_entries favorite-media-entries_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY favorite_media_entries
-    ADD CONSTRAINT "favorite-media-entries_users_fkey" FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.favorite_media_entries
+    ADD CONSTRAINT "favorite-media-entries_users_fkey" FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
 -- Name: filter_set_api_client_permissions filter-set-api-client-permissions-updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_set_api_client_permissions
-    ADD CONSTRAINT "filter-set-api-client-permissions-updators_fkey" FOREIGN KEY (updator_id) REFERENCES users(id);
+ALTER TABLE ONLY public.filter_set_api_client_permissions
+    ADD CONSTRAINT "filter-set-api-client-permissions-updators_fkey" FOREIGN KEY (updator_id) REFERENCES public.users(id);
 
 
 --
 -- Name: filter_set_api_client_permissions filter-set-api-client-permissions_api-clients_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_set_api_client_permissions
-    ADD CONSTRAINT "filter-set-api-client-permissions_api-clients_fkey" FOREIGN KEY (api_client_id) REFERENCES api_clients(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.filter_set_api_client_permissions
+    ADD CONSTRAINT "filter-set-api-client-permissions_api-clients_fkey" FOREIGN KEY (api_client_id) REFERENCES public.api_clients(id) ON DELETE CASCADE;
 
 
 --
 -- Name: filter_set_api_client_permissions filter-set-api-client-permissions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_set_api_client_permissions
-    ADD CONSTRAINT "filter-set-api-client-permissions_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES filter_sets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.filter_set_api_client_permissions
+    ADD CONSTRAINT "filter-set-api-client-permissions_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
 
 
 --
 -- Name: filter_set_group_permissions filter-set-group-permissions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_set_group_permissions
-    ADD CONSTRAINT "filter-set-group-permissions_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES filter_sets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.filter_set_group_permissions
+    ADD CONSTRAINT "filter-set-group-permissions_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
 
 
 --
 -- Name: filter_set_group_permissions filter-set-group-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_set_group_permissions
-    ADD CONSTRAINT "filter-set-group-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES users(id);
+ALTER TABLE ONLY public.filter_set_group_permissions
+    ADD CONSTRAINT "filter-set-group-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES public.users(id);
 
 
 --
 -- Name: filter_set_user_permissions filter-set-user-permissions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_set_user_permissions
-    ADD CONSTRAINT "filter-set-user-permissions_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES filter_sets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.filter_set_user_permissions
+    ADD CONSTRAINT "filter-set-user-permissions_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
 
 
 --
 -- Name: filter_set_user_permissions filter-set-user-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_set_user_permissions
-    ADD CONSTRAINT "filter-set-user-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES users(id);
+ALTER TABLE ONLY public.filter_set_user_permissions
+    ADD CONSTRAINT "filter-set-user-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES public.users(id);
 
 
 --
 -- Name: filter_set_user_permissions filter-set-user-permissions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_set_user_permissions
-    ADD CONSTRAINT "filter-set-user-permissions_users_fkey" FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.filter_set_user_permissions
+    ADD CONSTRAINT "filter-set-user-permissions_users_fkey" FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
 -- Name: filter_sets filter-sets_creators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_sets
-    ADD CONSTRAINT "filter-sets_creators_fkey" FOREIGN KEY (creator_id) REFERENCES users(id);
+ALTER TABLE ONLY public.filter_sets
+    ADD CONSTRAINT "filter-sets_creators_fkey" FOREIGN KEY (creator_id) REFERENCES public.users(id);
 
 
 --
 -- Name: filter_sets filter-sets_responsible-users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_sets
-    ADD CONSTRAINT "filter-sets_responsible-users_fkey" FOREIGN KEY (responsible_user_id) REFERENCES users(id);
+ALTER TABLE ONLY public.filter_sets
+    ADD CONSTRAINT "filter-sets_responsible-users_fkey" FOREIGN KEY (responsible_user_id) REFERENCES public.users(id);
 
 
 --
 -- Name: context_keys fk_rails_2957e036b5; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY context_keys
-    ADD CONSTRAINT fk_rails_2957e036b5 FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.context_keys
+    ADD CONSTRAINT fk_rails_2957e036b5 FOREIGN KEY (meta_key_id) REFERENCES public.meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: api_clients fk_rails_45043d2037; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY api_clients
-    ADD CONSTRAINT fk_rails_45043d2037 FOREIGN KEY (user_id) REFERENCES users(id);
+ALTER TABLE ONLY public.api_clients
+    ADD CONSTRAINT fk_rails_45043d2037 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
 -- Name: groups_users fk_rails_4e63edbd27; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY groups_users
-    ADD CONSTRAINT fk_rails_4e63edbd27 FOREIGN KEY (group_id) REFERENCES groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.groups_users
+    ADD CONSTRAINT fk_rails_4e63edbd27 FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: vocabulary_group_permissions fk_rails_8550647b84; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY vocabulary_group_permissions
-    ADD CONSTRAINT fk_rails_8550647b84 FOREIGN KEY (group_id) REFERENCES groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.vocabulary_group_permissions
+    ADD CONSTRAINT fk_rails_8550647b84 FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: filter_set_group_permissions fk_rails_9cf683b9d3; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY filter_set_group_permissions
-    ADD CONSTRAINT fk_rails_9cf683b9d3 FOREIGN KEY (group_id) REFERENCES groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.filter_set_group_permissions
+    ADD CONSTRAINT fk_rails_9cf683b9d3 FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: context_keys fk_rails_b297363c89; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY context_keys
-    ADD CONSTRAINT fk_rails_b297363c89 FOREIGN KEY (context_id) REFERENCES contexts(id);
+ALTER TABLE ONLY public.context_keys
+    ADD CONSTRAINT fk_rails_b297363c89 FOREIGN KEY (context_id) REFERENCES public.contexts(id);
 
 
 --
 -- Name: collection_group_permissions fk_rails_b88fcbe505; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collection_group_permissions
-    ADD CONSTRAINT fk_rails_b88fcbe505 FOREIGN KEY (group_id) REFERENCES groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.collection_group_permissions
+    ADD CONSTRAINT fk_rails_b88fcbe505 FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: media_entry_group_permissions fk_rails_c5e91a50bb; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entry_group_permissions
-    ADD CONSTRAINT fk_rails_c5e91a50bb FOREIGN KEY (group_id) REFERENCES groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.media_entry_group_permissions
+    ADD CONSTRAINT fk_rails_c5e91a50bb FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: io_mappings fk_rails_dbf6e7c067; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY io_mappings
-    ADD CONSTRAINT fk_rails_dbf6e7c067 FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.io_mappings
+    ADD CONSTRAINT fk_rails_dbf6e7c067 FOREIGN KEY (meta_key_id) REFERENCES public.meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: meta_data fk_rails_ee76aad01f; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data
-    ADD CONSTRAINT fk_rails_ee76aad01f FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.meta_data
+    ADD CONSTRAINT fk_rails_ee76aad01f FOREIGN KEY (meta_key_id) REFERENCES public.meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: api_tokens fk_rails_f16b5e0447; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY api_tokens
-    ADD CONSTRAINT fk_rails_f16b5e0447 FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.api_tokens
+    ADD CONSTRAINT fk_rails_f16b5e0447 FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: keywords fk_rails_f3e1612c9e; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY keywords
-    ADD CONSTRAINT fk_rails_f3e1612c9e FOREIGN KEY (meta_key_id) REFERENCES meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.keywords
+    ADD CONSTRAINT fk_rails_f3e1612c9e FOREIGN KEY (meta_key_id) REFERENCES public.meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: groups_users groups-users_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY groups_users
-    ADD CONSTRAINT "groups-users_users_fkey" FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.groups_users
+    ADD CONSTRAINT "groups-users_users_fkey" FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
 -- Name: io_mappings io-mappings_io-interfaces_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY io_mappings
-    ADD CONSTRAINT "io-mappings_io-interfaces_fkey" FOREIGN KEY (io_interface_id) REFERENCES io_interfaces(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.io_mappings
+    ADD CONSTRAINT "io-mappings_io-interfaces_fkey" FOREIGN KEY (io_interface_id) REFERENCES public.io_interfaces(id) ON DELETE CASCADE;
 
 
 --
 -- Name: keywords keywords_rdf_class_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY keywords
-    ADD CONSTRAINT keywords_rdf_class_fkey FOREIGN KEY (rdf_class) REFERENCES rdf_classes(id) ON UPDATE CASCADE;
+ALTER TABLE ONLY public.keywords
+    ADD CONSTRAINT keywords_rdf_class_fkey FOREIGN KEY (rdf_class) REFERENCES public.rdf_classes(id) ON UPDATE CASCADE;
 
 
 --
 -- Name: media_entries media-entries_creators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entries
-    ADD CONSTRAINT "media-entries_creators_fkey" FOREIGN KEY (creator_id) REFERENCES users(id);
+ALTER TABLE ONLY public.media_entries
+    ADD CONSTRAINT "media-entries_creators_fkey" FOREIGN KEY (creator_id) REFERENCES public.users(id);
 
 
 --
 -- Name: media_entries media-entries_responsible-users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entries
-    ADD CONSTRAINT "media-entries_responsible-users_fkey" FOREIGN KEY (responsible_user_id) REFERENCES users(id);
+ALTER TABLE ONLY public.media_entries
+    ADD CONSTRAINT "media-entries_responsible-users_fkey" FOREIGN KEY (responsible_user_id) REFERENCES public.users(id);
 
 
 --
 -- Name: media_entry_api_client_permissions media-entry-api-client-permissions_api-clients_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entry_api_client_permissions
-    ADD CONSTRAINT "media-entry-api-client-permissions_api-clients_fkey" FOREIGN KEY (api_client_id) REFERENCES api_clients(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.media_entry_api_client_permissions
+    ADD CONSTRAINT "media-entry-api-client-permissions_api-clients_fkey" FOREIGN KEY (api_client_id) REFERENCES public.api_clients(id) ON DELETE CASCADE;
 
 
 --
 -- Name: media_entry_api_client_permissions media-entry-api-client-permissions_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entry_api_client_permissions
-    ADD CONSTRAINT "media-entry-api-client-permissions_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.media_entry_api_client_permissions
+    ADD CONSTRAINT "media-entry-api-client-permissions_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES public.media_entries(id) ON DELETE CASCADE;
 
 
 --
 -- Name: media_entry_api_client_permissions media-entry-api-client-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entry_api_client_permissions
-    ADD CONSTRAINT "media-entry-api-client-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES users(id);
+ALTER TABLE ONLY public.media_entry_api_client_permissions
+    ADD CONSTRAINT "media-entry-api-client-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES public.users(id);
 
 
 --
 -- Name: media_entry_group_permissions media-entry-group-permissions_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entry_group_permissions
-    ADD CONSTRAINT "media-entry-group-permissions_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.media_entry_group_permissions
+    ADD CONSTRAINT "media-entry-group-permissions_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES public.media_entries(id) ON DELETE CASCADE;
 
 
 --
 -- Name: media_entry_group_permissions media-entry-group-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entry_group_permissions
-    ADD CONSTRAINT "media-entry-group-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES users(id);
+ALTER TABLE ONLY public.media_entry_group_permissions
+    ADD CONSTRAINT "media-entry-group-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES public.users(id);
 
 
 --
 -- Name: media_entry_user_permissions media-entry-user-permissions_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entry_user_permissions
-    ADD CONSTRAINT "media-entry-user-permissions_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.media_entry_user_permissions
+    ADD CONSTRAINT "media-entry-user-permissions_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES public.media_entries(id) ON DELETE CASCADE;
 
 
 --
 -- Name: media_entry_user_permissions media-entry-user-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entry_user_permissions
-    ADD CONSTRAINT "media-entry-user-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES users(id);
+ALTER TABLE ONLY public.media_entry_user_permissions
+    ADD CONSTRAINT "media-entry-user-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES public.users(id);
 
 
 --
 -- Name: media_entry_user_permissions media-entry-user-permissions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_entry_user_permissions
-    ADD CONSTRAINT "media-entry-user-permissions_users_fkey" FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.media_entry_user_permissions
+    ADD CONSTRAINT "media-entry-user-permissions_users_fkey" FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
 -- Name: media_files media-files_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_files
-    ADD CONSTRAINT "media-files_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id);
+ALTER TABLE ONLY public.media_files
+    ADD CONSTRAINT "media-files_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES public.media_entries(id);
 
 
 --
 -- Name: media_files media-files_uploaders_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY media_files
-    ADD CONSTRAINT "media-files_uploaders_fkey" FOREIGN KEY (uploader_id) REFERENCES users(id);
+ALTER TABLE ONLY public.media_files
+    ADD CONSTRAINT "media-files_uploaders_fkey" FOREIGN KEY (uploader_id) REFERENCES public.users(id);
 
 
 --
 -- Name: meta_data_keywords meta-data-keywords_keywords_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data_keywords
-    ADD CONSTRAINT "meta-data-keywords_keywords_fkey" FOREIGN KEY (keyword_id) REFERENCES keywords(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.meta_data_keywords
+    ADD CONSTRAINT "meta-data-keywords_keywords_fkey" FOREIGN KEY (keyword_id) REFERENCES public.keywords(id) ON DELETE CASCADE;
 
 
 --
 -- Name: meta_data_keywords meta-data-keywords_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data_keywords
-    ADD CONSTRAINT "meta-data-keywords_users_fkey" FOREIGN KEY (created_by_id) REFERENCES users(id);
+ALTER TABLE ONLY public.meta_data_keywords
+    ADD CONSTRAINT "meta-data-keywords_users_fkey" FOREIGN KEY (created_by_id) REFERENCES public.users(id);
 
 
 --
 -- Name: meta_data_meta_terms meta-data-meta-terms_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data_meta_terms
-    ADD CONSTRAINT "meta-data-meta-terms_meta-data_fkey" FOREIGN KEY (meta_datum_id) REFERENCES meta_data(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.meta_data_meta_terms
+    ADD CONSTRAINT "meta-data-meta-terms_meta-data_fkey" FOREIGN KEY (meta_datum_id) REFERENCES public.meta_data(id) ON DELETE CASCADE;
 
 
 --
 -- Name: meta_data_people meta-data-people_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data_people
-    ADD CONSTRAINT "meta-data-people_meta-data_fkey" FOREIGN KEY (meta_datum_id) REFERENCES meta_data(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.meta_data_people
+    ADD CONSTRAINT "meta-data-people_meta-data_fkey" FOREIGN KEY (meta_datum_id) REFERENCES public.meta_data(id) ON DELETE CASCADE;
 
 
 --
 -- Name: meta_data_people meta-data-people_people_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data_people
-    ADD CONSTRAINT "meta-data-people_people_fkey" FOREIGN KEY (person_id) REFERENCES people(id);
+ALTER TABLE ONLY public.meta_data_people
+    ADD CONSTRAINT "meta-data-people_people_fkey" FOREIGN KEY (person_id) REFERENCES public.people(id);
 
 
 --
 -- Name: meta_data_people meta-data-people_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data_people
-    ADD CONSTRAINT "meta-data-people_users_fkey" FOREIGN KEY (created_by_id) REFERENCES users(id);
+ALTER TABLE ONLY public.meta_data_people
+    ADD CONSTRAINT "meta-data-people_users_fkey" FOREIGN KEY (created_by_id) REFERENCES public.users(id);
 
 
 --
 -- Name: meta_data meta-data_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data
-    ADD CONSTRAINT "meta-data_collections_fkey" FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.meta_data
+    ADD CONSTRAINT "meta-data_collections_fkey" FOREIGN KEY (collection_id) REFERENCES public.collections(id) ON DELETE CASCADE;
 
 
 --
 -- Name: meta_data meta-data_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data
-    ADD CONSTRAINT "meta-data_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES filter_sets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.meta_data
+    ADD CONSTRAINT "meta-data_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
 
 
 --
 -- Name: meta_data meta-data_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data
-    ADD CONSTRAINT "meta-data_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES media_entries(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.meta_data
+    ADD CONSTRAINT "meta-data_media-entries_fkey" FOREIGN KEY (media_entry_id) REFERENCES public.media_entries(id) ON DELETE CASCADE;
 
 
 --
 -- Name: meta_data meta-data_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data
-    ADD CONSTRAINT "meta-data_users_fkey" FOREIGN KEY (created_by_id) REFERENCES users(id);
+ALTER TABLE ONLY public.meta_data
+    ADD CONSTRAINT "meta-data_users_fkey" FOREIGN KEY (created_by_id) REFERENCES public.users(id);
 
 
 --
 -- Name: meta_keys meta-keys_vocabularies_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_keys
-    ADD CONSTRAINT "meta-keys_vocabularies_fkey" FOREIGN KEY (vocabulary_id) REFERENCES vocabularies(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.meta_keys
+    ADD CONSTRAINT "meta-keys_vocabularies_fkey" FOREIGN KEY (vocabulary_id) REFERENCES public.vocabularies(id) ON DELETE CASCADE;
 
 
 --
 -- Name: meta_data_keywords meta_data_keywords_meta-data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_data_keywords
-    ADD CONSTRAINT "meta_data_keywords_meta-data_fkey" FOREIGN KEY (meta_datum_id) REFERENCES meta_data(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.meta_data_keywords
+    ADD CONSTRAINT "meta_data_keywords_meta-data_fkey" FOREIGN KEY (meta_datum_id) REFERENCES public.meta_data(id) ON DELETE CASCADE;
 
 
 --
 -- Name: meta_keys meta_keys_allowed_rdf_class_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY meta_keys
-    ADD CONSTRAINT meta_keys_allowed_rdf_class_fkey FOREIGN KEY (allowed_rdf_class) REFERENCES rdf_classes(id) ON UPDATE CASCADE;
+ALTER TABLE ONLY public.meta_keys
+    ADD CONSTRAINT meta_keys_allowed_rdf_class_fkey FOREIGN KEY (allowed_rdf_class) REFERENCES public.rdf_classes(id) ON UPDATE CASCADE;
 
 
 --
 -- Name: previews previews_media-files_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY previews
-    ADD CONSTRAINT "previews_media-files_fkey" FOREIGN KEY (media_file_id) REFERENCES media_files(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.previews
+    ADD CONSTRAINT "previews_media-files_fkey" FOREIGN KEY (media_file_id) REFERENCES public.media_files(id) ON DELETE CASCADE;
 
 
 --
 -- Name: users users_people_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY users
-    ADD CONSTRAINT users_people_fkey FOREIGN KEY (person_id) REFERENCES people(id);
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_people_fkey FOREIGN KEY (person_id) REFERENCES public.people(id);
 
 
 --
 -- Name: visualizations visualizations_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY visualizations
-    ADD CONSTRAINT visualizations_users_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+ALTER TABLE ONLY public.visualizations
+    ADD CONSTRAINT visualizations_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
 -- Name: vocabulary_api_client_permissions vocabulary-api-client-permissions_api-clients_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY vocabulary_api_client_permissions
-    ADD CONSTRAINT "vocabulary-api-client-permissions_api-clients_fkey" FOREIGN KEY (api_client_id) REFERENCES api_clients(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.vocabulary_api_client_permissions
+    ADD CONSTRAINT "vocabulary-api-client-permissions_api-clients_fkey" FOREIGN KEY (api_client_id) REFERENCES public.api_clients(id) ON DELETE CASCADE;
 
 
 --
 -- Name: vocabulary_api_client_permissions vocabulary-api-client-permissions_vocabularies_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY vocabulary_api_client_permissions
-    ADD CONSTRAINT "vocabulary-api-client-permissions_vocabularies_fkey" FOREIGN KEY (vocabulary_id) REFERENCES vocabularies(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.vocabulary_api_client_permissions
+    ADD CONSTRAINT "vocabulary-api-client-permissions_vocabularies_fkey" FOREIGN KEY (vocabulary_id) REFERENCES public.vocabularies(id) ON DELETE CASCADE;
 
 
 --
 -- Name: vocabulary_group_permissions vocabulary-group-permissions_vocabularies_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY vocabulary_group_permissions
-    ADD CONSTRAINT "vocabulary-group-permissions_vocabularies_fkey" FOREIGN KEY (vocabulary_id) REFERENCES vocabularies(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.vocabulary_group_permissions
+    ADD CONSTRAINT "vocabulary-group-permissions_vocabularies_fkey" FOREIGN KEY (vocabulary_id) REFERENCES public.vocabularies(id) ON DELETE CASCADE;
 
 
 --
 -- Name: vocabulary_user_permissions vocabulary-user-permissions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY vocabulary_user_permissions
-    ADD CONSTRAINT "vocabulary-user-permissions_users_fkey" FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.vocabulary_user_permissions
+    ADD CONSTRAINT "vocabulary-user-permissions_users_fkey" FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
 -- Name: vocabulary_user_permissions vocabulary-user-permissions_vocabularies_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY vocabulary_user_permissions
-    ADD CONSTRAINT "vocabulary-user-permissions_vocabularies_fkey" FOREIGN KEY (vocabulary_id) REFERENCES vocabularies(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.vocabulary_user_permissions
+    ADD CONSTRAINT "vocabulary-user-permissions_vocabularies_fkey" FOREIGN KEY (vocabulary_id) REFERENCES public.vocabularies(id) ON DELETE CASCADE;
 
 
 --
 -- Name: zencoder_jobs zencoder-jobs_media-files_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY zencoder_jobs
-    ADD CONSTRAINT "zencoder-jobs_media-files_fkey" FOREIGN KEY (media_file_id) REFERENCES media_files(id);
+ALTER TABLE ONLY public.zencoder_jobs
+    ADD CONSTRAINT "zencoder-jobs_media-files_fkey" FOREIGN KEY (media_file_id) REFERENCES public.media_files(id);
 
 
 --
@@ -4854,6 +4855,8 @@ INSERT INTO schema_migrations (version) VALUES ('363');
 INSERT INTO schema_migrations (version) VALUES ('364');
 
 INSERT INTO schema_migrations (version) VALUES ('365');
+
+INSERT INTO schema_migrations (version) VALUES ('366');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 
