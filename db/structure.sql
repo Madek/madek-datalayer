@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.8
--- Dumped by pg_dump version 9.6.8
+-- Dumped from database version 10.3
+-- Dumped by pg_dump version 10.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -27,6 +27,20 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- Name: fuzzystrmatch; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION fuzzystrmatch; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION fuzzystrmatch IS 'determine similarities and distance between strings';
 
 
 --
@@ -644,6 +658,25 @@ BEGIN
    RETURN NEW;
 END;
 $$;
+
+
+--
+-- Name: person_display_name(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.person_display_name(first_name character varying, last_name character varying, pseudonym character varying) RETURNS character varying
+    LANGUAGE plpgsql
+    AS $$
+        BEGIN RETURN (CASE
+                          WHEN ((first_name <> ''
+                                 OR last_name <> '')
+                                AND pseudonym <> '') THEN btrim(first_name || ' ' || last_name || ' ' || '(' || pseudonym || ')')
+                          WHEN (first_name <> ''
+                                OR last_name <> '') THEN btrim(first_name || ' ' || last_name)
+                          ELSE btrim(pseudonym)
+                      END);
+        END;
+      $$;
 
 
 --
@@ -4857,6 +4890,8 @@ INSERT INTO schema_migrations (version) VALUES ('364');
 INSERT INTO schema_migrations (version) VALUES ('365');
 
 INSERT INTO schema_migrations (version) VALUES ('366');
+
+INSERT INTO schema_migrations (version) VALUES ('367');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 
