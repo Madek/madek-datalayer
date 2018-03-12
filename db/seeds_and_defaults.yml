@@ -26,9 +26,15 @@ MADEK_CORE_VOCABULARY:
     madek_core:title:
       meta_datum_object_type: MetaDatum::Text
       text_type: line
-      label: Titel
-      description: NULL
-      hint: NULL
+      labels:
+        en: NULL
+        de: Titel
+      descriptions:
+        en: NULL
+        de: NULL
+      hints:
+        en: NULL
+        de: NULL
       position: 1
       is_enabled_for_media_entries: true
       is_enabled_for_collections: true
@@ -39,9 +45,15 @@ MADEK_CORE_VOCABULARY:
     madek_core:subtitle:
       meta_datum_object_type: MetaDatum::Text
       text_type: line
-      label: Untertitel
-      description: NULL
-      hint: NULL
+      labels:
+        en: NULL
+        de: Untertitel
+      descriptions:
+        en: NULL
+        de: NULL
+      hints:
+        en: NULL
+        de: NULL
       position: 2
       is_enabled_for_media_entries: true
       is_enabled_for_collections: true
@@ -51,9 +63,15 @@ MADEK_CORE_VOCABULARY:
 
     madek_core:authors:
       meta_datum_object_type: MetaDatum::People
-      label: Autor/in
-      description: NULL
-      hint: NULL
+      labels:
+        en: NULL
+        de: Autor/in
+      descriptions:
+        en: NULL
+        de: NULL
+      hints:
+        en: NULL
+        de: NULL
       position: 3
       is_enabled_for_media_entries: true
       is_enabled_for_collections: true
@@ -63,9 +81,15 @@ MADEK_CORE_VOCABULARY:
 
     madek_core:portrayed_object_date:
       meta_datum_object_type: MetaDatum::TextDate
-      label: Datierung
-      description: NULL
-      hint: NULL
+      labels:
+        en: NULL
+        de: Datierung
+      descriptions:
+        en: NULL
+        de: NULL
+      hints:
+        en: NULL
+        de: NULL
       position: 4
       is_enabled_for_media_entries: true
       is_enabled_for_collections: true
@@ -77,9 +101,15 @@ MADEK_CORE_VOCABULARY:
       is_extensible_list: true
       meta_datum_object_type: MetaDatum::Keywords
       keywords_alphabetical_order: true
-      label: Schlagworte
-      description: NULL
-      hint: NULL
+      labels:
+        en: NULL
+        de: Schlagworte
+      descriptions:
+        en: NULL
+        de: NULL
+      hints:
+        en: NULL
+        de: NULL
       position: 5
       is_enabled_for_media_entries: true
       is_enabled_for_collections: true
@@ -90,9 +120,15 @@ MADEK_CORE_VOCABULARY:
     madek_core:description:
       meta_datum_object_type: MetaDatum::Text
       text_type: block
-      label: Beschreibung
-      description: NULL
-      hint: NULL
+      labels:
+        en: NULL
+        de: Beschreibung
+      descriptions:
+        en: NULL
+        de: NULL
+      hints:
+        en: NULL
+        de: NULL
       position: 6
       is_enabled_for_media_entries: true
       is_enabled_for_collections: true
@@ -103,9 +139,15 @@ MADEK_CORE_VOCABULARY:
     madek_core:copyright_notice:
       meta_datum_object_type: MetaDatum::Text
       text_type: line
-      label: Rechteinhaber/in
-      description: NULL
-      hint: NULL
+      labels:
+        en: NULL
+        de: Rechteinhaber/in
+      descriptions:
+        en: NULL
+        de: NULL
+      hints:
+        en: NULL
+        de: NULL
       position: 7
       is_enabled_for_media_entries: true
       is_enabled_for_collections: true
