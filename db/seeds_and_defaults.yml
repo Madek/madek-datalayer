@@ -27,7 +27,7 @@ MADEK_CORE_VOCABULARY:
       meta_datum_object_type: MetaDatum::Text
       text_type: line
       labels:
-        en: NULL
+        en: Title
         de: Titel
       descriptions:
         en: NULL
@@ -46,7 +46,7 @@ MADEK_CORE_VOCABULARY:
       meta_datum_object_type: MetaDatum::Text
       text_type: line
       labels:
-        en: NULL
+        en: Subtitle
         de: Untertitel
       descriptions:
         en: NULL
@@ -64,7 +64,7 @@ MADEK_CORE_VOCABULARY:
     madek_core:authors:
       meta_datum_object_type: MetaDatum::People
       labels:
-        en: NULL
+        en: Author
         de: Autor/in
       descriptions:
         en: NULL
@@ -82,7 +82,7 @@ MADEK_CORE_VOCABULARY:
     madek_core:portrayed_object_date:
       meta_datum_object_type: MetaDatum::TextDate
       labels:
-        en: NULL
+        en: Date
         de: Datierung
       descriptions:
         en: NULL
@@ -102,7 +102,7 @@ MADEK_CORE_VOCABULARY:
       meta_datum_object_type: MetaDatum::Keywords
       keywords_alphabetical_order: true
       labels:
-        en: NULL
+        en: Keywords
         de: Schlagworte
       descriptions:
         en: NULL
@@ -121,7 +121,7 @@ MADEK_CORE_VOCABULARY:
       meta_datum_object_type: MetaDatum::Text
       text_type: block
       labels:
-        en: NULL
+        en: Description
         de: Beschreibung
       descriptions:
         en: NULL
@@ -140,7 +140,7 @@ MADEK_CORE_VOCABULARY:
       meta_datum_object_type: MetaDatum::Text
       text_type: line
       labels:
-        en: NULL
+        en: Copyright Notice
         de: Rechteinhaber/in
       descriptions:
         en: NULL
