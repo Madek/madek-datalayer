@@ -5,20 +5,8 @@ module Concerns
       include Concerns::FilterBySearchTerm
 
       included do
-        scope :admin_users, -> { joins(:admin) }
-
-        scope :filter_by, lambda { |term, search_also_in_person = false|
-          result = where(is_deactivated: false)
-          exact_match = self.find_exact_matching(term, result)
-          return exact_match if exact_match
-          search_attributes = ['users.searchable']
-          if search_also_in_person
-            search_attributes << 'people.searchable'
-            result = joins(:person)
-          end
-          result.filter_by_term_using_attributes(term, *search_attributes)
-        }
-
+        scope :admins, -> { joins(:admin) }
+        scope :deactivated, -> { where(is_deactivated: true) }
         scope :sort_by, lambda { |attribute|
           case attribute.to_sym
           when :first_name_last_name
@@ -28,10 +16,26 @@ module Concerns
             reorder(attribute)
           end
         }
+      end
+
+      class_methods do
+        def filter_by(term,
+                      search_also_in_person = false,
+                      with_deactivated = false)
+          result = with_deactivated ? all : where(is_deactivated: false)
+          exact_match = find_exact_matching(term, result)
+          return exact_match if exact_match
+          search_attributes = ['users.searchable']
+          if search_also_in_person
+            search_attributes << 'people.searchable'
+            result = joins(:person)
+          end
+          result.filter_by_term_using_attributes(term, *search_attributes)
+        end
 
         private
 
-        def self.find_exact_matching(term, scope)
+        def find_exact_matching(term, scope)
           # NOTE: should only be done for 'UNIQUE' columns!
           by_id = scope.where(id: term.split('/').last)
           return by_id if by_id.present?
@@ -42,7 +46,6 @@ module Concerns
           by_mail = scope.where(email: term)
           return by_mail if by_mail.present?
         end
-
       end
     end
   end
