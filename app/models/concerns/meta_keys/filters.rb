@@ -11,7 +11,12 @@ module Concerns
             setweight(to_tsvector('english', coalesce(meta_keys.description, '')), 'B') ||
             setweight(to_tsvector('english', coalesce(meta_keys.hint, '')), 'C')
           SQL
-          query = "plainto_tsquery('english', '#{term}')"
+          query = sanitize_sql_for_conditions(
+            [
+              "plainto_tsquery('english', '%s')",
+              term
+            ]
+          )
 
           select('meta_keys.*', "ts_rank_cd(#{vector}, #{query}) AS search_rank")
             .where("#{vector} @@ #{query}", term)

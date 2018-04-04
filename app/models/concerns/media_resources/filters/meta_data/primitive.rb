@@ -13,10 +13,17 @@ module Concerns
                       Concerns::MetaData::FilterHelpers
                         .validate_keys_for_primitive!(meta_datum)
 
-                      joins("AND to_tsvector('english', " \
-                              "#{meta_datum[:md_alias] or 'meta_data'}.string) " \
-                            '@@ ' \
-                            "plainto_tsquery('english', '#{meta_datum[:match]}')")
+                      sanitized = sanitize_sql_for_conditions(
+                        [
+                          "AND to_tsvector('english', " \
+                          "#{meta_datum[:md_alias] or 'meta_data'}.string) " \
+                          '@@ ' \
+                          "plainto_tsquery('english', '%s')",
+                          meta_datum[:match]
+                        ]
+                      )
+
+                      joins(sanitized)
                     }
             end
           end

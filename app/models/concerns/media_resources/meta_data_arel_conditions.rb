@@ -24,9 +24,18 @@ module Concerns
                 .eq(meta_data_arel_table[:id]))
               .project(1)
               .where(
-                Arel::Nodes::SqlLiteral.new \
-                  "to_tsvector('english', #{match_table}.#{match_column}) @@ " \
-                  "plainto_tsquery('english', '#{match}')")
+                Arel::Nodes::SqlLiteral.new(
+                  sanitize_sql_for_conditions(
+                    [
+                      'to_tsvector(' \
+                      "'english', #{match_table}.#{match_column}" \
+                      ') @@ ' \
+                      "plainto_tsquery('english', '%s')",
+                      match
+                    ]
+                  )
+                )
+              )
               .where(meta_data_arel_table["#{model_name.singular}_id"]
                 .eq arel_table[:id])
               .where(meta_data_arel_table[:meta_key_id].in(meta_key_ids))
@@ -43,9 +52,17 @@ module Concerns
           meta_data
             .project(1)
             .where(meta_data["#{model_name.singular}_id"].eq arel_table[:id])
-            .where(Arel::Nodes::SqlLiteral.new \
-                     "to_tsvector('english', meta_data.string) @@ " \
-                     "plainto_tsquery('english', '#{match}')")
+            .where(
+              Arel::Nodes::SqlLiteral.new(
+                sanitize_sql_for_conditions(
+                  [
+                    "to_tsvector('english', meta_data.string) @@ " \
+                    "plainto_tsquery('english', '%s')",
+                    match
+                  ]
+                )
+              )
+            )
             .where(meta_data[:meta_key_id].in(meta_key_ids))
             .exists
         end
