@@ -5,7 +5,7 @@ DB_SEEDS ||= YAML.load_file(Rails.root.join('db','seeds_and_defaults.yml'))
   .deep_symbolize_keys
 
 CORE_VOCAB = DB_SEEDS[:MADEK_CORE_VOCABULARY]
-DEFAULT_LOCALE = Settings.madek_default_locale
+DEFAULT_LOCALE = AppSetting.default_locale
 
 ####################################################################################
 ActiveRecord::Base.transaction do

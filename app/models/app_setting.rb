@@ -16,6 +16,17 @@ class AppSetting < ActiveRecord::Base
     private :"#{name}_existence"
   end
 
+  [:default_locale, :available_locales].each do |method_name|
+    define_singleton_method method_name do
+      begin
+        fallback = Settings.send("madek_#{method_name}")
+        first.try(method_name) || fallback
+      rescue ActiveRecord::StatementInvalid
+        fallback
+      end
+    end
+  end
+
   validate_set_existence(:featured_set)
 
   validate :catalog_context_keys_types

@@ -1008,6 +1008,8 @@ CREATE TABLE public.app_settings (
     media_entry_default_license_usage_text text,
     media_entry_default_license_usage_meta_key text,
     ignored_keyword_keys_for_browsing text,
+    default_locale character varying DEFAULT 'de'::character varying,
+    available_locales character varying[] DEFAULT '{}'::character varying[],
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -4892,6 +4894,8 @@ INSERT INTO schema_migrations (version) VALUES ('365');
 INSERT INTO schema_migrations (version) VALUES ('366');
 
 INSERT INTO schema_migrations (version) VALUES ('367');
+
+INSERT INTO schema_migrations (version) VALUES ('368');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 

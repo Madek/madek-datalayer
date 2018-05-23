@@ -40,7 +40,7 @@ module Concerns
     end
 
     def determine_locale(locale)
-      locale.nil? ? Settings.madek_default_locale : locale.to_s
+      locale.nil? ? AppSetting.default_locale : locale.to_s
     end
   end
 end
