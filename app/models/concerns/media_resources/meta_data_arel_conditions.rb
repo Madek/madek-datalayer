@@ -57,14 +57,18 @@ module Concerns
                 sanitize_sql_for_conditions(
                   [
                     "to_tsvector('english', meta_data.string) @@ " \
-                    "plainto_tsquery('english', '%s')",
-                    match
+                    "to_tsquery('english', '%s')",
+                    prepare_match_for_tsquery(match)
                   ]
                 )
               )
             )
             .where(meta_data[:meta_key_id].in(meta_key_ids))
             .exists
+        end
+
+        def self.prepare_match_for_tsquery(match)
+          match.split(' ').map { |m| m + ':*' }.join(' & ')
         end
       end
     end
