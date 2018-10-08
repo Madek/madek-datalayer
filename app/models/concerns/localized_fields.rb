@@ -19,7 +19,7 @@ module Concerns
 
           define_method "#{method_name}=" do |value|
             send(field)[determine_locale(nil)] = value
-            super(value.presence)
+            super(value.presence) if defined?(super)
           end
         end
       end
@@ -33,7 +33,9 @@ module Concerns
         values.each_pair do |locale, value|
           send(k)[locale.to_s] = value
         end
-        self[k.singularize] = values[determine_locale(nil).to_sym].presence
+        unless defined?("#{k.singularize}=")
+          self[k.singularize] = values[determine_locale(nil).to_sym].presence
+        end
       else
         super
       end

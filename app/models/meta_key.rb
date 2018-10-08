@@ -7,6 +7,7 @@ class MetaKey < ActiveRecord::Base
   has_many :meta_data, dependent: :destroy
   belongs_to :vocabulary
   has_many :context_keys
+  has_many :roles
 
   enum text_type: { line: 'line', block: 'block' }
 
@@ -45,11 +46,13 @@ class MetaKey < ActiveRecord::Base
   after_save :order_keywords_if_necessary
 
   def self.object_types
-    unscoped \
-      .select(:meta_datum_object_type)
-      .distinct
-      .order(:meta_datum_object_type)
-      .map(&:meta_datum_object_type)
+    (
+      unscoped
+        .distinct
+        .pluck(:meta_datum_object_type) << 'MetaDatum::Roles'
+    )
+      .uniq
+      .sort
   end
 
   def can_have_keywords?
@@ -60,12 +63,24 @@ class MetaKey < ActiveRecord::Base
     meta_datum_object_type == 'MetaDatum::People'
   end
 
+  def can_have_roles?
+    meta_datum_object_type == 'MetaDatum::Roles'
+  end
+
   def can_have_allowed_rdf_class?
     meta_datum_object_type == 'MetaDatum::Keywords'
   end
 
   def can_have_text_type?
     meta_datum_object_type == 'MetaDatum::Text'
+  end
+
+  def allowed_people_subtypes
+    if can_have_roles?
+      %w(Person PeopleGroup)
+    else
+      self[:allowed_people_subtypes]
+    end
   end
 
   def self.viewable_by_user_or_public(user = nil)

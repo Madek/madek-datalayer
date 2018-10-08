@@ -71,6 +71,69 @@ module Concerns
             .join(' AND ')
           [where_clause, *substrings]
         end
+
+        # rubocop:disable Metrics/MethodLength
+        def self.matching_meta_data_roles_roles_exists_condition(match,
+                                                                 meta_key_ids)
+          meta_data = MetaDatum.arel_table
+          roles = Arel::Table.new('roles')
+          meta_data_roles = Arel::Table.new(:meta_data_roles)
+
+          condition = \
+            "array_to_string(avals(#{roles.table_name}.labels), '||') ILIKE '%s'"
+
+          roles \
+            .join(meta_data_roles)
+            .on(roles[:id]
+              .eq(meta_data_roles[:role_id]))
+            .join(meta_data)
+            .on(meta_data[:id].eq(meta_data_roles[:meta_datum_id]))
+            .project(1)
+            .where(
+              Arel::Nodes::SqlLiteral.new(
+                sanitize_sql_for_conditions([condition, "%#{match}%"])
+              )
+            )
+            .where(meta_data["#{model_name.singular}_id"]
+              .eq arel_table[:id])
+            .where(meta_data[:meta_key_id].in(meta_key_ids))
+            .exists
+        end
+        # rubocop:enable Metrics/MethodLength
+
+        # rubocop:disable Metrics/MethodLength
+        def self.matching_meta_data_roles_people_exists_condition(match,
+                                                                  meta_key_ids)
+          meta_data = MetaDatum.arel_table
+          people = Person.arel_table
+          meta_data_roles = Arel::Table.new(:meta_data_roles)
+
+          people \
+            .join(meta_data_roles)
+            .on(people[:id]
+              .eq(meta_data_roles[:person_id]))
+            .join(meta_data)
+            .on(meta_data[:id].eq(meta_data_roles[:meta_datum_id]))
+            .project(1)
+            .where(
+              Arel::Nodes::SqlLiteral.new(
+                sanitize_sql_for_conditions(
+                  [
+                    'to_tsvector(' \
+                    "'english', people.searchable" \
+                    ') @@ ' \
+                    "plainto_tsquery('english', '%s')",
+                    match
+                  ]
+                )
+              )
+            )
+            .where(meta_data["#{model_name.singular}_id"]
+              .eq arel_table[:id])
+            .where(meta_data[:meta_key_id].in(meta_key_ids))
+            .exists
+        end
+        # rubocop:enable Metrics/MethodLength
       end
     end
   end

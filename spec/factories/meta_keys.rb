@@ -53,6 +53,11 @@ FactoryGirl.define do
       meta_datum_object_type 'MetaDatum::People'
       allowed_people_subtypes ['PeopleInstitutionalGroup']
     end
+
+    factory :meta_key_roles, class: MetaKey do
+      sequence(:id) { |n| "test:roles_#{n}" }
+      meta_datum_object_type 'MetaDatum::Roles'
+    end
   end
 
   factory :meta_key_core, class: MetaKey do

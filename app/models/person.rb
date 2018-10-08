@@ -11,6 +11,7 @@ class Person < ActiveRecord::Base
 
   has_and_belongs_to_many :meta_data, join_table: :meta_data_people
   has_many :meta_data_people, class_name: '::MetaDatum::Person'
+  has_and_belongs_to_many :roles, join_table: :meta_data_roles
 
   validate do
     if [first_name, last_name, pseudonym].all?(&:blank?)

@@ -43,7 +43,6 @@ RSpec.shared_examples 'assigning localized fields' do
         }
       )
 
-      expect(model_instance[:label]).to eq 'label DE'
       expect(model_instance.label).to eq 'label DE'
       expect(model_instance.label(:de)).to eq 'label DE'
       expect(model_instance.label(:en)).to eq 'label EN'
@@ -62,7 +61,6 @@ RSpec.shared_examples 'assigning localized fields' do
         }
       )
 
-      expect(model_instance[:description]).to eq 'description DE'
       expect(model_instance.description).to eq 'description DE'
       expect(model_instance.description(:de)).to eq 'description DE'
       expect(model_instance.description(:en)).to eq 'description EN'
@@ -81,7 +79,6 @@ RSpec.shared_examples 'assigning localized fields' do
         }
       )
 
-      expect(model_instance[:hint]).to eq 'hint DE'
       expect(model_instance.hint).to eq 'hint DE'
       expect(model_instance.hint(:de)).to eq 'hint DE'
       expect(model_instance.hint(:en)).to eq 'hint EN'

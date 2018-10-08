@@ -45,4 +45,8 @@ class Vocabulary < ActiveRecord::Base
   def can_have_keywords?
     !meta_keys.where(meta_datum_object_type: 'MetaDatum::Keywords').empty?
   end
+
+  def can_have_roles?
+    !meta_keys.where(meta_datum_object_type: 'MetaDatum::Roles').empty?
+  end
 end

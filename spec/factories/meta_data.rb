@@ -5,6 +5,13 @@ FactoryGirl.define do
     association :meta_datum, factory: :meta_datum_keywords
   end
 
+  factory :meta_datum_role, class: MetaDatum::Role do
+    meta_datum
+    role
+    person
+    sequence :position
+  end
+
   factory :meta_datum do
     created_by { create(:user) }
 
@@ -79,5 +86,15 @@ FactoryGirl.define do
       end
     end
 
+    factory :meta_datum_roles, class: MetaDatum::Roles do
+      meta_key do
+        MetaKey.find_by(id: 'test:roles') \
+          || FactoryGirl.create(:meta_key_roles)
+      end
+      after(:create) do |md, evaluator|
+        create_list :meta_datum_role, 3, meta_datum: md
+        create :meta_datum_role, meta_datum: md, role: nil
+      end
+    end
   end
 end

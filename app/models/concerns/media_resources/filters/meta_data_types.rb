@@ -6,6 +6,7 @@ module Concerns
 
         include Concerns::MediaResources::Filters::MetaData::Actors
         include Concerns::MediaResources::Filters::MetaData::Primitive
+        include Concerns::MediaResources::Filters::MetaData::Roles
 
         included do
           scope :filter_by_meta_datum_type, lambda { |meta_datum|

@@ -1483,7 +1483,7 @@ CREATE TABLE public.meta_data (
     filter_set_id uuid,
     created_by_id uuid,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['MetaDatum::Keywords'::character varying, 'MetaDatum::Licenses'::character varying, 'MetaDatum::People'::character varying, 'MetaDatum::Text'::character varying, 'MetaDatum::TextDate'::character varying, 'MetaDatum::Users'::character varying, 'MetaDatum::Vocables'::character varying])::text[]))),
+    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['MetaDatum::Licenses'::character varying, 'MetaDatum::Text'::character varying, 'MetaDatum::TextDate'::character varying, 'MetaDatum::Groups'::character varying, 'MetaDatum::Keywords'::character varying, 'MetaDatum::Vocables'::character varying, 'MetaDatum::People'::character varying, 'MetaDatum::Users'::character varying, 'MetaDatum::Roles'::character varying])::text[]))),
     CONSTRAINT meta_data_is_related CHECK ((((media_entry_id IS NULL) AND (collection_id IS NULL) AND (filter_set_id IS NOT NULL)) OR ((media_entry_id IS NULL) AND (collection_id IS NOT NULL) AND (filter_set_id IS NULL)) OR ((media_entry_id IS NOT NULL) AND (collection_id IS NULL) AND (filter_set_id IS NULL))))
 );
 
@@ -1527,6 +1527,20 @@ CREATE TABLE public.meta_data_people (
 
 
 --
+-- Name: meta_data_roles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.meta_data_roles (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    meta_datum_id uuid,
+    person_id uuid NOT NULL,
+    role_id uuid,
+    created_by_id uuid,
+    "position" integer DEFAULT 0 NOT NULL
+);
+
+
+--
 -- Name: meta_keys; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1556,7 +1570,7 @@ CREATE TABLE public.meta_keys (
     CONSTRAINT check_is_extensible_list_is_boolean_for_meta_datum_keywords CHECK (((((is_extensible_list = true) OR (is_extensible_list = false)) AND (meta_datum_object_type = 'MetaDatum::Keywords'::text)) OR (meta_datum_object_type <> 'MetaDatum::Keywords'::text))),
     CONSTRAINT check_keywords_alphabetical_order_is_boolean_for_meta_datum_key CHECK (((((keywords_alphabetical_order = true) OR (keywords_alphabetical_order = false)) AND (meta_datum_object_type = 'MetaDatum::Keywords'::text)) OR (meta_datum_object_type <> 'MetaDatum::Keywords'::text))),
     CONSTRAINT check_label_not_blank CHECK ((label !~ '^\s*$'::text)),
-    CONSTRAINT check_valid_meta_datum_object_type CHECK ((meta_datum_object_type = ANY (ARRAY['MetaDatum::Licenses'::text, 'MetaDatum::Text'::text, 'MetaDatum::TextDate'::text, 'MetaDatum::Groups'::text, 'MetaDatum::Keywords'::text, 'MetaDatum::Vocables'::text, 'MetaDatum::People'::text, 'MetaDatum::Users'::text]))),
+    CONSTRAINT check_valid_meta_datum_object_type CHECK ((meta_datum_object_type = ANY (ARRAY['MetaDatum::Licenses'::text, 'MetaDatum::Text'::text, 'MetaDatum::TextDate'::text, 'MetaDatum::Groups'::text, 'MetaDatum::Keywords'::text, 'MetaDatum::Vocables'::text, 'MetaDatum::People'::text, 'MetaDatum::Users'::text, 'MetaDatum::Roles'::text]))),
     CONSTRAINT check_valid_text_type CHECK ((text_type = ANY (ARRAY['line'::text, 'block'::text]))),
     CONSTRAINT meta_key_id_chars CHECK (((id)::text ~* '^[a-z0-9\-\_\:]+$'::text)),
     CONSTRAINT start_id_like_vocabulary_id CHECK (((id)::text ~~ ((vocabulary_id)::text || ':%'::text)))
@@ -1618,6 +1632,20 @@ CREATE TABLE public.rdf_classes (
     "position" integer DEFAULT 0 NOT NULL,
     CONSTRAINT rdf_class_id_chars CHECK (((id)::text ~* '^[A-Za-z0-9]+$'::text)),
     CONSTRAINT rdf_class_id_start_uppercase CHECK (((id)::text ~ '^[A-Z]'::text))
+);
+
+
+--
+-- Name: roles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.roles (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    labels public.hstore DEFAULT ''::public.hstore NOT NULL,
+    meta_key_id character varying NOT NULL,
+    creator_id uuid,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -2050,6 +2078,14 @@ ALTER TABLE ONLY public.meta_data
 
 
 --
+-- Name: meta_data_roles meta_data_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.meta_data_roles
+    ADD CONSTRAINT meta_data_roles_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: context_keys meta_key_definitions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2087,6 +2123,14 @@ ALTER TABLE ONLY public.previews
 
 ALTER TABLE ONLY public.rdf_classes
     ADD CONSTRAINT rdf_classes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.roles
+    ADD CONSTRAINT roles_pkey PRIMARY KEY (id);
 
 
 --
@@ -3148,6 +3192,34 @@ CREATE INDEX index_meta_data_on_type ON public.meta_data USING btree (type);
 
 
 --
+-- Name: index_meta_data_roles_on_meta_datum_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_meta_data_roles_on_meta_datum_id ON public.meta_data_roles USING btree (meta_datum_id);
+
+
+--
+-- Name: index_meta_data_roles_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_meta_data_roles_on_person_id ON public.meta_data_roles USING btree (person_id);
+
+
+--
+-- Name: index_meta_data_roles_on_position; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_meta_data_roles_on_position ON public.meta_data_roles USING btree ("position");
+
+
+--
+-- Name: index_meta_data_roles_on_role_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_meta_data_roles_on_role_id ON public.meta_data_roles USING btree (role_id);
+
+
+--
 -- Name: index_people_on_first_name; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3187,6 +3259,27 @@ CREATE INDEX index_previews_on_media_file_id ON public.previews USING btree (med
 --
 
 CREATE INDEX index_previews_on_media_type ON public.previews USING btree (media_type);
+
+
+--
+-- Name: index_roles_on_creator_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_roles_on_creator_id ON public.roles USING btree (creator_id);
+
+
+--
+-- Name: index_roles_on_labels; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_roles_on_labels ON public.roles USING btree (labels);
+
+
+--
+-- Name: index_roles_on_meta_key_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_roles_on_meta_key_id ON public.roles USING btree (meta_key_id);
 
 
 --
@@ -4154,6 +4247,14 @@ ALTER TABLE ONLY public.filter_set_group_permissions
 
 
 --
+-- Name: meta_data_roles fk_rails_b1e57448c0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.meta_data_roles
+    ADD CONSTRAINT fk_rails_b1e57448c0 FOREIGN KEY (created_by_id) REFERENCES public.users(id);
+
+
+--
 -- Name: context_keys fk_rails_b297363c89; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4896,6 +4997,12 @@ INSERT INTO schema_migrations (version) VALUES ('366');
 INSERT INTO schema_migrations (version) VALUES ('367');
 
 INSERT INTO schema_migrations (version) VALUES ('368');
+
+INSERT INTO schema_migrations (version) VALUES ('369');
+
+INSERT INTO schema_migrations (version) VALUES ('370');
+
+INSERT INTO schema_migrations (version) VALUES ('371');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 
