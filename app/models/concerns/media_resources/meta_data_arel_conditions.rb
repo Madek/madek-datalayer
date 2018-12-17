@@ -56,8 +56,7 @@ module Concerns
               Arel::Nodes::SqlLiteral.new(
                 sanitize_sql_for_conditions(
                   [
-                    "to_tsvector('english', meta_data.string) @@ " \
-                    "to_tsquery('english', '%s')",
+                    'to_tsvector(meta_data.string) @@ ?::tsquery',
                     prepare_match_for_tsquery(match)
                   ]
                 )
@@ -68,7 +67,7 @@ module Concerns
         end
 
         def self.prepare_match_for_tsquery(match)
-          match.split(' ').map { |m| m + ':*' }.join(' & ')
+          match.split(' ').map { |m| "'#{m}':*" }.join(' & ')
         end
       end
     end
