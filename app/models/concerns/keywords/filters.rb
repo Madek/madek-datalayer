@@ -43,6 +43,11 @@ module Concerns
         def self.of_vocabulary(vocabulary_id)
           joins(:meta_key).where(meta_keys: { vocabulary_id: vocabulary_id })
         end
+
+        def self.not_used
+          all_with_usage_count
+            .having('COUNT(meta_data_keywords.id) = ?', 0)
+        end
       end
     end
   end

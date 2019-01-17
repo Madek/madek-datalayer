@@ -57,11 +57,18 @@ class Keyword < ActiveRecord::Base
   end
 
   def self.with_usage_count
-    select('keywords.*, count(keywords.id) AS usage_count')
+    select('keywords.*, count(meta_data_keywords.id) AS usage_count')
       .joins('INNER JOIN meta_data_keywords ' \
              'ON meta_data_keywords.keyword_id = keywords.id')
       .group('keywords.id')
       .reorder('usage_count DESC')
+  end
+
+  def self.all_with_usage_count
+    select('keywords.*, count(meta_data_keywords.id) AS usage_count')
+      .joins('LEFT OUTER JOIN meta_data_keywords AS meta_data_keywords ' \
+             'ON meta_data_keywords.keyword_id = keywords.id')
+      .group('keywords.id')
   end
 
   def self.usage_count_for(record_or_relation)
