@@ -38,7 +38,7 @@ class Person < ActiveRecord::Base
           created_by_id: receiver.user.try(:id) || creator_fallback.id
         )
       end
-      user.update!(:person_id, receiver.id) if user
+      user.update!(person: receiver) if user
       destroy!
     end
   end
