@@ -69,7 +69,7 @@ class Person < ActiveRecord::Base
 
   # used in admin
   def self.admin_with_usage_count
-    select('people.*, count(people.id) AS usage_count')
+    select('people.*, count(meta_data.id) AS usage_count')
       .joins(
         'LEFT OUTER JOIN meta_data_people ON
          meta_data_people.person_id = people.id'
