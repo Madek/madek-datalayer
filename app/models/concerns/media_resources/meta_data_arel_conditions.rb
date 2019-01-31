@@ -55,10 +55,7 @@ module Concerns
             .where(
               Arel::Nodes::SqlLiteral.new(
                 sanitize_sql_for_conditions(
-                  [
-                    'to_tsvector(meta_data.string) @@ ?::tsquery',
-                    prepare_match_for_tsquery(match)
-                  ]
+                  multiple_ilike_helper(match)
                 )
               )
             )
@@ -66,8 +63,13 @@ module Concerns
             .exists
         end
 
-        def self.prepare_match_for_tsquery(match)
-          match.split(' ').map { |m| "'#{m}':*" }.join(' & ')
+        def self.multiple_ilike_helper(match)
+          substrings = match.split(' ').map { |s| "%#{s}%" }
+          where_clause = \
+            Array
+            .new(substrings.length, 'meta_data.string ILIKE ?')
+            .join(' AND ')
+          [where_clause, *substrings]
         end
       end
     end
