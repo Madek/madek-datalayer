@@ -13,6 +13,6 @@ class CreateRoles < ActiveRecord::Migration
     end
     set_timestamps_defaults :roles
 
-    add_index :roles, :labels, unique: true
+    add_index :roles, [:meta_key_id, :labels], unique: true
   end
 end

@@ -3269,17 +3269,17 @@ CREATE INDEX index_roles_on_creator_id ON public.roles USING btree (creator_id);
 
 
 --
--- Name: index_roles_on_labels; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_roles_on_labels ON public.roles USING btree (labels);
-
-
---
 -- Name: index_roles_on_meta_key_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_roles_on_meta_key_id ON public.roles USING btree (meta_key_id);
+
+
+--
+-- Name: index_roles_on_meta_key_id_and_labels; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_roles_on_meta_key_id_and_labels ON public.roles USING btree (meta_key_id, labels);
 
 
 --
