@@ -1643,9 +1643,10 @@ CREATE TABLE public.roles (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     labels public.hstore DEFAULT ''::public.hstore NOT NULL,
     meta_key_id character varying NOT NULL,
-    creator_id uuid,
+    creator_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    CONSTRAINT labels_non_blank CHECK ((array_to_string(public.avals(labels), ''::text) !~ '^ *$'::text))
 );
 
 
@@ -4239,6 +4240,14 @@ ALTER TABLE ONLY public.vocabulary_group_permissions
 
 
 --
+-- Name: roles fk_rails_973fbfab62; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.roles
+    ADD CONSTRAINT fk_rails_973fbfab62 FOREIGN KEY (meta_key_id) REFERENCES public.meta_keys(id);
+
+
+--
 -- Name: filter_set_group_permissions fk_rails_9cf683b9d3; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4540,6 +4549,14 @@ ALTER TABLE ONLY public.meta_keys
 
 ALTER TABLE ONLY public.previews
     ADD CONSTRAINT "previews_media-files_fkey" FOREIGN KEY (media_file_id) REFERENCES public.media_files(id) ON DELETE CASCADE;
+
+
+--
+-- Name: roles roles_creator_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.roles
+    ADD CONSTRAINT roles_creator_id_fkey FOREIGN KEY (creator_id) REFERENCES public.users(id);
 
 
 --
