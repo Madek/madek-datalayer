@@ -7,7 +7,8 @@ class MetaDatum::Roles < MetaDatum
 
   has_many :meta_data_roles,
            class_name: 'MetaDatum::Role',
-           foreign_key: :meta_datum_id
+           foreign_key: :meta_datum_id,
+           dependent: :delete_all
 
   def to_s
     value.map(&:to_s).join('; ')
@@ -31,15 +32,13 @@ class MetaDatum::Roles < MetaDatum
   end
 
   def set_value!(roles, _created_by_user)
-    roles = roles.map do |person_with_role|
-      role_id = extract_role_id(person_with_role)
-      person_id = extract_person_id(person_with_role)
-      { person_id => role_id }
+    if roles.delete_if(&:blank?).empty?
+      destroy! and return
     end
 
     ActiveRecord::Base.transaction do
       people_and_roles = [].tap do |result|
-        roles.each do |person_with_role|
+        prepare_data(roles).each do |person_with_role|
           person_params = person_with_role.keys.first
           next if person_params.blank?
           person = ::Person.find_or_build_resource!(person_params, self)
@@ -62,6 +61,14 @@ class MetaDatum::Roles < MetaDatum
   end
 
   private
+
+  def prepare_data(source)
+    source.map do |person_with_role|
+      role_id = extract_role_id(person_with_role)
+      person_id = extract_person_id(person_with_role)
+      { person_id => role_id }
+    end
+  end
 
   def extract_person_id(data)
     if data.is_a?(Hash)
