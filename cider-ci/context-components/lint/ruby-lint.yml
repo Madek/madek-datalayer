@@ -41,7 +41,9 @@
           body: |
             set -eux
             export PATH=~/.rubies/$RUBY/bin:$PATH
-            bundle exec cider-ci_flay app/
+            find app -type f \
+              -not -path 'app/models/concerns/media_resources/meta_data_arel_conditions.rb' \
+              | xargs bundle exec cider-ci_flay
 
     lint-ruby:
       name: Lint/Stylecheck with Rubocop
