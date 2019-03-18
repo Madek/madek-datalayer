@@ -35,6 +35,8 @@ module Madek
       end
     end
 
+    DEFAULT_MIME_TYPE = 'application/octet-stream'
+
     DEFAULT_STORAGE_DIR = env_path_or_nil('MADEK_STORAGE_DIR') \
       || pathname_or_nil(Settings.default_storage_dir) \
       || (MADEK_ROOT_DIR && MADEK_ROOT_DIR.join('tmp', Rails.env)) \
