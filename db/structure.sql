@@ -1173,6 +1173,8 @@ CREATE TABLE public.contexts (
     label character varying DEFAULT ''::character varying NOT NULL,
     description text DEFAULT ''::text NOT NULL,
     admin_comment text,
+    labels public.hstore DEFAULT ''::public.hstore NOT NULL,
+    descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
     CONSTRAINT context_id_chars CHECK (((id)::text ~* '^[a-z0-9\-\_]+$'::text))
 );
 
@@ -1742,6 +1744,8 @@ CREATE TABLE public.vocabularies (
     enabled_for_public_use boolean DEFAULT true NOT NULL,
     admin_comment text,
     "position" integer NOT NULL,
+    labels public.hstore DEFAULT ''::public.hstore NOT NULL,
+    descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
     CONSTRAINT positive_position CHECK (("position" >= 0)),
     CONSTRAINT vocabulary_id_chars CHECK (((id)::text ~* '^[a-z0-9\-\_]+$'::text))
 );
@@ -5072,6 +5076,14 @@ INSERT INTO schema_migrations (version) VALUES ('371');
 INSERT INTO schema_migrations (version) VALUES ('372');
 
 INSERT INTO schema_migrations (version) VALUES ('373');
+
+INSERT INTO schema_migrations (version) VALUES ('374');
+
+INSERT INTO schema_migrations (version) VALUES ('375');
+
+INSERT INTO schema_migrations (version) VALUES ('376');
+
+INSERT INTO schema_migrations (version) VALUES ('377');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 

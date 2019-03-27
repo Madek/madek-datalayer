@@ -7,8 +7,10 @@ class Vocabulary < ActiveRecord::Base
   include Concerns::Vocabularies::AccessScopesAndHelpers
   include Concerns::Vocabularies::Filters
   include Concerns::Orderable
+  include Concerns::LocalizedFields
 
   enable_ordering
+  localize_fields :labels, :descriptions
 
   has_many :meta_keys
   has_many :keywords,

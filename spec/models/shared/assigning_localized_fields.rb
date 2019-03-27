@@ -2,11 +2,11 @@ RSpec.configure do |c|
   c.alias_it_should_behave_like_to :it_ensures, 'ensures'
 end
 
-RSpec.shared_examples 'assigning localized fields' do
+RSpec.shared_examples 'assigning localized fields' do |without_hint = true|
   describe 'assignment from pure attribute' do
     let(:label) { Faker::Lorem.word }
     let(:description) { Faker::Lorem.paragraph }
-    let(:hint) { Faker::Lorem.sentence }
+    let(:hint) { Faker::Lorem.sentence } unless without_hint
 
     it 'assigns localized label from pure label' do
       model_instance = described_class.new
@@ -24,12 +24,14 @@ RSpec.shared_examples 'assigning localized fields' do
       expect(model_instance.descriptions).to eq('de' => description)
     end
 
-    it 'assigns localized hint from pure hint' do
-      model_instance = described_class.new
-      model_instance.hint = hint
+    unless without_hint
+      it 'assigns localized hint from pure hint' do
+        model_instance = described_class.new
+        model_instance.hint = hint
 
-      expect(model_instance.hint(:de)).to eq hint
-      expect(model_instance.hints).to eq('de' => hint)
+        expect(model_instance.hint(:de)).to eq hint
+        expect(model_instance.hints).to eq('de' => hint)
+      end
     end
   end
 
@@ -70,22 +72,24 @@ RSpec.shared_examples 'assigning localized fields' do
       )
     end
 
-    it 'assigns localized hint' do
-      model_instance = described_class.new(
-        id: 'foo:bar',
-        hints: {
-          de: 'hint DE',
-          en: 'hint EN'
-        }
-      )
+    unless without_hint
+      it 'assigns localized hint' do
+        model_instance = described_class.new(
+          id: 'foo:bar',
+          hints: {
+            de: 'hint DE',
+            en: 'hint EN'
+          }
+        )
 
-      expect(model_instance.hint).to eq 'hint DE'
-      expect(model_instance.hint(:de)).to eq 'hint DE'
-      expect(model_instance.hint(:en)).to eq 'hint EN'
-      expect(model_instance.hints).to eq(
-        'de' => 'hint DE',
-        'en' => 'hint EN'
-      )
+        expect(model_instance.hint).to eq 'hint DE'
+        expect(model_instance.hint(:de)).to eq 'hint DE'
+        expect(model_instance.hint(:en)).to eq 'hint EN'
+        expect(model_instance.hints).to eq(
+          'de' => 'hint DE',
+          'en' => 'hint EN'
+        )
+      end
     end
   end
 end
