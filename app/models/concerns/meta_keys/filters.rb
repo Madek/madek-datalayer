@@ -6,10 +6,17 @@ module Concerns
       included do
         scope :filter_by, lambda { |term|
           vector = <<-SQL
-            setweight(to_tsvector('english', coalesce(meta_keys.id, '')), 'A') ||
-            setweight(to_tsvector('english', coalesce(meta_keys.label, '')),  'A') ||
-            setweight(to_tsvector('english', coalesce(meta_keys.description, '')), 'B') ||
-            setweight(to_tsvector('english', coalesce(meta_keys.hint, '')), 'C')
+            setweight(
+              to_tsvector('english', coalesce(meta_keys.id, '')), 'A') ||
+            setweight(
+              to_tsvector('english', coalesce(
+                array_to_string(avals(meta_keys.labels), ' '), '')), 'A') ||
+            setweight(
+              to_tsvector('english', coalesce(
+                array_to_string(avals(meta_keys.descriptions), ' '), '')), 'B') ||
+            setweight(
+              to_tsvector('english', coalesce(
+                array_to_string(avals(meta_keys.hints), ' '), '')), 'C')
           SQL
           query = sanitize_sql_for_conditions(
             [

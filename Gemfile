@@ -20,7 +20,7 @@ gem 'uuidtools'
 gem 'zencoder', '~> 2.4'
 
 gem 'cider_ci-support', '3.2', group: [:development, :test]
-gem 'factory_girl', group: [:test, :development]
+gem 'factory_girl', '~> 4.8.1', group: [:test, :development]
 gem 'faker', group: [:test, :development]
 gem 'pry', group: [:test, :development]
 gem 'pry-nav', group: [:test, :development]

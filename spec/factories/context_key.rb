@@ -4,9 +4,15 @@ FactoryGirl.define do
     context { create(:context) }
     meta_key { MetaKey.first || create(:meta_key_text) }
     id { Faker::Internet.slug(nil, '-') }
-    label { Faker::Lorem.word }
-    description { Faker::Lorem.sentence }
-    hint { Faker::Lorem.sentence }
+    labels do
+      { AppSetting.default_locale => Faker::Lorem.word }
+    end
+    descriptions do
+      { AppSetting.default_locale => Faker::Lorem.sentence }
+    end
+    hints do
+      { AppSetting.default_locale => Faker::Lorem.sentence }
+    end
     admin_comment { Faker::Lorem.sentence }
     sequence(:position) { |n| n }
     is_required false

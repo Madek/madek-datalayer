@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'models/shared/saving_empty_strings'
 require 'models/shared/orderable'
 require 'models/shared/assigning_localized_fields'
+require 'models/shared/blank_localized_fields'
 
 describe MetaKey do
   describe '.object_types' do
@@ -23,13 +23,12 @@ describe MetaKey do
     end
   end
 
-  it_ensures 'saving empty strings' do
-    let(:model) { create :meta_key_text }
-  end
-
   it_behaves_like 'orderable' do
     let(:parent_scope) { :vocabulary }
   end
 
   it_ensures 'assigning localized fields'
+  it_handles 'blank localized fields' do
+    let(:factory_name) { :meta_key_text }
+  end
 end

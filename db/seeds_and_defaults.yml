@@ -167,12 +167,16 @@ MADEK_CORE_VOCABULARY:
 
 MADEK_DEFAULT_CONTEXTS:
   - id: metadata
-    label: Metadaten
+    labels:
+      de: Metadaten
+      en: NULL
     admin_comment: Dieser Kontext enthält initial alle MetaKeys aus dem Core-Vokabular.
     meta_keys_where: {vocabulary_id: 'madek_core'}
 
   - id: mandatory
-    label: Pflichtfelder
+    labels:
+      de: Pflichtfelder
+      en: NULL
     admin_comment: >
       Metakeys, die in diesem Kontext als required festgelegt sind,
       werden im System als Pflichtfelder für Medieneinträge behandelt.
@@ -181,7 +185,9 @@ MADEK_DEFAULT_CONTEXTS:
     context_key_attr: {is_required: true}
 
   - id: media_entry_summary
-    label: Medieneintrag
+    labels:
+      de: Medieneintrag
+      en: NULL
     admin_comment: >
       Dieser Kontext fasst die wichtigsten Metakeys für einen Medieneintrag zusammen.
       Er wird auf der Medieneintrag-Detailansicht links neben dem Thumbnail angezeigt.
@@ -189,7 +195,9 @@ MADEK_DEFAULT_CONTEXTS:
     meta_keys_where: {vocabulary_id: 'madek_core', is_enabled_for_media_entries: true}
 
   - id: set_summary
-    label: Set
+    labels:
+      de: Set
+      en: NULL
     admin_comment: >
       Dieser Kontext fasst die Metakeys für ein Set zusammen
       und wird als erstes Tab auf der Set-Detailseite angezeigt.

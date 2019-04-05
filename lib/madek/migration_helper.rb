@@ -14,6 +14,31 @@ module Madek
       end
     end
 
+    def clean_blank_hstore_vals(klass, *columns)
+      ActiveRecord::Base.transaction do
+        execute "SET session_replication_role = REPLICA"
+
+        klass.find_each do |row|
+          columns.each do |column|
+            row[column] = row[column].map { |loc, val| [loc, val.presence] }.to_h
+          end
+          row.save
+        end
+
+        execute "SET session_replication_role = DEFAULT"
+      end
+    end
+
+    def add_non_blank_constraints(table_name, *columns)
+      columns.each do |column_name|
+        execute <<-SQL.strip_heredoc
+          ALTER TABLE #{table_name}
+          ADD CONSTRAINT #{column_name}_non_blank
+          CHECK ('^\s*$' !~ ALL(avals(#{column_name})))
+        SQL
+      end
+    end
+
     def auto_update_searchable table_name, columns
       reversible do |dir|
         dir.up do

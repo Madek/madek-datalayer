@@ -16,11 +16,6 @@ module Concerns
           define_method method_name do |locale = nil|
             send(field)[determine_locale(locale)].presence
           end
-
-          define_method "#{method_name}=" do |value|
-            send(field)[determine_locale(nil)] = value
-            super(value.presence) if defined?(super)
-          end
         end
       end
     end
@@ -31,10 +26,7 @@ module Concerns
       if self.class.localized_fields.map(&:to_s).include?(k)
         values = v.symbolize_keys
         values.each_pair do |locale, value|
-          send(k)[locale.to_s] = value
-        end
-        unless defined?("#{k.singularize}=")
-          self[k.singularize] = values[determine_locale(nil).to_sym].presence
+          send(k)[locale.to_s] = value.presence
         end
       else
         super

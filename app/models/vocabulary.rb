@@ -16,7 +16,9 @@ class Vocabulary < ActiveRecord::Base
   has_many :keywords,
            through: :meta_keys
 
-  scope :sorted, -> { unscoped.order(:label) }
+  scope :sorted, lambda { |locale = AppSetting.default_locale|
+    unscoped.order("vocabularies.labels->'#{locale}'")
+  }
   scope :with_meta_keys_count, lambda {
     joins('LEFT OUTER JOIN meta_keys ON meta_keys.vocabulary_id = vocabularies.id')
       .select('vocabularies.*, count(meta_keys.id) AS meta_keys_count')

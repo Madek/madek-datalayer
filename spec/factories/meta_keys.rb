@@ -12,7 +12,9 @@ FactoryGirl.define do
     is_enabled_for_collections true
     is_enabled_for_filter_sets true
 
-    label { Faker::Lorem.characters(10) }
+    labels do
+      { AppSetting.default_locale => Faker::Lorem.characters(10) }
+    end
 
     factory :meta_key_text, class: MetaKey do
       id { 'test:string' }

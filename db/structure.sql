@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.12
--- Dumped by pg_dump version 10.7
+-- Dumped from database version 9.6.8
+-- Dumped by pg_dump version 9.6.8
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1144,9 +1144,6 @@ CREATE TABLE public.confidential_links (
 
 CREATE TABLE public.context_keys (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
-    description text,
-    hint text,
-    label text,
     context_id character varying NOT NULL,
     meta_key_id character varying NOT NULL,
     is_required boolean DEFAULT false NOT NULL,
@@ -1159,9 +1156,9 @@ CREATE TABLE public.context_keys (
     labels public.hstore DEFAULT ''::public.hstore NOT NULL,
     descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
     hints public.hstore DEFAULT ''::public.hstore NOT NULL,
-    CONSTRAINT check_description_not_blank CHECK ((description !~ '^\s*$'::text)),
-    CONSTRAINT check_hint_not_blank CHECK ((hint !~ '^\s*$'::text)),
-    CONSTRAINT check_label_not_blank CHECK ((label !~ '^\s*$'::text))
+    CONSTRAINT descriptions_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(descriptions)))),
+    CONSTRAINT hints_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(hints)))),
+    CONSTRAINT labels_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(labels))))
 );
 
 
@@ -1171,8 +1168,6 @@ CREATE TABLE public.context_keys (
 
 CREATE TABLE public.contexts (
     id character varying NOT NULL,
-    label character varying DEFAULT ''::character varying NOT NULL,
-    description text DEFAULT ''::text NOT NULL,
     admin_comment text,
     labels public.hstore DEFAULT ''::public.hstore NOT NULL,
     descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
@@ -1570,9 +1565,6 @@ CREATE TABLE public.meta_keys (
     is_extensible_list boolean DEFAULT false NOT NULL,
     meta_datum_object_type text DEFAULT 'MetaDatum::Text'::text NOT NULL,
     keywords_alphabetical_order boolean DEFAULT true NOT NULL,
-    label text,
-    description text,
-    hint text,
     "position" integer DEFAULT 0 NOT NULL,
     is_enabled_for_media_entries boolean DEFAULT false NOT NULL,
     is_enabled_for_collections boolean DEFAULT false NOT NULL,
@@ -1586,13 +1578,13 @@ CREATE TABLE public.meta_keys (
     descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
     hints public.hstore DEFAULT ''::public.hstore NOT NULL,
     CONSTRAINT check_allowed_people_subtypes_not_empty_for_meta_datum_people CHECK ((((allowed_people_subtypes IS NOT NULL) AND (COALESCE(array_length(allowed_people_subtypes, 1), 0) > 0)) OR (meta_datum_object_type <> 'MetaDatum::People'::text))),
-    CONSTRAINT check_description_not_blank CHECK ((description !~ '^\s*$'::text)),
-    CONSTRAINT check_hint_not_blank CHECK ((hint !~ '^\s*$'::text)),
     CONSTRAINT check_is_extensible_list_is_boolean_for_meta_datum_keywords CHECK (((((is_extensible_list = true) OR (is_extensible_list = false)) AND (meta_datum_object_type = 'MetaDatum::Keywords'::text)) OR (meta_datum_object_type <> 'MetaDatum::Keywords'::text))),
     CONSTRAINT check_keywords_alphabetical_order_is_boolean_for_meta_datum_key CHECK (((((keywords_alphabetical_order = true) OR (keywords_alphabetical_order = false)) AND (meta_datum_object_type = 'MetaDatum::Keywords'::text)) OR (meta_datum_object_type <> 'MetaDatum::Keywords'::text))),
-    CONSTRAINT check_label_not_blank CHECK ((label !~ '^\s*$'::text)),
     CONSTRAINT check_valid_meta_datum_object_type CHECK ((meta_datum_object_type = ANY (ARRAY['MetaDatum::Licenses'::text, 'MetaDatum::Text'::text, 'MetaDatum::TextDate'::text, 'MetaDatum::Groups'::text, 'MetaDatum::Keywords'::text, 'MetaDatum::Vocables'::text, 'MetaDatum::People'::text, 'MetaDatum::Users'::text, 'MetaDatum::Roles'::text]))),
     CONSTRAINT check_valid_text_type CHECK ((text_type = ANY (ARRAY['line'::text, 'block'::text]))),
+    CONSTRAINT descriptions_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(descriptions)))),
+    CONSTRAINT hints_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(hints)))),
+    CONSTRAINT labels_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(labels)))),
     CONSTRAINT meta_key_id_chars CHECK (((id)::text ~* '^[a-z0-9\-\_\:]+$'::text)),
     CONSTRAINT start_id_like_vocabulary_id CHECK (((id)::text ~~ ((vocabulary_id)::text || ':%'::text)))
 );
@@ -1739,8 +1731,6 @@ CREATE TABLE public.visualizations (
 
 CREATE TABLE public.vocabularies (
     id character varying NOT NULL,
-    label text,
-    description text,
     enabled_for_public_view boolean DEFAULT true NOT NULL,
     enabled_for_public_use boolean DEFAULT true NOT NULL,
     admin_comment text,
@@ -5091,6 +5081,14 @@ INSERT INTO schema_migrations (version) VALUES ('378');
 INSERT INTO schema_migrations (version) VALUES ('379');
 
 INSERT INTO schema_migrations (version) VALUES ('380');
+
+INSERT INTO schema_migrations (version) VALUES ('381');
+
+INSERT INTO schema_migrations (version) VALUES ('382');
+
+INSERT INTO schema_migrations (version) VALUES ('383');
+
+INSERT INTO schema_migrations (version) VALUES ('384');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 

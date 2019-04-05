@@ -23,8 +23,14 @@ namespace :db do
         # only create/override defaults if context does not exist:
         next if Context.find_by(id: ctx[:id])
 
-        context_attrs = ctx.slice(:id, :label, :description, :admin_comment)
-          .map { |k, v| [k, v.try(:strip)] }.to_h
+        context_attrs = ctx.slice(:id, :labels, :descriptions, :admin_comment)
+          .map do |k, v|
+            if v.is_a?(Hash)
+              [k, v.map { |loc, val| [loc, val.try(:strip)] }.to_h]
+            else
+              [k, v.try(:strip)]
+            end
+          end.to_h
 
         key_attrs = ctx[:context_key_attr] || {}
 

@@ -16,8 +16,14 @@ ActiveRecord::Base.transaction do
   ActiveRecord::Base.connection.execute 'SET session_replication_role = replica;'
 
   Vocabulary.find_or_create_by(id: CORE_VOCAB[:id]).update_attributes!(
-    CORE_VOCAB.slice(:label, :description, :admin_comment)
-      .map {|k, v| [k, v.try(:strip)] }.to_h)
+    CORE_VOCAB.slice(:labels, :descriptions, :admin_comment)
+      .map do |k, v|
+        if v.is_a?(Hash)
+          [k, v.map { |loc, val| [loc, val.try(:strip)] }.to_h]
+        else
+          [k, v.try(:strip)]
+        end
+      end.to_h)
 
   CORE_VOCAB[:meta_keys].each do |id, attrs|
     MetaKey.find_or_initialize_by(id: id).update_attributes!(attrs)
@@ -37,25 +43,15 @@ ActiveRecord::Base.transaction do
 
   # find ContextKeys that "overide" a string (like label)
   # with the SAME string and delete those duplicated string(s)
-  %w(label description hint).each do |column_name|
-    ActiveRecord::Base.connection.execute <<-SQL.strip_heredoc
-      UPDATE context_keys
-        SET #{column_name} = NULL
-        FROM meta_keys
-        WHERE meta_key_id = meta_keys.id
-        AND meta_keys.#{column_name} = context_keys.#{column_name}
-    SQL
-
-    ContextKey.includes(:meta_key).find_each do |ck|
-      if ck.labels[DEFAULT_LOCALE] == ck.meta_key.labels[DEFAULT_LOCALE]
-        ck.update_column(:labels, { DEFAULT_LOCALE => nil })
-      end
-      if ck.descriptions[DEFAULT_LOCALE] == ck.meta_key.descriptions[DEFAULT_LOCALE]
-        ck.update_column(:descriptions, { DEFAULT_LOCALE => nil })
-      end
-      if ck.hints[DEFAULT_LOCALE] == ck.meta_key.hints[DEFAULT_LOCALE]
-        ck.update_column(:hints, { DEFAULT_LOCALE => nil })
-      end
+  ContextKey.includes(:meta_key).find_each do |ck|
+    if ck.labels[DEFAULT_LOCALE] == ck.meta_key.labels[DEFAULT_LOCALE]
+      ck.update_column(:labels, { DEFAULT_LOCALE => nil })
+    end
+    if ck.descriptions[DEFAULT_LOCALE] == ck.meta_key.descriptions[DEFAULT_LOCALE]
+      ck.update_column(:descriptions, { DEFAULT_LOCALE => nil })
+    end
+    if ck.hints[DEFAULT_LOCALE] == ck.meta_key.hints[DEFAULT_LOCALE]
+      ck.update_column(:hints, { DEFAULT_LOCALE => nil })
     end
   end
 

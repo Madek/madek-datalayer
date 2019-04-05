@@ -13,7 +13,7 @@ describe Role do
         role = create :role, meta_key: meta_key
 
         expect do
-          create(:role, label: role.label, meta_key: meta_key)
+          create(:role, labels: { de: role.label }, meta_key: meta_key)
         end.to raise_error ActiveRecord::RecordNotUnique
       end
     end
@@ -22,7 +22,7 @@ describe Role do
       it 'ends with success' do
         role = create :role
 
-        expect { create(:role, label: role.label) }.not_to raise_error
+        expect { create(:role, labels: { de: role.label }) }.not_to raise_error
       end
     end
   end
