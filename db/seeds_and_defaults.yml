@@ -215,11 +215,6 @@ MADEK_DEFAULT_SETTINGS:
     welcome_title: '** Wilkommen zum System **'
     welcome_text: '** Informationen zum System **'
 
-    sitemap:
-      - "API": "/api/browser/"
-      - "Software Madek": "https://zhdk.ch/madek"
-      - "Madek Project on Github": "https://github.com/Madek"
-
     featured_set_title: '** Sehenswerte Inhalte **'
     featured_set_subtitle: '** Höhepunkte aus diesem Archiv. **'
 
@@ -228,3 +223,14 @@ MADEK_DEFAULT_SETTINGS:
 
     media_entry_default_license_usage_meta_key: 'madek_core:copyright_notice'
     media_entry_default_license_usage_text: 'All Rights reserved.'
+
+    about_page: |
+      # About this Archive
+
+      (Nothing here yet, configure content in [Admin Interface](/admin/app_settings))
+
+    sitemap:
+      - "About": "/about/"
+      - "API": "/api/browser/"
+      - "Software Madek": "https://zhdk.ch/madek"
+      - "Madek Project on Github": "https://github.com/Madek"

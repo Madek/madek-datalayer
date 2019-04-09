@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.8
--- Dumped by pg_dump version 9.6.8
+-- Dumped from database version 9.6.12
+-- Dumped by pg_dump version 10.7
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1010,6 +1010,7 @@ CREATE TABLE public.app_settings (
     ignored_keyword_keys_for_browsing text,
     default_locale character varying DEFAULT 'de'::character varying,
     available_locales character varying[] DEFAULT '{}'::character varying[],
+    about_page character varying DEFAULT ''::character varying,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -5084,6 +5085,8 @@ INSERT INTO schema_migrations (version) VALUES ('375');
 INSERT INTO schema_migrations (version) VALUES ('376');
 
 INSERT INTO schema_migrations (version) VALUES ('377');
+
+INSERT INTO schema_migrations (version) VALUES ('378');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 
