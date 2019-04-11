@@ -1,7 +1,7 @@
 FactoryGirl.define do
 
   factory :vocabulary do
-    id { Faker::Internet.slug(nil, '-') }
+    id { Array.new(5) { Faker::Hacker.abbreviation }.join('-').downcase }
     label { Faker::Lorem.word }
     description { Faker::Lorem.sentence }
     admin_comment { Faker::Lorem.sentence }
