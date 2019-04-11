@@ -1393,7 +1393,7 @@ CREATE TABLE public.keywords (
     "position" integer,
     rdf_class character varying DEFAULT 'Keyword'::character varying NOT NULL,
     description text,
-    external_uri character varying
+    external_uris character varying[] DEFAULT '{}'::character varying[]
 );
 
 
@@ -1613,7 +1613,7 @@ CREATE TABLE public.people (
     institutional_id text,
     subtype text NOT NULL,
     description text,
-    external_uri character varying,
+    external_uris character varying[] DEFAULT '{}'::character varying[],
     CONSTRAINT check_presence_of_first_name_or_last_name_or_pseudonym CHECK (((first_name IS NOT NULL) OR (last_name IS NOT NULL) OR (pseudonym IS NOT NULL))),
     CONSTRAINT check_valid_people_subtype CHECK ((subtype = ANY (ARRAY['Person'::text, 'PeopleGroup'::text, 'PeopleInstitutionalGroup'::text]))),
     CONSTRAINT first_name_is_not_blank CHECK (((first_name)::text !~ '^\s*$'::text)),
@@ -5087,6 +5087,8 @@ INSERT INTO schema_migrations (version) VALUES ('376');
 INSERT INTO schema_migrations (version) VALUES ('377');
 
 INSERT INTO schema_migrations (version) VALUES ('378');
+
+INSERT INTO schema_migrations (version) VALUES ('379');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 

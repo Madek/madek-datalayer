@@ -24,8 +24,8 @@ FactoryGirl.define do
       description do
         Faker::Hipster.sentence
       end
-      external_uri do
-        Faker::Internet.url('example.com', "/licenses/#{SecureRandom.uuid}")
+      external_uris do
+        [Faker::Internet.url('example.com', "/licenses/#{SecureRandom.uuid}")]
       end
       rdf_class do
         RdfClass.find_by(id: 'License') \
