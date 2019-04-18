@@ -1,4 +1,4 @@
-class MigrateFavoriteFilterSets < ActiveRecord::Migration
+class MigrateFavoriteFilterSets < ActiveRecord::Migration[4.2]
   include Madek::MediaResourceMigrationModels
 
   def change

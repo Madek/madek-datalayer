@@ -1,4 +1,4 @@
-class RenameKeywordTables < ActiveRecord::Migration
+class RenameKeywordTables < ActiveRecord::Migration[4.2]
   def change
     rename_table :keywords, :meta_data_keywords
     rename_table :keyword_terms, :keywords

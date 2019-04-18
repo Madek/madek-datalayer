@@ -1,4 +1,4 @@
-class DropFavorites < ActiveRecord::Migration
+class DropFavorites < ActiveRecord::Migration[4.2]
 
   def change
     drop_table :favorites

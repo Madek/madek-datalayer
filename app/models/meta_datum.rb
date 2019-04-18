@@ -1,4 +1,4 @@
-class MetaDatum < ActiveRecord::Base
+class MetaDatum < ApplicationRecord
 
   include Concerns::ContextsHelpers
   include Concerns::MetaData::Filters
@@ -12,7 +12,8 @@ class MetaDatum < ActiveRecord::Base
         raise 'MetaDatum is abstract; instatiate a subclass'
       end
     end
-    alias_method_chain :new, :cast
+    alias_method :new_without_cast, :new
+    alias_method :new, :new_with_cast
   end
 
   ########################################

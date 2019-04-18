@@ -1,4 +1,4 @@
-class ZencoderJob < ActiveRecord::Base
+class ZencoderJob < ApplicationRecord
   belongs_to :media_file
 
   def self.config

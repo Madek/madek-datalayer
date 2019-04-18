@@ -1,5 +1,5 @@
 module Permissions
-  class CollectionApiClientPermission < ActiveRecord::Base
+  class CollectionApiClientPermission < ApplicationRecord
     include ::Permissions::Modules::Collection
     belongs_to :api_client
   end

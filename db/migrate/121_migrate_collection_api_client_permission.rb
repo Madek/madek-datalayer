@@ -1,4 +1,4 @@
-class MigrateCollectionApiClientPermission < ActiveRecord::Migration
+class MigrateCollectionApiClientPermission < ActiveRecord::Migration[4.2]
 
   include Madek::MigrationHelper
 

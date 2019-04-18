@@ -1,4 +1,4 @@
-class AddUserToMetaData < ActiveRecord::Migration
+class AddUserToMetaData < ActiveRecord::Migration[4.2]
   def up
     # meta_data_people ########################################################
     add_column :meta_data_people, :created_by_id, :uuid, null: true

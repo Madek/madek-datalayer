@@ -1,4 +1,4 @@
-class MigrateEditSessionsData < ActiveRecord::Migration
+class MigrateEditSessionsData < ActiveRecord::Migration[4.2]
 
   private
 

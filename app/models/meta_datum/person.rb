@@ -1,4 +1,4 @@
-class MetaDatum::Person < ActiveRecord::Base
+class MetaDatum::Person < ApplicationRecord
 
   self.table_name = :meta_data_people
 

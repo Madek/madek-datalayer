@@ -1,4 +1,4 @@
-class AddMetaKeysConstraints < ActiveRecord::Migration
+class AddMetaKeysConstraints < ActiveRecord::Migration[4.2]
   def change
 
     %w(meta_keys context_keys).each do |table|

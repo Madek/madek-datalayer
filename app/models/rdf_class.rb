@@ -1,4 +1,4 @@
-class RdfClass < ActiveRecord::Base
+class RdfClass < ApplicationRecord
 
   belongs_to :keyword # fkey not null
 

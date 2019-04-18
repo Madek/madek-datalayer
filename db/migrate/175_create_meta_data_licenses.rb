@@ -1,4 +1,4 @@
-class CreateMetaDataLicenses < ActiveRecord::Migration
+class CreateMetaDataLicenses < ActiveRecord::Migration[4.2]
   def change
     create_table :meta_data_licenses, id: false do |t|
       t.uuid :meta_datum_id, null: false

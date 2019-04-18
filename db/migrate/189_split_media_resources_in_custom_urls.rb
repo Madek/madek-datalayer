@@ -1,4 +1,4 @@
-class SplitMediaResourcesInCustomUrls < ActiveRecord::Migration
+class SplitMediaResourcesInCustomUrls < ActiveRecord::Migration[4.2]
   def up
     add_column :custom_urls, :media_entry_id, :uuid
     add_column :custom_urls, :collection_id, :uuid

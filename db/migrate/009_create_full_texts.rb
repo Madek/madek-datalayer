@@ -1,5 +1,4 @@
-# -*- encoding : utf-8 -*-
-class CreateFullTexts < ActiveRecord::Migration
+class CreateFullTexts < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

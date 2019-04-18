@@ -1,4 +1,4 @@
-class CreateMediaResourcesView < ActiveRecord::Migration
+class CreateMediaResourcesView < ActiveRecord::Migration[4.2]
   def up
     columns = [ :id,
                 :get_metadata_and_previews,

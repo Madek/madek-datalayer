@@ -1,4 +1,4 @@
-class CreateIoMappings < ActiveRecord::Migration
+class CreateIoMappings < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
   def change
     create_table :io_mappings, id: false do |t|

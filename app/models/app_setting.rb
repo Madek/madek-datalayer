@@ -1,4 +1,4 @@
-class AppSetting < ActiveRecord::Base
+class AppSetting < ApplicationRecord
   include Concerns::LocalizedFields
 
   localize_fields *%w(site_titles brand_texts welcome_titles welcome_texts

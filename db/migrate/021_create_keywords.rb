@@ -1,4 +1,4 @@
-class CreateKeywords < ActiveRecord::Migration
+class CreateKeywords < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

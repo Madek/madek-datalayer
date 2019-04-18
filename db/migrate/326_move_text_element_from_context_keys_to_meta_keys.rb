@@ -1,4 +1,4 @@
-class MoveTextElementFromContextKeysToMetaKeys < ActiveRecord::Migration
+class MoveTextElementFromContextKeysToMetaKeys < ActiveRecord::Migration[4.2]
   def change
     add_column :meta_keys, :text_type, :text, default: 'line', null: false
 

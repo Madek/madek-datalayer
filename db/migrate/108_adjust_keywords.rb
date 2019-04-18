@@ -1,4 +1,4 @@
-class AdjustKeywords < ActiveRecord::Migration
+class AdjustKeywords < ActiveRecord::Migration[4.2]
 
   def change
 

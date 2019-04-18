@@ -1,4 +1,4 @@
-class AllowedPersonTypeColumnForMetaKeys < ActiveRecord::Migration
+class AllowedPersonTypeColumnForMetaKeys < ActiveRecord::Migration[4.2]
   def up
     execute <<-SQL.strip_heredoc
       ALTER TABLE meta_keys

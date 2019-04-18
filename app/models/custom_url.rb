@@ -1,4 +1,4 @@
-class CustomUrl < ActiveRecord::Base
+class CustomUrl < ApplicationRecord
   belongs_to :media_entry
   belongs_to :collection
   belongs_to :filter_set

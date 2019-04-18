@@ -1,4 +1,4 @@
-class AddConversionProfilesToZencoderJobs < ActiveRecord::Migration
+class AddConversionProfilesToZencoderJobs < ActiveRecord::Migration[4.2]
   class MigrationZencoderJob < ActiveRecord::Base
     self.table_name = :zencoder_jobs
   end

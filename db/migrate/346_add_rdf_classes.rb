@@ -1,4 +1,4 @@
-class AddRdfClasses < ActiveRecord::Migration
+class AddRdfClasses < ActiveRecord::Migration[4.2]
   def up
     execute <<-SQL
 

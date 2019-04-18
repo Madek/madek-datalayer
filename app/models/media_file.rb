@@ -1,7 +1,6 @@
-# -*- encoding : utf-8 -*-
 # require 'digest'
 
-class MediaFile < ActiveRecord::Base
+class MediaFile < ApplicationRecord
   include Concerns::MediaType
   include Concerns::MediaFiles::Filters
   include Concerns::MediaFiles::Sorters

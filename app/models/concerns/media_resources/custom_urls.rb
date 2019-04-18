@@ -17,7 +17,8 @@ module Concerns
         # it also prevents the use of `find_by` and `find_by!`
         extend Concerns::MediaResources::CustomUrls::Finders
         class << self
-          alias_method_chain :find, :custom_id
+          alias_method :find_without_custom_id, :find
+          alias_method :find, :find_with_custom_id
         end
 
         # this provides customized `find` and `find_by_id` methods
@@ -28,9 +29,8 @@ module Concerns
         #       .where(custom_urls: { is_primary: true })
         #       .find('custom_id')
         # it also prevents the use of `find_by` and `find_by!`
-        self::ActiveRecord_Relation.class_eval do
+        const_get(:ActiveRecord_Relation).class_eval do
           include Concerns::MediaResources::CustomUrls::Finders
-          alias_method_chain :find, :custom_id
         end
       end
     end

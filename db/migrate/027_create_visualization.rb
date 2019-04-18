@@ -1,4 +1,4 @@
-class CreateVisualization < ActiveRecord::Migration
+class CreateVisualization < ActiveRecord::Migration[4.2]
 
   def change
     create_table :visualizations, id: false do |t|

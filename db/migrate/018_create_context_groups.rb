@@ -1,4 +1,4 @@
-class CreateContextGroups < ActiveRecord::Migration
+class CreateContextGroups < ActiveRecord::Migration[4.2]
 
   def change
     create_table :context_groups, id: false do |t|

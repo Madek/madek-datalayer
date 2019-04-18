@@ -1,4 +1,4 @@
-class MetaDatumGroupsToPeopleP2 < ActiveRecord::Migration
+class MetaDatumGroupsToPeopleP2 < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

@@ -1,4 +1,4 @@
-class CreateUsageTerms < ActiveRecord::Migration
+class CreateUsageTerms < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

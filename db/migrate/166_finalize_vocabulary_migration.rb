@@ -1,4 +1,4 @@
-class FinalizeVocabularyMigration < ActiveRecord::Migration
+class FinalizeVocabularyMigration < ActiveRecord::Migration[4.2]
 
   class Context < ActiveRecord::Base
   end

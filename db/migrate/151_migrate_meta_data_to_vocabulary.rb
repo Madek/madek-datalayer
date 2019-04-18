@@ -1,4 +1,4 @@
-class MigrateMetaDataToVocabulary < ActiveRecord::Migration
+class MigrateMetaDataToVocabulary < ActiveRecord::Migration[4.2]
 
   class IoMapping < ActiveRecord::Base
     belongs_to :meta_key

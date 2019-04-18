@@ -1,4 +1,4 @@
-class AddLocalizedLabelsToContexts < ActiveRecord::Migration
+class AddLocalizedLabelsToContexts < ActiveRecord::Migration[4.2]
   class MigrationContext < ActiveRecord::Base
     self.table_name = :contexts
   end

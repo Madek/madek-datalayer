@@ -71,7 +71,7 @@ class MetaDatum::Roles < MetaDatum
   end
 
   def extract_person_id(data)
-    if data.is_a?(Hash)
+    if data.is_a?(ActionController::Parameters)
       data.fetch('uuid', data)
     else
       data
@@ -79,7 +79,7 @@ class MetaDatum::Roles < MetaDatum
   end
 
   def extract_role_id(data)
-    if data.is_a?(Hash)
+    if data.is_a?(ActionController::Parameters)
       data['role']
     end
   end

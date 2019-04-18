@@ -1,4 +1,4 @@
-class RenameContextSetting < ActiveRecord::Migration
+class RenameContextSetting < ActiveRecord::Migration[4.2]
 
   def change
     rename_column(:app_settings,

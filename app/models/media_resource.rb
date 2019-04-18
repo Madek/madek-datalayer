@@ -1,6 +1,8 @@
-class MediaResource < ActiveRecord::Base
+class MediaResource < ApplicationRecord
   self.table_name = :vw_media_resources
   self.primary_key = :id
+  # prevents Rails to treat the table/view as STI table
+  self.inheritance_column = :_not_existing_column
 
   include Concerns::MediaResources::CustomOrderBy
 
@@ -77,4 +79,8 @@ class MediaResource < ActiveRecord::Base
     )
   end
   # rubocop:enable Metrics/MethodLength
+
+  def cast_to_type
+    @_casted_to_type ||= becomes(type.constantize)
+  end
 end

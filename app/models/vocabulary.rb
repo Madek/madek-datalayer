@@ -1,4 +1,4 @@
-class Vocabulary < ActiveRecord::Base
+class Vocabulary < ApplicationRecord
 
   VIEW_PERMISSION_NAME = :view
 

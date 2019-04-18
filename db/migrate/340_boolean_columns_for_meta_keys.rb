@@ -1,4 +1,4 @@
-class BooleanColumnsForMetaKeys < ActiveRecord::Migration
+class BooleanColumnsForMetaKeys < ActiveRecord::Migration[4.2]
   def up
     execute <<-SQL.strip_heredoc
       ALTER TABLE meta_keys

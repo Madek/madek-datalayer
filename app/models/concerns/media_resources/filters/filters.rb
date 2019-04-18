@@ -24,7 +24,7 @@ module Concerns
                 .filter_by_meta_data(user, filter_opts[:meta_data])
                 .filter_by_media_files(filter_opts[:media_files])
                 .filter_by_permissions(filter_opts[:permissions])
-                .uniq
+                .distinct
             end
           end
 

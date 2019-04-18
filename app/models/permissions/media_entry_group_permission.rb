@@ -1,5 +1,5 @@
 module Permissions
-  class MediaEntryGroupPermission < ActiveRecord::Base
+  class MediaEntryGroupPermission < ApplicationRecord
     BASE_ENTITY_TABLE_NAME = 'media_entries'
 
     include ::Permissions::Modules::MediaEntry

@@ -1,4 +1,4 @@
-class MetaDatum::Keyword < ActiveRecord::Base
+class MetaDatum::Keyword < ApplicationRecord
 
   self.table_name = :meta_data_keywords
 

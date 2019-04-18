@@ -1,4 +1,4 @@
-class FixMetaDataKeywordsDuplicates < ActiveRecord::Migration
+class FixMetaDataKeywordsDuplicates < ActiveRecord::Migration[4.2]
   class MetaDataKeywords < ActiveRecord::Base
     self.table_name = 'meta_data_keywords'
     belongs_to :meta_datum

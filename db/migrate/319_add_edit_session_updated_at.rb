@@ -1,4 +1,4 @@
-class AddEditSessionUpdatedAt < ActiveRecord::Migration
+class AddEditSessionUpdatedAt < ActiveRecord::Migration[4.2]
   def change
     %w(media_entries collections filter_sets).each do |table_name|
       reversible do |dir|

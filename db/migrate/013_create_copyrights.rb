@@ -1,5 +1,4 @@
-# -*- encoding : utf-8 -*-
-class CreateCopyrights < ActiveRecord::Migration
+class CreateCopyrights < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

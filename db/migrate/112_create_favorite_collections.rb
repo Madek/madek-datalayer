@@ -1,4 +1,4 @@
-class CreateFavoriteCollections < ActiveRecord::Migration
+class CreateFavoriteCollections < ActiveRecord::Migration[4.2]
 
   def change
     create_table :favorite_collections, id: false do |t|

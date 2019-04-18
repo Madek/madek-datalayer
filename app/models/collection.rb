@@ -1,4 +1,4 @@
-class Collection < ActiveRecord::Base
+class Collection < ApplicationRecord
   ################################################################################
   # NOTE: The standard `find` and `find_by_id` methods are extended/overridden in
   # app/models/concerns/media_resources/custom_urls in order to accomodate

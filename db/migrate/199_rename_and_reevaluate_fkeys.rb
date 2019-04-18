@@ -1,4 +1,4 @@
-class RenameAndReevaluateFkeys < ActiveRecord::Migration
+class RenameAndReevaluateFkeys < ActiveRecord::Migration[4.2]
   def change
     remove_foreign_key :users, :people
     add_foreign_key :users, :people, name: :users_people_fkey
@@ -73,7 +73,7 @@ class RenameAndReevaluateFkeys < ActiveRecord::Migration
     remove_foreign_key :admins, :users
     add_foreign_key :admins, :users, name: :admins_users_fkey
 
-    remove_foreign_key :media_files, :media_entries
+    # remove_foreign_key :media_files, :media_entries
     add_foreign_key :media_files, :media_entries, name: 'media-files_media-entries_fkey'
 
     remove_foreign_key :collection_media_entry_arcs, :media_entries
@@ -201,7 +201,7 @@ class RenameAndReevaluateFkeys < ActiveRecord::Migration
     remove_foreign_key :filter_set_user_permissions, :filter_sets
     add_foreign_key :filter_set_user_permissions, :filter_sets, on_delete: :cascade,
       name: 'filter-set-user-permissions_filter-sets_fkey'
-    remove_foreign_key :filter_set_user_permissions, column: :updator_id
+    # remove_foreign_key :filter_set_user_permissions, column: :updator_id
     add_foreign_key :filter_set_user_permissions, :users, column: :updator_id,
       name: 'filter-set-user-permissions_updators_fkey'
 
@@ -211,7 +211,7 @@ class RenameAndReevaluateFkeys < ActiveRecord::Migration
     remove_foreign_key :collection_user_permissions, :collections
     add_foreign_key :collection_user_permissions, :collections, on_delete: :cascade,
       name: 'collection-user-permissions_collections_fkey'
-    remove_foreign_key :collection_user_permissions, column: :updator_id
+    # remove_foreign_key :collection_user_permissions, column: :updator_id
     add_foreign_key :collection_user_permissions, :users, column: :updator_id,
       name: 'collection-user-permissions-updators_fkey'
 

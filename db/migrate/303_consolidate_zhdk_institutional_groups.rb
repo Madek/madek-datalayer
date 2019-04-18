@@ -1,13 +1,13 @@
-class ConsolidateZhdkInstitutionalGroups < ActiveRecord::Migration
+class ConsolidateZhdkInstitutionalGroups < ActiveRecord::Migration[4.2]
 
-  class ::Person < ActiveRecord::Base
+  class Person < ActiveRecord::Base
     self.inheritance_column = false
     default_scope { reorder(:last_name) }
     has_one :user
     has_and_belongs_to_many :meta_data, join_table: :meta_data_people
   end
 
-  class ::MetaDatumPerson < ActiveRecord::Base
+  class MetaDatumPerson < ActiveRecord::Base
 
     self.table_name = :meta_data_people
 
@@ -20,9 +20,9 @@ class ConsolidateZhdkInstitutionalGroups < ActiveRecord::Migration
 
   def change
 
-    ::Person.reset_column_information
+    Person.reset_column_information
 
-    ::Person.first
+    Person.first
 
     puts "Before #{Person.where(subtype: 'PeopleInstitutionalGroup').count} PeopleInstitutionalGroups"
     puts "Before #{MetaDatum::People.count} MetaDatum::People"

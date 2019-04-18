@@ -1,5 +1,4 @@
-# -*- encoding : utf-8 -*-
-class CreateGroups < ActiveRecord::Migration
+class CreateGroups < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

@@ -1,4 +1,4 @@
-class MetaDatumGroupsToPeople < ActiveRecord::Migration
+class MetaDatumGroupsToPeople < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   # TODO: for now we have a duplication of name in
@@ -9,15 +9,15 @@ class MetaDatumGroupsToPeople < ActiveRecord::Migration
   # the peoples table.
 
 
-  class ::Person < ActiveRecord::Base
+  class Person < ActiveRecord::Base
     self.table_name = :people
     has_one :user
   end
 
-  class ::User < ActiveRecord::Base
+  class User < ActiveRecord::Base
   end
 
-  class ::Group < ActiveRecord::Base
+  class Group < ActiveRecord::Base
     belongs_to :person
     has_and_belongs_to_many :meta_data,
       join_table: :meta_data_groups,
@@ -25,37 +25,37 @@ class MetaDatumGroupsToPeople < ActiveRecord::Migration
       foreign_key: :group_id
   end
 
-  class ::InstitutionalGroup < Group
+  class InstitutionalGroup < Group
     has_and_belongs_to_many :meta_data,
       join_table: :meta_data_groups,
       association_foreign_key: :meta_datum_id,
       foreign_key: :group_id
   end
 
-  class ::MetaDatum < ActiveRecord::Base
+  class MetaDatum < ActiveRecord::Base
     belongs_to :meta_key
     has_one :vocabulary, through: :meta_key
     belongs_to :created_by, class_name: 'User'
   end
 
-  class ::MetaDatum::People < MetaDatum
+  class MetaDatum::People < MetaDatum
     has_many :meta_data_people, class_name: 'MetaDatum::Person', foreign_key: :meta_datum_id
     has_many :people, through: :meta_data_people
   end
 
-  class ::MetaDatum::Person < ActiveRecord::Base
+  class MetaDatum::Person < ActiveRecord::Base
     self.table_name = :meta_data_people
     # include Concerns::MetaData::CreatedBy
     belongs_to :meta_datum
     belongs_to :person, class_name: '::Person'
   end
 
-  class ::MetaDatum::Groups < MetaDatum
+  class MetaDatum::Groups < MetaDatum
     has_many :groups, through: :meta_data_groups
     has_many :meta_data_groups, class_name: 'MetaDatum::Group', foreign_key: :meta_datum_id
   end
 
-  class ::MetaDatum::Group < ActiveRecord::Base
+  class MetaDatum::Group < ActiveRecord::Base
     self.table_name = :meta_data_groups
     #include Concerns::MetaData::CreatedBy
     belongs_to :meta_datum
@@ -158,19 +158,19 @@ class MetaDatumGroupsToPeople < ActiveRecord::Migration
       execute "SET session_replication_role = DEFAULT"
     end
 
-    ::MetaDatum::Groups.find_each do |mdgs|
+    MetaDatum::Groups.find_each do |mdgs|
       begin
         mdgs_attrs =  mdgs.attributes.with_indifferent_access.except!(:id, :type)
 
         mdgxs = mdgs.meta_data_groups.map(&:attributes).map(&:with_indifferent_access)
         mdgs.destroy
 
-        mdp = ::MetaDatum::People.find_or_create_by(mdgs_attrs.except!(:created_by_id))
+        mdp = MetaDatum::People.find_or_create_by(mdgs_attrs.except!(:created_by_id))
         mdp.update_attributes!(mdgs_attrs)
 
         mdgxs.each do |mdg|
           person = Group.find(mdg[:group_id]).person
-          ::MetaDatum::Person.create! meta_datum_id: mdp.id ,person_id: person.id, created_by_id:  mdg[:created_by_id]
+          MetaDatum::Person.create! meta_datum_id: mdp.id ,person_id: person.id, created_by_id:  mdg[:created_by_id]
         end
 
       rescue Exception => e

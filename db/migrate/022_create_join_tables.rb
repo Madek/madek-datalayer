@@ -1,4 +1,4 @@
-class CreateJoinTables < ActiveRecord::Migration
+class CreateJoinTables < ActiveRecord::Migration[4.2]
 
   def change
     create_table :media_sets_contexts, id: false do |t|

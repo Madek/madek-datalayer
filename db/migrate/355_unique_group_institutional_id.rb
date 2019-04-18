@@ -1,4 +1,4 @@
-class UniqueGroupInstitutionalId < ActiveRecord::Migration
+class UniqueGroupInstitutionalId < ActiveRecord::Migration[4.2]
   def up
     remove_index :groups, :institutional_group_id
     add_index :groups, :institutional_group_id, unique: true

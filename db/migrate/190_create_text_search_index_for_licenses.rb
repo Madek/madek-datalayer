@@ -1,4 +1,4 @@
-class CreateTextSearchIndexForLicenses < ActiveRecord::Migration
+class CreateTextSearchIndexForLicenses < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

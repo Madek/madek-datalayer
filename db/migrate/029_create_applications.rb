@@ -1,4 +1,4 @@
-class CreateApplications < ActiveRecord::Migration
+class CreateApplications < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

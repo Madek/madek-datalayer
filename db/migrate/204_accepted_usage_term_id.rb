@@ -1,4 +1,4 @@
-class AcceptedUsageTermId < ActiveRecord::Migration
+class AcceptedUsageTermId < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
   include Madek::MediaResourceMigrationModels
 

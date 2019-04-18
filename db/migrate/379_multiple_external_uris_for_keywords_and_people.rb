@@ -1,4 +1,4 @@
-class MultipleExternalUrisForKeywordsAndPeople < ActiveRecord::Migration
+class MultipleExternalUrisForKeywordsAndPeople < ActiveRecord::Migration[4.2]
   class MigrationPeople < ActiveRecord::Base
     self.table_name = :people
   end

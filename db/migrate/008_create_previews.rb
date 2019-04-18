@@ -1,5 +1,4 @@
-# -*- encoding : utf-8 -*-
-class CreatePreviews < ActiveRecord::Migration
+class CreatePreviews < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

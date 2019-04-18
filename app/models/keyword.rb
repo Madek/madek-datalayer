@@ -1,4 +1,4 @@
-class Keyword < ActiveRecord::Base
+class Keyword < ApplicationRecord
 
   include Concerns::FindResource
   include Concerns::Keywords::Filters
@@ -8,7 +8,7 @@ class Keyword < ActiveRecord::Base
                   parent_scope: :meta_key
 
   belongs_to :meta_key
-  belongs_to :creator, class_name: User
+  belongs_to :creator, class_name: 'User'
   has_and_belongs_to_many :meta_data, join_table: :meta_data_keywords
   has_many :meta_data_keywords, class_name: '::MetaDatum::Keyword'
 

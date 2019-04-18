@@ -1,4 +1,4 @@
-class UsageTerms < ActiveRecord::Base
+class UsageTerms < ApplicationRecord
   validates :title, :version, :intro, :body, presence: true
 
   def self.most_recent

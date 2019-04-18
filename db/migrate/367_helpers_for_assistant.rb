@@ -1,4 +1,4 @@
-class HelpersForAssistant < ActiveRecord::Migration
+class HelpersForAssistant < ActiveRecord::Migration[4.2]
 
   def up
     execute <<-SQL

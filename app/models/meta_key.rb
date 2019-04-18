@@ -1,4 +1,4 @@
-class MetaKey < ActiveRecord::Base
+class MetaKey < ApplicationRecord
 
   include Concerns::MetaKeys::Filters
   include Concerns::Orderable
@@ -43,7 +43,7 @@ class MetaKey < ActiveRecord::Base
   enable_ordering parent_scope: :vocabulary
   localize_fields :labels, :descriptions, :hints
   before_validation :sanitize_allowed_people_subtypes
-  after_save :order_keywords_if_necessary
+  before_save :keep_keywords_order_if_needed
 
   def self.object_types
     (
@@ -103,11 +103,13 @@ class MetaKey < ActiveRecord::Base
 
   private
 
-  def order_keywords_if_necessary
+  def keep_keywords_order_if_needed
     if keywords_alphabetical_order_changed? && !keywords_alphabetical_order
       unless keywords.empty?
-        keywords.reorder('term ASC').each_with_index do |keyword, index|
-          keyword.update_column :position, index
+        Keyword.transaction do
+          keywords.reorder('term ASC').each_with_index do |keyword, index|
+            keyword.update_column :position, index
+          end
         end
       end
     end

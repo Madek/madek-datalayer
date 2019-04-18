@@ -1,5 +1,5 @@
 module Permissions
-  class VocabularyApiClientPermission < ActiveRecord::Base
+  class VocabularyApiClientPermission < ApplicationRecord
     include ::Permissions::Modules::Vocabulary
     belongs_to :api_client
   end

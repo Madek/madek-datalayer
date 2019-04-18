@@ -1,5 +1,5 @@
 module Permissions
-  class MediaEntryApiClientPermission < ActiveRecord::Base
+  class MediaEntryApiClientPermission < ApplicationRecord
     include ::Permissions::Modules::MediaEntry
     belongs_to :api_client
     define_destroy_ineffective(

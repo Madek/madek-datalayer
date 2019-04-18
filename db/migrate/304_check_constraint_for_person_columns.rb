@@ -1,4 +1,4 @@
-class CheckConstraintForPersonColumns < ActiveRecord::Migration
+class CheckConstraintForPersonColumns < ActiveRecord::Migration[4.2]
   def up
     execute <<-SQL
       ALTER TABLE people

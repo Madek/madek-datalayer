@@ -1,4 +1,4 @@
-class CreateFavorites < ActiveRecord::Migration
+class CreateFavorites < ActiveRecord::Migration[4.2]
   def change
     create_table :favorites, id: false do |t|
       t.uuid :user_id, null: false

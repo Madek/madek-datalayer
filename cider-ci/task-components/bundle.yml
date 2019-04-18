@@ -1,6 +1,6 @@
 environment_variables:
   RUBY_ENGINE: ruby
-  RUBY_VERSION: 2.2.4
+  RUBY_VERSION: 2.6.3
   RUBY: '{{RUBY_ENGINE}}-{{RUBY_VERSION}}'
 
 traits:

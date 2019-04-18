@@ -1,4 +1,4 @@
-class SplitMediaResourcesTable < ActiveRecord::Migration
+class SplitMediaResourcesTable < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
   include Madek::MediaResourceMigrationModels
 
@@ -48,8 +48,8 @@ class SplitMediaResourcesTable < ActiveRecord::Migration
     # we just need to recreate the key
     reversible do |dir|
       dir.up do
-        remove_foreign_key :media_files, :media_entries
-        add_foreign_key :media_files, :media_entries
+        # remove_foreign_key :media_files, :media_entries if foreign_key_exists?(:media_files, :media_entries)
+        # add_foreign_key :media_files, :media_entries unless foreign_key_exists?(:media_files, :media_entries)
       end
       dir.down do
         remove_foreign_key :media_files, :media_entries

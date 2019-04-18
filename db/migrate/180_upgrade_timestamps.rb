@@ -1,4 +1,4 @@
-class UpgradeTimestamps < ActiveRecord::Migration
+class UpgradeTimestamps < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

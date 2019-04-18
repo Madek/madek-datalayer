@@ -1,4 +1,4 @@
-class AddLanguageSettingsToAppSetting < ActiveRecord::Migration
+class AddLanguageSettingsToAppSetting < ActiveRecord::Migration[4.2]
   class MigrationAppSetting < ActiveRecord::Base
     self.table_name = :app_settings
   end

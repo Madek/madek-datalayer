@@ -1,4 +1,4 @@
-class MigrateFilterSetGroupPermissionsData < ActiveRecord::Migration
+class MigrateFilterSetGroupPermissionsData < ActiveRecord::Migration[4.2]
 
   include Madek::MigrationHelper
   include Madek::MediaResourceMigrationModels

@@ -1,4 +1,4 @@
-class CreateVocabularyPermissions < ActiveRecord::Migration
+class CreateVocabularyPermissions < ActiveRecord::Migration[4.2]
   def change
 
     %w(user api_client group).each do |entity|

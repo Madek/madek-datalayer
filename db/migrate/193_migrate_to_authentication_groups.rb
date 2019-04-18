@@ -1,4 +1,4 @@
-class MigrateToAuthenticationGroups < ActiveRecord::Migration
+class MigrateToAuthenticationGroups < ActiveRecord::Migration[4.2]
   def change
     execute <<-SQL.strip_heredoc
       UPDATE groups SET type = 'AuthenticationGroup'

@@ -1,4 +1,4 @@
-class AddTimestampsToFavorites < ActiveRecord::Migration
+class AddTimestampsToFavorites < ActiveRecord::Migration[4.2]
 
   def change
     [:favorite_media_entries, :favorite_collections, :favorite_filter_sets].each do |table_name|

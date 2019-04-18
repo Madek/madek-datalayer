@@ -1,4 +1,4 @@
-class CreateContexts < ActiveRecord::Migration
+class CreateContexts < ActiveRecord::Migration[4.2]
   def change
     create_table :contexts, id: :string do |t|
 

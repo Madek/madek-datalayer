@@ -1,4 +1,4 @@
-class DeprecateMetaDataUsers < ActiveRecord::Migration
+class DeprecateMetaDataUsers < ActiveRecord::Migration[4.2]
 
   class MetaKey < ActiveRecord::Base
     self.table_name = 'meta_keys'

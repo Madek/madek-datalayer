@@ -1,4 +1,4 @@
-class CreateFilterSetGroupPermissions < ActiveRecord::Migration
+class CreateFilterSetGroupPermissions < ActiveRecord::Migration[4.2]
 
   def change
     create_table :filter_set_group_permissions, id: false do |t|

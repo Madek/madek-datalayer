@@ -1,4 +1,4 @@
-class CleanUpUsers < ActiveRecord::Migration
+class CleanUpUsers < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def up

@@ -1,5 +1,5 @@
 module Arcs
-  class CollectionMediaEntryArc < ActiveRecord::Base
+  class CollectionMediaEntryArc < ApplicationRecord
     belongs_to :collection
     belongs_to :media_entry
   end

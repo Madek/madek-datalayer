@@ -1,5 +1,5 @@
 module Permissions
-  class CollectionUserPermission < ActiveRecord::Base
+  class CollectionUserPermission < ApplicationRecord
     include ::Permissions::Modules::Collection
     include ::Permissions::Modules::ArelConditions
 

@@ -1,4 +1,4 @@
-class AddColumnsToEditSessions < ActiveRecord::Migration
+class AddColumnsToEditSessions < ActiveRecord::Migration[4.2]
 
   def change
     resources_tables = %w(media_entries collections filter_sets)

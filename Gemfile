@@ -1,14 +1,12 @@
 source 'https://rubygems.org'
 
-gem 'rails', '>= 4.2.7.1', '< 5'
+ruby '2.6.3'
 
-gem 'activerecord-jdbcpostgresql-adapter', platform: :jruby
-gem 'jdbc-postgres', platform: :jruby
-gem 'pg', platform: :mri
-gem 'pg_tasks', '= 2.2.0.pre.0'
-#gem 'pg_tasks', path: '/Users/thomas/Programming/ROR/pg_tasks'
+gem 'rails', '~> 5.2.3'
 
-gem 'drtom-textacular', '= 4.0.0.alpha.20160302'
+gem 'pg'
+gem 'pg_tasks', git: 'https://github.com/drtom/rails_pg-tasks', branch: 'master_rails_5'
+gem 'textacular', '~> 5.0'
 
 gem 'base32-crockford'
 gem 'bcrypt'
@@ -26,3 +24,4 @@ gem 'pry', group: [:test, :development]
 gem 'pry-nav', group: [:test, :development]
 gem 'pry-rails', group: [:development]
 gem 'webmock', group: [:test]
+gem 'listen', group: :development

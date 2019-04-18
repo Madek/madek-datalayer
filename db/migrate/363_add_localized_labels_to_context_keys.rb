@@ -1,4 +1,4 @@
-class AddLocalizedLabelsToContextKeys < ActiveRecord::Migration
+class AddLocalizedLabelsToContextKeys < ActiveRecord::Migration[4.2]
   class MigrationContextKey < ActiveRecord::Base
     self.table_name = :context_keys
   end

@@ -1,4 +1,4 @@
-class AddAppSettingsForBrowseEntries < ActiveRecord::Migration
+class AddAppSettingsForBrowseEntries < ActiveRecord::Migration[4.2]
 
   KEY = :ignored_keyword_keys_for_browsing
 

@@ -1,4 +1,4 @@
-class ApplyCoreVocabTextChanges < ActiveRecord::Migration
+class ApplyCoreVocabTextChanges < ActiveRecord::Migration[4.2]
   class MigrationVocabulary < ActiveRecord::Base
     self.table_name = :vocabularies
   end

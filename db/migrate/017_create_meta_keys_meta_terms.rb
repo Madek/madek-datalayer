@@ -1,5 +1,4 @@
-# -*- encoding : utf-8 -*-
-class CreateMetaKeysMetaTerms < ActiveRecord::Migration
+class CreateMetaKeysMetaTerms < ActiveRecord::Migration[4.2]
 
   def change
     create_table :meta_keys_meta_terms, id: false do |t|

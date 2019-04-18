@@ -1,4 +1,4 @@
-class DeleteKeywordsWithBlankTerms < ActiveRecord::Migration
+class DeleteKeywordsWithBlankTerms < ActiveRecord::Migration[4.2]
 
   class ::MigrationKeyword < ActiveRecord::Base
     self.table_name = 'keywords'

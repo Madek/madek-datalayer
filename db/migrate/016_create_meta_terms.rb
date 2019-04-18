@@ -1,4 +1,4 @@
-class CreateMetaTerms < ActiveRecord::Migration
+class CreateMetaTerms < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

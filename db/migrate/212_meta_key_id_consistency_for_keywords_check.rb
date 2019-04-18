@@ -1,4 +1,4 @@
-class MetaKeyIdConsistencyForKeywordsCheck < ActiveRecord::Migration
+class MetaKeyIdConsistencyForKeywordsCheck < ActiveRecord::Migration[4.2]
   def change
 
     reversible do |dir|

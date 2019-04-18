@@ -1,4 +1,4 @@
-class MigrateDefaultLicenseHackToAppSettings < ActiveRecord::Migration
+class MigrateDefaultLicenseHackToAppSettings < ActiveRecord::Migration[4.2]
 
   # add an app setting to hold the default license,
   # then apply the logic from the current upload controller to find one and set it

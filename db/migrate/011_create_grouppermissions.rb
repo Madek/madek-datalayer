@@ -1,4 +1,4 @@
-class CreateGrouppermissions < ActiveRecord::Migration
+class CreateGrouppermissions < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
   include Madek::Constants
 

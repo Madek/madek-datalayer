@@ -1,24 +1,24 @@
-class MigrateLicensesToKeywords < ActiveRecord::Migration
+class MigrateLicensesToKeywords < ActiveRecord::Migration[4.2]
 
   # - add rdf_class 'License'
   # - choose old "License"-meta_key and change to type keyword
   # - copy licenses to keywords with rdf_class='License' and chosen meta_key
   # - fix up the related metadata etc
 
-  class ::MetaKey < ActiveRecord::Base
+  class MetaKey < ActiveRecord::Base
     self.table_name = :meta_keys
   end
 
-  class ::License < ActiveRecord::Base
+  class License < ActiveRecord::Base
     self.table_name = :licenses
   end
 
-  class ::Keyword < ActiveRecord::Base
+  class Keyword < ActiveRecord::Base
     self.table_name = :keywords
     belongs_to :meta_key
   end
 
-  class ::RdfClass < ActiveRecord::Base
+  class RdfClass < ActiveRecord::Base
     self.table_name = :rdf_classes
   end
 

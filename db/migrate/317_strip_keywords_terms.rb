@@ -1,4 +1,4 @@
-class StripKeywordsTerms < ActiveRecord::Migration
+class StripKeywordsTerms < ActiveRecord::Migration[4.2]
 
   class ::MigrationKeyword < ActiveRecord::Base
     self.table_name = 'keywords'

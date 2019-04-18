@@ -1,4 +1,4 @@
-class AddExplorePageFieldsToAppSettings < ActiveRecord::Migration
+class AddExplorePageFieldsToAppSettings < ActiveRecord::Migration[4.2]
   def change
     add_column :app_settings, :catalog_title, :string, default: 'Catalog', null: false
     add_column :app_settings, :catalog_subtitle, :string, default: 'Browse the catalog', null: false

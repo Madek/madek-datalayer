@@ -1,4 +1,4 @@
-class UpdateZhdkLdapData < ActiveRecord::Migration
+class UpdateZhdkLdapData < ActiveRecord::Migration[4.2]
 
   def domain_name
     `hostname -d`.strip rescue ''

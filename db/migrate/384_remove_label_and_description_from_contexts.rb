@@ -1,4 +1,4 @@
-class RemoveLabelAndDescriptionFromContexts < ActiveRecord::Migration
+class RemoveLabelAndDescriptionFromContexts < ActiveRecord::Migration[4.2]
   class MigrationContext < ActiveRecord::Base
     self.table_name = 'contexts'
   end

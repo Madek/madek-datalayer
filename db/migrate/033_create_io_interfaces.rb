@@ -1,4 +1,4 @@
-class CreateIoInterfaces < ActiveRecord::Migration
+class CreateIoInterfaces < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

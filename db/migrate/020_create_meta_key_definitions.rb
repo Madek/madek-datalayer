@@ -1,4 +1,4 @@
-class CreateMetaKeyDefinitions < ActiveRecord::Migration
+class CreateMetaKeyDefinitions < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

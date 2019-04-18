@@ -1,4 +1,4 @@
-class ExtendMadekCoreProtection < ActiveRecord::Migration
+class ExtendMadekCoreProtection < ActiveRecord::Migration[4.2]
   def change
   end
 

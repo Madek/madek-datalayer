@@ -1,4 +1,4 @@
-class CheckMediaResourceAspectWithPgTrigger < ActiveRecord::Migration
+class CheckMediaResourceAspectWithPgTrigger < ActiveRecord::Migration[4.2]
   def change
     # rubocop:disable Style/CommentIndentation
 

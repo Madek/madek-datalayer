@@ -1,4 +1,4 @@
-class AddRolesMetaDatumObjectType < ActiveRecord::Migration
+class AddRolesMetaDatumObjectType < ActiveRecord::Migration[4.2]
   def before_types
     [ 'MetaDatum::Licenses',
       'MetaDatum::Text',

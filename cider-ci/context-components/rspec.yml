@@ -18,7 +18,7 @@ task_defaults:
 
   environment_variables:
     RUBY_ENGINE: ruby
-    RUBY_VERSION: 2.2.4
+    RUBY_VERSION: 2.6.3
     RAILS_ENV: test
     DATABASE: madek_datalayer_test_{{CIDER_CI_TRIAL_ID}}
     LANG: "en_US.UTF-8"

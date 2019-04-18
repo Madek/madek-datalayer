@@ -1,4 +1,4 @@
-class MigrateApiApplication < ActiveRecord::Migration
+class MigrateApiApplication < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   class ApiApplication < ActiveRecord::Base

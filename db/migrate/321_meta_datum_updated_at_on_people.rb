@@ -1,4 +1,4 @@
-class MetaDatumUpdatedAtOnPeople < ActiveRecord::Migration
+class MetaDatumUpdatedAtOnPeople < ActiveRecord::Migration[4.2]
   def change
 
     reversible do |dir|

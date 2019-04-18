@@ -66,6 +66,12 @@ module Concerns
         def find_by!(_ = nil)
           prevent_find_by!
         end
+
+        # for ActiveRecord_Relation
+        included do
+          alias_method :find_without_custom_id, :find
+          alias_method :find, :find_with_custom_id
+        end
       end
     end
   end

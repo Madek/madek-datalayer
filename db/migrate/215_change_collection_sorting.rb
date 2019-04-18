@@ -1,4 +1,4 @@
-class ChangeCollectionSorting < ActiveRecord::Migration
+class ChangeCollectionSorting < ActiveRecord::Migration[4.2]
   COLLECTION_SORTING_VALUES = \
     ['created_at ASC', 'created_at DESC', 'title ASC', 'title DESC']
 

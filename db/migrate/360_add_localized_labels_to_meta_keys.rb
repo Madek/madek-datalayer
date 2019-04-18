@@ -1,4 +1,4 @@
-class AddLocalizedLabelsToMetaKeys < ActiveRecord::Migration
+class AddLocalizedLabelsToMetaKeys < ActiveRecord::Migration[4.2]
   class MigrationMetaKey < ActiveRecord::Base
     self.table_name = :meta_keys
   end

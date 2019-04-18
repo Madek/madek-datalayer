@@ -1,4 +1,4 @@
-class CreateZencoderJobs < ActiveRecord::Migration
+class CreateZencoderJobs < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

@@ -1,4 +1,4 @@
-class ExtendMetaKeysAndKeywordsWithRdfClass < ActiveRecord::Migration
+class ExtendMetaKeysAndKeywordsWithRdfClass < ActiveRecord::Migration[4.2]
 
   # adds meta-information to keywords, especially an RDF class
   # adds relations between meta_keys and rdf_class

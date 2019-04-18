@@ -1,4 +1,4 @@
-class Context < ActiveRecord::Base
+class Context < ApplicationRecord
   include Concerns::LocalizedFields
 
   has_many(:context_keys,

@@ -1,4 +1,4 @@
-class CreateCollectionGroupPermission < ActiveRecord::Migration
+class CreateCollectionGroupPermission < ActiveRecord::Migration[4.2]
 
   include Madek::MigrationHelper
 

@@ -1,4 +1,4 @@
-class ConfidentialLink < ActiveRecord::Base
+class ConfidentialLink < ApplicationRecord
   belongs_to :resource, polymorphic: true
   belongs_to :user
 

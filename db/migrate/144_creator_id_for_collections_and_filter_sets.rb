@@ -1,4 +1,4 @@
-class CreatorIdForCollectionsAndFilterSets < ActiveRecord::Migration
+class CreatorIdForCollectionsAndFilterSets < ActiveRecord::Migration[4.2]
   def change
     # collections.responsible_user_id as fallback for collections with creator_id == NULL
     execute %(

@@ -1,5 +1,4 @@
-# -*- encoding : utf-8 -*-
-class CreateMediaResourceArcs < ActiveRecord::Migration
+class CreateMediaResourceArcs < ActiveRecord::Migration[4.2]
 
   def change
     create_table :media_resource_arcs, id: false do |t|

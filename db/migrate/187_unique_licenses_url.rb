@@ -1,4 +1,4 @@
-class UniqueLicensesUrl < ActiveRecord::Migration
+class UniqueLicensesUrl < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   class License < ActiveRecord::Base

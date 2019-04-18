@@ -1,5 +1,5 @@
 module Permissions
-  class MediaEntryUserPermission < ActiveRecord::Base
+  class MediaEntryUserPermission < ApplicationRecord
     include ::Permissions::Modules::MediaEntry
     include ::Permissions::Modules::ArelConditions
 

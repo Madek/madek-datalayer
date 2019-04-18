@@ -1,4 +1,4 @@
-class CreateUserpermissions < ActiveRecord::Migration
+class CreateUserpermissions < ActiveRecord::Migration[4.2]
   include Madek::Constants
 
   def change

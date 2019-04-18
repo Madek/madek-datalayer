@@ -1,4 +1,4 @@
-class AddAudioCodecToPreviews < ActiveRecord::Migration
+class AddAudioCodecToPreviews < ActiveRecord::Migration[4.2]
   class MigrationPreview < ActiveRecord::Base
     self.table_name = :previews
 

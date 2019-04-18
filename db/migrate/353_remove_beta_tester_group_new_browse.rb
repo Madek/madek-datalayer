@@ -1,4 +1,4 @@
-class RemoveBetaTesterGroupNewBrowse < ActiveRecord::Migration
+class RemoveBetaTesterGroupNewBrowse < ActiveRecord::Migration[4.2]
 
   def change
     # the id is UUIDTools::UUID.sha1_create(Madek::Constants::MADEK_UUID_NS, "beta_test_new_browse").to_s

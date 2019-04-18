@@ -1,4 +1,4 @@
-class CreateMetaData < ActiveRecord::Migration
+class CreateMetaData < ActiveRecord::Migration[4.2]
 
   def change
     create_table :meta_data, id: false do |t|

@@ -1,4 +1,4 @@
-class AddCollectionSortingLastChange < ActiveRecord::Migration
+class AddCollectionSortingLastChange < ActiveRecord::Migration[4.2]
 
   COLLECTION_SORTING_VALUES = \
     ['created_at ASC', 'created_at DESC', 'title ASC', 'title DESC', 'last_change']

@@ -1,4 +1,4 @@
-class SetIdForZhdkGroup < ActiveRecord::Migration
+class SetIdForZhdkGroup < ActiveRecord::Migration[4.2]
   def change
 
     [:collection_group_permissions, :filter_set_group_permissions,

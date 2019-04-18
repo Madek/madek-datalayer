@@ -1,4 +1,4 @@
-class MoreStringentMetaKeys < ActiveRecord::Migration
+class MoreStringentMetaKeys < ActiveRecord::Migration[4.2]
   def change
 
     reversible do |dir|

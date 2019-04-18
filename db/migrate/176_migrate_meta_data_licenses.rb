@@ -1,4 +1,4 @@
-class MigrateMetaDataLicenses < ActiveRecord::Migration
+class MigrateMetaDataLicenses < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
   include Madek::MediaResourceMigrationModels
 

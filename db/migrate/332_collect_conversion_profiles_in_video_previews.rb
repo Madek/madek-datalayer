@@ -1,4 +1,4 @@
-class CollectConversionProfilesInVideoPreviews < ActiveRecord::Migration
+class CollectConversionProfilesInVideoPreviews < ActiveRecord::Migration[4.2]
   class MigrationPreview < ActiveRecord::Base
     self.table_name = :previews
 

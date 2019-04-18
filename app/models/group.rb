@@ -1,4 +1,4 @@
-class Group < ActiveRecord::Base
+class Group < ApplicationRecord
   include Concerns::FindResource
   include Concerns::Groups::Filters
   include Concerns::Groups::Searches

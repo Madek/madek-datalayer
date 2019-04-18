@@ -1,4 +1,4 @@
-class RemoveLabelDescriptionAndHintFromMetaKeys < ActiveRecord::Migration
+class RemoveLabelDescriptionAndHintFromMetaKeys < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   class MigrationMetaKey < ActiveRecord::Base

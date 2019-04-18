@@ -1,4 +1,4 @@
-class ContextKeysCleanup < ActiveRecord::Migration
+class ContextKeysCleanup < ActiveRecord::Migration[4.2]
   def change
 
     %w(meta_keys context_keys).each do |table|

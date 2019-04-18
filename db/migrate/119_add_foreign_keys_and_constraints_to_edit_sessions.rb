@@ -1,4 +1,4 @@
-class AddForeignKeysAndConstraintsToEditSessions < ActiveRecord::Migration
+class AddForeignKeysAndConstraintsToEditSessions < ActiveRecord::Migration[4.2]
 
   def change
     add_foreign_key :edit_sessions, :media_entries, dependent: :destroy

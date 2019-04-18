@@ -1,5 +1,4 @@
-# -*- encoding : utf-8 -*-
-class Preview < ActiveRecord::Base
+class Preview < ApplicationRecord
   include Concerns::MediaType
 
   attr_accessor :accessed_by_confidential_link

@@ -1,4 +1,4 @@
-class Person < ActiveRecord::Base
+class Person < ApplicationRecord
   include Concerns::FindResource
   include Concerns::People::Filters
 

@@ -1,4 +1,4 @@
-class CreateMediaEntryGrouppermission < ActiveRecord::Migration
+class CreateMediaEntryGrouppermission < ActiveRecord::Migration[4.2]
 
   include Madek::MigrationHelper
 

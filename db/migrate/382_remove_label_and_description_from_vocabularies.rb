@@ -1,4 +1,4 @@
-class RemoveLabelAndDescriptionFromVocabularies < ActiveRecord::Migration
+class RemoveLabelAndDescriptionFromVocabularies < ActiveRecord::Migration[4.2]
   class MigrationVocabulary < ActiveRecord::Base
     self.table_name = 'vocabularies'
   end

@@ -1,4 +1,4 @@
-class CreateFavoriteMediaEntries < ActiveRecord::Migration
+class CreateFavoriteMediaEntries < ActiveRecord::Migration[4.2]
 
   def change
     create_table :favorite_media_entries, id: false do |t|

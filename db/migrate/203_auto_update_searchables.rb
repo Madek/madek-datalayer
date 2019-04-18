@@ -1,4 +1,4 @@
-class AutoUpdateSearchables < ActiveRecord::Migration
+class AutoUpdateSearchables < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

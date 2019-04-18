@@ -1,4 +1,4 @@
-class TimestampsWithTimeZone < ActiveRecord::Migration
+class TimestampsWithTimeZone < ActiveRecord::Migration[4.2]
   def change
 
     res = execute <<-SQL.strip_heredoc

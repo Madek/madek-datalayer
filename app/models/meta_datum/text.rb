@@ -1,5 +1,3 @@
-# -*- encoding : utf-8 -*-
-
 class MetaDatum::Text < MetaDatum
 
   before_save do

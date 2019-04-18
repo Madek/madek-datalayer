@@ -1,4 +1,4 @@
-class MigrateUserCollectionPermissionsData < ActiveRecord::Migration
+class MigrateUserCollectionPermissionsData < ActiveRecord::Migration[4.2]
 
   include Madek::MigrationHelper
   include Madek::MediaResourceMigrationModels

@@ -1,4 +1,4 @@
-class MigrateFavoriteMediaEntries < ActiveRecord::Migration
+class MigrateFavoriteMediaEntries < ActiveRecord::Migration[4.2]
   include Madek::MediaResourceMigrationModels
 
   def change

@@ -1,5 +1,5 @@
 module Permissions
-  class VocabularyGroupPermission < ActiveRecord::Base
+  class VocabularyGroupPermission < ApplicationRecord
     BASE_ENTITY_TABLE_NAME = 'vocabularies'
 
     include ::Permissions::Modules::Vocabulary

@@ -1,4 +1,4 @@
-class MigrateUploaderToMediaEntries < ActiveRecord::Migration
+class MigrateUploaderToMediaEntries < ActiveRecord::Migration[4.2]
   def change
     reversible do |dir|
       dir.up do

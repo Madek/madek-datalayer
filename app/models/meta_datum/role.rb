@@ -1,4 +1,4 @@
-class MetaDatum::Role < ActiveRecord::Base
+class MetaDatum::Role < ApplicationRecord
 
   self.table_name = :meta_data_roles
 

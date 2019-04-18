@@ -1,4 +1,4 @@
-class AddGroupsNotEmptyConstraint < ActiveRecord::Migration
+class AddGroupsNotEmptyConstraint < ActiveRecord::Migration[4.2]
   def change
 
     reversible do |dir|

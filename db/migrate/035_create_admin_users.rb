@@ -1,4 +1,4 @@
-class CreateAdminUsers < ActiveRecord::Migration
+class CreateAdminUsers < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

@@ -1,4 +1,4 @@
-class Role < ActiveRecord::Base
+class Role < ApplicationRecord
 
   include Concerns::Roles::Filters
   include Concerns::FindResource
@@ -6,7 +6,7 @@ class Role < ActiveRecord::Base
 
   localize_fields :labels
 
-  belongs_to :creator, class_name: User
+  belongs_to :creator, class_name: 'User'
   belongs_to :meta_key
   has_many :meta_data_roles, class_name: 'MetaDatum::Role', dependent: :nullify
   has_many :meta_data, through: :meta_data_roles

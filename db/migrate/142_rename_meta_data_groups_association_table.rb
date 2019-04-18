@@ -1,7 +1,7 @@
-class RenameMetaDataGroupsAssociationTable < ActiveRecord::Migration
+class RenameMetaDataGroupsAssociationTable < ActiveRecord::Migration[4.2]
   def up
 
-    remove_foreign_key :meta_data_institutional_groups, :institutional_groups
+    # remove_foreign_key :meta_data_institutional_groups, :institutional_groups
     remove_foreign_key :meta_data_institutional_groups, :meta_data
 
     rename_table :meta_data_institutional_groups, :meta_data_groups 

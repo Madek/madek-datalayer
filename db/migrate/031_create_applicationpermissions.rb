@@ -1,4 +1,4 @@
-class CreateApplicationpermissions < ActiveRecord::Migration
+class CreateApplicationpermissions < ActiveRecord::Migration[4.2]
   include Madek::Constants
   include Madek::MigrationHelper
 

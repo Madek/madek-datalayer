@@ -1,8 +1,6 @@
-# -*- encoding : utf-8 -*-
-
 # user is the system oriented representation of a User
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
 
   # include UserModules::Dropbox
   # include UserModules::TextSearch

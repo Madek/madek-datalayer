@@ -1,4 +1,4 @@
-class AddContraintsForUserSignInColumns < ActiveRecord::Migration
+class AddContraintsForUserSignInColumns < ActiveRecord::Migration[4.2]
   def change
     execute <<-SQL.strip_heredoc
       UPDATE users SET email = NULL WHERE email ~ '^\\s*$';

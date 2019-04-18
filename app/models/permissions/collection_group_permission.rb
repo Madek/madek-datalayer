@@ -1,5 +1,5 @@
 module Permissions
-  class CollectionGroupPermission < ActiveRecord::Base
+  class CollectionGroupPermission < ApplicationRecord
     BASE_ENTITY_TABLE_NAME = 'collections'
 
     include ::Permissions::Modules::Collection

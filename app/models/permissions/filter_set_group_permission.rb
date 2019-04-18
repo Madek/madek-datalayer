@@ -1,5 +1,5 @@
 module Permissions
-  class FilterSetGroupPermission < ActiveRecord::Base
+  class FilterSetGroupPermission < ApplicationRecord
     BASE_ENTITY_TABLE_NAME = 'filter_sets'
 
     include ::Permissions::Modules::FilterSet

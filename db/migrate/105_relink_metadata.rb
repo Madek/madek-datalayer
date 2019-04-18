@@ -1,4 +1,4 @@
-class RelinkMetadata < ActiveRecord::Migration
+class RelinkMetadata < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
   include Madek::MediaResourceMigrationModels
 

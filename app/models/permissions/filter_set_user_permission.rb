@@ -1,5 +1,5 @@
 module Permissions
-  class FilterSetUserPermission < ActiveRecord::Base
+  class FilterSetUserPermission < ApplicationRecord
     include ::Permissions::Modules::FilterSet
     include ::Permissions::Modules::ArelConditions
 

@@ -1,10 +1,3 @@
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 9.6.12
--- Dumped by pg_dump version 10.7
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -12,6 +5,7 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
+SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
@@ -984,16 +978,16 @@ CREATE TABLE public.app_settings (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     brand_logo_url character varying,
     sitemap jsonb DEFAULT '{"de": [{"Medienarchiv ZHdK": "http://medienarchiv.zhdk.ch"}, {"Madek-Projekt auf GitHub": "https://github.com/Madek"}], "en": [{"Media Archiv ZHdK": "http://medienarchiv.zhdk.ch"}, {"Madek Project on Github": "https://github.com/Madek"}]}'::jsonb NOT NULL,
-    contexts_for_entry_extra text[] DEFAULT '{}'::text[] NOT NULL,
-    contexts_for_list_details text[] DEFAULT '{}'::text[] NOT NULL,
-    contexts_for_entry_validation text[] DEFAULT '{}'::text[] NOT NULL,
-    contexts_for_dynamic_filters text[] DEFAULT '{}'::text[] NOT NULL,
-    context_for_entry_summary text,
-    context_for_collection_summary text,
+    contexts_for_entry_extra text[] DEFAULT '{}'::text[],
+    contexts_for_list_details text[] DEFAULT '{}'::text[],
+    contexts_for_entry_validation text[] DEFAULT '{}'::text[],
+    contexts_for_dynamic_filters text[] DEFAULT '{}'::text[],
+    context_for_entry_summary character varying,
+    context_for_collection_summary character varying,
     catalog_context_keys text[] DEFAULT '{}'::text[] NOT NULL,
-    contexts_for_entry_edit text[] DEFAULT '{}'::text[] NOT NULL,
-    contexts_for_collection_edit text[] DEFAULT '{}'::text[] NOT NULL,
-    contexts_for_collection_extra text[] DEFAULT '{}'::text[] NOT NULL,
+    contexts_for_entry_edit text[] DEFAULT '{}'::text[],
+    contexts_for_collection_edit text[] DEFAULT '{}'::text[],
+    contexts_for_collection_extra text[] DEFAULT '{}'::text[],
     media_entry_default_license_id uuid,
     media_entry_default_license_meta_key text,
     media_entry_default_license_usage_text text,
@@ -1012,6 +1006,18 @@ CREATE TABLE public.app_settings (
     about_pages public.hstore DEFAULT ''::public.hstore NOT NULL,
     support_urls public.hstore DEFAULT ''::public.hstore NOT NULL,
     CONSTRAINT oneandonly CHECK ((id = 0))
+);
+
+
+--
+-- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ar_internal_metadata (
+    key character varying NOT NULL,
+    value character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
@@ -1873,6 +1879,14 @@ ALTER TABLE ONLY public.api_tokens
 
 ALTER TABLE ONLY public.app_settings
     ADD CONSTRAINT app_settings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ar_internal_metadata
+    ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
 
 
 --
@@ -4672,437 +4686,224 @@ ALTER TABLE ONLY public.zencoder_jobs
 
 SET search_path TO "$user", public;
 
-INSERT INTO schema_migrations (version) VALUES ('0');
+INSERT INTO "schema_migrations" (version) VALUES
+('0'),
+('1'),
+('10'),
+('100'),
+('101'),
+('102'),
+('103'),
+('104'),
+('105'),
+('107'),
+('108'),
+('109'),
+('11'),
+('110'),
+('111'),
+('112'),
+('113'),
+('114'),
+('115'),
+('117'),
+('118'),
+('119'),
+('12'),
+('120'),
+('121'),
+('122'),
+('123'),
+('124'),
+('125'),
+('126'),
+('127'),
+('128'),
+('129'),
+('13'),
+('130'),
+('131'),
+('132'),
+('133'),
+('134'),
+('135'),
+('136'),
+('137'),
+('138'),
+('139'),
+('14'),
+('140'),
+('141'),
+('142'),
+('143'),
+('144'),
+('145'),
+('146'),
+('147'),
+('148'),
+('149'),
+('15'),
+('150'),
+('151'),
+('152'),
+('153'),
+('154'),
+('156'),
+('157'),
+('16'),
+('165'),
+('166'),
+('168'),
+('169'),
+('17'),
+('171'),
+('175'),
+('176'),
+('177'),
+('178'),
+('18'),
+('180'),
+('181'),
+('182'),
+('183'),
+('184'),
+('185'),
+('186'),
+('187'),
+('188'),
+('189'),
+('19'),
+('190'),
+('191'),
+('192'),
+('193'),
+('194'),
+('199'),
+('2'),
+('20'),
+('200'),
+('201'),
+('202'),
+('203'),
+('204'),
+('205'),
+('206'),
+('207'),
+('208'),
+('209'),
+('21'),
+('210'),
+('211'),
+('212'),
+('213'),
+('214'),
+('215'),
+('22'),
+('23'),
+('24'),
+('25'),
+('26'),
+('27'),
+('28'),
+('29'),
+('299'),
+('3'),
+('30'),
+('300'),
+('301'),
+('302'),
+('303'),
+('304'),
+('305'),
+('306'),
+('31'),
+('310'),
+('311'),
+('312'),
+('313'),
+('314'),
+('315'),
+('316'),
+('317'),
+('318'),
+('319'),
+('32'),
+('320'),
+('321'),
+('322'),
+('323'),
+('324'),
+('325'),
+('326'),
+('327'),
+('328'),
+('329'),
+('33'),
+('330'),
+('331'),
+('332'),
+('333'),
+('334'),
+('335'),
+('336'),
+('337'),
+('338'),
+('339'),
+('34'),
+('340'),
+('341'),
+('342'),
+('343'),
+('344'),
+('345'),
+('346'),
+('347'),
+('348'),
+('349'),
+('35'),
+('350'),
+('351'),
+('352'),
+('353'),
+('354'),
+('355'),
+('356'),
+('357'),
+('358'),
+('359'),
+('360'),
+('361'),
+('362'),
+('363'),
+('364'),
+('365'),
+('366'),
+('367'),
+('368'),
+('369'),
+('370'),
+('371'),
+('372'),
+('373'),
+('374'),
+('375'),
+('376'),
+('377'),
+('378'),
+('379'),
+('380'),
+('381'),
+('382'),
+('383'),
+('384'),
+('385'),
+('386'),
+('387'),
+('4'),
+('5'),
+('6'),
+('7'),
+('8'),
+('9');
 
-INSERT INTO schema_migrations (version) VALUES ('1');
-
-INSERT INTO schema_migrations (version) VALUES ('10');
-
-INSERT INTO schema_migrations (version) VALUES ('100');
-
-INSERT INTO schema_migrations (version) VALUES ('101');
-
-INSERT INTO schema_migrations (version) VALUES ('102');
-
-INSERT INTO schema_migrations (version) VALUES ('103');
-
-INSERT INTO schema_migrations (version) VALUES ('104');
-
-INSERT INTO schema_migrations (version) VALUES ('105');
-
-INSERT INTO schema_migrations (version) VALUES ('107');
-
-INSERT INTO schema_migrations (version) VALUES ('108');
-
-INSERT INTO schema_migrations (version) VALUES ('109');
-
-INSERT INTO schema_migrations (version) VALUES ('11');
-
-INSERT INTO schema_migrations (version) VALUES ('110');
-
-INSERT INTO schema_migrations (version) VALUES ('111');
-
-INSERT INTO schema_migrations (version) VALUES ('112');
-
-INSERT INTO schema_migrations (version) VALUES ('113');
-
-INSERT INTO schema_migrations (version) VALUES ('114');
-
-INSERT INTO schema_migrations (version) VALUES ('115');
-
-INSERT INTO schema_migrations (version) VALUES ('117');
-
-INSERT INTO schema_migrations (version) VALUES ('118');
-
-INSERT INTO schema_migrations (version) VALUES ('119');
-
-INSERT INTO schema_migrations (version) VALUES ('12');
-
-INSERT INTO schema_migrations (version) VALUES ('120');
-
-INSERT INTO schema_migrations (version) VALUES ('121');
-
-INSERT INTO schema_migrations (version) VALUES ('122');
-
-INSERT INTO schema_migrations (version) VALUES ('123');
-
-INSERT INTO schema_migrations (version) VALUES ('124');
-
-INSERT INTO schema_migrations (version) VALUES ('125');
-
-INSERT INTO schema_migrations (version) VALUES ('126');
-
-INSERT INTO schema_migrations (version) VALUES ('127');
-
-INSERT INTO schema_migrations (version) VALUES ('128');
-
-INSERT INTO schema_migrations (version) VALUES ('129');
-
-INSERT INTO schema_migrations (version) VALUES ('13');
-
-INSERT INTO schema_migrations (version) VALUES ('130');
-
-INSERT INTO schema_migrations (version) VALUES ('131');
-
-INSERT INTO schema_migrations (version) VALUES ('132');
-
-INSERT INTO schema_migrations (version) VALUES ('133');
-
-INSERT INTO schema_migrations (version) VALUES ('134');
-
-INSERT INTO schema_migrations (version) VALUES ('135');
-
-INSERT INTO schema_migrations (version) VALUES ('136');
-
-INSERT INTO schema_migrations (version) VALUES ('137');
-
-INSERT INTO schema_migrations (version) VALUES ('138');
-
-INSERT INTO schema_migrations (version) VALUES ('139');
-
-INSERT INTO schema_migrations (version) VALUES ('14');
-
-INSERT INTO schema_migrations (version) VALUES ('140');
-
-INSERT INTO schema_migrations (version) VALUES ('141');
-
-INSERT INTO schema_migrations (version) VALUES ('142');
-
-INSERT INTO schema_migrations (version) VALUES ('143');
-
-INSERT INTO schema_migrations (version) VALUES ('144');
-
-INSERT INTO schema_migrations (version) VALUES ('145');
-
-INSERT INTO schema_migrations (version) VALUES ('146');
-
-INSERT INTO schema_migrations (version) VALUES ('147');
-
-INSERT INTO schema_migrations (version) VALUES ('148');
-
-INSERT INTO schema_migrations (version) VALUES ('149');
-
-INSERT INTO schema_migrations (version) VALUES ('15');
-
-INSERT INTO schema_migrations (version) VALUES ('150');
-
-INSERT INTO schema_migrations (version) VALUES ('151');
-
-INSERT INTO schema_migrations (version) VALUES ('152');
-
-INSERT INTO schema_migrations (version) VALUES ('153');
-
-INSERT INTO schema_migrations (version) VALUES ('154');
-
-INSERT INTO schema_migrations (version) VALUES ('156');
-
-INSERT INTO schema_migrations (version) VALUES ('157');
-
-INSERT INTO schema_migrations (version) VALUES ('16');
-
-INSERT INTO schema_migrations (version) VALUES ('165');
-
-INSERT INTO schema_migrations (version) VALUES ('166');
-
-INSERT INTO schema_migrations (version) VALUES ('168');
-
-INSERT INTO schema_migrations (version) VALUES ('169');
-
-INSERT INTO schema_migrations (version) VALUES ('17');
-
-INSERT INTO schema_migrations (version) VALUES ('171');
-
-INSERT INTO schema_migrations (version) VALUES ('175');
-
-INSERT INTO schema_migrations (version) VALUES ('176');
-
-INSERT INTO schema_migrations (version) VALUES ('177');
-
-INSERT INTO schema_migrations (version) VALUES ('178');
-
-INSERT INTO schema_migrations (version) VALUES ('18');
-
-INSERT INTO schema_migrations (version) VALUES ('180');
-
-INSERT INTO schema_migrations (version) VALUES ('181');
-
-INSERT INTO schema_migrations (version) VALUES ('182');
-
-INSERT INTO schema_migrations (version) VALUES ('183');
-
-INSERT INTO schema_migrations (version) VALUES ('184');
-
-INSERT INTO schema_migrations (version) VALUES ('185');
-
-INSERT INTO schema_migrations (version) VALUES ('186');
-
-INSERT INTO schema_migrations (version) VALUES ('187');
-
-INSERT INTO schema_migrations (version) VALUES ('188');
-
-INSERT INTO schema_migrations (version) VALUES ('189');
-
-INSERT INTO schema_migrations (version) VALUES ('19');
-
-INSERT INTO schema_migrations (version) VALUES ('190');
-
-INSERT INTO schema_migrations (version) VALUES ('191');
-
-INSERT INTO schema_migrations (version) VALUES ('192');
-
-INSERT INTO schema_migrations (version) VALUES ('193');
-
-INSERT INTO schema_migrations (version) VALUES ('194');
-
-INSERT INTO schema_migrations (version) VALUES ('199');
-
-INSERT INTO schema_migrations (version) VALUES ('2');
-
-INSERT INTO schema_migrations (version) VALUES ('20');
-
-INSERT INTO schema_migrations (version) VALUES ('200');
-
-INSERT INTO schema_migrations (version) VALUES ('201');
-
-INSERT INTO schema_migrations (version) VALUES ('202');
-
-INSERT INTO schema_migrations (version) VALUES ('203');
-
-INSERT INTO schema_migrations (version) VALUES ('204');
-
-INSERT INTO schema_migrations (version) VALUES ('205');
-
-INSERT INTO schema_migrations (version) VALUES ('206');
-
-INSERT INTO schema_migrations (version) VALUES ('207');
-
-INSERT INTO schema_migrations (version) VALUES ('208');
-
-INSERT INTO schema_migrations (version) VALUES ('209');
-
-INSERT INTO schema_migrations (version) VALUES ('21');
-
-INSERT INTO schema_migrations (version) VALUES ('210');
-
-INSERT INTO schema_migrations (version) VALUES ('211');
-
-INSERT INTO schema_migrations (version) VALUES ('212');
-
-INSERT INTO schema_migrations (version) VALUES ('213');
-
-INSERT INTO schema_migrations (version) VALUES ('214');
-
-INSERT INTO schema_migrations (version) VALUES ('215');
-
-INSERT INTO schema_migrations (version) VALUES ('22');
-
-INSERT INTO schema_migrations (version) VALUES ('23');
-
-INSERT INTO schema_migrations (version) VALUES ('24');
-
-INSERT INTO schema_migrations (version) VALUES ('25');
-
-INSERT INTO schema_migrations (version) VALUES ('26');
-
-INSERT INTO schema_migrations (version) VALUES ('27');
-
-INSERT INTO schema_migrations (version) VALUES ('28');
-
-INSERT INTO schema_migrations (version) VALUES ('29');
-
-INSERT INTO schema_migrations (version) VALUES ('299');
-
-INSERT INTO schema_migrations (version) VALUES ('3');
-
-INSERT INTO schema_migrations (version) VALUES ('30');
-
-INSERT INTO schema_migrations (version) VALUES ('300');
-
-INSERT INTO schema_migrations (version) VALUES ('301');
-
-INSERT INTO schema_migrations (version) VALUES ('302');
-
-INSERT INTO schema_migrations (version) VALUES ('303');
-
-INSERT INTO schema_migrations (version) VALUES ('304');
-
-INSERT INTO schema_migrations (version) VALUES ('305');
-
-INSERT INTO schema_migrations (version) VALUES ('306');
-
-INSERT INTO schema_migrations (version) VALUES ('31');
-
-INSERT INTO schema_migrations (version) VALUES ('310');
-
-INSERT INTO schema_migrations (version) VALUES ('311');
-
-INSERT INTO schema_migrations (version) VALUES ('312');
-
-INSERT INTO schema_migrations (version) VALUES ('313');
-
-INSERT INTO schema_migrations (version) VALUES ('314');
-
-INSERT INTO schema_migrations (version) VALUES ('315');
-
-INSERT INTO schema_migrations (version) VALUES ('316');
-
-INSERT INTO schema_migrations (version) VALUES ('317');
-
-INSERT INTO schema_migrations (version) VALUES ('318');
-
-INSERT INTO schema_migrations (version) VALUES ('319');
-
-INSERT INTO schema_migrations (version) VALUES ('32');
-
-INSERT INTO schema_migrations (version) VALUES ('320');
-
-INSERT INTO schema_migrations (version) VALUES ('321');
-
-INSERT INTO schema_migrations (version) VALUES ('322');
-
-INSERT INTO schema_migrations (version) VALUES ('323');
-
-INSERT INTO schema_migrations (version) VALUES ('324');
-
-INSERT INTO schema_migrations (version) VALUES ('325');
-
-INSERT INTO schema_migrations (version) VALUES ('326');
-
-INSERT INTO schema_migrations (version) VALUES ('327');
-
-INSERT INTO schema_migrations (version) VALUES ('328');
-
-INSERT INTO schema_migrations (version) VALUES ('329');
-
-INSERT INTO schema_migrations (version) VALUES ('33');
-
-INSERT INTO schema_migrations (version) VALUES ('330');
-
-INSERT INTO schema_migrations (version) VALUES ('331');
-
-INSERT INTO schema_migrations (version) VALUES ('332');
-
-INSERT INTO schema_migrations (version) VALUES ('333');
-
-INSERT INTO schema_migrations (version) VALUES ('334');
-
-INSERT INTO schema_migrations (version) VALUES ('335');
-
-INSERT INTO schema_migrations (version) VALUES ('336');
-
-INSERT INTO schema_migrations (version) VALUES ('337');
-
-INSERT INTO schema_migrations (version) VALUES ('338');
-
-INSERT INTO schema_migrations (version) VALUES ('339');
-
-INSERT INTO schema_migrations (version) VALUES ('34');
-
-INSERT INTO schema_migrations (version) VALUES ('340');
-
-INSERT INTO schema_migrations (version) VALUES ('341');
-
-INSERT INTO schema_migrations (version) VALUES ('342');
-
-INSERT INTO schema_migrations (version) VALUES ('343');
-
-INSERT INTO schema_migrations (version) VALUES ('344');
-
-INSERT INTO schema_migrations (version) VALUES ('345');
-
-INSERT INTO schema_migrations (version) VALUES ('346');
-
-INSERT INTO schema_migrations (version) VALUES ('347');
-
-INSERT INTO schema_migrations (version) VALUES ('348');
-
-INSERT INTO schema_migrations (version) VALUES ('349');
-
-INSERT INTO schema_migrations (version) VALUES ('35');
-
-INSERT INTO schema_migrations (version) VALUES ('350');
-
-INSERT INTO schema_migrations (version) VALUES ('351');
-
-INSERT INTO schema_migrations (version) VALUES ('352');
-
-INSERT INTO schema_migrations (version) VALUES ('353');
-
-INSERT INTO schema_migrations (version) VALUES ('354');
-
-INSERT INTO schema_migrations (version) VALUES ('355');
-
-INSERT INTO schema_migrations (version) VALUES ('356');
-
-INSERT INTO schema_migrations (version) VALUES ('357');
-
-INSERT INTO schema_migrations (version) VALUES ('358');
-
-INSERT INTO schema_migrations (version) VALUES ('359');
-
-INSERT INTO schema_migrations (version) VALUES ('360');
-
-INSERT INTO schema_migrations (version) VALUES ('361');
-
-INSERT INTO schema_migrations (version) VALUES ('362');
-
-INSERT INTO schema_migrations (version) VALUES ('363');
-
-INSERT INTO schema_migrations (version) VALUES ('364');
-
-INSERT INTO schema_migrations (version) VALUES ('365');
-
-INSERT INTO schema_migrations (version) VALUES ('366');
-
-INSERT INTO schema_migrations (version) VALUES ('367');
-
-INSERT INTO schema_migrations (version) VALUES ('368');
-
-INSERT INTO schema_migrations (version) VALUES ('369');
-
-INSERT INTO schema_migrations (version) VALUES ('370');
-
-INSERT INTO schema_migrations (version) VALUES ('371');
-
-INSERT INTO schema_migrations (version) VALUES ('372');
-
-INSERT INTO schema_migrations (version) VALUES ('373');
-
-INSERT INTO schema_migrations (version) VALUES ('374');
-
-INSERT INTO schema_migrations (version) VALUES ('375');
-
-INSERT INTO schema_migrations (version) VALUES ('376');
-
-INSERT INTO schema_migrations (version) VALUES ('377');
-
-INSERT INTO schema_migrations (version) VALUES ('378');
-
-INSERT INTO schema_migrations (version) VALUES ('379');
-
-INSERT INTO schema_migrations (version) VALUES ('380');
-
-INSERT INTO schema_migrations (version) VALUES ('381');
-
-INSERT INTO schema_migrations (version) VALUES ('382');
-
-INSERT INTO schema_migrations (version) VALUES ('383');
-
-INSERT INTO schema_migrations (version) VALUES ('384');
-
-INSERT INTO schema_migrations (version) VALUES ('385');
-
-INSERT INTO schema_migrations (version) VALUES ('386');
-
-INSERT INTO schema_migrations (version) VALUES ('4');
-
-INSERT INTO schema_migrations (version) VALUES ('5');
-
-INSERT INTO schema_migrations (version) VALUES ('6');
-
-INSERT INTO schema_migrations (version) VALUES ('7');
-
-INSERT INTO schema_migrations (version) VALUES ('8');
-
-INSERT INTO schema_migrations (version) VALUES ('9');
 

@@ -1,4 +1,4 @@
-class FinalizeMetaDatumGroupsToPeople < ActiveRecord::Migration
+class FinalizeMetaDatumGroupsToPeople < ActiveRecord::Migration[4.2]
 
   def change
 

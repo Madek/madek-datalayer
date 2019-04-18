@@ -1,4 +1,4 @@
-class ContextKey < ActiveRecord::Base
+class ContextKey < ApplicationRecord
   include Concerns::Orderable
   include Concerns::LocalizedFields
 

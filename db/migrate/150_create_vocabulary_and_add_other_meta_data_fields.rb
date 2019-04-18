@@ -1,4 +1,4 @@
-class CreateVocabularyAndAddOtherMetaDataFields < ActiveRecord::Migration
+class CreateVocabularyAndAddOtherMetaDataFields < ActiveRecord::Migration[4.2]
 
   def change
     rename_column :meta_keys, :meta_terms_alphabetical_order, :keywords_alphabetical_order

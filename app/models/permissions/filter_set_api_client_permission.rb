@@ -1,5 +1,5 @@
 module Permissions
-  class FilterSetApiClientPermission < ActiveRecord::Base
+  class FilterSetApiClientPermission < ApplicationRecord
     include ::Permissions::Modules::FilterSet
     belongs_to :api_client
   end

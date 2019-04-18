@@ -1,4 +1,4 @@
-class AddMetaKeyUniquenessToMetaData < ActiveRecord::Migration
+class AddMetaKeyUniquenessToMetaData < ActiveRecord::Migration[4.2]
   def change
     change_table :meta_data do |t|
       t.index [:media_entry_id, :meta_key_id], unique: :true

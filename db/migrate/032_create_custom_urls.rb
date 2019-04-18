@@ -1,4 +1,4 @@
-class CreateCustomUrls < ActiveRecord::Migration
+class CreateCustomUrls < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

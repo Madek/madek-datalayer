@@ -1,4 +1,4 @@
-class CreateEditSessions < ActiveRecord::Migration
+class CreateEditSessions < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   def change

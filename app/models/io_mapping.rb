@@ -1,4 +1,4 @@
-class IoMapping < ActiveRecord::Base
+class IoMapping < ApplicationRecord
   include Concerns::IoMappings::Filters
 
   belongs_to :io_interface

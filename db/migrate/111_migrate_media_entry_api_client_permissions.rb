@@ -1,4 +1,4 @@
-class MigrateMediaEntryApiClientPermissions < ActiveRecord::Migration
+class MigrateMediaEntryApiClientPermissions < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   class ::MigrationApiClientpermission < ActiveRecord::Base

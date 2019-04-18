@@ -1,4 +1,4 @@
-class RemoveLabelDescriptionAndHintFromContextKeys < ActiveRecord::Migration
+class RemoveLabelDescriptionAndHintFromContextKeys < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
   class MigrationContextKey < ActiveRecord::Base

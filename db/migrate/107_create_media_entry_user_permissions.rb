@@ -1,4 +1,4 @@
-class CreateMediaEntryUserPermissions < ActiveRecord::Migration
+class CreateMediaEntryUserPermissions < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
   include Madek::MediaResourceMigrationModels
 

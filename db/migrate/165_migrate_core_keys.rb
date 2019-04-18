@@ -1,4 +1,4 @@
-class MigrateCoreKeys < ActiveRecord::Migration
+class MigrateCoreKeys < ActiveRecord::Migration[4.2]
 
   class MetaKey < ActiveRecord::Base ; end
   class IoMapping < ActiveRecord::Base ; end

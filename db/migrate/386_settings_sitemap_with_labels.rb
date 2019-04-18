@@ -1,4 +1,4 @@
-class SettingsSitemapWithLabels < ActiveRecord::Migration
+class SettingsSitemapWithLabels < ActiveRecord::Migration[4.2]
   class MigrationSetting < ActiveRecord::Base
     self.table_name = 'app_settings'
   end
@@ -19,12 +19,14 @@ class SettingsSitemapWithLabels < ActiveRecord::Migration
   }
 
   def change
+    # NOTE: prevents 'cached plan must not change result type' error from ActiveRecord ¯\_(ツ)_/¯
+    MigrationSetting.reset_column_information
+
     old_sitemap = MigrationSetting.first.sitemap.as_json
-    new_sitemap = available_locales
-      .map { |lang| { lang => old_sitemap } }
-      .reduce(&:merge)
+    new_sitemap = available_locales.map { |lang| { lang => old_sitemap } }.reduce(&:merge)
     MigrationSetting.first.update_attributes!(sitemap: new_sitemap)
-    change_column_default(:app_settings, :sitemap, NEW_FIELD_DEFAULT)
+
+    change_column_default(:app_settings, :sitemap, NEW_FIELD_DEFAULT.as_json)
   end
 
   private

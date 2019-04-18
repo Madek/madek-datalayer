@@ -1,4 +1,4 @@
-class DetachDraftsFromSets < ActiveRecord::Migration
+class DetachDraftsFromSets < ActiveRecord::Migration[4.2]
   def change
 
     execute <<-SQL.strip_heredoc

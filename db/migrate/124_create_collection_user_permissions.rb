@@ -1,4 +1,4 @@
-class CreateCollectionUserPermissions < ActiveRecord::Migration
+class CreateCollectionUserPermissions < ActiveRecord::Migration[4.2]
 
   def change
     create_table :collection_user_permissions, id: false do |t|

@@ -1,4 +1,4 @@
-class AddIndexesToNewUpdatedAtCols < ActiveRecord::Migration
+class AddIndexesToNewUpdatedAtCols < ActiveRecord::Migration[4.2]
   def change
     %w(media_entries collections filter_sets).each do |table_name|
       add_index table_name, :edit_session_updated_at

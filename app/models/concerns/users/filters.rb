@@ -7,7 +7,7 @@ module Concerns
       included do
         scope :admins, -> { joins(:admin) }
         scope :deactivated, -> { where(is_deactivated: true) }
-        scope :sort_by, lambda { |attribute|
+        scope :order_by, lambda { |attribute|
           case attribute.to_sym
           when :first_name_last_name
             joins(:person)

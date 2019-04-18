@@ -1,4 +1,4 @@
-class ApiClient < ActiveRecord::Base
+class ApiClient < ApplicationRecord
   include Concerns::ApiClients::Filters
 
   belongs_to :user

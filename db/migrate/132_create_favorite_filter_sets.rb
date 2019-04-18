@@ -1,4 +1,4 @@
-class CreateFavoriteFilterSets < ActiveRecord::Migration
+class CreateFavoriteFilterSets < ActiveRecord::Migration[4.2]
 
   def change
     create_table :favorite_filter_sets, id: false do |t|

@@ -1,4 +1,4 @@
-class UuidPkeyForIoMapping < ActiveRecord::Migration
+class UuidPkeyForIoMapping < ActiveRecord::Migration[4.2]
   def change
     add_column  :io_mappings, :id, :uuid, nil: false, default: 'gen_random_uuid()'
     execute "ALTER TABLE io_mappings DROP CONSTRAINT io_mappings_pkey;";

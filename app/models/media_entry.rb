@@ -1,4 +1,4 @@
-class MediaEntry < ActiveRecord::Base
+class MediaEntry < ApplicationRecord
   ################################################################################
   # NOTE: The standard `find` and `find_by_id` methods are extended/overridden in
   # app/models/concerns/media_resources/custom_urls in order to accomodate
@@ -32,7 +32,8 @@ class MediaEntry < ActiveRecord::Base
 
   has_one :media_file, dependent: :destroy
 
-  has_many :collection_media_entry_arcs, class_name: Arcs::CollectionMediaEntryArc
+  has_many :collection_media_entry_arcs,
+           class_name: 'Arcs::CollectionMediaEntryArc'
   has_many :parent_collections,
            through: :collection_media_entry_arcs,
            source: :collection

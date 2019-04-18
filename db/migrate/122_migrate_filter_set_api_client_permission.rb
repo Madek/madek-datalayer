@@ -1,4 +1,4 @@
-class MigrateFilterSetApiClientPermission < ActiveRecord::Migration
+class MigrateFilterSetApiClientPermission < ActiveRecord::Migration[4.2]
 
   include Madek::MigrationHelper
 

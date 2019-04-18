@@ -1,4 +1,4 @@
-class CreateFilterSetUserPermission < ActiveRecord::Migration
+class CreateFilterSetUserPermission < ActiveRecord::Migration[4.2]
 
   include Madek::MigrationHelper
 

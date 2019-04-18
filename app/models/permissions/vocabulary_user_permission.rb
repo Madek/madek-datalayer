@@ -1,5 +1,5 @@
 module Permissions
-  class VocabularyUserPermission < ActiveRecord::Base
+  class VocabularyUserPermission < ApplicationRecord
     include ::Permissions::Modules::Vocabulary
     include ::Permissions::Modules::ArelConditions
     belongs_to :user

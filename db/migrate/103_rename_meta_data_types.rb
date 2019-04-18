@@ -1,4 +1,4 @@
-class RenameMetaDataTypes < ActiveRecord::Migration
+class RenameMetaDataTypes < ActiveRecord::Migration[4.2]
 
   TYPE_MAP={
     'MetaDatumCopyright' => 'MetaDatum::Copyright',

@@ -1,4 +1,4 @@
-class AddForeignKeysToCollectionUserPermissions < ActiveRecord::Migration
+class AddForeignKeysToCollectionUserPermissions < ActiveRecord::Migration[4.2]
 
   def change
     add_foreign_key :collection_user_permissions, :users, on_delete: :cascade

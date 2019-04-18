@@ -1,4 +1,4 @@
-class FinalizeMetaTermsToKeywords< ActiveRecord::Migration
+class FinalizeMetaTermsToKeywords< ActiveRecord::Migration[4.2]
   def change
 
     ActiveRecord::Base.transaction do

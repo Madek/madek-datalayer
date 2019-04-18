@@ -1,4 +1,4 @@
-class CleanupLicensesAndLicenseGroups < ActiveRecord::Migration
+class CleanupLicensesAndLicenseGroups < ActiveRecord::Migration[4.2]
 
   # remove licenses and related tables that were migrated/are not used anymore 
 

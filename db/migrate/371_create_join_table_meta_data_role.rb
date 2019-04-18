@@ -1,4 +1,4 @@
-class CreateJoinTableMetaDataRole < ActiveRecord::Migration
+class CreateJoinTableMetaDataRole < ActiveRecord::Migration[4.2]
   def change
     create_table :meta_data_roles, id: false do |t|
       t.primary_key :id, :uuid, default: 'gen_random_uuid()'
