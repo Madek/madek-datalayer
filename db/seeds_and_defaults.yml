@@ -12,16 +12,22 @@
 #
 # NOTE: for major changes (like changing an id), existing data that references the core vocab (like MetaDatum) needs to be migrated as well!
 # For smaller changes (label, …), only ContextKeys need to migrated (e.g. if context_key.label is empty and the meta_key label changed, copy the old value).
-# Changing text atributes or adding MetaKeys does need a migration.
+# Changing text atributes or adding MetaKeys always needs a migration.
 
 MADEK_CORE_VOCABULARY:
   id: madek_core
-  label: 'Madek Core'
-  description: >
-    Das Core-Vokabular ist fester Bestandteil der Software Madek.
-    Es enthält die wichtigsten Metadaten für die Verwaltung von Medieninhalten
-    und ist vordefiniert und unveränderbar.
-
+  labels:
+    de: 'Madek Core'
+    en: 'Madek Core'
+  descriptions:
+    de: >
+      Das Core-Vokabular ist fester Bestandteil der Software Madek.
+      Es enthält die wichtigsten Metadaten für die Beschreibung von Medieninhalten
+      und ist vordefiniert und unveränderbar.
+    en: >
+      The Core vocabulary is an integral part of the software Madek.
+      It contains the most important metadata for describing media content
+      and is predefined and immutable.
   meta_keys:
     madek_core:title:
       meta_datum_object_type: MetaDatum::Text
@@ -141,7 +147,7 @@ MADEK_CORE_VOCABULARY:
       text_type: line
       labels:
         en: Copyright Notice
-        de: Rechteinhaber/in
+        de: Urheberrechtshinweis
       descriptions:
         en: NULL
         de: NULL

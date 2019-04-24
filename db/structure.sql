@@ -5090,6 +5090,8 @@ INSERT INTO schema_migrations (version) VALUES ('378');
 
 INSERT INTO schema_migrations (version) VALUES ('379');
 
+INSERT INTO schema_migrations (version) VALUES ('380');
+
 INSERT INTO schema_migrations (version) VALUES ('4');
 
 INSERT INTO schema_migrations (version) VALUES ('5');
