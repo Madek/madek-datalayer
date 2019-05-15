@@ -118,6 +118,8 @@ module UriAuthorityControl
         provider: AUTHORITY_CONTROL_PROVIDERS[res[:kind]].except(:patterns)
       )
     end
+  # rubocop:disable Lint/HandleExceptions
+  rescue
   end
 
 end
