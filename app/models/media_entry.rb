@@ -27,6 +27,7 @@ class MediaEntry < ApplicationRecord
   include Concerns::MediaResources::Editability
   include Concerns::MediaResources::Highlight
   include Concerns::MediaResources::MetaDataArelConditions
+  include Concerns::MediaResources::PartOfWorkflow
   include Concerns::SharedOrderBy
   include Concerns::SharedScopes
 

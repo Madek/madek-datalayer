@@ -5,7 +5,6 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
-SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
@@ -372,14 +371,39 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
 CREATE FUNCTION public.check_no_drafts_in_collections() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
-          BEGIN
-            IF
-              (SELECT is_published FROM media_entries WHERE id = NEW.media_entry_id) = false
-              THEN RAISE EXCEPTION 'Incomplete MediaEntries can not be put into Collections!';
-            END IF;
-            RETURN NEW;
-          END;
-          $$;
+      BEGIN
+        IF
+          (SELECT is_published FROM media_entries WHERE id = NEW.media_entry_id) = false
+          AND NOT EXISTS (
+            SELECT 1 FROM workflows WHERE workflows.is_active = TRUE AND workflows.id IN (
+              SELECT workflow_id FROM collections WHERE collections.id IN (
+                WITH RECURSIVE parent_ids as (
+  SELECT parent_id
+  FROM collection_collection_arcs
+  WHERE child_id IN (
+    SELECT collection_id
+    FROM collection_media_entry_arcs
+    WHERE media_entry_id = NEW.media_entry_id
+  )
+  UNION
+    SELECT cca.parent_id
+    FROM collection_collection_arcs cca
+    JOIN parent_ids p ON cca.child_id = p.parent_id
+)
+SELECT parent_id FROM parent_ids
+UNION
+  SELECT cmea.collection_id
+  FROM collection_media_entry_arcs cmea
+  WHERE media_entry_id = NEW.media_entry_id
+
+              )
+            )
+          )
+          THEN RAISE EXCEPTION 'Incomplete MediaEntries can not be put into Collections!';
+        END IF;
+        RETURN NEW;
+      END;
+      $$;
 
 
 --
@@ -1014,7 +1038,6 @@ CREATE TABLE public.app_settings (
 --
 
 CREATE SEQUENCE public.app_settings_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1148,7 +1171,9 @@ CREATE TABLE public.collections (
     sorting public.collection_sorting DEFAULT 'created_at DESC'::public.collection_sorting NOT NULL,
     edit_session_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    clipboard_user_id character varying
+    clipboard_user_id character varying,
+    workflow_id uuid,
+    is_master boolean DEFAULT false NOT NULL
 );
 
 
@@ -1746,6 +1771,16 @@ CREATE TABLE public.users (
 
 
 --
+-- Name: users_workflows; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.users_workflows (
+    user_id uuid NOT NULL,
+    workflow_id uuid NOT NULL
+);
+
+
+--
 -- Name: visualizations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1845,6 +1880,19 @@ UNION
     filter_sets.updated_at,
     'FilterSet'::text AS type
    FROM public.filter_sets;
+
+
+--
+-- Name: workflows; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.workflows (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    name character varying NOT NULL,
+    creator_id uuid NOT NULL,
+    is_active boolean DEFAULT true NOT NULL,
+    configuration jsonb DEFAULT '{}'::jsonb
+);
 
 
 --
@@ -2258,6 +2306,14 @@ ALTER TABLE ONLY public.vocabulary_group_permissions
 
 ALTER TABLE ONLY public.vocabulary_user_permissions
     ADD CONSTRAINT vocabulary_user_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: workflows workflows_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.workflows
+    ADD CONSTRAINT workflows_pkey PRIMARY KEY (id);
 
 
 --
@@ -2686,6 +2742,13 @@ CREATE INDEX index_collections_on_responsible_user_id ON public.collections USIN
 --
 
 CREATE INDEX index_collections_on_updated_at ON public.collections USING btree (updated_at);
+
+
+--
+-- Name: index_collections_on_workflow_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_collections_on_workflow_id ON public.collections USING btree (workflow_id);
 
 
 --
@@ -3393,6 +3456,20 @@ CREATE UNIQUE INDEX index_users_on_institutional_id ON public.users USING btree 
 --
 
 CREATE INDEX index_users_on_login ON public.users USING btree (login);
+
+
+--
+-- Name: index_users_workflows_on_user_id_and_workflow_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_workflows_on_user_id_and_workflow_id ON public.users_workflows USING btree (user_id, workflow_id);
+
+
+--
+-- Name: index_users_workflows_on_workflow_id_and_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_workflows_on_workflow_id_and_user_id ON public.users_workflows USING btree (workflow_id, user_id);
 
 
 --
@@ -4368,6 +4445,14 @@ ALTER TABLE ONLY public.collection_user_permissions
 
 
 --
+-- Name: collections fk_rails_9085ae39f1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.collections
+    ADD CONSTRAINT fk_rails_9085ae39f1 FOREIGN KEY (workflow_id) REFERENCES public.workflows(id);
+
+
+--
 -- Name: roles fk_rails_973fbfab62; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4381,6 +4466,14 @@ ALTER TABLE ONLY public.roles
 
 ALTER TABLE ONLY public.filter_set_group_permissions
     ADD CONSTRAINT fk_rails_9cf683b9d3 FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: workflows fk_rails_ad47ad12fc; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.workflows
+    ADD CONSTRAINT fk_rails_ad47ad12fc FOREIGN KEY (creator_id) REFERENCES public.users(id);
 
 
 --
@@ -4980,6 +5073,12 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('387'),
 ('388'),
 ('389'),
+('390'),
+('391'),
+('392'),
+('393'),
+('394'),
+('395'),
 ('4'),
 ('5'),
 ('6'),

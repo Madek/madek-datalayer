@@ -27,6 +27,7 @@ class Collection < ApplicationRecord
   include Concerns::MediaResources::Editability
   include Concerns::MediaResources::Highlight
   include Concerns::MediaResources::MetaDataArelConditions
+  include Concerns::MediaResources::PartOfWorkflow
   include Concerns::SharedOrderBy
   include Concerns::SharedScopes
 
@@ -62,11 +63,19 @@ class Collection < ApplicationRecord
 
   #################################################################################
 
+  belongs_to :workflow, optional: true
+
+  #################################################################################
+
   scope :by_title, lambda{ |title|
     joins(:meta_data)
       .where(meta_data: { meta_key_id: 'madek_core:title' })
       .where('string ILIKE :title', title: "%#{title}%")
       .order(:created_at, :id)
+  }
+
+  scope :not_part_of_finished_workflow, lambda{
+    where.not(id: self.joins(:workflow).where(workflows: { is_active: false }))
   }
 
   default_scope { where(clipboard_user_id: nil).reorder(:created_at, :id) }
@@ -78,7 +87,8 @@ class Collection < ApplicationRecord
   def child_media_resources
     MediaResource.unified_scope(media_entries,
                                 collections,
-                                filter_sets)
+                                filter_sets,
+                                part_of_workflow?)
   end
 
   def highlighted_media_resources

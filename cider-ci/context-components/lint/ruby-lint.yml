@@ -32,7 +32,8 @@
             -e app/models/permissions/modules/arel_conditions.rb \
             -e app/models/concerns/media_resources/meta_data_arel_conditions.rb \
             -e app/models/concerns/media_resources/filters/meta_keys.rb \
-            -e app/models/concerns/localized_fields.rb
+            -e app/models/concerns/localized_fields.rb \
+            -e app/models/concerns/media_resources/visibility.rb
 
     code-similarity:
       name: Code similarity with flay
@@ -43,6 +44,7 @@
             export PATH=~/.rubies/$RUBY/bin:$PATH
             find app -type f \
               -not -path 'app/models/concerns/media_resources/meta_data_arel_conditions.rb' \
+              -not -path 'app/models/concerns/media_resources/visibility.rb' \
               | xargs bundle exec cider-ci_flay
 
     lint-ruby:
