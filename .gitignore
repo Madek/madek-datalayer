@@ -21,3 +21,4 @@
 /config/database.yml
 /config/settings.local.yml
 backups
+.ruby-gemset

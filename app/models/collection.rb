@@ -62,6 +62,10 @@ class Collection < ApplicationRecord
 
   #################################################################################
 
+  belongs_to :workflow, optional: true
+
+  #################################################################################
+
   scope :by_title, lambda{ |title|
     joins(:meta_data)
       .where(meta_data: { meta_key_id: 'madek_core:title' })

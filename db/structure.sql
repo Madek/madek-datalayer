@@ -5,7 +5,6 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
-SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
@@ -1010,14 +1009,33 @@ CREATE TABLE public.app_settings (
 
 
 --
+-- Name: app_settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.app_settings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: app_settings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.app_settings_id_seq OWNED BY public.app_settings.id;
+
+
+--
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.ar_internal_metadata (
     key character varying NOT NULL,
     value character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -1128,7 +1146,8 @@ CREATE TABLE public.collections (
     sorting public.collection_sorting DEFAULT 'created_at DESC'::public.collection_sorting NOT NULL,
     edit_session_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    clipboard_user_id character varying
+    clipboard_user_id character varying,
+    workflow_id uuid
 );
 
 
@@ -1139,8 +1158,8 @@ CREATE TABLE public.collections (
 CREATE TABLE public.confidential_links (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     user_id uuid NOT NULL,
-    resource_id uuid,
     resource_type character varying,
+    resource_id uuid,
     token character varying(45) NOT NULL,
     revoked boolean DEFAULT false NOT NULL,
     description text,
@@ -1345,7 +1364,7 @@ CREATE TABLE public.groups (
     type character varying DEFAULT 'Group'::character varying NOT NULL,
     person_id uuid,
     searchable text DEFAULT ''::text NOT NULL,
-    CONSTRAINT check_valid_type CHECK (((type)::text = ANY (ARRAY[('AuthenticationGroup'::character varying)::text, ('InstitutionalGroup'::character varying)::text, ('Group'::character varying)::text])))
+    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['AuthenticationGroup'::character varying, 'InstitutionalGroup'::character varying, 'Group'::character varying])::text[])))
 );
 
 
@@ -1828,6 +1847,18 @@ UNION
 
 
 --
+-- Name: workflows; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.workflows (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    name character varying NOT NULL,
+    user_id uuid NOT NULL,
+    is_active boolean DEFAULT true NOT NULL
+);
+
+
+--
 -- Name: zencoder_jobs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2177,6 +2208,14 @@ ALTER TABLE ONLY public.roles
 
 
 --
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
 -- Name: usage_terms usage_terms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2230,6 +2269,14 @@ ALTER TABLE ONLY public.vocabulary_group_permissions
 
 ALTER TABLE ONLY public.vocabulary_user_permissions
     ADD CONSTRAINT vocabulary_user_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: workflows workflows_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.workflows
+    ADD CONSTRAINT workflows_pkey PRIMARY KEY (id);
 
 
 --
@@ -2658,6 +2705,13 @@ CREATE INDEX index_collections_on_responsible_user_id ON public.collections USIN
 --
 
 CREATE INDEX index_collections_on_updated_at ON public.collections USING btree (updated_at);
+
+
+--
+-- Name: index_collections_on_workflow_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_collections_on_workflow_id ON public.collections USING btree (workflow_id);
 
 
 --
@@ -3375,6 +3429,13 @@ CREATE INDEX index_vocabularies_on_position ON public.vocabularies USING btree (
 
 
 --
+-- Name: index_workflows_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_workflows_on_user_id ON public.workflows USING btree (user_id);
+
+
+--
 -- Name: index_zencoder_jobs_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3456,13 +3517,6 @@ CREATE UNIQUE INDEX unique_email_idx ON public.users USING btree (lower((email):
 --
 
 CREATE UNIQUE INDEX unique_login_idx ON public.users USING btree (login);
-
-
---
--- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX unique_schema_migrations ON public.schema_migrations USING btree (version);
 
 
 --
@@ -3743,6 +3797,13 @@ CREATE TRIGGER update_updated_at_column_of_api_tokens BEFORE UPDATE ON public.ap
 --
 
 CREATE TRIGGER update_updated_at_column_of_app_settings BEFORE UPDATE ON public.app_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
+
+
+--
+-- Name: ar_internal_metadata update_updated_at_column_of_ar_internal_metadata; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_ar_internal_metadata BEFORE UPDATE ON public.ar_internal_metadata FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
@@ -4332,6 +4393,22 @@ ALTER TABLE ONLY public.confidential_links
 
 
 --
+-- Name: collection_user_permissions fk_rails_8f830fb7e7; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.collection_user_permissions
+    ADD CONSTRAINT fk_rails_8f830fb7e7 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: collections fk_rails_9085ae39f1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.collections
+    ADD CONSTRAINT fk_rails_9085ae39f1 FOREIGN KEY (workflow_id) REFERENCES public.workflows(id);
+
+
+--
 -- Name: roles fk_rails_973fbfab62; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4361,6 +4438,14 @@ ALTER TABLE ONLY public.meta_data_roles
 
 ALTER TABLE ONLY public.context_keys
     ADD CONSTRAINT fk_rails_b297363c89 FOREIGN KEY (context_id) REFERENCES public.contexts(id);
+
+
+--
+-- Name: workflows fk_rails_b2ae6690e8; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.workflows
+    ADD CONSTRAINT fk_rails_b2ae6690e8 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -4409,6 +4494,14 @@ ALTER TABLE ONLY public.api_tokens
 
 ALTER TABLE ONLY public.keywords
     ADD CONSTRAINT fk_rails_f3e1612c9e FOREIGN KEY (meta_key_id) REFERENCES public.meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: filter_set_user_permissions fk_rails_fe38b294ce; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.filter_set_user_permissions
+    ADD CONSTRAINT fk_rails_fe38b294ce FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -4936,6 +5029,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('387'),
 ('388'),
 ('389'),
+('390'),
+('391'),
 ('4'),
 ('5'),
 ('6'),
