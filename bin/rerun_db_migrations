@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -eux
+
+SQUASHED_MIGRATIONS_VERSION=340
+
+export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
+
+# seeds (only seeds, like the core vocab)
+bundle exec rails db:pg:terminate_connections db:drop db:create db:migrate VERSION=$SQUASHED_MIGRATIONS_VERSION
+# bundle exec rails db:pg:truncate_tables db:pg:data:restore FILE=db/seeds.$SQUASHED_MIGRATIONS_VERSION.pgbin
+bundle exec rails db:migrate
+bundle exec rails db:seed
+rm -f db/seeds.pgbin
+bundle exec rails db:pg:structure_and_data:dump FILE=db/seeds.pgbin
+
+# personas (seeds and example data)
+bundle exec rails db:pg:terminate_connections db:drop db:create db:migrate VERSION=$SQUASHED_MIGRATIONS_VERSION
+bundle exec rails db:pg:truncate_tables db:pg:data:restore FILE=db/personas.$SQUASHED_MIGRATIONS_VERSION.pgbin
+bundle exec rails db:migrate
+bundle exec rails db:seed
+rm -f db/personas.pgbin
+bundle exec rails db:pg:structure_and_data:dump FILE=db/personas.pgbin
