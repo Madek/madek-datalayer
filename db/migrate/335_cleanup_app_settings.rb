@@ -13,11 +13,11 @@ class CleanupAppSettings < ActiveRecord::Migration
     change_column :app_settings, :brand_logo_url, :string, null: true, default: nil
     change_column :app_settings, :catalog_context_keys, :text, array: true, null: false, default: []
 
-    AppSettings.attribute_names.select {|k| k.starts_with?('context_')}.each do |k|
+    MigrationAppSetting.attribute_names.select {|k| k.starts_with?('context_')}.each do |k|
       change_column :app_settings, k, :text, null: true, default: nil
     end
 
-    AppSettings.attribute_names.select {|k| k.starts_with?('contexts_')}.each do |k|
+    MigrationAppSetting.attribute_names.select {|k| k.starts_with?('contexts_')}.each do |k|
       change_column :app_settings, k, :text, array: true, null: false, default: []
     end
     MigrationAppSetting.reset_column_information

@@ -9,14 +9,24 @@ module Concerns
         @localized_fields = []
 
         args.each do |field|
+          begin
+            next unless columns_hash.include?(field.to_s)
+          rescue ActiveRecord::StatementInvalid
+            next
+          end
+
           @localized_fields << field.to_sym
 
-          method_name = field.to_s.singularize
+          getter_name = field.to_s.singularize
 
-          define_method method_name do |locale = nil|
+          define_method getter_name do |locale = nil|
             send(field)[determine_locale(locale)].presence
           end
         end
+      end
+
+      def localized_field?(column)
+        @localized_fields.include?(column.to_sym)
       end
     end
 

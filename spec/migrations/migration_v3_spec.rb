@@ -17,13 +17,13 @@ describe 'Migration from v2 to v3' do
       .to match_array(normins_useds_terms)
   end
 
-  it 'has correct AppSettings: Context-/MetaData-Display' do
-    settings = AppSettings.first
+  it 'has correct AppSetting: Context-/MetaData-Display' do
+    settings = AppSetting.first
     # hardcoded in v2, should be set in v3 to not break
     # existing instances
-    expect(settings.context_for_entry_summary).to eq 'core'
-    expect(settings.context_for_collection_summary).to eq 'core'
-    expect(settings.contexts_for_entry_validation).to eq ['upload']
+    expect(settings.context_for_entry_summary.id).to eq 'core'
+    expect(settings.context_for_collection_summary.id).to eq 'core'
+    expect(settings.contexts_for_entry_validation.map(&:id)).to eq ['upload']
   end
 
 end

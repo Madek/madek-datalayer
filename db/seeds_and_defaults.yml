@@ -224,25 +224,48 @@ MADEK_DEFAULT_SETTINGS:
       context_id: 'metadata'
 
   STRINGS:
-    site_title: '** Name des Systems **'
-    brand_text: '** Name des Anbieters **'
+    site_titles:
+      de: '** Name des Systems **'
+      en: ''
+    brand_texts:
+      de: '** Name des Anbieters **'
+      en: ''
     brand_logo_url: null
-    welcome_title: '** Wilkommen zum System **'
-    welcome_text: '** Informationen zum System **'
+    welcome_titles:
+      de: '** Wilkommen zum System **'
+      en: ''
+    welcome_texts:
+      de: '** Informationen zum System **'
+      en: ''
 
-    featured_set_title: '** Sehenswerte Inhalte **'
-    featured_set_subtitle: '** Höhepunkte aus diesem Archiv. **'
+    featured_set_titles:
+      de: '** Sehenswerte Inhalte **'
+      en: ''
+    featured_set_subtitles:
+      de: '** Höhepunkte aus diesem Archiv. **'
+      en: ''
 
-    catalog_title: '** Katalog **'
-    catalog_subtitle: '** Erkunden Sie den Katalog. **'
+    catalog_titles:
+      de: '** Katalog **'
+      en: ''
+    catalog_subtitles:
+      de: '** Erkunden Sie den Katalog. **'
+      en: ''
 
     media_entry_default_license_usage_meta_key: 'madek_core:copyright_notice'
     media_entry_default_license_usage_text: 'All Rights reserved.'
 
-    about_page: |
-      # About this Archive
+    about_pages:
+      de: |
+        # Über dieses Archiv
 
-      (Nothing here yet, configure content in [Admin Interface](/admin/app_settings))
+        (Hier ist noch kein Inhalt. Dieser kann im
+        [Admin Interface](/admin/app_settings)
+        konfiguriert werden.)
+      en: |
+        # About this Archive
+
+        (Nothing here yet, configure content in [Admin Interface](/admin/app_settings))
 
     sitemap:
       - 'About': '/about/'

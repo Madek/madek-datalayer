@@ -45,7 +45,7 @@ namespace :db do
 
       # Default Settings ##########################################################
 
-      settings = AppSettings.first
+      settings = AppSetting.first
 
       DEFAULT_CONTEXT_SETTINGS.each do |key, val|
         settings.update_attributes!(key => val)
@@ -58,8 +58,8 @@ namespace :db do
         settings.update_attributes!(key => ckeys.map(&:id))
       end
 
-      DEFAULT_STRING_SETTINGS.each do |key, string|
-        settings.update_attributes!(key => string)
+      DEFAULT_STRING_SETTINGS.each do |key, value|
+        settings.update_attributes!(key => value)
       end
 
     end

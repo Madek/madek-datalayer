@@ -8,12 +8,12 @@ class UpgradeAppSettingsForV3 < ActiveRecord::Migration
   def change
     change_column_default :app_settings, :id, 0
 
-    app_setting = (AppSetting.first or AppSetting.create)
+    app_setting = (MigrationAppSetting.first or MigrationAppSetting.create)
 
     rename_column :app_settings, :title, :site_title
     site_title_default = 'Media Archive'
     change_column_default :app_settings, :site_title, site_title_default
-    AppSetting.reset_column_information
+    MigrationAppSetting.reset_column_information
     unless app_setting.reload.site_title
       app_setting.update_attribute :site_title, site_title_default
     end
@@ -22,7 +22,7 @@ class UpgradeAppSettingsForV3 < ActiveRecord::Migration
     rename_column :app_settings, :brand, :brand_text
     brand_text_default = 'ACME, Inc.'
     change_column_default :app_settings, :brand_text, brand_text_default
-    AppSetting.reset_column_information
+    MigrationAppSetting.reset_column_information
     unless app_setting.reload.brand_text
       app_setting.update_attribute :brand_text, brand_text_default
     end
@@ -32,7 +32,7 @@ class UpgradeAppSettingsForV3 < ActiveRecord::Migration
 
     welcome_title_default = 'Powerful Global Information System'
     change_column_default :app_settings, :welcome_title, welcome_title_default
-    AppSetting.reset_column_information
+    MigrationAppSetting.reset_column_information
     unless app_setting.reload.welcome_title
       app_setting.update_attribute :welcome_title, welcome_title_default
     end
@@ -42,14 +42,14 @@ class UpgradeAppSettingsForV3 < ActiveRecord::Migration
     welcome_text_default = \
       '**“Academic information should be freely available to anyone”** — Tim Berners-Lee'
     change_column_default :app_settings, :welcome_text, welcome_text_default
-    AppSetting.reset_column_information
+    MigrationAppSetting.reset_column_information
     unless app_setting.reload.welcome_text
       app_setting.update_attribute :welcome_text, welcome_text_default
     end
     change_column_null :app_settings, :welcome_text, false
 
     rename_column :app_settings, :footer_links, :sitemap
-    AppSetting.reset_column_information
+    MigrationAppSetting.reset_column_information
     app_setting.reload
 
     sitemap_default = '[{ "Medienarchiv ZHdK": "http://medienarchiv.zhdk.ch" }, '\
