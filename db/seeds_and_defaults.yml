@@ -171,7 +171,7 @@ MADEK_DEFAULT_CONTEXTS:
       de: Metadaten
       en: NULL
     admin_comment: Dieser Kontext enthält initial alle MetaKeys aus dem Core-Vokabular.
-    meta_keys_where: {vocabulary_id: 'madek_core'}
+    meta_keys_where: { vocabulary_id: 'madek_core' }
 
   - id: mandatory
     labels:
@@ -181,8 +181,8 @@ MADEK_DEFAULT_CONTEXTS:
       Metakeys, die in diesem Kontext als required festgelegt sind,
       werden im System als Pflichtfelder für Medieneinträge behandelt.
       Sie dürfen keine leere Werte enthalten.
-    meta_keys_where: {id: ['madek_core:title', 'madek_core:copyright_notice']}
-    context_key_attr: {is_required: true}
+    meta_keys_where: { id: ['madek_core:title', 'madek_core:copyright_notice'] }
+    context_key_attr: { is_required: true }
 
   - id: media_entry_summary
     labels:
@@ -192,7 +192,7 @@ MADEK_DEFAULT_CONTEXTS:
       Dieser Kontext fasst die wichtigsten Metakeys für einen Medieneintrag zusammen.
       Er wird auf der Medieneintrag-Detailansicht links neben dem Thumbnail angezeigt.
       Die Metakeys dieses Kontext sollten Madek Core entsprechen.
-    meta_keys_where: {vocabulary_id: 'madek_core', is_enabled_for_media_entries: true}
+    meta_keys_where: { vocabulary_id: 'madek_core', is_enabled_for_media_entries: true }
 
   - id: set_summary
     labels:
@@ -202,7 +202,7 @@ MADEK_DEFAULT_CONTEXTS:
       Dieser Kontext fasst die Metakeys für ein Set zusammen
       und wird als erstes Tab auf der Set-Detailseite angezeigt.
       Auch beim Editieren der Metadaten eines Sets wird dieser Kontext als erster Tab angezeigt.
-    meta_keys_where: {vocabulary_id: 'madek_core', is_enabled_for_collections: true}
+    meta_keys_where: { vocabulary_id: 'madek_core', is_enabled_for_collections: true }
 
 MADEK_DEFAULT_SETTINGS:
   CONTEXTS:
@@ -219,7 +219,8 @@ MADEK_DEFAULT_SETTINGS:
   CONTEXT_KEYS:
     # add all Keyword-type Core MetaKeys in Default Context to the Catalog:
     catalog_context_keys:
-      meta_keys_where: {vocabulary_id: 'madek_core', meta_datum_object_type: 'MetaDatum::Keywords'}
+      meta_keys_where:
+        { vocabulary_id: 'madek_core', meta_datum_object_type: 'MetaDatum::Keywords' }
       context_id: 'metadata'
 
   STRINGS:
@@ -244,7 +245,7 @@ MADEK_DEFAULT_SETTINGS:
       (Nothing here yet, configure content in [Admin Interface](/admin/app_settings))
 
     sitemap:
-      - "About": "/about/"
-      - "API": "/api/browser/"
-      - "Software Madek": "https://zhdk.ch/madek"
-      - "Madek Project on Github": "https://github.com/Madek"
+      - 'About': '/about/'
+      - 'API': '/api/browser/'
+      - 'Software Madek': 'https://zhdk.ch/madek'
+      - 'Madek Project on Github': 'https://github.com/Madek'
