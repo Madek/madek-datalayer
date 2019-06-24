@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.8
--- Dumped by pg_dump version 9.6.8
+-- Dumped from database version 9.6.12
+-- Dumped by pg_dump version 10.7
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -979,27 +979,18 @@ CREATE TABLE public.app_settings (
     id integer DEFAULT 0 NOT NULL,
     featured_set_id uuid,
     splashscreen_slideshow_set_id uuid,
-    site_title character varying DEFAULT 'Media Archive'::character varying NOT NULL,
-    support_url character varying,
-    welcome_title character varying DEFAULT 'Powerful Global Information System'::character varying NOT NULL,
-    welcome_text character varying DEFAULT '**“Academic information should be freely available to anyone”** — Tim Berners-Lee'::character varying NOT NULL,
     teaser_set_id uuid,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     brand_logo_url character varying,
-    brand_text character varying DEFAULT 'ACME, Inc.'::character varying NOT NULL,
-    sitemap jsonb DEFAULT '[{"Medienarchiv ZHdK": "http://medienarchiv.zhdk.ch"}, {"Madek Project on Github": "https://github.com/Madek"}]'::jsonb NOT NULL,
+    sitemap jsonb DEFAULT '{"de": [{"Medienarchiv ZHdK": "http://medienarchiv.zhdk.ch"}, {"Madek-Projekt auf GitHub": "https://github.com/Madek"}], "en": [{"Media Archiv ZHdK": "http://medienarchiv.zhdk.ch"}, {"Madek Project on Github": "https://github.com/Madek"}]}'::jsonb NOT NULL,
     contexts_for_entry_extra text[] DEFAULT '{}'::text[] NOT NULL,
     contexts_for_list_details text[] DEFAULT '{}'::text[] NOT NULL,
     contexts_for_entry_validation text[] DEFAULT '{}'::text[] NOT NULL,
     contexts_for_dynamic_filters text[] DEFAULT '{}'::text[] NOT NULL,
     context_for_entry_summary text,
     context_for_collection_summary text,
-    catalog_title character varying DEFAULT 'Catalog'::character varying NOT NULL,
-    catalog_subtitle character varying DEFAULT 'Browse the catalog'::character varying NOT NULL,
     catalog_context_keys text[] DEFAULT '{}'::text[] NOT NULL,
-    featured_set_title character varying DEFAULT 'Featured Content'::character varying,
-    featured_set_subtitle character varying DEFAULT 'Highlights from this Archive'::character varying,
     contexts_for_entry_edit text[] DEFAULT '{}'::text[] NOT NULL,
     contexts_for_collection_edit text[] DEFAULT '{}'::text[] NOT NULL,
     contexts_for_collection_extra text[] DEFAULT '{}'::text[] NOT NULL,
@@ -1010,7 +1001,16 @@ CREATE TABLE public.app_settings (
     ignored_keyword_keys_for_browsing text,
     default_locale character varying DEFAULT 'de'::character varying,
     available_locales character varying[] DEFAULT '{}'::character varying[],
-    about_page character varying DEFAULT ''::character varying,
+    site_titles public.hstore DEFAULT ''::public.hstore NOT NULL,
+    brand_texts public.hstore DEFAULT ''::public.hstore NOT NULL,
+    welcome_titles public.hstore DEFAULT ''::public.hstore NOT NULL,
+    welcome_texts public.hstore DEFAULT ''::public.hstore NOT NULL,
+    featured_set_titles public.hstore DEFAULT ''::public.hstore NOT NULL,
+    featured_set_subtitles public.hstore DEFAULT ''::public.hstore NOT NULL,
+    catalog_titles public.hstore DEFAULT ''::public.hstore NOT NULL,
+    catalog_subtitles public.hstore DEFAULT ''::public.hstore NOT NULL,
+    about_pages public.hstore DEFAULT ''::public.hstore NOT NULL,
+    support_urls public.hstore DEFAULT ''::public.hstore NOT NULL,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -1333,7 +1333,7 @@ CREATE TABLE public.groups (
     type character varying DEFAULT 'Group'::character varying NOT NULL,
     person_id uuid,
     searchable text DEFAULT ''::text NOT NULL,
-    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['AuthenticationGroup'::character varying, 'InstitutionalGroup'::character varying, 'Group'::character varying])::text[])))
+    CONSTRAINT check_valid_type CHECK (((type)::text = ANY (ARRAY[('AuthenticationGroup'::character varying)::text, ('InstitutionalGroup'::character varying)::text, ('Group'::character varying)::text])))
 );
 
 
@@ -1499,7 +1499,7 @@ CREATE TABLE public.meta_data (
     filter_set_id uuid,
     created_by_id uuid,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['MetaDatum::Licenses'::character varying, 'MetaDatum::Text'::character varying, 'MetaDatum::TextDate'::character varying, 'MetaDatum::Groups'::character varying, 'MetaDatum::Keywords'::character varying, 'MetaDatum::Vocables'::character varying, 'MetaDatum::People'::character varying, 'MetaDatum::Users'::character varying, 'MetaDatum::Roles'::character varying])::text[]))),
+    CONSTRAINT check_valid_type CHECK (((type)::text = ANY (ARRAY[('MetaDatum::Licenses'::character varying)::text, ('MetaDatum::Text'::character varying)::text, ('MetaDatum::TextDate'::character varying)::text, ('MetaDatum::Groups'::character varying)::text, ('MetaDatum::Keywords'::character varying)::text, ('MetaDatum::Vocables'::character varying)::text, ('MetaDatum::People'::character varying)::text, ('MetaDatum::Users'::character varying)::text, ('MetaDatum::Roles'::character varying)::text]))),
     CONSTRAINT meta_data_is_related CHECK ((((media_entry_id IS NULL) AND (collection_id IS NULL) AND (filter_set_id IS NOT NULL)) OR ((media_entry_id IS NULL) AND (collection_id IS NOT NULL) AND (filter_set_id IS NULL)) OR ((media_entry_id IS NOT NULL) AND (collection_id IS NULL) AND (filter_set_id IS NULL))))
 );
 
@@ -5089,6 +5089,10 @@ INSERT INTO schema_migrations (version) VALUES ('382');
 INSERT INTO schema_migrations (version) VALUES ('383');
 
 INSERT INTO schema_migrations (version) VALUES ('384');
+
+INSERT INTO schema_migrations (version) VALUES ('385');
+
+INSERT INTO schema_migrations (version) VALUES ('386');
 
 INSERT INTO schema_migrations (version) VALUES ('4');
 
