@@ -225,32 +225,32 @@ MADEK_DEFAULT_SETTINGS:
 
   STRINGS:
     site_titles:
-      de: '** Name des Systems **'
-      en: ''
+      de: '** Name des Archivs **'
+      en: '** Name of the archive **'
     brand_texts:
       de: '** Name des Anbieters **'
-      en: ''
+      en: '** Name of the provider **'
     brand_logo_url: null
     welcome_titles:
-      de: '** Wilkommen zum System **'
-      en: ''
+      de: '** Wilkommen zum Archiv **'
+      en: '** Welcome to the archive **'
     welcome_texts:
-      de: '** Informationen zum System **'
-      en: ''
+      de: '** Informationen zum Archiv **'
+      en: '** Information about the archive **'
 
     featured_set_titles:
       de: '** Sehenswerte Inhalte **'
-      en: ''
+      en: '** Staff Picks **'
     featured_set_subtitles:
       de: '** Höhepunkte aus diesem Archiv. **'
-      en: ''
+      en: '** Highlights from this archive. **'
 
     catalog_titles:
       de: '** Katalog **'
-      en: ''
+      en: '** Catalogue **'
     catalog_subtitles:
       de: '** Erkunden Sie den Katalog. **'
-      en: ''
+      en: '** Explore the catalogue. **'
 
     media_entry_default_license_usage_meta_key: 'madek_core:copyright_notice'
     media_entry_default_license_usage_text: 'All Rights reserved.'
@@ -269,12 +269,12 @@ MADEK_DEFAULT_SETTINGS:
 
     sitemap:
       de:
-        - 'About': '/about/'
+        - 'Über': '/about/'
         - 'API': '/api/browser/'
         - 'Software Madek': 'https://zhdk.ch/madek'
-        - 'Madek Project on Github': 'https://github.com/Madek'
+        - 'Madek-Projekt auf Github': 'https://github.com/Madek'
       en:
-        - 'About': '/about/'
+        - 'About': '/about?lang=en'
         - 'API': '/api/browser/'
         - 'Software Madek': 'https://zhdk.ch/madek'
         - 'Madek Project on Github': 'https://github.com/Madek'
