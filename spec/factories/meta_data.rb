@@ -28,6 +28,7 @@ FactoryGirl.define do
      string { Faker::Lorem.words.join(' ') }
      meta_key do
        MetaKey.find_by(id: 'test:textdate') \
+         || MetaKey.find_by(id: 'test:textdate') \
          || FactoryGirl.create(:meta_key_text_date)
      end
    end
