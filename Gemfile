@@ -12,7 +12,7 @@ gem 'base32-crockford'
 gem 'bcrypt'
 gem 'chronic_duration'
 gem 'rspec-rails', '~> 3.1', group: [:test, :development]
-gem 'rubocop', '= 0.39.0', require: false
+gem 'rubocop', '0.49.0', require: false
 gem 'strong_password'
 gem 'uuidtools'
 gem 'zencoder', '~> 2.4'
