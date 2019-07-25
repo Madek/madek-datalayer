@@ -58,4 +58,8 @@ class MediaEntry < ApplicationRecord
   def self.order_by_last_edit_session
     order_by_last_edit_session_by_classname
   end
+
+  def workflow
+    parent_collections.where(is_master: true).joins(:workflow).first.try(:workflow)
+  end
 end
