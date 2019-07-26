@@ -1855,7 +1855,8 @@ CREATE TABLE public.workflows (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     name character varying NOT NULL,
     user_id uuid NOT NULL,
-    is_active boolean DEFAULT true NOT NULL
+    is_active boolean DEFAULT true NOT NULL,
+    configuration jsonb DEFAULT '{}'::jsonb
 );
 
 
@@ -5033,6 +5034,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('390'),
 ('391'),
 ('392'),
+('393'),
 ('4'),
 ('5'),
 ('6'),
