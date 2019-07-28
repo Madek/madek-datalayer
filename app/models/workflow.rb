@@ -39,10 +39,16 @@ class Workflow < ApplicationRecord
     [
       {
         key: 'Beschreibungstext',
+        meta_key_id: 'madek_core:description', # TMP!
         value:
           'Material zur Verfügung gestellt im Rahmen des Forschungsprojekts «Sound Colour Space»'
       },
-      { key: 'Rechtsschutz', value: 'CC-By-SA-CH: Attribution Share Alike' },
+      {
+        key: 'Copyright Notice',
+        meta_key_id: 'madek_core:copyright_notice',
+        value: "This resource is a part of the project #{name}"
+      },
+      { key: 'Rechtsschutz', meta_key_id: 'copyright:license', value: 'CC-By-SA-CH: Attribution Share Alike' },
       { key: 'ArkID', value: 'http://pid.zhdk.ch/ark:99999/x9t38rk45c' }
     ]
   end
