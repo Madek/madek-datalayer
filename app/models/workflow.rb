@@ -8,25 +8,29 @@ class Workflow < ApplicationRecord
     collections.find_by(is_master: true)
   end
 
+  def finish
+    WorkflowLocker.new(self).call
+  end
+
   private
 
   def random_user_id
     User.pluck(:id).sample
   end
 
-  def random_group_id
-    Group.pluck(:id).sample
+  def random_group_ids
+    Group.pluck(:id).sample(3)
   end
 
-  def random_api_client_id
-    ApiClient.pluck(:id).sample
+  def random_api_client_ids
+    ApiClient.pluck(:id).sample(2)
   end
 
   def common_permissions
     {
       responsible: random_user_id,
-      write: [random_group_id],
-      read: [random_api_client_id],
+      write: random_group_ids,
+      read: random_api_client_ids,
       read_public: true
     }
   end
