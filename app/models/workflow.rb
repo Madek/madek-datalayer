@@ -4,6 +4,8 @@ class Workflow < ApplicationRecord
 
   before_create :set_default_configuration
 
+  store_accessor :configuration, :common_permissions, :common_meta_data
+
   def master_collection
     collections.find_by(is_master: true)
   end
@@ -26,7 +28,7 @@ class Workflow < ApplicationRecord
     ApiClient.pluck(:id).sample(2)
   end
 
-  def common_permissions
+  def default_common_permissions
     {
       responsible: random_user_id,
       write: random_group_ids,
@@ -35,7 +37,7 @@ class Workflow < ApplicationRecord
     }
   end
 
-  def common_meta_data
+  def default_common_meta_data
     [
       {
         key: 'Beschreibungstext',
@@ -54,9 +56,7 @@ class Workflow < ApplicationRecord
   end
 
   def set_default_configuration
-    self.configuration = {
-      common_permissions: common_permissions,
-      common_meta_data: common_meta_data  
-    }
+    self.common_permissions = default_common_permissions
+    self.common_meta_data = default_common_meta_data
   end
 end
