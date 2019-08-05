@@ -1,10 +1,21 @@
 class Workflow < ApplicationRecord
   belongs_to :user
   has_many :collections
+  has_and_belongs_to_many :owners, class_name: 'User'
 
   before_create :set_default_configuration
 
   store_accessor :configuration, :common_permissions, :common_meta_data
+
+  def common_permissions
+    super.map do |key, value|
+      if key.to_s == 'read_public' && ![true, false].include?(value)
+        [key, value == 'true']
+      else
+        [key, value]
+      end
+    end.to_h
+  end
 
   def master_collection
     collections.find_by(is_master: true)

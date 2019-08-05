@@ -1746,6 +1746,16 @@ CREATE TABLE public.users (
 
 
 --
+-- Name: users_workflows; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.users_workflows (
+    user_id uuid NOT NULL,
+    workflow_id uuid NOT NULL
+);
+
+
+--
 -- Name: visualizations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3421,6 +3431,20 @@ CREATE UNIQUE INDEX index_users_on_institutional_id ON public.users USING btree 
 --
 
 CREATE INDEX index_users_on_login ON public.users USING btree (login);
+
+
+--
+-- Name: index_users_workflows_on_user_id_and_workflow_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_workflows_on_user_id_and_workflow_id ON public.users_workflows USING btree (user_id, workflow_id);
+
+
+--
+-- Name: index_users_workflows_on_workflow_id_and_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_workflows_on_workflow_id_and_user_id ON public.users_workflows USING btree (workflow_id, user_id);
 
 
 --
