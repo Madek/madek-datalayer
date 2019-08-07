@@ -60,30 +60,37 @@ class MediaEntry < ApplicationRecord
   end
 
   def workflow
-    # parent_collections.where(is_master: [true, false]).joins(:workflow).first.try(:workflow)
-    self.class.parent_ids(self).joins(:workflow).first
+    Workflow.find_by(id: MediaEntry.workflow_ids(id))
   end
 
   def part_of_workflow?
-    self.class.parent_ids(self).joins(:workflow).any?
+    MediaEntry.parent_collections(id).joins(:workflow).any?
   end
 
-  def self.parent_ids(instance) # collections
-    Collection.where("collections.id IN (#{parent_ids_query(instance)})")
+  def self.parent_collections(media_entry_id)
+    Collection.where("collections.id IN (#{parent_collections_query(media_entry_id)})")
   end
 
-  def self.parent_ids_query(instance)
-    sql = <<-SQL.strip_heredoc
+  def self.parent_collections_query(media_entry_id)
+    <<-SQL.strip_heredoc
       WITH RECURSIVE parents as (
-        SELECT child_id, parent_id
+        SELECT parent_id
         FROM collection_collection_arcs
-        WHERE child_id IN (#{instance.parent_collections.pluck(:id).map { |id| "'#{id}'" }.join(',').presence})
-      UNION ALL
-        SELECT cca.id, cca.parent_id
+        WHERE child_id IN (
+          SELECT collection_id
+          FROM collection_media_entry_arcs
+          WHERE media_entry_id = '#{media_entry_id}'
+        )
+        UNION
+        SELECT cca.parent_id
         FROM collection_collection_arcs cca
         JOIN parents p ON cca.child_id = p.parent_id
       )
       SELECT parent_id FROM parents
     SQL
+  end
+
+  def self.workflow_ids(media_entry_id)
+    parent_collections(media_entry_id).joins(:workflow).pluck(:workflow_id)
   end
 end
