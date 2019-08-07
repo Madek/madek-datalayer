@@ -60,6 +60,30 @@ class MediaEntry < ApplicationRecord
   end
 
   def workflow
-    parent_collections.where(is_master: true).joins(:workflow).first.try(:workflow)
+    # parent_collections.where(is_master: [true, false]).joins(:workflow).first.try(:workflow)
+    self.class.parent_ids(self).joins(:workflow).first
+  end
+
+  def part_of_workflow?
+    self.class.parent_ids(self).joins(:workflow).any?
+  end
+
+  def self.parent_ids(instance) # collections
+    Collection.where("collections.id IN (#{parent_ids_query(instance)})")
+  end
+
+  def self.parent_ids_query(instance)
+    sql = <<-SQL.strip_heredoc
+      WITH RECURSIVE parents as (
+        SELECT child_id, parent_id
+        FROM collection_collection_arcs
+        WHERE child_id IN (#{instance.parent_collections.pluck(:id).map { |id| "'#{id}'" }.join(',').presence})
+      UNION ALL
+        SELECT cca.id, cca.parent_id
+        FROM collection_collection_arcs cca
+        JOIN parents p ON cca.child_id = p.parent_id
+      )
+      SELECT parent_id FROM parents
+    SQL
   end
 end
