@@ -25,9 +25,26 @@ module Concerns
             ]
           )
 
-          select('meta_keys.*', "ts_rank_cd(#{vector}, #{query}) AS search_rank")
-            .where("#{vector} @@ #{query}", term)
-            .reorder('search_rank DESC')
+          result =
+            select('meta_keys.*', "ts_rank_cd(#{vector}, #{query}) AS search_rank")
+              .where("#{vector} @@ #{query}", term)
+              .reorder('search_rank DESC')
+
+          # NOTE: the tsvector-based search does not match substrings ("desc"
+          # should find "description"). As a workaround, we return simple
+          # ILIKE-based results if the clever search did not find anything
+          if result.blank?
+            where_condition = <<-SQL
+              id ILIKE :t
+              OR
+              coalesce(array_to_string(avals(labels), ' '), '') ILIKE :t
+              OR
+              coalesce(array_to_string(avals(descriptions), ' '), '') ILIKE :t
+            SQL
+            MetaKey.where(where_condition, t: "%#{term}%")
+          else
+            result
+          end
         }
         scope :with_type, lambda { |type|
           where(meta_datum_object_type: type)
