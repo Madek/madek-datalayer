@@ -3,7 +3,7 @@ RSpec.configure do |c|
 end
 
 RSpec.shared_examples 'part of workflow' do
-  before(:all) do
+  before(:each) do
     @workflow = create :workflow
 
     @master_collection = @workflow.collections.first
