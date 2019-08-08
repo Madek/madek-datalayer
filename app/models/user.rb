@@ -38,7 +38,8 @@ class User < ApplicationRecord
   has_one :admin, dependent: :destroy
   belongs_to :accepted_usage_terms, class_name: 'UsageTerms'
 
-  has_and_belongs_to_many :workflows
+  # has_and_belongs_to_many :workflows
+  has_many :workflows
 
   #############################################################
 
