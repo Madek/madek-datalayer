@@ -87,6 +87,10 @@ class MediaEntry < ApplicationRecord
         JOIN parents p ON cca.child_id = p.parent_id
       )
       SELECT parent_id FROM parents
+      UNION
+      SELECT cmea.collection_id
+      FROM collection_media_entry_arcs cmea
+      WHERE media_entry_id = '#{media_entry_id}'
     SQL
   end
 
