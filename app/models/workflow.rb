@@ -49,21 +49,26 @@ class Workflow < ApplicationRecord
   end
 
   def default_common_meta_data
+    # NOTE: defaults will be empty OR provided by "WorkflowTemplates",
+    # for now the hardcoded values are fitting for a research project.
     [
       {
         key: 'Beschreibungstext',
-        meta_key_id: 'madek_core:description', # TMP!
-        value:
-          'Material zur Verfügung gestellt im Rahmen des Forschungsprojekts «Sound Colour Space»'
+        meta_key_id: 'madek_core:description',
+        value: "Material zur Verfügung gestellt im Rahmen des Forschungsprojekts «#{name}»"
       },
       {
         key: 'Copyright Notice',
         meta_key_id: 'madek_core:copyright_notice',
         value: "This resource is a part of the project #{name}"
-      },
-      { key: 'Rechtsschutz', meta_key_id: 'copyright:license', value: 'CC-By-SA-CH: Attribution Share Alike' },
-      { key: 'ArkID', value: 'http://pid.zhdk.ch/ark:99999/x9t38rk45c' }
+      }
     ]
+    # FIXME: re-enable this, but as Keywords!!!
+    # {
+    #   key: 'Rechtsschutz',
+    #   meta_key_id: 'copyright:license',
+    #   value: 'CC-By-SA-CH: Attribution Share Alike'
+    # }
   end
 
   def set_default_configuration
