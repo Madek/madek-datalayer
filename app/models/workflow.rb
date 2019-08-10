@@ -27,23 +27,32 @@ class Workflow < ApplicationRecord
 
   private
 
+  def prepare_data(ar_relation)
+    ar_relation.map do |obj|
+      { uuid: obj.id, type: obj.class.name }
+    end
+  end
+
   def random_user_id
     User.pluck(:id).sample
   end
 
-  def random_group_ids
-    Group.pluck(:id).sample(3)
+  def random_groups
+    prepare_data Group.where(id: Group.pluck(:id).sample(3))
   end
 
-  def random_api_client_ids
-    ApiClient.pluck(:id).sample(2)
+  def random_api_clients
+    prepare_data [
+      ApiClient.where(id: ApiClient.pluck(:id).sample(2)),
+      Group.where(id: Group.pluck(:id).sample)
+    ].flatten
   end
 
   def default_common_permissions
     {
       responsible: random_user_id,
-      write: random_group_ids,
-      read: random_api_client_ids,
+      write: random_groups,
+      read: random_api_clients,
       read_public: true
     }
   end
