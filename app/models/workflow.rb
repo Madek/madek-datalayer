@@ -33,8 +33,8 @@ class Workflow < ApplicationRecord
     end
   end
 
-  def random_user_id
-    User.pluck(:id).sample
+  def default_responsible_user
+    user
   end
 
   def random_users
@@ -42,7 +42,7 @@ class Workflow < ApplicationRecord
   end
 
   def random_groups
-    prepare_data Group.where(id: Group.pluck(:id).sample(2))
+    prepare_data Group.where(id: Group.pluck(:id).sample(3))
   end
 
   def random_api_client
@@ -51,9 +51,9 @@ class Workflow < ApplicationRecord
 
   def default_common_permissions
     {
-      responsible: random_user_id,
-      write: [random_users, random_groups].flatten,
-      read: [random_users, random_groups, random_api_client].flatten,
+      responsible: default_responsible_user.id,
+      write: [random_users[0], random_groups[0..1]].flatten,
+      read: [random_users[1], random_groups[2], random_api_client].flatten,
       read_public: true
     }
   end
