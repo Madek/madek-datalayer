@@ -32,6 +32,9 @@ class Collection < ApplicationRecord
 
   #################################################################################
 
+  # has_many :media_entries,
+  #          ->(col) { col.part_of_workflow? ? with_unpublished : super },
+  #          through: :collection_media_entry_arcs
   has_many :media_entries, through: :collection_media_entry_arcs
 
   has_many :highlighted_media_entries,
@@ -82,7 +85,8 @@ class Collection < ApplicationRecord
   def child_media_resources
     MediaResource.unified_scope(media_entries,
                                 collections,
-                                filter_sets)
+                                filter_sets,
+                                true)
   end
 
   def highlighted_media_resources
