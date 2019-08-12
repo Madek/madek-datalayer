@@ -37,22 +37,23 @@ class Workflow < ApplicationRecord
     User.pluck(:id).sample
   end
 
-  def random_groups
-    prepare_data Group.where(id: Group.pluck(:id).sample(3))
+  def random_users
+    prepare_data User.where(id: User.pluck(:id).sample(3))
   end
 
-  def random_api_clients
-    prepare_data [
-      ApiClient.where(id: ApiClient.pluck(:id).sample(2)),
-      Group.where(id: Group.pluck(:id).sample)
-    ].flatten
+  def random_groups
+    prepare_data Group.where(id: Group.pluck(:id).sample(2))
+  end
+
+  def random_api_client
+    prepare_data ApiClient.where(id: ApiClient.pluck(:id).sample)
   end
 
   def default_common_permissions
     {
       responsible: random_user_id,
-      write: random_groups,
-      read: random_api_clients,
+      write: [random_users, random_groups].flatten,
+      read: [random_users, random_groups, random_api_client].flatten,
       read_public: true
     }
   end
@@ -64,12 +65,12 @@ class Workflow < ApplicationRecord
       {
         key: 'Beschreibungstext',
         meta_key_id: 'madek_core:description',
-        value: "Material zur Verfügung gestellt im Rahmen des Forschungsprojekts «#{name}»"
+        value: ["Material zur Verfügung gestellt im Rahmen des Forschungsprojekts «#{name}»"]
       },
       {
         key: 'Copyright Notice',
         meta_key_id: 'madek_core:copyright_notice',
-        value: "This resource is a part of the project #{name}"
+        value: ["This resource is a part of the project #{name}"]
       }
     ]
     # FIXME: re-enable this, but as Keywords!!!
