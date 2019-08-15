@@ -1,7 +1,7 @@
 class Workflow < ApplicationRecord
-  belongs_to :user
-  has_many :collections
+  belongs_to :creator, class_name: 'User'
   has_and_belongs_to_many :owners, class_name: 'User'
+  has_many :collections
 
   before_create :set_default_configuration
 
@@ -34,7 +34,7 @@ class Workflow < ApplicationRecord
   end
 
   def default_responsible_user
-    user
+    creator
   end
 
   def random_users

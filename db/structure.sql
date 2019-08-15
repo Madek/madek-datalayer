@@ -1884,7 +1884,7 @@ UNION
 CREATE TABLE public.workflows (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     name character varying NOT NULL,
-    user_id uuid NOT NULL,
+    creator_id uuid NOT NULL,
     is_active boolean DEFAULT true NOT NULL,
     configuration jsonb DEFAULT '{}'::jsonb
 );
@@ -3475,13 +3475,6 @@ CREATE INDEX index_vocabularies_on_position ON public.vocabularies USING btree (
 
 
 --
--- Name: index_workflows_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_workflows_on_user_id ON public.workflows USING btree (user_id);
-
-
---
 -- Name: index_zencoder_jobs_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4471,6 +4464,14 @@ ALTER TABLE ONLY public.filter_set_group_permissions
 
 
 --
+-- Name: workflows fk_rails_ad47ad12fc; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.workflows
+    ADD CONSTRAINT fk_rails_ad47ad12fc FOREIGN KEY (creator_id) REFERENCES public.users(id);
+
+
+--
 -- Name: meta_data_roles fk_rails_b1e57448c0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4484,14 +4485,6 @@ ALTER TABLE ONLY public.meta_data_roles
 
 ALTER TABLE ONLY public.context_keys
     ADD CONSTRAINT fk_rails_b297363c89 FOREIGN KEY (context_id) REFERENCES public.contexts(id);
-
-
---
--- Name: workflows fk_rails_b2ae6690e8; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.workflows
-    ADD CONSTRAINT fk_rails_b2ae6690e8 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
