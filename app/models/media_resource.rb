@@ -27,9 +27,7 @@ class MediaResource < ApplicationRecord
 
   def self.unified_scope(scope1, scope2, scope3, with_unpublished = false)
     if with_unpublished
-      [scope1, scope2, scope3].map do |s|
-        s.respond_to?(:with_unpublished) ? s.with_unpublished : s
-      end
+      scope1 = scope1.with_unpublished
     end
 
     where(
