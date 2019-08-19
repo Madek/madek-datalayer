@@ -18,7 +18,7 @@ class MediaResource < ApplicationRecord
     view_scope = \
       unified_scope(MediaEntry.send(method_name, *args).reorder(nil),
                     Collection.send(method_name, *args).reorder(nil),
-                    FilterSet.send(method_name, *args).reorder(nil), true)
+                    FilterSet.send(method_name, *args).reorder(nil))
 
     sql = "((#{(current_scope or all).to_sql}) INTERSECT " \
            "(#{view_scope.to_sql})) AS vw_media_resources"
@@ -27,12 +27,10 @@ class MediaResource < ApplicationRecord
 
   def self.unified_scope(scope1, scope2, scope3, with_unpublished = false)
     if with_unpublished
-      scope1 = scope1.with_unpublished if scope1.respond_to?(:with_unpublished)
-      scope2 = scope2.with_unpublished if scope2.respond_to?(:with_unpublished)
-      scope3 = scope3.with_unpublished if scope3.respond_to?(:with_unpublished)
+      [scope1, scope2, scope3].map do |s|
+        s.respond_to?(:with_unpublished) ? s.with_unpublished : s
+      end
     end
-
-    # binding.pry if with_unpublished
 
     where(
       "vw_media_resources.id IN (#{scope1.select(:id).to_sql}) " \
