@@ -1,5 +1,6 @@
 FactoryGirl.define do
   factory :collection_media_entry_arc, class: Arcs::CollectionMediaEntryArc do
+    order { rand < 0.75 ? rand : nil }
     collection
     media_entry
   end
