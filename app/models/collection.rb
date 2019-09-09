@@ -27,6 +27,7 @@ class Collection < ApplicationRecord
   include Concerns::MediaResources::Editability
   include Concerns::MediaResources::Highlight
   include Concerns::MediaResources::MetaDataArelConditions
+  include Concerns::MediaResources::PartOfWorkflow
   include Concerns::SharedOrderBy
   include Concerns::SharedScopes
 
@@ -117,10 +118,6 @@ class Collection < ApplicationRecord
       .where("collection_media_entry_arcs.collection_id = '#{self.id}' OR "\
              'collection_media_entry_arcs.collection_id IN ' \
                "(#{Collection.descendent_collection_tree_sql_for(self.id)})")
-  end
-
-  def part_of_workflow?
-    !workflow.nil?
   end
 
   def self.descendent_collection_tree_sql_for(collection_id)

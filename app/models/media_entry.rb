@@ -27,6 +27,7 @@ class MediaEntry < ApplicationRecord
   include Concerns::MediaResources::Editability
   include Concerns::MediaResources::Highlight
   include Concerns::MediaResources::MetaDataArelConditions
+  include Concerns::MediaResources::PartOfWorkflow
   include Concerns::SharedOrderBy
   include Concerns::SharedScopes
 
@@ -57,44 +58,5 @@ class MediaEntry < ApplicationRecord
 
   def self.order_by_last_edit_session
     order_by_last_edit_session_by_classname
-  end
-
-  def workflow
-    Workflow.find_by(id: MediaEntry.workflow_ids(id))
-  end
-
-  def part_of_workflow?
-    MediaEntry.parent_collections(id).joins(:workflow).any?
-  end
-
-  def self.parent_collections(media_entry_id)
-    Collection.where("collections.id IN (#{parent_collections_query(media_entry_id)})")
-  end
-
-  def self.parent_collections_query(media_entry_id)
-    <<-SQL.strip_heredoc
-      WITH RECURSIVE parents as (
-        SELECT parent_id
-        FROM collection_collection_arcs
-        WHERE child_id IN (
-          SELECT collection_id
-          FROM collection_media_entry_arcs
-          WHERE media_entry_id = '#{media_entry_id}'
-        )
-        UNION
-        SELECT cca.parent_id
-        FROM collection_collection_arcs cca
-        JOIN parents p ON cca.child_id = p.parent_id
-      )
-      SELECT parent_id FROM parents
-      UNION
-      SELECT cmea.collection_id
-      FROM collection_media_entry_arcs cmea
-      WHERE media_entry_id = '#{media_entry_id}'
-    SQL
-  end
-
-  def self.workflow_ids(media_entry_id)
-    parent_collections(media_entry_id).joins(:workflow).pluck(:workflow_id)
   end
 end
