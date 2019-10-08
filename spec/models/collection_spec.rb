@@ -139,4 +139,33 @@ describe Collection do
   end
 
   it_can 'be found via custom id'
+
+  describe '.not_part_of_finished_workflow' do
+    let(:active_workflow) { create :workflow }
+    let(:finished_workflow) { create :finished_workflow }
+
+    context 'when collection belongs to active workflow' do
+      it 'return the collection' do
+        collection = active_workflow.master_collection
+
+        expect(Collection.not_part_of_finished_workflow).to include collection
+      end
+    end
+
+    context 'when collection belongs to finished workflow' do
+      it 'does not return the collection' do
+        collection = finished_workflow.master_collection
+
+        expect(Collection.not_part_of_finished_workflow).not_to include collection
+      end
+    end
+
+    context 'when collection does not belongs to any workflow' do
+      it 'returns the collection' do
+        collection = create :collection
+
+        expect(Collection.not_part_of_finished_workflow).to include collection
+      end
+    end
+  end
 end

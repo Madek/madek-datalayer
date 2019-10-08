@@ -75,8 +75,7 @@ class Collection < ApplicationRecord
   }
 
   scope :not_part_of_finished_workflow, lambda{
-    joins('RIGHT JOIN workflows ON workflows.id = collections.workflow_id')
-      .where('workflows.is_active = ?', true)
+    where.not(id: self.joins(:workflow).where(workflows: { is_active: false }))
   }
 
   default_scope { where(clipboard_user_id: nil).reorder(:created_at, :id) }
