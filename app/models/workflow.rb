@@ -47,12 +47,12 @@ class Workflow < ApplicationRecord
       {
         key: 'Beschreibungstext',
         meta_key_id: 'madek_core:description',
-        value: ["Material zur Verfügung gestellt im Rahmen des Forschungsprojekts «#{name}»"]
+        value: [{string: "Material zur Verfügung gestellt im Rahmen des Forschungsprojekts «#{name}»"}]
       },
       {
         key: 'Copyright Notice',
         meta_key_id: 'madek_core:copyright_notice',
-        value: ["This resource is a part of the project #{name}"]
+        value: [{string: "This resource is a part of the project #{name}"}]
       }
     ]
     # FIXME: re-enable this, but as Keywords!!!
