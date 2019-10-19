@@ -88,7 +88,7 @@ class Collection < ApplicationRecord
     MediaResource.unified_scope(media_entries,
                                 collections,
                                 filter_sets,
-                                true)
+                                part_of_workflow?)
   end
 
   def highlighted_media_resources

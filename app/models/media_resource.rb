@@ -15,19 +15,24 @@ class MediaResource < ApplicationRecord
   end
 
   def self.scope_helper(method_name, *args)
+    part_of_workflow_hash = args.detect { |a| a.is_a?(Hash) }&.extract!(:part_of_workflow)
+    part_of_workflow = part_of_workflow_hash&.fetch(:part_of_workflow)
+
     view_scope = \
       unified_scope(MediaEntry.send(method_name, *args).reorder(nil),
                     Collection.send(method_name, *args).reorder(nil),
-                    FilterSet.send(method_name, *args).reorder(nil))
+                    FilterSet.send(method_name, *args).reorder(nil),
+                    part_of_workflow)
 
     sql = "((#{(current_scope or all).to_sql}) INTERSECT " \
            "(#{view_scope.to_sql})) AS vw_media_resources"
     from(sql)
   end
 
-  def self.unified_scope(scope1, scope2, scope3, with_unpublished = false)
-    if with_unpublished
-      scope1 = scope1.with_unpublished
+  def self.unified_scope(scope1, scope2, scope3, part_of_workflow = false)
+    scope1, scope2, scope3 = [scope1, scope2, scope3].map do |s|
+      s = s.with_unpublished if part_of_workflow && s.respond_to?(:with_unpublished)
+      s
     end
 
     where(
