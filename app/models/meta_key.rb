@@ -49,7 +49,7 @@ class MetaKey < ApplicationRecord
     (
       unscoped
         .distinct
-        .pluck(:meta_datum_object_type) << 'MetaDatum::Roles'
+        .pluck(:meta_datum_object_type) << 'MetaDatum::Roles' << 'MetaDatum::JSON'
     )
       .uniq
       .sort

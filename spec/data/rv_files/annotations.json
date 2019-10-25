@@ -1,0 +1,348 @@
+{
+   "general" : {
+      "title" : "(Sample Project) The Dot and the Line"
+   },
+   "video" : {
+      "type" : "blob"
+   },
+   "id" : 0,
+   "timeline" : {
+      "id" : 0,
+      "duration" : 300.002,
+      "tracks" : [
+         {
+            "fields" : {
+               "title" : "Title cards"
+            },
+            "id" : 0,
+            "color" : "#f6d751",
+            "annotationStacks" : [
+               [
+                  {
+                     "isShown" : true,
+                     "id" : 0,
+                     "fields" : {
+                        "description" : "MGM Title Card"
+                     },
+                     "duration" : 6.835,
+                     "utc_timestamp" : 0
+                  },
+                  {
+                     "id" : 1,
+                     "isShown" : true,
+                     "duration" : 3.49275029372608,
+                     "fields" : {
+                        "description" : "MGM presents"
+                     },
+                     "utc_timestamp" : 29.739
+                  },
+                  {
+                     "utc_timestamp" : 34.9317397260274,
+                     "isShown" : true,
+                     "id" : 2,
+                     "duration" : 4.889,
+                     "fields" : {
+                        "description" : "Title Card\nThe Dot and the Line\na romance in lower mathematics"
+                     }
+                  },
+                  {
+                     "duration" : 30.237,
+                     "fields" : {
+                        "description" : "Credits"
+                     },
+                     "isShown" : true,
+                     "id" : 3,
+                     "utc_timestamp" : 41.214
+                  },
+                  {
+                     "isShown" : true,
+                     "id" : 4,
+                     "fields" : {
+                        "description" : "Celebrated Daredevil"
+                     },
+                     "duration" : 3.306,
+                     "utc_timestamp" : 234.348
+                  },
+                  {
+                     "duration" : 3.306,
+                     "fields" : {
+                        "description" : "Leader in world affairs"
+                     },
+                     "id" : 5,
+                     "isShown" : true,
+                     "utc_timestamp" : 240.877
+                  },
+                  {
+                     "utc_timestamp" : 248.428,
+                     "fields" : {
+                        "description" : "Fearless law enforcement agent"
+                     },
+                     "duration" : 3.216,
+                     "id" : 6,
+                     "isShown" : true
+                  },
+                  {
+                     "utc_timestamp" : 255.13,
+                     "duration" : 0,
+                     "fields" : {
+                        "description" : "Potent Force in the World of Art\nThe line as a potent force in the world of art\n"
+                     },
+                     "id" : 7,
+                     "isShown" : true
+                  },
+                  {
+                     "utc_timestamp" : 262.279,
+                     "fields" : {
+                        "description" : "International Sportsman\nThe line as an international sportsman"
+                     },
+                     "duration" : 3.127,
+                     "id" : 8,
+                     "isShown" : true
+                  }
+               ]
+            ],
+            "isActive" : false
+         },
+         {
+            "fields" : {
+               "title" : "Dot"
+            },
+            "color" : "#FE5F55",
+            "id" : 1,
+            "isActive" : false,
+            "annotationStacks" : [
+               [
+                  {
+                     "fields" : {
+                        "description" : ""
+                     },
+                     "duration" : 21.1973561784497,
+                     "isShown" : true,
+                     "id" : 9,
+                     "utc_timestamp" : 6.73623243726257
+                  },
+                  {
+                     "fields" : {
+                        "description" : ""
+                     },
+                     "duration" : 2.98423319467213,
+                     "isShown" : true,
+                     "id" : 10,
+                     "utc_timestamp" : 80.5742962561475
+                  },
+                  {
+                     "isShown" : true,
+                     "id" : 11,
+                     "duration" : 6.16419638802959,
+                     "fields" : {
+                        "description" : ""
+                     },
+                     "utc_timestamp" : 86.5462978409267
+                  },
+                  {
+                     "utc_timestamp" : 94.7388719778412,
+                     "fields" : {
+                        "description" : ""
+                     },
+                     "duration" : 5.2136427394082,
+                     "isShown" : true,
+                     "id" : 12
+                  },
+                  {
+                     "id" : 13,
+                     "isShown" : true,
+                     "fields" : {
+                        "description" : ""
+                     },
+                     "duration" : 29.515124222066,
+                     "utc_timestamp" : 106.85002739726
+                  },
+                  {
+                     "utc_timestamp" : 196.85062739726,
+                     "id" : 14,
+                     "isShown" : true,
+                     "duration" : 25.8555190061596,
+                     "fields" : {
+                        "description" : ""
+                     }
+                  }
+               ]
+            ]
+         },
+         {
+            "isActive" : false,
+            "annotationStacks" : [
+               [
+                  {
+                     "utc_timestamp" : 73.201,
+                     "fields" : {
+                        "description" : ""
+                     },
+                     "duration" : 13.2535062469262,
+                     "isShown" : true,
+                     "id" : 15
+                  },
+                  {
+                     "utc_timestamp" : 88.2140256897884,
+                     "duration" : 6.62507088433087,
+                     "fields" : {
+                        "description" : ""
+                     },
+                     "id" : 16,
+                     "isShown" : true
+                  },
+                  {
+                     "utc_timestamp" : 124.574938254763,
+                     "fields" : {
+                        "description" : ""
+                     },
+                     "duration" : 9.58283253963181,
+                     "id" : 17,
+                     "isShown" : true
+                  },
+                  {
+                     "fields" : {
+                        "description" : ""
+                     },
+                     "duration" : 57.8135828709159,
+                     "isShown" : true,
+                     "id" : 18,
+                     "utc_timestamp" : 140.959843835616
+                  },
+                  {
+                     "duration" : 77.9186229562369,
+                     "fields" : {
+                        "description" : ""
+                     },
+                     "id" : 19,
+                     "isShown" : true,
+                     "utc_timestamp" : 222.083377043763
+                  }
+               ]
+            ],
+            "id" : 2,
+            "color" : "#5684e3",
+            "fields" : {
+               "title" : "Line"
+            }
+         },
+         {
+            "id" : 3,
+            "color" : "#a6b074",
+            "fields" : {
+               "title" : "Squiggle"
+            },
+            "isActive" : false,
+            "annotationStacks" : [
+               [
+                  {
+                     "isShown" : true,
+                     "id" : 20,
+                     "fields" : {
+                        "description" : ""
+                     },
+                     "duration" : 24.5320513014574,
+                     "utc_timestamp" : 100.428085015341
+                  }
+               ]
+            ]
+         },
+         {
+            "annotationStacks" : [
+               [
+                  {
+                     "utc_timestamp" : 75.637,
+                     "id" : 21,
+                     "isShown" : true,
+                     "fields" : {
+                        "description" : "Once upon a time\nOnce upon a time there was a sensible straight line, who was hopelessly in love with a dot."
+                     },
+                     "duration" : 7.553
+                  },
+                  {
+                     "id" : 22,
+                     "isShown" : true,
+                     "fields" : {
+                        "description" : "You're the beginning and the end\n\"You're the beginning and the end, the hub, the core and the quintessence\" he told her tenderly, but the frivolous dot wasn't a bit interested."
+                     },
+                     "duration" : 4.62513270850312,
+                     "utc_timestamp" : 88.888
+                  },
+                  {
+                     "utc_timestamp" : 94.767,
+                     "isShown" : true,
+                     "id" : 23,
+                     "duration" : 11.5549226127086,
+                     "fields" : {
+                        "description" : "But the frivolous dot\nBut the frivolous dot wasn't a bit interested, for she only had eyes for a wild and unkempt squiggle, who never seemed to have anything on his mind at all."
+                     }
+                  },
+                  {
+                     "utc_timestamp" : 111.767,
+                     "fields" : {
+                        "description" : "They were everywhere together\nThey were everywhere together, singing and dancing and frolicking and laughing and laughing and lord knows what else."
+                     },
+                     "duration" : 7.13907642834173,
+                     "id" : 24,
+                     "isShown" : true
+                  },
+                  {
+                     "utc_timestamp" : 145.493,
+                     "fields" : {
+                        "description" : "Why take chances\n\"Why take chances\", the line argued without much conviction. \"I'm dependable, steady, consistent. I know where I'm going. I've got dignity.\""
+                     },
+                     "duration" : 12.598,
+                     "isShown" : true,
+                     "id" : 25
+                  },
+                  {
+                     "duration" : 12.64,
+                     "fields" : {
+                        "description" : "But this was small consolation\nBut this was small consolation for the miserable line. Each day he grew more and more morose. He stopped eating or sleeping, and before long was completely on edge."
+                     },
+                     "id" : 26,
+                     "isShown" : true,
+                     "utc_timestamp" : 162.612
+                  },
+                  {
+                     "utc_timestamp" : 192.279,
+                     "duration" : 8.245,
+                     "fields" : {
+                        "description" : "But he hardly\nBut he hardly heard a word they said, for any way he looked at her she was perfect."
+                     },
+                     "id" : 27,
+                     "isShown" : true
+                  },
+                  {
+                     "utc_timestamp" : 217.658,
+                     "fields" : {
+                        "description" : "But even allowing for his feelings\nBut even allowing for his feelings, this was probably stretching a point."
+                     },
+                     "duration" : 4.4340235136043,
+                     "isShown" : true,
+                     "id" : 28
+                  },
+                  {
+                     "duration" : 8.215,
+                     "fields" : {
+                        "description" : "But he soon grew tired\nBut he soon grew tired of self-deception and decided that perhaps the squiggle might have had the answer after all."
+                     },
+                     "id" : 29,
+                     "isShown" : true,
+                     "utc_timestamp" : 272.008
+                  }
+               ]
+            ],
+            "isActive" : false,
+            "id" : 4,
+            "color" : "#6adc7f",
+            "fields" : {
+               "title" : "Transcript"
+            }
+         }
+      ]
+   },
+   "hashtags" : {
+      "list" : null
+   }
+}

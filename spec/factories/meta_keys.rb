@@ -21,6 +21,11 @@ FactoryGirl.define do
       meta_datum_object_type 'MetaDatum::Text'
     end
 
+    factory :meta_key_json, class: MetaKey do
+      id { 'test:json' }
+      meta_datum_object_type 'MetaDatum::JSON'
+    end
+
     factory :meta_key_text_date, class: MetaKey do
       id { 'test:datestring' }
       meta_datum_object_type 'MetaDatum::TextDate'
