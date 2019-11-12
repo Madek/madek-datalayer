@@ -40,13 +40,17 @@ FactoryGirl.define do
       vocabulary = Vocabulary.find_by(id: VOCABULARY_ID) ||
         FactoryGirl.create(:vocabulary,
                            id: VOCABULARY_ID,
-                           enabled_for_public_view: true)
+                           enabled_for_public_view: true,
+                           labels: {de: "Research Video"}
+                          )
 
       annotation_meta_key = MetaKey.find_by(id: ANNOTATION_META_KEY_ID) ||
         FactoryGirl.create(:meta_key,
                            id: ANNOTATION_META_KEY_ID,
                            is_enabled_for_media_entries: true,
-                           meta_datum_object_type: 'MetaDatum::JSON')
+                           meta_datum_object_type: 'MetaDatum::JSON',
+                           labels: {de: 'Annotation'}
+                          )
 
       context = Context.find_by(id: VOCABULARY_ID) ||
         FactoryGirl.create(:context, id: VOCABULARY_ID)
