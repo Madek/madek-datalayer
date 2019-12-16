@@ -7,7 +7,8 @@ module Concerns
         def parent_collections(resource_id)
           raise 'Not an UUID!' unless UUIDTools::UUID_REGEXP =~ resource_id
 
-          relation = Collection.where("collections.id IN (#{parent_collections_query(resource_id)})")
+          relation = Collection.where(
+            "collections.id IN (#{parent_collections_query(resource_id)})")
           if self == Collection
             relation = relation.or(Collection.where(id: resource_id))
           end
@@ -20,25 +21,29 @@ module Concerns
 
         private
 
+        def arcs_child_fk
+          case name
+          when 'Collection'
+            'child_id'
+          when 'MediaEntry'
+            'media_entry_id'
+          end
+        end
+
+        def arcs_parent_fk
+          case name
+          when 'Collection'
+            'parent_id'
+          when 'MediaEntry'
+            'collection_id'
+          end
+        end
+
+        def arcs_table_name
+          "collection_#{table_name.singularize}_arcs"
+        end
+
         def parent_collections_query(resource_id)
-          arcs_child_fk =
-            case name
-            when 'Collection'
-              'child_id'
-            when 'MediaEntry'
-              'media_entry_id'
-            end
-
-          arcs_parent_fk =
-            case name
-            when 'Collection'
-              'parent_id'
-            when 'MediaEntry'
-              'collection_id'
-            end
-
-          arcs_table_name = "collection_#{table_name.singularize}_arcs"
-
           <<-SQL.strip_heredoc
             WITH RECURSIVE parents as (
               SELECT parent_id

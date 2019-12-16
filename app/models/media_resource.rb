@@ -15,7 +15,8 @@ class MediaResource < ApplicationRecord
   end
 
   def self.scope_helper(method_name, *args)
-    part_of_workflow_hash = args.detect { |a| a.is_a?(Hash) }&.extract!(:part_of_workflow)
+    part_of_workflow_hash = args
+      .detect { |a| a.is_a?(Hash) }&.extract!(:part_of_workflow)
     part_of_workflow = part_of_workflow_hash&.fetch(:part_of_workflow)
 
     view_scope = \

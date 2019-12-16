@@ -47,20 +47,15 @@ class Workflow < ApplicationRecord
       {
         key: 'Beschreibungstext',
         meta_key_id: 'madek_core:description',
-        value: [{string: "Material zur Verfügung gestellt im Rahmen des Forschungsprojekts «#{name}»"}]
+        value: [{ string: "Material zur Verfügung gestellt im Rahmen des " \
+                          "Forschungsprojekts «#{name}»" }]
       },
       {
         key: 'Copyright Notice',
         meta_key_id: 'madek_core:copyright_notice',
-        value: [{string: "This resource is a part of the project #{name}"}]
+        value: [{ string: "This resource is a part of the project #{name}" }]
       }
     ]
-    # FIXME: re-enable this, but as Keywords!!!
-    # {
-    #   key: 'Rechtsschutz',
-    #   meta_key_id: 'copyright:license',
-    #   value: 'CC-By-SA-CH: Attribution Share Alike'
-    # }
   end
 
   def set_default_configuration
