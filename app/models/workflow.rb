@@ -1,3 +1,5 @@
+# rubocop:disable Metrics/MethodLength
+
 class Workflow < ApplicationRecord
   belongs_to :creator, class_name: 'User'
   has_and_belongs_to_many :owners, class_name: 'User'
@@ -43,17 +45,51 @@ class Workflow < ApplicationRecord
   def default_common_meta_data
     # NOTE: defaults will be empty OR provided by "WorkflowTemplates",
     # for now the hardcoded values are fitting for a research project.
+
+    # NOTE: currently keys come from this context: https://madek-spiel.kiste.li/admin/contexts/fair-data
     [
       {
-        key: 'Beschreibungstext',
+        meta_key_id: 'madek_core:authors'
+      },
+      {
+        meta_key_id: 'madek_core:title'
+      },
+      {
+        meta_key_id: 'copyright:publication_date'
+      },
+      {
+        meta_key_id: 'madek_core:keywords'
+      },
+      {
+        meta_key_id: 'media_content:type'
+      },
+      {
+        meta_key_id: 'media_object:other_creative_participants'
+      },
+      {
+        meta_key_id: 'madek_core:portrayed_object_date'
+      },
+      {
         meta_key_id: 'madek_core:description',
         value: [{ string: "Material zur Verfügung gestellt im Rahmen des " \
                           "Forschungsprojekts «#{name}»" }]
       },
       {
-        key: 'Copyright Notice',
         meta_key_id: 'madek_core:copyright_notice',
         value: [{ string: "This resource is a part of the project #{name}" }]
+      },
+      {
+        meta_key_id: 'copyright:license',
+        value: Keyword.where(term: 'CC-By-SA-CH: Attribution Share Alike')
+      },
+      {
+        meta_key_id: 'copyright:copyright_usage'
+      },
+      {
+        meta_key_id: 'madek_core:subtitle'
+      },
+      {
+        meta_key_id: 'media_content:portrayed_object_dimensions'
       }
     ]
   end
