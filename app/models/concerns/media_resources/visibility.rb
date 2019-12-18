@@ -17,7 +17,6 @@ module Concerns
           where(Hash[self::VIEW_PERMISSION_NAME, true])
         end
 
-        # rubocop:disable Metrics/MethodLength
         def viewable_by_user(user)
           conditions = arel_table[self::VIEW_PERMISSION_NAME].eq(true)
             .or(arel_table[:responsible_user_id].eq(user.id))
