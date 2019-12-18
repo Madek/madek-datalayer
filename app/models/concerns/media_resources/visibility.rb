@@ -33,8 +33,9 @@ module Concerns
               .or(
                 scope_to_reuse
                   .with_unpublished
-                  .where(viewable_by_workflow_creator(user)
-                    .or(viewable_by_workflow_owner(user))
+                  .where(
+                    viewable_by_workflow_creator(user)
+                      .or(viewable_by_workflow_owner(user))
                   )
               )
           else

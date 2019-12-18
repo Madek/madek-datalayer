@@ -32,7 +32,9 @@ class MediaResource < ApplicationRecord
 
   def self.unified_scope(scope1, scope2, scope3, part_of_workflow = false)
     scope1, scope2, scope3 = [scope1, scope2, scope3].map do |s|
-      s = s.with_unpublished if part_of_workflow && s.respond_to?(:with_unpublished)
+      if part_of_workflow && s.respond_to?(:with_unpublished)
+        s = s.with_unpublished
+      end
       s
     end
 
