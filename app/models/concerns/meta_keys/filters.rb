@@ -25,12 +25,14 @@ module Concerns
             ]
           )
 
-          result = select('meta_keys.*', "ts_rank_cd(#{vector}, #{query}) AS search_rank")
-            .where("#{vector} @@ #{query}", term)
-            .reorder('search_rank DESC')
+          result =
+            select('meta_keys.*', "ts_rank_cd(#{vector}, #{query}) AS search_rank")
+              .where("#{vector} @@ #{query}", term)
+              .reorder('search_rank DESC')
 
-          # NOTE: the tsvector-based search does not match substrings ("desc" should find "description").
-          # As a workaround, we return simple ILIKE-based results if the clever search did not find anything
+          # NOTE: the tsvector-based search does not match substrings ("desc"
+          # should find "description"). As a workaround, we return simple
+          # ILIKE-based results if the clever search did not find anything
           if result.blank?
             where_condition = <<-SQL
               id ILIKE :t

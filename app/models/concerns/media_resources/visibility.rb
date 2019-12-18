@@ -36,7 +36,7 @@ module Concerns
                   .with_unpublished
                   .where(viewable_by_workflow_creator(user)
                     .or(viewable_by_workflow_owner(user))
-                  )
+                        )
               )
           else
             where(conditions)
@@ -62,7 +62,7 @@ module Concerns
             .join(workflows).on(workflows[:id].eq(collections[:workflow_id]))
             .where(workflows[:is_active].eq(true)
               .and(workflows[:creator_id].eq(user[:id]))
-            )
+                  )
             .exists
         end
 
