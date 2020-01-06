@@ -9,6 +9,7 @@ describe MetaKey do
       expect(described_class.object_types).to eq(
         %w(MetaDatum::JSON
            MetaDatum::Keywords
+           MetaDatum::MediaEntry
            MetaDatum::People
            MetaDatum::Roles
            MetaDatum::Text

@@ -23,7 +23,7 @@ class MetaDatum < ApplicationRecord
   belongs_to :created_by, class_name: 'User'
 
   # NOTE: need to overwrite the default scope, Rails 5 has '#rescope'
-  belongs_to :media_entry, -> { where(is_published: [true, false]) }
+  belongs_to :media_entry, -> { with_unpublished }, class_name: '::MediaEntry'
   belongs_to :collection
   belongs_to :filter_set
 

@@ -63,6 +63,15 @@ FactoryGirl.define do
      end
    end
 
+   factory :meta_datum_media_entry, class: MetaDatum::MediaEntry do
+     string { Faker::Lorem.sentence }
+     other_media_entry { FactoryGirl.create(:media_entry_with_title) }
+     meta_key do
+       MetaKey.find_by(id: 'test:media_entry') \
+         || FactoryGirl.create(:meta_key_media_entry)
+     end
+   end
+
    factory :meta_datum_keywords, class: MetaDatum::Keywords do
      meta_key do
        MetaKey.find_by(id: attributes_for(:meta_key_keywords)[:id]) \
