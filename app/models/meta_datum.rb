@@ -55,6 +55,7 @@ class MetaDatum < ApplicationRecord
   # table values with the created_by user (#set_value!)
   def self.create_with_user!(user, attrs)
     value = attrs.delete(:value)
+    # binding.pry if value.is_a?(Array)
     meta_datum = new attrs.merge(created_by: user)
     meta_datum.set_value!(value, user)
     meta_datum

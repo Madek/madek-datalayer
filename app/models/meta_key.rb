@@ -45,11 +45,20 @@ class MetaKey < ApplicationRecord
   before_validation :sanitize_allowed_people_subtypes
   before_save :keep_keywords_order_if_needed
 
+  def self.non_default_object_types
+    %w(
+      MetaDatum::Roles
+      MetaDatum::JSON
+      MetaDatum::OtherMediaEntry
+    )
+  end
+  private_class_method :non_default_object_types
+
   def self.object_types
     (
       unscoped
         .distinct
-        .pluck(:meta_datum_object_type) << 'MetaDatum::Roles' << 'MetaDatum::JSON'
+        .pluck(:meta_datum_object_type) + non_default_object_types
     )
       .uniq
       .sort
