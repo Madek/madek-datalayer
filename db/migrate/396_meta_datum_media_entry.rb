@@ -2,7 +2,7 @@ class MetaDatumMediaEntry < ActiveRecord::Migration[5.2]
   # include Madek::MigrationHelper
 
   def new_type
-    'MetaDatum::OtherMediaEntry'
+    'MetaDatum::MediaEntry'
   end
 
   def before_types

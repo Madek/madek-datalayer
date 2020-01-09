@@ -28,7 +28,7 @@ FactoryGirl.define do
 
     factory :meta_key_media_entry do
       id { 'test:media_entry' }
-      meta_datum_object_type 'MetaDatum::OtherMediaEntry'
+      meta_datum_object_type 'MetaDatum::MediaEntry'
     end
 
     factory :meta_key_text_date, class: MetaKey do

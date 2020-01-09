@@ -63,7 +63,7 @@ FactoryGirl.define do
      end
    end
 
-   factory :meta_datum_media_entry, class: MetaDatum::OtherMediaEntry do
+   factory :meta_datum_media_entry, class: MetaDatum::MediaEntry do
      string { Faker::Lorem.sentence }
      other_media_entry { FactoryGirl.create(:media_entry_with_title) }
      meta_key do

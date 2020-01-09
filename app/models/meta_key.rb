@@ -49,7 +49,7 @@ class MetaKey < ApplicationRecord
     %w(
       MetaDatum::Roles
       MetaDatum::JSON
-      MetaDatum::OtherMediaEntry
+      MetaDatum::MediaEntry
     )
   end
   private_class_method :non_default_object_types

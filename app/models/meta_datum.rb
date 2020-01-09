@@ -23,7 +23,7 @@ class MetaDatum < ApplicationRecord
   belongs_to :created_by, class_name: 'User'
 
   # NOTE: need to overwrite the default scope, Rails 5 has '#rescope'
-  belongs_to :media_entry, -> { where(is_published: [true, false]) }
+  belongs_to :media_entry, -> { with_unpublished }, class_name: '::MediaEntry'
   belongs_to :collection
   belongs_to :filter_set
 
@@ -55,7 +55,6 @@ class MetaDatum < ApplicationRecord
   # table values with the created_by user (#set_value!)
   def self.create_with_user!(user, attrs)
     value = attrs.delete(:value)
-    # binding.pry if value.is_a?(Array)
     meta_datum = new attrs.merge(created_by: user)
     meta_datum.set_value!(value, user)
     meta_datum
