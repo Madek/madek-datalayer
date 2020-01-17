@@ -94,8 +94,24 @@ class Workflow < ApplicationRecord
     ]
   end
 
+  def append_type_to_values(data)
+    data.map do |entry|
+      entry[:value] = Array.wrap(entry[:value])
+      entry[:value] = entry[:value].map do |val|
+        type = val.class.name
+        if val.respond_to?(:serializable_hash)
+          val = val.serializable_hash
+          val['type'] = type
+          val['uuid'] = val.delete('id')
+        end
+        val
+      end
+      entry
+    end
+  end
+
   def set_default_configuration
     self.common_permissions = default_common_permissions
-    self.common_meta_data = default_common_meta_data
+    self.common_meta_data = append_type_to_values(default_common_meta_data)
   end
 end
