@@ -1774,6 +1774,39 @@ CREATE TABLE public.previews (
 
 
 --
+-- Name: previous_group_ids; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.previous_group_ids (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    previous_id uuid NOT NULL,
+    group_id uuid NOT NULL
+);
+
+
+--
+-- Name: previous_keyword_ids; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.previous_keyword_ids (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    previous_id uuid NOT NULL,
+    keyword_id uuid NOT NULL
+);
+
+
+--
+-- Name: previous_person_ids; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.previous_person_ids (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    previous_id uuid NOT NULL,
+    person_id uuid NOT NULL
+);
+
+
+--
 -- Name: rdf_classes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2331,6 +2364,30 @@ ALTER TABLE ONLY public.people
 
 ALTER TABLE ONLY public.previews
     ADD CONSTRAINT previews_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: previous_group_ids previous_group_ids_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.previous_group_ids
+    ADD CONSTRAINT previous_group_ids_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: previous_keyword_ids previous_keyword_ids_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.previous_keyword_ids
+    ADD CONSTRAINT previous_keyword_ids_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: previous_person_ids previous_person_ids_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.previous_person_ids
+    ADD CONSTRAINT previous_person_ids_pkey PRIMARY KEY (id);
 
 
 --
@@ -3646,6 +3703,48 @@ CREATE INDEX index_previews_on_media_file_id ON public.previews USING btree (med
 --
 
 CREATE INDEX index_previews_on_media_type ON public.previews USING btree (media_type);
+
+
+--
+-- Name: index_previous_group_ids_on_group_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_previous_group_ids_on_group_id ON public.previous_group_ids USING btree (group_id);
+
+
+--
+-- Name: index_previous_group_ids_on_previous_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_previous_group_ids_on_previous_id ON public.previous_group_ids USING btree (previous_id);
+
+
+--
+-- Name: index_previous_keyword_ids_on_keyword_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_previous_keyword_ids_on_keyword_id ON public.previous_keyword_ids USING btree (keyword_id);
+
+
+--
+-- Name: index_previous_keyword_ids_on_previous_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_previous_keyword_ids_on_previous_id ON public.previous_keyword_ids USING btree (previous_id);
+
+
+--
+-- Name: index_previous_person_ids_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_previous_person_ids_on_person_id ON public.previous_person_ids USING btree (person_id);
+
+
+--
+-- Name: index_previous_person_ids_on_previous_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_previous_person_ids_on_previous_id ON public.previous_person_ids USING btree (previous_id);
 
 
 --
@@ -5404,6 +5503,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('408'),
 ('409'),
 ('410'),
+('411'),
 ('5'),
 ('6'),
 ('7'),

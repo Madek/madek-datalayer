@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'spec_helper_no_tx'
+require_relative 'shared/previous_ids'
 
 describe Group do
 
@@ -33,4 +34,25 @@ describe Group do
       expect(Group.find_by id: @group.id).to be
     end
   end
+
+  describe '#merge_to' do
+    let(:group) { create(:group) }
+    let(:receiver) { create(:group) }
+
+    it 'deletes group' do
+      expect(group).to receive(:destroy!)
+
+      group.merge_to(receiver)
+    end
+
+    it 'remembers previous id' do
+      expect { group.merge_to(receiver) }.to change {
+        PreviousIds::PreviousGroupId
+          .where(previous_id: group.id, group_id: receiver.id)
+          .count
+      }.by(1)
+    end
+  end
+
+  include_examples 'previous ids'
 end

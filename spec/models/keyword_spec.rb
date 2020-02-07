@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'models/shared/orderable'
+require_relative 'shared/previous_ids'
 
 describe Keyword do
   describe '#creator' do
@@ -67,4 +68,24 @@ describe Keyword do
     let(:parent_scope) { :meta_key }
   end
 
+  describe '#merge_to' do
+    let(:keyword) { create(:keyword) }
+    let(:receiver) { create(:keyword) }
+
+    it 'deletes keyword' do
+      expect(keyword).to receive(:destroy!)
+
+      keyword.merge_to(receiver)
+    end
+
+    it 'remembers previous id' do
+      expect { keyword.merge_to(receiver) }.to change {
+        PreviousIds::PreviousKeywordId
+          .where(previous_id: keyword.id, keyword_id: receiver.id)
+          .count
+      }.by(1)
+    end
+  end
+
+  include_examples 'previous ids'
 end

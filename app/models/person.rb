@@ -1,6 +1,7 @@
 class Person < ApplicationRecord
   include Concerns::FindResource
   include Concerns::People::Filters
+  include Concerns::PreviousId
 
   self.inheritance_column = false
 
@@ -33,15 +34,16 @@ class Person < ApplicationRecord
     end
   end
 
-  def merge_to(receiver, creator_fallback)
+  def merge_to(receiver, creator_fallback = nil)
     ActiveRecord::Base.transaction do
       meta_data_people.each do |mdp|
         mdp.update_columns(
           person_id: receiver.id,
-          created_by_id: receiver.user.try(:id) || creator_fallback.id
+          created_by_id: (receiver.user.try(:id) || creator_fallback&.id)
         )
       end
       user.update!(person: receiver) if user
+      receiver.remember_id(id)
       destroy!
     end
   end

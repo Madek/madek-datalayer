@@ -3,6 +3,7 @@ class Keyword < ApplicationRecord
   include Concerns::FindResource
   include Concerns::Keywords::Filters
   include Concerns::Orderable
+  include Concerns::PreviousId
 
   enable_ordering skip_default_scope: true,
                   parent_scope: :meta_key
@@ -46,6 +47,7 @@ class Keyword < ApplicationRecord
           created_by_id: receiver.creator_id
         )
       end
+      receiver.remember_id(id)
       destroy!
     end
   end

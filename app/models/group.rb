@@ -2,6 +2,7 @@ class Group < ApplicationRecord
   include Concerns::FindResource
   include Concerns::Groups::Filters
   include Concerns::Groups::Searches
+  include Concerns::PreviousId
 
   has_and_belongs_to_many :users
   belongs_to :person
@@ -22,9 +23,10 @@ class Group < ApplicationRecord
   end
 
   def merge_to(receiver)
-    Group.transaction do
+    ActiveRecord::Base.transaction do
       merge_users_to(receiver)
-      delete
+      receiver.remember_id(id)
+      destroy!
     end
   end
 
