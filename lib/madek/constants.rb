@@ -22,6 +22,8 @@ module Madek
       UUIDTools::UUID.sha1_create MADEK_UUID_NS, 'signed-in users'
     BETA_TESTERS_QUICK_EDIT_GROUP_ID =
       UUIDTools::UUID.sha1_create MADEK_UUID_NS, 'beta_test_quick_edit'
+    BETA_TESTERS_WORKFLOWS_GROUP_ID =
+      UUIDTools::UUID.sha1_create MADEK_UUID_NS, 'beta_test_workflows'
 
     def self.env_path_or_nil(env_var)
       ENV[env_var].present? && Pathname(ENV[env_var]).realpath
