@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ClassLength
 # rubocop:disable Metrics/MethodLength
 
 class Workflow < ApplicationRecord
@@ -27,6 +28,12 @@ class Workflow < ApplicationRecord
     WorkflowLocker.new(self).call
   end
 
+  def mandatory_meta_key_ids
+    self.common_meta_data
+      .select { |cfg| cfg['is_mandatory'] }
+      .map { |cfg| cfg['meta_key_id'] }
+  end
+
   private
 
   def default_responsible_user
@@ -49,47 +56,109 @@ class Workflow < ApplicationRecord
     # NOTE: currently keys come from this context: https://madek-spiel.kiste.li/admin/contexts/fair-data
     [
       {
-        meta_key_id: 'madek_core:authors'
+        meta_key_id: 'madek_core:authors',
+        is_common: false,
+        is_mandatory: true,
+        is_overridable: true
       },
       {
-        meta_key_id: 'madek_core:title'
+        meta_key_id: 'madek_core:title',
+        is_common: false,
+        is_mandatory: true,
+        is_overridable: true
       },
       {
-        meta_key_id: 'copyright:publication_date'
+        meta_key_id: 'zhdk_bereich:​project_title',
+        is_common: true,
+        is_mandatory: false,
+        is_overridable: false
       },
       {
-        meta_key_id: 'madek_core:keywords'
+        meta_key_id: 'zhdk_bereich:​project_title_english',
+        is_common: true,
+        is_mandatory: false,
+        is_overridable: false
       },
       {
-        meta_key_id: 'media_content:type'
+        meta_key_id: 'zhdk_bereich:​project_leader',
+        is_common: true,
+        is_mandatory: false,
+        is_overridable: false
       },
       {
-        meta_key_id: 'media_object:other_creative_participants'
+        meta_key_id: 'copyright:publication_date',
+        is_common: false,
+        is_mandatory: false,
+        is_overridable: true
       },
       {
-        meta_key_id: 'madek_core:portrayed_object_date'
+        meta_key_id: 'madek_core:keywords',
+        is_common: false,
+        is_mandatory: false,
+        is_overridable: true
+      },
+      {
+        meta_key_id: 'media_content:type',
+        is_common: false,
+        is_mandatory: false,
+        is_overridable: true
+      },
+      {
+        meta_key_id: 'media_object:other_creative_participants',
+        is_common: false,
+        is_mandatory: false,
+        is_overridable: true
+      },
+      {
+        meta_key_id: 'madek_core:portrayed_object_date',
+        is_common: false,
+        is_mandatory: false,
+        is_overridable: true
       },
       {
         meta_key_id: 'madek_core:description',
-        value: [{ string: "Material zur Verfügung gestellt im Rahmen des " \
-                          "Forschungsprojekts «#{name}»" }]
+        is_common: false,
+        is_mandatory: false,
+        is_overridable: true,
+        value: [
+          {
+            string:
+              'Material zur Verfügung gestellt im Rahmen des ' \
+                "Forschungsprojekts «#{name}»"
+          }
+        ]
       },
       {
         meta_key_id: 'madek_core:copyright_notice',
+        is_common: true,
+        is_mandatory: true,
+        is_overridable: true,
         value: [{ string: "This resource is a part of the project #{name}" }]
       },
       {
         meta_key_id: 'copyright:license',
+        is_common: true,
+        is_mandatory: false,
+        is_overridable: true,
         value: Keyword.where(term: 'CC-By-SA-CH: Attribution Share Alike')
       },
       {
-        meta_key_id: 'copyright:copyright_usage'
+        meta_key_id: 'copyright:copyright_usage',
+        is_common: true,
+        is_mandatory: true,
+        is_overridable: true
       },
       {
-        meta_key_id: 'madek_core:subtitle'
+        meta_key_id: 'madek_core:subtitle',
+        is_common: true,
+        is_mandatory: false,
+        is_overridable: true
       },
       {
-        meta_key_id: 'media_content:portrayed_object_dimensions'
+        meta_key_id: 'media_content:portrayed_object_dimensions',
+        is_common: true,
+        is_mandatory: false,
+        is_overridable: true
       }
     ]
   end
@@ -97,15 +166,16 @@ class Workflow < ApplicationRecord
   def append_type_to_values(data)
     data.map do |entry|
       entry[:value] = Array.wrap(entry[:value])
-      entry[:value] = entry[:value].map do |val|
-        type = val.class.name
-        if val.respond_to?(:serializable_hash)
-          val = val.serializable_hash
-          val['type'] = type
-          val['uuid'] = val.delete('id')
+      entry[:value] =
+        entry[:value].map do |val|
+          type = val.class.name
+          if val.respond_to?(:serializable_hash)
+            val = val.serializable_hash
+            val['type'] = type
+            val['uuid'] = val.delete('id')
+          end
+          val
         end
-        val
-      end
       entry
     end
   end
