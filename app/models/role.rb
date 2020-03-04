@@ -12,7 +12,8 @@ class Role < ApplicationRecord
   has_many :meta_data, through: :meta_data_roles
 
   scope :sorted, lambda { |locale = AppSetting.default_locale|
-    order("roles.labels->'#{locale}'")
+    throw unless AppSetting.available_locales.include?(locale.to_s)
+    order(Arel.sql("roles.labels->'#{locale}'"))
   }
   scope :with_usage_count, lambda {
     select('roles.*, count(meta_data_roles.id) as usage_count')
