@@ -84,6 +84,26 @@ describe Person do
 
   end
 
+  describe '#reject_blank_uris' do
+    let(:person) { build :person }
+    let(:url_1) { Faker::Internet.url }
+    let(:url_2) { Faker::Internet.url }
+
+    it 'does not persist blank uris' do
+      person.external_uris = [
+        url_1,
+        '',
+        url_2,
+        ' '
+      ]
+
+      expect(person).to receive(:reject_blank_uris).and_call_original
+      person.save!
+
+      expect(person.external_uris).to eq([url_1, url_2])
+    end
+  end
+
   def find_person(first_name)
     Person
       .admin_with_usage_count

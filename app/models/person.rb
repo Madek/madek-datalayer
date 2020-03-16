@@ -20,6 +20,8 @@ class Person < ApplicationRecord
     end
   end
 
+  before_save :reject_blank_uris
+
   def to_s
     case
     when ((first_name or last_name) and (pseudonym and !pseudonym.try(:empty?)))
@@ -100,4 +102,10 @@ class Person < ApplicationRecord
       .group('people.id')
   end
   # rubocop:enable Metrics/MethodLength
+
+  private
+
+  def reject_blank_uris
+    self.external_uris = external_uris&.reject(&:blank?)
+  end
 end
