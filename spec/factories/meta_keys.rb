@@ -62,7 +62,7 @@ FactoryGirl.define do
     end
 
     factory :meta_key_roles, class: MetaKey do
-      sequence(:id) { |n| "test:roles_#{n}" }
+      id { 'test:roles' }
       meta_datum_object_type 'MetaDatum::Roles'
     end
   end
