@@ -27,8 +27,7 @@ FactoryGirl.define do
    factory :meta_datum_text_date, class: MetaDatum::TextDate do
      string { Faker::Lorem.words.join(' ') }
      meta_key do
-       MetaKey.find_by(id: 'test:textdate') \
-         || MetaKey.find_by(id: 'test:textdate') \
+       MetaKey.find_by(id: attributes_for(:meta_key_text_date)[:id]) \
          || FactoryGirl.create(:meta_key_text_date)
      end
    end
@@ -36,7 +35,7 @@ FactoryGirl.define do
    factory :meta_datum_text, class: MetaDatum::Text do
      string { Faker::Lorem.words.join(' ') }
      meta_key do
-       MetaKey.find_by(id: 'test:text') \
+       MetaKey.find_by(id: attributes_for(:meta_key_text)[:id]) \
          || FactoryGirl.create(:meta_key_text)
      end
 
@@ -59,14 +58,14 @@ FactoryGirl.define do
    factory :meta_datum_json, class: MetaDatum::JSON do
      json { { "some_boolean": true, "zero_point": -273.15, "seq": [1, 2, nil] } }
      meta_key do
-       MetaKey.find_by(id: 'test:json') \
+       MetaKey.find_by(id: attributes_for(:meta_key_json)[:id]) \
          || FactoryGirl.create(:meta_key_json)
      end
    end
 
    factory :meta_datum_keywords, class: MetaDatum::Keywords do
      meta_key do
-       MetaKey.find_by(id: 'test:keywords') \
+       MetaKey.find_by(id: attributes_for(:meta_key_keywords)[:id]) \
          || FactoryGirl.create(:meta_key_keywords)
      end
      keywords do
@@ -84,7 +83,7 @@ FactoryGirl.define do
 
    factory :meta_datum_people, class: MetaDatum::People do
      meta_key do
-       MetaKey.find_by(id: 'test:people') \
+       MetaKey.find_by(id: attributes_for(:meta_key_people)[:id]) \
          || FactoryGirl.create(:meta_key_people)
      end
      people { (1..3).map { FactoryGirl.create :person } }
@@ -97,12 +96,17 @@ FactoryGirl.define do
 
    factory :meta_datum_roles, class: MetaDatum::Roles do
      meta_key do
-       MetaKey.find_by(id: 'test:roles') \
+       MetaKey.find_by(id: attributes_for(:meta_key_roles)[:id]) \
          || FactoryGirl.create(:meta_key_roles)
      end
+     transient do
+       create_sample_data true
+     end
      after(:create) do |md, evaluator|
-       create_list :meta_datum_role, 3, meta_datum: md
-       create :meta_datum_role, meta_datum: md, role: nil
+       if evaluator.create_sample_data
+         create_list :meta_datum_role, 3, meta_datum: md
+         create :meta_datum_role, meta_datum: md, role: nil
+       end
      end
    end
  end
