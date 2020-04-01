@@ -1010,34 +1010,14 @@ CREATE TABLE public.app_settings (
 
 
 --
--- Name: app_settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.app_settings_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: app_settings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.app_settings_id_seq OWNED BY public.app_settings.id;
-
-
---
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.ar_internal_metadata (
     key character varying NOT NULL,
     value character varying,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
@@ -1159,8 +1139,8 @@ CREATE TABLE public.collections (
 CREATE TABLE public.confidential_links (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     user_id uuid NOT NULL,
-    resource_type character varying,
     resource_id uuid,
+    resource_type character varying,
     token character varying(45) NOT NULL,
     revoked boolean DEFAULT false NOT NULL,
     description text,
@@ -1365,7 +1345,7 @@ CREATE TABLE public.groups (
     type character varying DEFAULT 'Group'::character varying NOT NULL,
     person_id uuid,
     searchable text DEFAULT ''::text NOT NULL,
-    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['AuthenticationGroup'::character varying, 'InstitutionalGroup'::character varying, 'Group'::character varying])::text[])))
+    CONSTRAINT check_valid_type CHECK (((type)::text = ANY (ARRAY[('AuthenticationGroup'::character varying)::text, ('InstitutionalGroup'::character varying)::text, ('Group'::character varying)::text])))
 );
 
 
@@ -2194,14 +2174,6 @@ ALTER TABLE ONLY public.rdf_classes
 
 ALTER TABLE ONLY public.roles
     ADD CONSTRAINT roles_pkey PRIMARY KEY (id);
-
-
---
--- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.schema_migrations
-    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
 
 
 --
@@ -3487,6 +3459,13 @@ CREATE UNIQUE INDEX unique_login_idx ON public.users USING btree (login);
 
 
 --
+-- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX unique_schema_migrations ON public.schema_migrations USING btree (version);
+
+
+--
 -- Name: users_searchable_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3764,13 +3743,6 @@ CREATE TRIGGER update_updated_at_column_of_api_tokens BEFORE UPDATE ON public.ap
 --
 
 CREATE TRIGGER update_updated_at_column_of_app_settings BEFORE UPDATE ON public.app_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
-
-
---
--- Name: ar_internal_metadata update_updated_at_column_of_ar_internal_metadata; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_ar_internal_metadata BEFORE UPDATE ON public.ar_internal_metadata FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
@@ -4360,14 +4332,6 @@ ALTER TABLE ONLY public.confidential_links
 
 
 --
--- Name: collection_user_permissions fk_rails_8f830fb7e7; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.collection_user_permissions
-    ADD CONSTRAINT fk_rails_8f830fb7e7 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
-
-
---
 -- Name: roles fk_rails_973fbfab62; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4445,14 +4409,6 @@ ALTER TABLE ONLY public.api_tokens
 
 ALTER TABLE ONLY public.keywords
     ADD CONSTRAINT fk_rails_f3e1612c9e FOREIGN KEY (meta_key_id) REFERENCES public.meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: filter_set_user_permissions fk_rails_fe38b294ce; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_user_permissions
-    ADD CONSTRAINT fk_rails_fe38b294ce FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
