@@ -4,10 +4,9 @@ generate_tasks:
   include_match: spec/.*_spec.rb
 
 tasks:
-  spec/models/media_entry/combined_filter_spec.rb: {priority: 1}
+  spec/models/media_entry/combined_filter_spec.rb: { priority: 1 }
 
 task_defaults:
-
   include:
     - cider-ci/task-components/bundle.yml
     - cider-ci/task-components/database.yml
@@ -18,10 +17,10 @@ task_defaults:
 
   environment_variables:
     RUBY_ENGINE: ruby
-    RUBY_VERSION: 2.6.3
+    RUBY_VERSION: 2.6.6
     RAILS_ENV: test
     DATABASE: madek_datalayer_test_{{CIDER_CI_TRIAL_ID}}
-    LANG: "en_US.UTF-8"
+    LANG: 'en_US.UTF-8'
 
   git_options:
     submodules:
@@ -40,7 +39,6 @@ task_defaults:
     nodejs: true
 
   scripts:
-
     test:
       body: |
         set -eux

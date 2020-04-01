@@ -1,6 +1,6 @@
 environment_variables:
   RUBY_ENGINE: ruby
-  RUBY_VERSION: 2.6.3
+  RUBY_VERSION: 2.6.6
   RUBY: '{{RUBY_ENGINE}}-{{RUBY_VERSION}}'
 
 traits:
@@ -8,7 +8,6 @@ traits:
   ruby-install: true
 
 scripts:
-
   bundle:
     exclusive_executor_resource: ruby-install_{{$RUBY}}
     timeout: 20 Minutes
