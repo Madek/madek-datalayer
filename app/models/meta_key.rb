@@ -46,12 +46,9 @@ class MetaKey < ApplicationRecord
   before_save :keep_keywords_order_if_needed
 
   def self.object_types
-    (
-      unscoped
-        .distinct
-        .pluck(:meta_datum_object_type) << 'MetaDatum::Roles' << 'MetaDatum::JSON'
-    )
-      .uniq
+    MetaDatum
+      .descendants
+      .map(&:name)
       .sort
   end
 
