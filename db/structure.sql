@@ -1895,7 +1895,9 @@ CREATE TABLE public.workflows (
     name character varying NOT NULL,
     creator_id uuid NOT NULL,
     is_active boolean DEFAULT true NOT NULL,
-    configuration jsonb DEFAULT '{}'::jsonb
+    configuration jsonb DEFAULT '{}'::jsonb,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
 );
 
 
@@ -4055,6 +4057,13 @@ CREATE TRIGGER update_updated_at_column_of_usage_terms BEFORE UPDATE ON public.u
 --
 
 CREATE TRIGGER update_updated_at_column_of_users BEFORE UPDATE ON public.users FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
+
+
+--
+-- Name: workflows update_updated_at_column_of_workflows; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_workflows BEFORE UPDATE ON public.workflows FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
