@@ -230,7 +230,11 @@ MADEK_DEFAULT_SETTINGS:
     brand_texts:
       de: '** Name des Anbieters **'
       en: '** Name of the provider **'
+    provenance_notices:
+      de: '** Provenienzhinweis **'
+      en: '** Provenance Notice **'
     brand_logo_url: null
+
     welcome_titles:
       de: '** Wilkommen zum Archiv **'
       en: '** Welcome to the archive **'

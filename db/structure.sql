@@ -1030,6 +1030,7 @@ CREATE TABLE public.app_settings (
     catalog_subtitles public.hstore DEFAULT ''::public.hstore NOT NULL,
     about_pages public.hstore DEFAULT ''::public.hstore NOT NULL,
     support_urls public.hstore DEFAULT ''::public.hstore NOT NULL,
+    provenance_notices public.hstore DEFAULT ''::public.hstore NOT NULL,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -5082,6 +5083,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('394'),
 ('395'),
 ('396'),
+('397'),
 ('4'),
 ('5'),
 ('6'),
