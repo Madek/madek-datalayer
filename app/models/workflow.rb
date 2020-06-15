@@ -68,19 +68,19 @@ class Workflow < ApplicationRecord
         is_overridable: true
       },
       {
-        meta_key_id: 'zhdk_bereich:​project_title',
+        meta_key_id: 'zhdk_bereich:project_title',
         is_common: true,
         is_mandatory: false,
         is_overridable: false
       },
       {
-        meta_key_id: 'zhdk_bereich:​project_title_english',
+        meta_key_id: 'zhdk_bereich:project_title_english',
         is_common: true,
         is_mandatory: false,
         is_overridable: false
       },
       {
-        meta_key_id: 'zhdk_bereich:​project_leader',
+        meta_key_id: 'zhdk_bereich:project_leader',
         is_common: true,
         is_mandatory: false,
         is_overridable: false
