@@ -1031,6 +1031,7 @@ CREATE TABLE public.app_settings (
     about_pages public.hstore DEFAULT ''::public.hstore NOT NULL,
     support_urls public.hstore DEFAULT ''::public.hstore NOT NULL,
     provenance_notices public.hstore DEFAULT ''::public.hstore NOT NULL,
+    time_zone character varying DEFAULT 'Europe/Zurich'::character varying NOT NULL,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -5084,6 +5085,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('395'),
 ('396'),
 ('397'),
+('398'),
 ('4'),
 ('5'),
 ('6'),
