@@ -84,8 +84,8 @@ class Collection < ApplicationRecord
   # NOTE: disabled because there is no workflow yet
   # validate :validate_existence_of_meta_data_for_required_context_keys
 
-  def child_media_resources
-    MediaResource.unified_scope(media_entries,
+  def child_media_resources(media_entries_scope: :media_entries)
+    MediaResource.unified_scope(public_send(media_entries_scope),
                                 collections,
                                 filter_sets,
                                 part_of_workflow?)
