@@ -1597,7 +1597,44 @@ CREATE TABLE public.media_files (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     uploader_id uuid NOT NULL,
-    conversion_profiles character varying[] DEFAULT '{}'::character varying[]
+    conversion_profiles character varying[] DEFAULT '{}'::character varying[],
+    media_store_id uuid
+);
+
+
+--
+-- Name: media_stores; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.media_stores (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    configuration jsonb,
+    type text DEFAULT 'database'::text NOT NULL,
+    CONSTRAINT check_allowed_types CHECK ((type = ANY (ARRAY['database'::text, 'filesystem'::text, 'S3'::text])))
+);
+
+
+--
+-- Name: media_stores_groups; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.media_stores_groups (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    group_id uuid NOT NULL,
+    media_store_id uuid NOT NULL,
+    priority integer DEFAULT 0 NOT NULL
+);
+
+
+--
+-- Name: media_stores_users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.media_stores_users (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    media_store_id uuid NOT NULL,
+    priority integer DEFAULT 0 NOT NULL
 );
 
 
@@ -1787,6 +1824,16 @@ CREATE TABLE public.roles (
 
 CREATE TABLE public.schema_migrations (
     version character varying NOT NULL
+);
+
+
+--
+-- Name: system_admins; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.system_admins (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL
 );
 
 
@@ -2243,6 +2290,30 @@ ALTER TABLE ONLY public.media_files
 
 
 --
+-- Name: media_stores_groups media_stores_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_stores_groups
+    ADD CONSTRAINT media_stores_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: media_stores media_stores_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_stores
+    ADD CONSTRAINT media_stores_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: media_stores_users media_stores_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_stores_users
+    ADD CONSTRAINT media_stores_users_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: meta_data_people meta_data_people_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2320,6 +2391,14 @@ ALTER TABLE ONLY public.roles
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: system_admins system_admins_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.system_admins
+    ADD CONSTRAINT system_admins_pkey PRIMARY KEY (id);
 
 
 --
@@ -3431,10 +3510,59 @@ CREATE INDEX index_media_files_on_media_entry_id ON public.media_files USING btr
 
 
 --
+-- Name: index_media_files_on_media_store_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_media_files_on_media_store_id ON public.media_files USING btree (media_store_id);
+
+
+--
 -- Name: index_media_files_on_media_type; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_media_files_on_media_type ON public.media_files USING btree (media_type);
+
+
+--
+-- Name: index_media_stores_groups_on_group_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_media_stores_groups_on_group_id ON public.media_stores_groups USING btree (group_id);
+
+
+--
+-- Name: index_media_stores_groups_on_group_id_and_media_store_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_media_stores_groups_on_group_id_and_media_store_id ON public.media_stores_groups USING btree (group_id, media_store_id);
+
+
+--
+-- Name: index_media_stores_groups_on_media_store_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_media_stores_groups_on_media_store_id ON public.media_stores_groups USING btree (media_store_id);
+
+
+--
+-- Name: index_media_stores_users_on_media_store_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_media_stores_users_on_media_store_id ON public.media_stores_users USING btree (media_store_id);
+
+
+--
+-- Name: index_media_stores_users_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_media_stores_users_on_user_id ON public.media_stores_users USING btree (user_id);
+
+
+--
+-- Name: index_media_stores_users_on_user_id_and_media_store_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_media_stores_users_on_user_id_and_media_store_id ON public.media_stores_users USING btree (user_id, media_store_id);
 
 
 --
@@ -4593,6 +4721,14 @@ ALTER TABLE ONLY public.filter_sets
 
 
 --
+-- Name: media_files fk_rails_0e271bcc4b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_files
+    ADD CONSTRAINT fk_rails_0e271bcc4b FOREIGN KEY (media_store_id) REFERENCES public.media_stores(id);
+
+
+--
 -- Name: context_keys fk_rails_2957e036b5; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4622,6 +4758,22 @@ ALTER TABLE ONLY public.api_clients
 
 ALTER TABLE ONLY public.groups_users
     ADD CONSTRAINT fk_rails_4e63edbd27 FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: media_stores_groups fk_rails_4ec7425a31; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_stores_groups
+    ADD CONSTRAINT fk_rails_4ec7425a31 FOREIGN KEY (group_id) REFERENCES public.groups(id);
+
+
+--
+-- Name: system_admins fk_rails_53b10fbe11; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.system_admins
+    ADD CONSTRAINT fk_rails_53b10fbe11 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -4678,6 +4830,14 @@ ALTER TABLE ONLY public.filter_set_group_permissions
 
 ALTER TABLE ONLY public.delegations_groups
     ADD CONSTRAINT fk_rails_a507ac19bd FOREIGN KEY (delegation_id) REFERENCES public.delegations(id);
+
+
+--
+-- Name: media_stores_users fk_rails_aca436f96c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_stores_users
+    ADD CONSTRAINT fk_rails_aca436f96c FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -4745,6 +4905,14 @@ ALTER TABLE ONLY public.media_entry_group_permissions
 
 
 --
+-- Name: media_stores_groups fk_rails_cd89d9366d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_stores_groups
+    ADD CONSTRAINT fk_rails_cd89d9366d FOREIGN KEY (media_store_id) REFERENCES public.media_stores(id);
+
+
+--
 -- Name: io_mappings fk_rails_dbf6e7c067; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4798,6 +4966,14 @@ ALTER TABLE ONLY public.delegations_groups
 
 ALTER TABLE ONLY public.filter_set_user_permissions
     ADD CONSTRAINT fk_rails_fe38b294ce FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: media_stores_users fk_rails_fe7156acd6; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_stores_users
+    ADD CONSTRAINT fk_rails_fe7156acd6 FOREIGN KEY (media_store_id) REFERENCES public.media_stores(id);
 
 
 --
@@ -5347,6 +5523,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('408'),
 ('409'),
 ('5'),
+('500'),
+('501'),
 ('6'),
 ('7'),
 ('8'),

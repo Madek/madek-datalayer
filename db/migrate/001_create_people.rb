@@ -1,6 +1,7 @@
 class CreatePeople < ActiveRecord::Migration[4.2]
   include Madek::MigrationHelper
 
+
   def change
     create_table :people, id: false do |t|
       t.primary_key :id, :uuid, default: 'gen_random_uuid()'
