@@ -1598,7 +1598,7 @@ CREATE TABLE public.media_files (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     uploader_id uuid NOT NULL,
     conversion_profiles character varying[] DEFAULT '{}'::character varying[],
-    media_store_id uuid
+    media_store_id text
 );
 
 
@@ -1607,7 +1607,8 @@ CREATE TABLE public.media_files (
 --
 
 CREATE TABLE public.media_stores (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    id text NOT NULL,
+    description text,
     configuration jsonb,
     type text DEFAULT 'database'::text NOT NULL,
     CONSTRAINT check_allowed_types CHECK ((type = ANY (ARRAY['database'::text, 'filesystem'::text, 'S3'::text])))
@@ -1621,7 +1622,7 @@ CREATE TABLE public.media_stores (
 CREATE TABLE public.media_stores_groups (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     group_id uuid NOT NULL,
-    media_store_id uuid NOT NULL,
+    media_store_id text NOT NULL,
     priority integer DEFAULT 0 NOT NULL
 );
 
@@ -1633,7 +1634,7 @@ CREATE TABLE public.media_stores_groups (
 CREATE TABLE public.media_stores_users (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
-    media_store_id uuid NOT NULL,
+    media_store_id text NOT NULL,
     priority integer DEFAULT 0 NOT NULL
 );
 
