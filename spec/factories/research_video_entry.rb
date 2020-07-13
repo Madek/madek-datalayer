@@ -137,7 +137,7 @@ FactoryGirl.define do
 
       previews_data.map do |pd|
         pd.with_indifferent_access
-          .slice(:height, :width, :content_type, :media_type, :filename)
+          .slice(:height, :width, :content_type, :media_type, :filename, :conversion_profile)
       end.each do |pd|
         Preview.create! pd.merge(media_file: mf)
       end
