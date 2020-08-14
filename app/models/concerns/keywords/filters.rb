@@ -23,11 +23,11 @@ module Concerns
           end
 
           if term
-            if UUIDTools::UUID_REGEXP =~ term
-              keywords = keywords.where(id: term)
-            else
-              keywords = keywords.where('keywords.term ILIKE :t', t: "%#{term}%")
-            end
+            keywords = if UUIDTools::UUID_REGEXP =~ term
+                         keywords.where(id: term)
+                       else
+                         keywords.where('keywords.term ILIKE :t', t: "%#{term}%")
+                       end
           end
 
           if used_by_id

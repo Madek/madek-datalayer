@@ -115,4 +115,19 @@ class AppSetting < ApplicationRecord
       MetaDatum::People
     ).include?(type)
   end
+
+  def _assign_attribute(k, v)
+    return super unless v.is_a?(String)
+
+    case k
+    when 'copyright_notice_templates'
+      public_send("#{k}=", v.split("\r\n").delete_if(&:blank?))
+    when 'sitemap'
+      public_send("#{k}=", YAML.safe_load(v))
+    when /contexts|_keys$/
+      public_send("#{k}=", v.split(',').flatten.map(&:strip))
+    else
+      super
+    end
+  end
 end
