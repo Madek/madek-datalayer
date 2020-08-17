@@ -10,8 +10,9 @@ class MetaDatum::MediaEntry < MetaDatum::Text
 
   def value=(new_value)
     uuid, description = extract_values(new_value)
+    return unless uuid
     # FIXME: use a DB constraint instead
-    unless UUIDTools::UUID.parse(uuid)
+    if uuid and not UUIDTools::UUID.parse(uuid)
       raise ActionController::InvalidParameterValue, 'Invalid UUID!'
     end
     assign_value(uuid, :other_media_entry_id)
@@ -20,7 +21,7 @@ class MetaDatum::MediaEntry < MetaDatum::Text
 
   def set_value!(new_value, _created_by_user = nil)
     self.value = new_value.first
-    if !other_media_entry && string.blank? && persisted?
+    if !other_media_entry_id.present?
       destroy!
     else
       save!
