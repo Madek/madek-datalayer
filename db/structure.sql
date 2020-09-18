@@ -114,7 +114,9 @@ CREATE TYPE public.collection_sorting AS ENUM (
     'created_at DESC',
     'title ASC',
     'title DESC',
-    'last_change'
+    'last_change',
+    'manual ASC',
+    'manual DESC'
 );
 
 
@@ -1097,7 +1099,8 @@ CREATE TABLE public.collection_collection_arcs (
     highlight boolean DEFAULT false,
     "order" double precision,
     created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now()
+    updated_at timestamp with time zone DEFAULT now(),
+    "position" integer
 );
 
 
@@ -1109,7 +1112,8 @@ CREATE TABLE public.collection_filter_set_arcs (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     filter_set_id uuid NOT NULL,
     collection_id uuid NOT NULL,
-    highlight boolean DEFAULT false
+    highlight boolean DEFAULT false,
+    "position" integer
 );
 
 
@@ -1141,7 +1145,8 @@ CREATE TABLE public.collection_media_entry_arcs (
     cover boolean,
     "order" double precision,
     created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now()
+    updated_at timestamp with time zone DEFAULT now(),
+    "position" integer
 );
 
 
@@ -1174,12 +1179,12 @@ CREATE TABLE public.collections (
     layout public.collection_layout DEFAULT 'grid'::public.collection_layout NOT NULL,
     responsible_user_id uuid NOT NULL,
     creator_id uuid NOT NULL,
-    sorting public.collection_sorting DEFAULT 'created_at DESC'::public.collection_sorting NOT NULL,
     edit_session_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     clipboard_user_id character varying,
     workflow_id uuid,
-    is_master boolean DEFAULT false NOT NULL
+    is_master boolean DEFAULT false NOT NULL,
+    sorting public.collection_sorting DEFAULT 'created_at DESC'::public.collection_sorting NOT NULL
 );
 
 
@@ -2614,6 +2619,13 @@ CREATE UNIQUE INDEX index_collection_collection_arcs_on_parent_id_and_child_id O
 
 
 --
+-- Name: index_collection_collection_arcs_on_parent_id_and_position; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_collection_collection_arcs_on_parent_id_and_position ON public.collection_collection_arcs USING btree (parent_id, "position");
+
+
+--
 -- Name: index_collection_filter_set_arcs_on_collection_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2625,6 +2637,13 @@ CREATE INDEX index_collection_filter_set_arcs_on_collection_id ON public.collect
 --
 
 CREATE UNIQUE INDEX index_collection_filter_set_arcs_on_collection_id_and_filter_se ON public.collection_filter_set_arcs USING btree (collection_id, filter_set_id);
+
+
+--
+-- Name: index_collection_filter_set_arcs_on_collection_id_and_position; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_collection_filter_set_arcs_on_collection_id_and_position ON public.collection_filter_set_arcs USING btree (collection_id, "position");
 
 
 --
@@ -2674,6 +2693,13 @@ CREATE INDEX index_collection_media_entry_arcs_on_collection_id ON public.collec
 --
 
 CREATE UNIQUE INDEX index_collection_media_entry_arcs_on_collection_id_and_media_en ON public.collection_media_entry_arcs USING btree (collection_id, media_entry_id);
+
+
+--
+-- Name: index_collection_media_entry_arcs_on_collection_id_and_position; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_collection_media_entry_arcs_on_collection_id_and_position ON public.collection_media_entry_arcs USING btree (collection_id, "position");
 
 
 --
@@ -5118,6 +5144,10 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('401'),
 ('402'),
 ('403'),
+('404'),
+('405'),
+('406'),
+('407'),
 ('5'),
 ('6'),
 ('7'),

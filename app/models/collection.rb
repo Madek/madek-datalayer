@@ -145,4 +145,8 @@ class Collection < ApplicationRecord
   def self.order_by_last_edit_session
     order_by_last_edit_session_by_classname
   end
+
+  def self.order_by_manual_sorting
+    order_by_manual_sorting_by_classname
+  end
 end

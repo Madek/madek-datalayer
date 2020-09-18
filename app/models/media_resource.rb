@@ -92,6 +92,36 @@ class MediaResource < ApplicationRecord
   end
   # rubocop:enable Metrics/MethodLength
 
+  # rubocop:disable Metrics/MethodLength
+  def self.order_by_manual_sorting
+    select(
+      <<-SQL
+        vw_media_resources.*,
+        coalesce(cmea.position, cca.position, cfsa.position) AS arc_position
+      SQL
+    )
+    .distinct('vw_media_resources.id')
+    .joins(
+      <<-SQL
+        LEFT JOIN collection_media_entry_arcs cmea
+        ON (cmea.media_entry_id = vw_media_resources.id AND vw_media_resources.type = 'MediaEntry')
+      SQL
+    )
+    .joins(
+      <<-SQL
+        LEFT JOIN collection_collection_arcs cca
+        ON (cca.child_id = vw_media_resources.id AND vw_media_resources.type = 'Collection')
+      SQL
+    )
+    .joins(
+      <<-SQL
+        LEFT JOIN collection_filter_set_arcs cfsa
+        ON (cfsa.filter_set_id = vw_media_resources.id AND vw_media_resources.type = 'FilterSet')
+      SQL
+    )
+  end
+  # rubocop:enable Metrics/MethodLength
+
   def cast_to_type
     @_casted_to_type ||= becomes(type.constantize)
   end
