@@ -164,14 +164,14 @@ MADEK_CORE_VOCABULARY:
     madek_core:is_new_version_of:
       meta_datum_object_type: MetaDatum::MediaEntry
       labels:
-        en: is new version of
-        de: ist neue Version von
+        en: Previous version
+        de: Ältere Version
       descriptions:
-        en: This MediaEntry is a new Version of an older one. Enter additional text to specify the type of update.
-        de: Dieser Medieneintrag ist eine neue Version eines älteren Eintrags. Geben Sie zusätzlichen Text ein, um die Art der Aktualisierung anzugeben.
+        en: Older version available? Set UUID and description of change (optional).
+        de: Ältere Version verfügbar? UUID und optional Art der Änderung eingeben.
       hints:
-        en: Enter UUID of another MediaEntry.
-        de: Geben Sie die UUID eines anderen MediaEntry ein.
+        en: UUID der Vorversion
+        de: UUID of previous version
       position: 8
       is_enabled_for_media_entries: true
       is_enabled_for_collections: false

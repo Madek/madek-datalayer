@@ -56,10 +56,10 @@ class Workflow < ApplicationRecord
     # NOTE: currently keys come from this context: https://madek-spiel.kiste.li/admin/contexts/fair-data
     [
       {
-        meta_key_id: 'madek_core:authors',
-        is_common: false,
+        meta_key_id: 'zhdk_bereich:project_title',
+        is_common: true,
         is_mandatory: true,
-        is_overridable: true
+        is_overridable: false
       },
       {
         meta_key_id: 'madek_core:title',
@@ -68,25 +68,19 @@ class Workflow < ApplicationRecord
         is_overridable: true
       },
       {
-        meta_key_id: 'zhdk_bereich:project_title',
-        is_common: true,
+        meta_key_id: 'madek_core:subtitle',
+        is_common: false,
         is_mandatory: false,
-        is_overridable: false
+        is_overridable: true
       },
       {
-        meta_key_id: 'zhdk_bereich:project_title_english',
-        is_common: true,
-        is_mandatory: false,
-        is_overridable: false
+        meta_key_id: 'madek_core:authors',
+        is_common: false,
+        is_mandatory: true,
+        is_overridable: true
       },
       {
-        meta_key_id: 'zhdk_bereich:project_leader',
-        is_common: true,
-        is_mandatory: false,
-        is_overridable: false
-      },
-      {
-        meta_key_id: 'copyright:publication_date',
+        meta_key_id: 'media_object:​creative_participants_roles',
         is_common: false,
         is_mandatory: false,
         is_overridable: true
@@ -104,12 +98,6 @@ class Workflow < ApplicationRecord
         is_overridable: true
       },
       {
-        meta_key_id: 'media_object:other_creative_participants',
-        is_common: false,
-        is_mandatory: false,
-        is_overridable: true
-      },
-      {
         meta_key_id: 'madek_core:portrayed_object_date',
         is_common: false,
         is_mandatory: false,
@@ -119,43 +107,36 @@ class Workflow < ApplicationRecord
         meta_key_id: 'madek_core:description',
         is_common: false,
         is_mandatory: false,
-        is_overridable: true,
-        value: [
-          {
-            string:
-              'Material zur Verfügung gestellt im Rahmen des ' \
-                "Forschungsprojekts «#{name}»"
-          }
-        ]
+        is_overridable: true
+      },
+      {
+        meta_key_id: 'research_data:pid',
+        is_common: false,
+        is_mandatory: false,
+        is_overridable: true
       },
       {
         meta_key_id: 'madek_core:copyright_notice',
-        is_common: true,
+        is_common: false,
         is_mandatory: true,
         is_overridable: true,
         value: [{ string: "This resource is a part of the project #{name}" }]
       },
       {
         meta_key_id: 'copyright:license',
-        is_common: true,
-        is_mandatory: false,
+        is_common: false,
+        is_mandatory: true,
         is_overridable: true,
         value: Keyword.where(term: 'CC-By-SA-CH: Attribution Share Alike')
       },
       {
         meta_key_id: 'copyright:copyright_usage',
-        is_common: true,
+        is_common: false,
         is_mandatory: true,
         is_overridable: true
       },
       {
-        meta_key_id: 'madek_core:subtitle',
-        is_common: true,
-        is_mandatory: false,
-        is_overridable: true
-      },
-      {
-        meta_key_id: 'media_content:portrayed_object_dimensions',
+        meta_key_id: 'research_data:contact_for_reuse',
         is_common: true,
         is_mandatory: false,
         is_overridable: true
