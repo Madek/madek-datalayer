@@ -5,6 +5,7 @@ class Group < ApplicationRecord
 
   has_and_belongs_to_many :users
   belongs_to :person
+  has_and_belongs_to_many :delegations
 
   validates_presence_of :name
   validates :name, uniqueness: { scope: :institutional_name }

@@ -23,6 +23,9 @@ class FilterSet < ApplicationRecord
   include Concerns::MediaResources::Highlight
   include Concerns::MediaResources::MetaDataArelConditions
   include Concerns::SharedOrderBy
+  include Concerns::Delegations::Responsible
+
+  validates_presence_of :responsible_user
 
   # NOTE: could possibly be made as a DB trigger
   # NOTE: disabled because there is no workflow yet

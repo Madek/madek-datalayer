@@ -1177,14 +1177,16 @@ CREATE TABLE public.collections (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     layout public.collection_layout DEFAULT 'grid'::public.collection_layout NOT NULL,
-    responsible_user_id uuid NOT NULL,
+    responsible_user_id uuid,
     creator_id uuid NOT NULL,
     edit_session_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     clipboard_user_id character varying,
     workflow_id uuid,
     is_master boolean DEFAULT false NOT NULL,
-    sorting public.collection_sorting DEFAULT 'created_at DESC'::public.collection_sorting NOT NULL
+    sorting public.collection_sorting DEFAULT 'created_at DESC'::public.collection_sorting NOT NULL,
+    responsible_delegation_id uuid,
+    CONSTRAINT one_responsible_column_is_not_null_at_the_same_time CHECK ((((responsible_user_id IS NULL) AND (responsible_delegation_id IS NOT NULL)) OR ((responsible_user_id IS NOT NULL) AND (responsible_delegation_id IS NULL))))
 );
 
 
@@ -1260,6 +1262,38 @@ CREATE TABLE public.custom_urls (
     CONSTRAINT custom_url_is_related CHECK ((((media_entry_id IS NULL) AND (collection_id IS NULL) AND (filter_set_id IS NOT NULL)) OR ((media_entry_id IS NULL) AND (collection_id IS NOT NULL) AND (filter_set_id IS NULL)) OR ((media_entry_id IS NOT NULL) AND (collection_id IS NULL) AND (filter_set_id IS NULL)))),
     CONSTRAINT custom_urls_id_format CHECK (((id)::text ~ '^[a-z][a-z0-9\-\_]+$'::text)),
     CONSTRAINT custom_urls_id_is_not_uuid CHECK ((NOT ((id)::text ~* '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'::text)))
+);
+
+
+--
+-- Name: delegations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.delegations (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    name character varying NOT NULL,
+    description text,
+    admin_comment text
+);
+
+
+--
+-- Name: delegations_groups; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.delegations_groups (
+    delegation_id uuid NOT NULL,
+    group_id uuid NOT NULL
+);
+
+
+--
+-- Name: delegations_users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.delegations_users (
+    delegation_id uuid NOT NULL,
+    user_id uuid NOT NULL
 );
 
 
@@ -1372,10 +1406,12 @@ CREATE TABLE public.filter_sets (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     definition jsonb DEFAULT '{}'::jsonb NOT NULL,
-    responsible_user_id uuid NOT NULL,
+    responsible_user_id uuid,
     creator_id uuid NOT NULL,
     edit_session_updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL
+    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    responsible_delegation_id uuid,
+    CONSTRAINT one_responsible_column_is_not_null_at_the_same_time CHECK ((((responsible_user_id IS NULL) AND (responsible_delegation_id IS NOT NULL)) OR ((responsible_user_id IS NOT NULL) AND (responsible_delegation_id IS NULL))))
 );
 
 
@@ -1470,11 +1506,13 @@ CREATE TABLE public.media_entries (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     get_metadata_and_previews boolean DEFAULT false NOT NULL,
     get_full_size boolean DEFAULT false NOT NULL,
-    responsible_user_id uuid NOT NULL,
+    responsible_user_id uuid,
     creator_id uuid NOT NULL,
     is_published boolean DEFAULT false,
     edit_session_updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL
+    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    responsible_delegation_id uuid,
+    CONSTRAINT one_responsible_column_is_not_null_at_the_same_time CHECK ((((responsible_user_id IS NULL) AND (responsible_delegation_id IS NOT NULL)) OR ((responsible_user_id IS NOT NULL) AND (responsible_delegation_id IS NULL))))
 );
 
 
@@ -2056,6 +2094,14 @@ ALTER TABLE ONLY public.contexts
 
 ALTER TABLE ONLY public.custom_urls
     ADD CONSTRAINT custom_urls_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: delegations delegations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.delegations
+    ADD CONSTRAINT delegations_pkey PRIMARY KEY (id);
 
 
 --
@@ -2773,6 +2819,13 @@ CREATE INDEX index_collections_on_meta_data_updated_at ON public.collections USI
 
 
 --
+-- Name: index_collections_on_responsible_delegation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_collections_on_responsible_delegation_id ON public.collections USING btree (responsible_delegation_id);
+
+
+--
 -- Name: index_collections_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2826,6 +2879,55 @@ CREATE INDEX index_custom_urls_on_creator_id ON public.custom_urls USING btree (
 --
 
 CREATE INDEX index_custom_urls_on_updator_id ON public.custom_urls USING btree (updator_id);
+
+
+--
+-- Name: index_delegations_groups_on_delegation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_delegations_groups_on_delegation_id ON public.delegations_groups USING btree (delegation_id);
+
+
+--
+-- Name: index_delegations_groups_on_delegation_id_and_group_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_delegations_groups_on_delegation_id_and_group_id ON public.delegations_groups USING btree (delegation_id, group_id);
+
+
+--
+-- Name: index_delegations_groups_on_group_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_delegations_groups_on_group_id ON public.delegations_groups USING btree (group_id);
+
+
+--
+-- Name: index_delegations_on_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_delegations_on_name ON public.delegations USING btree (name);
+
+
+--
+-- Name: index_delegations_users_on_delegation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_delegations_users_on_delegation_id ON public.delegations_users USING btree (delegation_id);
+
+
+--
+-- Name: index_delegations_users_on_delegation_id_and_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_delegations_users_on_delegation_id_and_user_id ON public.delegations_users USING btree (delegation_id, user_id);
+
+
+--
+-- Name: index_delegations_users_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_delegations_users_on_user_id ON public.delegations_users USING btree (user_id);
 
 
 --
@@ -3018,6 +3120,13 @@ CREATE INDEX index_filter_sets_on_meta_data_updated_at ON public.filter_sets USI
 
 
 --
+-- Name: index_filter_sets_on_responsible_delegation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_filter_sets_on_responsible_delegation_id ON public.filter_sets USING btree (responsible_delegation_id);
+
+
+--
 -- Name: index_filter_sets_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3141,6 +3250,13 @@ CREATE INDEX index_media_entries_on_is_published ON public.media_entries USING b
 --
 
 CREATE INDEX index_media_entries_on_meta_data_updated_at ON public.media_entries USING btree (meta_data_updated_at);
+
+
+--
+-- Name: index_media_entries_on_responsible_delegation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_media_entries_on_responsible_delegation_id ON public.media_entries USING btree (responsible_delegation_id);
 
 
 --
@@ -4461,6 +4577,14 @@ ALTER TABLE ONLY public.context_keys
 
 
 --
+-- Name: collections fk_rails_312d185db8; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.collections
+    ADD CONSTRAINT fk_rails_312d185db8 FOREIGN KEY (responsible_delegation_id) REFERENCES public.delegations(id);
+
+
+--
 -- Name: api_clients fk_rails_45043d2037; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4525,11 +4649,27 @@ ALTER TABLE ONLY public.filter_set_group_permissions
 
 
 --
+-- Name: delegations_groups fk_rails_a507ac19bd; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.delegations_groups
+    ADD CONSTRAINT fk_rails_a507ac19bd FOREIGN KEY (delegation_id) REFERENCES public.delegations(id);
+
+
+--
 -- Name: workflows fk_rails_ad47ad12fc; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.workflows
     ADD CONSTRAINT fk_rails_ad47ad12fc FOREIGN KEY (creator_id) REFERENCES public.users(id);
+
+
+--
+-- Name: filter_sets fk_rails_afb3012934; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.filter_sets
+    ADD CONSTRAINT fk_rails_afb3012934 FOREIGN KEY (responsible_delegation_id) REFERENCES public.delegations(id);
 
 
 --
@@ -4549,11 +4689,27 @@ ALTER TABLE ONLY public.context_keys
 
 
 --
+-- Name: delegations_users fk_rails_b5f7f9c898; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.delegations_users
+    ADD CONSTRAINT fk_rails_b5f7f9c898 FOREIGN KEY (delegation_id) REFERENCES public.delegations(id);
+
+
+--
 -- Name: collection_group_permissions fk_rails_b88fcbe505; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.collection_group_permissions
     ADD CONSTRAINT fk_rails_b88fcbe505 FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: media_entries fk_rails_b97d1d811d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_entries
+    ADD CONSTRAINT fk_rails_b97d1d811d FOREIGN KEY (responsible_delegation_id) REFERENCES public.delegations(id);
 
 
 --
@@ -4570,6 +4726,14 @@ ALTER TABLE ONLY public.media_entry_group_permissions
 
 ALTER TABLE ONLY public.io_mappings
     ADD CONSTRAINT fk_rails_dbf6e7c067 FOREIGN KEY (meta_key_id) REFERENCES public.meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: delegations_users fk_rails_df1fb72b34; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.delegations_users
+    ADD CONSTRAINT fk_rails_df1fb72b34 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -4594,6 +4758,14 @@ ALTER TABLE ONLY public.api_tokens
 
 ALTER TABLE ONLY public.keywords
     ADD CONSTRAINT fk_rails_f3e1612c9e FOREIGN KEY (meta_key_id) REFERENCES public.meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: delegations_groups fk_rails_f6b29853e0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.delegations_groups
+    ADD CONSTRAINT fk_rails_f6b29853e0 FOREIGN KEY (group_id) REFERENCES public.groups(id);
 
 
 --
@@ -5148,6 +5320,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('405'),
 ('406'),
 ('407'),
+('408'),
 ('5'),
 ('6'),
 ('7'),

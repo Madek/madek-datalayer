@@ -23,7 +23,7 @@ module Concerns
           end
 
           if term
-            keywords = if UUIDTools::UUID_REGEXP =~ term
+            keywords = if valid_uuid?(term)
                          keywords.where(id: term)
                        else
                          keywords.where('keywords.term ILIKE :t', t: "%#{term}%")

@@ -5,7 +5,7 @@ module Concerns
 
       class_methods do
         def parent_collections(resource_id)
-          raise 'Not an UUID!' unless UUIDTools::UUID_REGEXP =~ resource_id
+          raise 'Not an UUID!' unless valid_uuid?(resource_id)
 
           relation = Collection.where(
             "collections.id IN (#{parent_collections_query(resource_id)})")

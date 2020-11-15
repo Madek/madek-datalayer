@@ -48,7 +48,7 @@ class MediaResource < ApplicationRecord
   end
 
   def self.memoize_collection_id(id)
-    return unless UUIDTools::UUID_REGEXP =~ id
+    return unless valid_uuid?(id)
     @_collection_id = id
   end
 

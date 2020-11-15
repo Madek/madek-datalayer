@@ -5,7 +5,7 @@ module Concerns
 
       included do
         scope :search_with, lambda { |term|
-          if UUIDTools::UUID_REGEXP =~ term
+          if valid_uuid?(term)
             where(id: term)
           else
             joins(%(LEFT OUTER JOIN meta_data ON \

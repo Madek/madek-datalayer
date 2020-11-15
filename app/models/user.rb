@@ -39,6 +39,7 @@ class User < ApplicationRecord
   belongs_to :accepted_usage_terms, class_name: 'UsageTerms'
 
   has_and_belongs_to_many :workflows
+  has_and_belongs_to_many :delegations
 
   #############################################################
 
@@ -72,6 +73,7 @@ class User < ApplicationRecord
 
   def can_edit_permissions_for?(resource)
     resource.responsible_user == self or
+      resource.delegation_with_user?(self) or
       resource
         .user_permissions
         .where(user_id: id, edit_permissions: true).exists?

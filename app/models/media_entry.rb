@@ -31,6 +31,7 @@ class MediaEntry < ApplicationRecord
   include Concerns::MediaResources::PartOfWorkflow
   include Concerns::SharedOrderBy
   include Concerns::SharedScopes
+  include Concerns::Delegations::Responsible
 
   has_one :media_file, dependent: :destroy
 

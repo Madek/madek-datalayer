@@ -4,7 +4,7 @@ module Concerns
       extend ActiveSupport::Concern
 
       included do
-        define_user_related_data(:responsible_user)
+        belongs_to :responsible_user, class_name: 'User'
         scope :in_responsibility_of, ->(user) { where(responsible_user: user) }
         singleton_class.send(:alias_method,
                              :filter_by_responsible_user,

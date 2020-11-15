@@ -26,11 +26,27 @@ describe Collection do
       expect { FactoryGirl.create :collection }.not_to raise_error
     end
 
+    context 'when neither responsible_user nor resposible_delegation columns are set' do
+      it 'raises error' do
+        expect do
+          resource = build :collection, responsible_user: nil
+          resource.save(validate: false)
+        end
+          .to raise_error(ActiveRecord::StatementInvalid)
+      end
+    end
+
+    context 'when only responsible_delegation is set' do
+      it 'does not raise any error' do
+        expect do
+          create :collection, responsible_user: nil, responsible_delegation: create(:delegation)
+        end.not_to raise_error
+      end
+    end
   end
 
   describe 'Update' do
 
-    it_validates 'presence of', :responsible_user_id
     it_validates 'presence of', :creator_id
 
   end

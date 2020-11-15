@@ -10,10 +10,12 @@ module Concerns
             .or(group_permission_for_user_exists_condition(
                   self::EDIT_PERMISSION_NAME, user))
             .or(arel_table[:responsible_user_id].eq user.id)
+            .or(arel_table[:responsible_delegation_id].in(user.delegation_ids))
         end
-        define_access_methods(:manageable_by, self::MANAGE_PERMISSION_NAME) do |u|
-          user_permission_exists_condition(self::MANAGE_PERMISSION_NAME, u)
-            .or(arel_table[:responsible_user_id].eq u.id)
+        define_access_methods(:manageable_by, self::MANAGE_PERMISSION_NAME) do |user|
+          user_permission_exists_condition(self::MANAGE_PERMISSION_NAME, user)
+            .or(arel_table[:responsible_user_id].eq user.id)
+            .or(arel_table[:responsible_delegation_id].in(user.delegation_ids))
         end
       end
     end

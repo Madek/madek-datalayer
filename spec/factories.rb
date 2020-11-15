@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class ActiveRecord::Base
   def self.find_random
     find_by_sql(%( SELECT \

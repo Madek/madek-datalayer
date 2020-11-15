@@ -9,7 +9,7 @@ module Concerns
 
           return roles if term.nil?
 
-          if UUIDTools::UUID_REGEXP =~ term
+          if valid_uuid?(term)
             roles = roles.where(id: term)
           else
             roles = roles

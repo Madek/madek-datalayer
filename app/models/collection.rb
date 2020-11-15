@@ -30,6 +30,7 @@ class Collection < ApplicationRecord
   include Concerns::MediaResources::PartOfWorkflow
   include Concerns::SharedOrderBy
   include Concerns::SharedScopes
+  include Concerns::Delegations::Responsible
 
   #################################################################################
 
@@ -121,7 +122,7 @@ class Collection < ApplicationRecord
   end
 
   def self.descendent_collection_tree_sql_for(collection_id)
-    raise 'Not an UUID!' unless UUIDTools::UUID_REGEXP =~ collection_id
+    raise 'Not an UUID!' unless valid_uuid?(collection_id)
 
     <<-SQL
       WITH RECURSIVE collection_tree(parent_id, child_id, path) AS

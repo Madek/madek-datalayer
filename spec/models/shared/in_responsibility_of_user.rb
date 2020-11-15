@@ -5,10 +5,9 @@ end
 RSpec.shared_examples 'in responsibility of user' do
 
   before :example do
-    @user = FactoryGirl.create(:user)
+    @user = create(:user)
     2.times do
-      @user.send("responsible_#{described_class.table_name}") << \
-        FactoryGirl.create(described_class.model_name.singular)
+      create(described_class.model_name.singular, responsible_user: @user)
     end
   end
 

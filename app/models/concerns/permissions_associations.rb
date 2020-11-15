@@ -28,10 +28,17 @@ module Concerns
       def select_keys_with_true_value(p)
         p.attributes.keep_if { |k, v| v == true }.keys
       end
+
+      def responsibility?(user)
+        user.is_a?(User) && (
+          try(:responsible_user) == user ||
+          respond_to?(:delegation_with_user?) && delegation_with_user?(user)
+        )
+      end
     end
 
     def permission_types_for_user(user)
-      if user.is_a?(User) && try(:responsible_user) == user
+      if responsibility?(user)
         "Permissions::Modules::#{self.class.name}::PERMISSION_TYPES".constantize
       else
         (user_permission_types_for(user) + group_permission_types_for(user))
