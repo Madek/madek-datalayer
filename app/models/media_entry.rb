@@ -22,6 +22,7 @@ class MediaEntry < ApplicationRecord
 
   include Concerns::Collections::Siblings
   include Concerns::MediaEntries::Filters
+  include Concerns::MediaEntries::Siblings
   include Concerns::MediaResources
   include Concerns::MediaResources::CustomOrderBy
   include Concerns::MediaResources::Editability
