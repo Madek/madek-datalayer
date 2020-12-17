@@ -30,7 +30,8 @@ class MediaResource < ApplicationRecord
     from(sql)
   end
 
-  def self.unified_scope(scope1, scope2, scope3, part_of_workflow = false)
+  def self.unified_scope(scope1, scope2, scope3, part_of_workflow = false, collection_id = nil)
+    handle_collection_id_for_manual_sorting(collection_id)
     scope1, scope2, scope3 = [scope1, scope2, scope3].map do |s|
       if part_of_workflow && s.respond_to?(:with_unpublished)
         s = s.with_unpublished
@@ -45,7 +46,13 @@ class MediaResource < ApplicationRecord
     )
   end
 
+  def self.handle_collection_id_for_manual_sorting(id)
+    return unless UUIDTools::UUID_REGEXP =~ id
+    @_collection_id_condition = Arel.sql(" AND cmea.collection_id = '#{id}'")
+  end
+
   private_class_method :scope_helper
+  private_class_method :handle_collection_id_for_manual_sorting
 
   def self.joins_meta_data_title
     joins(<<-SQL.strip_heredoc)
@@ -94,17 +101,20 @@ class MediaResource < ApplicationRecord
 
   # rubocop:disable Metrics/MethodLength
   def self.order_by_manual_sorting
-    select(
+    query = select(
       <<-SQL
         vw_media_resources.*,
         coalesce(cmea.position, cca.position, cfsa.position) AS arc_position
       SQL
     )
-    .distinct('vw_media_resources.id')
     .joins(
       <<-SQL
         LEFT JOIN collection_media_entry_arcs cmea
-        ON (cmea.media_entry_id = vw_media_resources.id AND vw_media_resources.type = 'MediaEntry')
+        ON (
+          cmea.media_entry_id = vw_media_resources.id AND
+          vw_media_resources.type = 'MediaEntry'
+          #{@_collection_id_condition}
+        )
       SQL
     )
     .joins(
@@ -119,6 +129,8 @@ class MediaResource < ApplicationRecord
         ON (cfsa.filter_set_id = vw_media_resources.id AND vw_media_resources.type = 'FilterSet')
       SQL
     )
+    @_collection_id_condition = nil
+    query
   end
   # rubocop:enable Metrics/MethodLength
 
