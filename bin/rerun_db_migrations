@@ -20,3 +20,6 @@ bundle exec rails db:migrate
 bundle exec rails db:seed
 rm -f db/personas.pgbin
 bundle exec rails db:pg:structure_and_data:dump FILE=db/personas.pgbin
+
+# needed because db:drop runs for all databases while db:migrate runs only in current env
+RAILS_ENV=test rails db:migrate

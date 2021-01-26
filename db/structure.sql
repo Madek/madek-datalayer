@@ -1298,6 +1298,16 @@ CREATE TABLE public.delegations_users (
 
 
 --
+-- Name: delegations_workflows; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.delegations_workflows (
+    delegation_id uuid NOT NULL,
+    workflow_id uuid NOT NULL
+);
+
+
+--
 -- Name: edit_sessions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2928,6 +2938,20 @@ CREATE UNIQUE INDEX index_delegations_users_on_delegation_id_and_user_id ON publ
 --
 
 CREATE INDEX index_delegations_users_on_user_id ON public.delegations_users USING btree (user_id);
+
+
+--
+-- Name: index_delegations_workflows_on_delegation_id_and_workflow_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_delegations_workflows_on_delegation_id_and_workflow_id ON public.delegations_workflows USING btree (delegation_id, workflow_id);
+
+
+--
+-- Name: index_delegations_workflows_on_workflow_id_and_delegation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_delegations_workflows_on_workflow_id_and_delegation_id ON public.delegations_workflows USING btree (workflow_id, delegation_id);
 
 
 --
@@ -5321,6 +5345,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('406'),
 ('407'),
 ('408'),
+('409'),
 ('5'),
 ('6'),
 ('7'),

@@ -1,6 +1,7 @@
 class Delegation < ApplicationRecord
   has_and_belongs_to_many :groups
   has_and_belongs_to_many :users
+  has_and_belongs_to_many :workflows
   has_many :media_entries, foreign_key: :responsible_delegation_id
   has_many :collections, foreign_key: :responsible_delegation_id
 

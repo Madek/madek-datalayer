@@ -10,14 +10,17 @@ module Concerns
 
       included do
         define_access_methods(:viewable_by, self::VIEW_PERMISSION_NAME)
+        private_class_method :ids_viewable_by_workflow_member
+        private_class_method :ids_viewable_by_workflow_creator
+        private_class_method :ids_viewable_by_workflow_owner
+        private_class_method :ids_viewable_by_workflow_delegated_owner
       end
 
-      module ClassMethods
+      class_methods do
         def viewable_by_public
           where(Hash[self::VIEW_PERMISSION_NAME, true])
         end
 
-        # rubocop:disable Metrics/MethodLength
         def viewable_by_user(user)
           conditions = arel_table[self::VIEW_PERMISSION_NAME].eq(true)
             .or(arel_table[:responsible_user_id].eq(user.id))
@@ -31,31 +34,39 @@ module Concerns
 
           if self == MediaEntry
             scope_to_reuse = current_scope ? current_scope : self
+
             where(conditions)
               .or(
                 scope_to_reuse
                   .with_unpublished
-                  .where(viewable_by_workflow_creator(user)
-                    .or(viewable_by_workflow_owner(user)))
+                  .where(arel_table[:id].in(ids_viewable_by_workflow_member(user)))
               )
           else
             where(conditions)
           end
         end
-        # rubocop:enable Metrics/MethodLength
 
         def viewable_by_user_or_public(user = nil)
           user ? viewable_by_user(user) : viewable_by_public
         end
 
-        def viewable_by_workflow_creator(user)
-          collection_media_entry_arcs =
-            Arel::Table.new(:collection_media_entry_arcs)
+        def ids_viewable_by_workflow_member(user)
+          Arel::Nodes::Union.new(
+            Arel::Nodes::Union.new(
+              ids_viewable_by_workflow_creator(user),
+              ids_viewable_by_workflow_owner(user)
+            ),
+            ids_viewable_by_workflow_delegated_owner(user)
+          )
+        end
+
+        def ids_viewable_by_workflow_creator(user)
+          collection_media_entry_arcs = Arel::Table.new(:collection_media_entry_arcs)
           collections = Arel::Table.new(:collections)
           workflows = Arel::Table.new(:workflows)
 
           arel_table
-            .project(1)
+            .project(arel_table[:id])
             .join(collection_media_entry_arcs)
             .on(collection_media_entry_arcs[:media_entry_id].eq(arel_table[:id]))
             .join(collections)
@@ -63,26 +74,45 @@ module Concerns
             .join(workflows).on(workflows[:id].eq(collections[:workflow_id]))
             .where(workflows[:is_active].eq(true)
               .and(workflows[:creator_id].eq(user[:id])))
-            .exists
         end
 
-        def viewable_by_workflow_owner(user)
-          collection_media_entry_arcs =
-            Arel::Table.new(:collection_media_entry_arcs)
+        def ids_viewable_by_workflow_owner(user)
+          collection_media_entry_arcs = Arel::Table.new(:collection_media_entry_arcs)
           collections = Arel::Table.new(:collections)
           workflows = Arel::Table.new(:workflows)
           users_workflows = Arel::Table.new(:users_workflows)
 
           arel_table
-            .project(1)
+            .project(arel_table[:id])
             .join(collection_media_entry_arcs)
             .on(collection_media_entry_arcs[:media_entry_id].eq(arel_table[:id]))
             .join(collections)
             .on(collections[:id].eq(collection_media_entry_arcs[:collection_id]))
             .join(workflows).on(workflows[:id].eq(collections[:workflow_id]))
-            .join(users_workflows).on(users_workflows[:user_id].eq(user[:id]))
+            .join(users_workflows).on(
+              users_workflows[:workflow_id].eq(workflows[:id])
+                .and(users_workflows[:user_id].eq(user[:id]))
+            )
             .where(workflows[:is_active].eq(true))
-            .exists
+        end
+
+        def ids_viewable_by_workflow_delegated_owner(user)
+          collection_media_entry_arcs = Arel::Table.new(:collection_media_entry_arcs)
+          collections = Arel::Table.new(:collections)
+          workflows = Arel::Table.new(:workflows)
+          delegations_workflows = Arel::Table.new(:delegations_workflows)
+
+          arel_table
+            .project(arel_table[:id])
+            .join(collection_media_entry_arcs)
+            .on(collection_media_entry_arcs[:media_entry_id].eq(arel_table[:id]))
+            .join(collections)
+            .on(collections[:id].eq(collection_media_entry_arcs[:collection_id]))
+            .join(workflows).on(workflows[:id].eq(collections[:workflow_id]))
+            .join(delegations_workflows)
+            .on(delegations_workflows[:workflow_id].eq(workflows[:id]))
+            .where(delegations_workflows[:delegation_id].in(user.delegation_ids))
+            .where(workflows[:is_active].eq(true))
         end
       end
     end

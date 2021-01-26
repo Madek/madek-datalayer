@@ -4,6 +4,7 @@
 class Workflow < ApplicationRecord
   belongs_to :creator, class_name: 'User'
   has_and_belongs_to_many :owners, class_name: 'User'
+  has_and_belongs_to_many :delegations, class_name: 'Delegation'
   has_many :collections
 
   before_create :set_default_configuration
@@ -32,6 +33,13 @@ class Workflow < ApplicationRecord
     self.common_meta_data
       .select { |cfg| cfg['is_mandatory'] }
       .map { |cfg| cfg['meta_key_id'] }
+  end
+
+  def delegation_with_user?(user)
+    return false if delegations.empty?
+
+    ids = self.class.connection.exec_query(user.delegation_ids.to_sql).rows.flatten
+    !(ids & delegation_ids).empty?
   end
 
   private
