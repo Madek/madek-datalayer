@@ -80,7 +80,7 @@ class Workflow < ApplicationRecord
         is_overridable: true
       },
       {
-        meta_key_id: 'media_object:​creative_participants_roles',
+        meta_key_id: 'media_object:creative_participants_roles',
         is_common: false,
         is_mandatory: false,
         is_overridable: true
