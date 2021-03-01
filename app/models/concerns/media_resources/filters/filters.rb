@@ -122,6 +122,8 @@ module Concerns
               entrusted_to_group Group.find(value)
             when 'entrusted_to_user'
               entrusted_to_user User.find(value)
+            when 'entrusted_to_api_client'
+              entrusted_to_api_client ApiClient.find(value)
             else
               raise 'Unrecognized permission key'
             end

@@ -13,7 +13,7 @@ module Concerns
 
         define_singleton_method "#{prefix}_group" do |group|
           where \
-            "Permissions::#{self.name}GroupPermission".constantize \
+            "Permissions::#{name}GroupPermission".constantize \
               .group_permission_exists_condition(perm_type, group)
         end
 

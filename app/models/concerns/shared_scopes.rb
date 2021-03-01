@@ -13,12 +13,6 @@ module Concerns
         )
       }
 
-      scope :filter_by_visibility_api, lambda {
-        where(get_metadata_and_previews: false).where(
-          sql_for_api_permission
-        )
-      }
-
       scope :filter_by_visibility_private, lambda {
         where(get_metadata_and_previews: false).where.not(
           sql_for_user_or_group_permission

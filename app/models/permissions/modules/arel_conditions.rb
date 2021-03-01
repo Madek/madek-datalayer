@@ -58,6 +58,17 @@ module Permissions
           end
         end
 
+        def self.define_api_client_permission_exists_condition(resources_table)
+          define_singleton_method \
+            :api_client_permission_exists_condition do |perm, api_client|
+
+            permissions_exists_condition_helper(resources_table,
+                                                perm,
+                                                arel_table[:api_client_id],
+                                                api_client)
+          end
+        end
+
         def self.permissions_exists_condition_helper(resources_table,
                                                      perm,
                                                      arel_attribute,
