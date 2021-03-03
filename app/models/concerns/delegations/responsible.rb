@@ -12,6 +12,8 @@ module Concerns
 
           errors.add(:base, 'Only one responsible entity can be set at the same time') unless cond
         end
+        scope :with_responsible_delegation,
+              ->(delegation) { where(responsible_delegation: delegation) }
       end
 
       def delegation_with_user?(user)

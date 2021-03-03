@@ -113,7 +113,9 @@ module Concerns
             # in the side filter.
             case key
             when 'responsible_user'
-              filter_by_responsible_user(value)
+              with_responsible_user(value)
+            when 'responsible_delegation'
+              with_responsible_delegation(value)
             when 'public'
               filter_by_public_view(value)
             when 'visibility'
