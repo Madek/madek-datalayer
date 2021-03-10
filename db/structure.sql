@@ -1308,6 +1308,67 @@ CREATE TABLE public.delegations_workflows (
 
 
 --
+-- Name: derivative_profiles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.derivative_profiles (
+    label text NOT NULL,
+    content_type text,
+    description text,
+    config jsonb
+);
+
+
+--
+-- Name: TABLE derivative_profiles; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.derivative_profiles IS 'Derivatives (previews) are generated based on matches
+on the content_type.
+';
+
+
+--
+-- Name: previews; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.previews (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    media_file_id uuid NOT NULL,
+    height integer,
+    width integer,
+    content_type character varying,
+    filename character varying,
+    thumbnail character varying,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    media_type character varying NOT NULL,
+    conversion_profile character varying,
+    derivative_profile_id text
+);
+
+
+--
+-- Name: derivatives; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.derivatives AS
+ SELECT previews.id,
+    previews.media_file_id,
+    previews.height,
+    previews.width,
+    previews.content_type,
+    previews.filename,
+    previews.thumbnail,
+    previews.created_at,
+    previews.updated_at,
+    previews.media_type,
+    previews.conversion_profile,
+    previews.derivative_profile_id
+   FROM public.previews;
+
+
+--
 -- Name: edit_sessions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1772,25 +1833,6 @@ CREATE TABLE public.people (
 
 
 --
--- Name: previews; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.previews (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
-    media_file_id uuid NOT NULL,
-    height integer,
-    width integer,
-    content_type character varying,
-    filename character varying,
-    thumbnail character varying,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    media_type character varying NOT NULL,
-    conversion_profile character varying
-);
-
-
---
 -- Name: rdf_classes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2160,6 +2202,14 @@ ALTER TABLE ONLY public.custom_urls
 
 ALTER TABLE ONLY public.delegations
     ADD CONSTRAINT delegations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: derivative_profiles derivative_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.derivative_profiles
+    ADD CONSTRAINT derivative_profiles_pkey PRIMARY KEY (label);
 
 
 --
@@ -4786,6 +4836,14 @@ ALTER TABLE ONLY public.vocabulary_group_permissions
 
 
 --
+-- Name: previews fk_rails_87c3c67bb8; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.previews
+    ADD CONSTRAINT fk_rails_87c3c67bb8 FOREIGN KEY (derivative_profile_id) REFERENCES public.derivative_profiles(label) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
 -- Name: confidential_links fk_rails_8c2cb96882; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5526,6 +5584,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('5'),
 ('500'),
 ('501'),
+('502'),
 ('6'),
 ('7'),
 ('8'),
