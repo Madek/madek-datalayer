@@ -6,6 +6,9 @@ class DerivativeProfiles < ActiveRecord::Migration[5.2]
   class Derivative < ApplicationRecord
   end
 
+  class Preview < ApplicationRecord
+  end
+
   def change
 
     cmt = <<-TXT.strip_heredoc
@@ -44,18 +47,30 @@ class DerivativeProfiles < ActiveRecord::Migration[5.2]
 
       reversible do |dir|
         dir.up do
+
+          # create video profiles
+
           Settings.zencoder_video_output_formats.to_h.each do |k, v|
             puts "#{k} #{v}"
             DerivativeProfile.create! label: k, content_type: 'video',
               config: v.to_h
           end
-          Derivative.all.each do |d|
-            next if d[:content_type] =~ /^image/
-            DerivativeProfile.all.each do |profile|
-              # TODO WTF nothing matches; see the configuration on production
-              if profile.config.try(:[],"width") == d.width
-                binding.pry
+
+          Preview.all.each do |derivative|
+            case derivative[:content_type]
+            when /^video/
+              if cp = derivative[:conversion_profile]
+                derivative.update_attributes! derivative_profile_id: cp
+              else
+                case derivative[:content_type]
+                when 'video/webm'
+                  derivative.update_attributes! derivative_profile_id: 'webm'
+                when 'video/mp4'
+                  derivative.update_attributes! derivative_profile_id: 'mp4'
+                end
               end
+            else
+              puts "DERIVATIVE NOT HANDLED YET #{derivative.as_json}"
             end
           end
         end
