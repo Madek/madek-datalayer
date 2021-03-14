@@ -1,11 +1,8 @@
 # user is the system oriented representation of a User
 
 class User < ApplicationRecord
-
-  # include UserModules::Dropbox
-  # include UserModules::TextSearch
-  # include UserModules::AutoCompletion
   include Concerns::FindResource
+  include Concerns::Users::Delegations
   include Concerns::Users::Filters
   include Concerns::Users::Keywords
   include Concerns::Users::ResourcesAssociations
@@ -38,8 +35,6 @@ class User < ApplicationRecord
   has_and_belongs_to_many :groups
   has_one :admin, dependent: :destroy
   belongs_to :accepted_usage_terms, class_name: 'UsageTerms'
-
-  has_and_belongs_to_many :delegations
 
   #############################################################
 

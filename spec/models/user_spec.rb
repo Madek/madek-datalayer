@@ -37,4 +37,29 @@ describe User do
       }.from(usage_terms.id).to(nil)
     end
   end
+
+  describe '#all_delegations' do
+    let(:user) { create(:user) }
+    let!(:another_user) { create(:user) }
+    let(:group) { create(:group) }
+    let(:delegation_with_user) { create(:delegation) }
+    let(:delegation_with_group) { create(:delegation) }
+    let!(:another_delegation) { create(:delegation) }
+
+    before do
+      group.users << user
+      delegation_with_user.users << user
+      delegation_with_group.groups << group
+      another_delegation.users << another_user
+    end
+
+    it 'returns delegations along with those from groups the user belongs to' do
+      expect(user.all_delegations).to eq(
+        [
+          delegation_with_user,
+          delegation_with_group
+        ]
+      )
+    end
+  end
 end
