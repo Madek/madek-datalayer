@@ -2,7 +2,8 @@ source 'https://rubygems.org'
 
 ruby '2.7.2'
 
-gem 'rails', '~> 5.2.3'
+gem 'rails', '~> 5.2.4'
+gem "sprockets", "<4" # DO NOT UPGRADE SPROCKETS!
 
 gem 'pg'
 gem 'pg_tasks', git: 'https://github.com/drtom/rails_pg-tasks', branch: 'master_rails_5'
