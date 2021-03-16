@@ -25,16 +25,20 @@ class Delegation < ApplicationRecord
 
   def self.with_members_count
     select('delegations.*, '\
-      '(COUNT(delegations_groups.group_id) + COUNT(delegations_users.user_id)) AS members_count')
-      .joins('LEFT OUTER JOIN delegations_groups '\
-             'ON delegations_groups.delegation_id = delegations.id')
+      '(COUNT(DISTINCT delegations_users.user_id) + COUNT(DISTINCT groups_users.user_id)) '\
+      'AS members_count, COUNT(DISTINCT groups_users.user_id) as group_members_count')
       .joins('LEFT OUTER JOIN delegations_users '\
              'ON delegations_users.delegation_id = delegations.id')
+      .joins('LEFT OUTER JOIN delegations_groups '\
+             'ON delegations_groups.delegation_id = delegations.id')
+      .joins('LEFT OUTER JOIN groups_users '\
+             'ON delegations_groups.group_id = groups_users.group_id')
       .group('delegations.id')
   end
 
   def self.with_resources_count
-    select('delegations.*, (COUNT(media_entries.id) + COUNT(collections.id)) AS resources_count')
+    select('delegations.*, '\
+      '(COUNT(DISTINCT media_entries.id) + COUNT(DISTINCT collections.id)) AS resources_count')
       .joins('LEFT OUTER JOIN media_entries '\
              'ON media_entries.responsible_delegation_id = delegations.id')
       .joins('LEFT OUTER JOIN collections ON '\
