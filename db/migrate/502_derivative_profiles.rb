@@ -3,10 +3,12 @@ class DerivativeProfiles < ActiveRecord::Migration[5.2]
   class DerivativeProfile < ApplicationRecord
   end
 
-  class Derivative < ApplicationRecord
+  class MediaFile < ApplicationRecord
+    has_many :previews, -> { order(:created_at, :id) }, dependent: :destroy
   end
 
   class Preview < ApplicationRecord
+    belongs_to :media_file
   end
 
   def change
@@ -56,23 +58,36 @@ class DerivativeProfiles < ActiveRecord::Migration[5.2]
               config: v.to_h
           end
 
-          Preview.all.each do |derivative|
-            case derivative[:content_type]
-            when /^video/
-              if cp = derivative[:conversion_profile]
-                derivative.update_attributes! derivative_profile_id: cp
-              else
+          MediaFile.all.each do |mf|
+
+            case mf.media_type
+
+            when 'video'
+
+              Preview.where(media_file_id: mf.id).each do |derivative|
                 case derivative[:content_type]
-                when 'video/webm'
-                  derivative.update_attributes! derivative_profile_id: 'webm'
-                when 'video/mp4'
-                  derivative.update_attributes! derivative_profile_id: 'mp4'
+                when /^video/
+                  if cp = derivative[:conversion_profile]
+                    derivative.update_attributes! derivative_profile_id: cp
+                  else
+                    case derivative[:content_type]
+                    when 'video/webm'
+                      derivative.update_attributes! derivative_profile_id: 'webm'
+                    when 'video/mp4'
+                      derivative.update_attributes! derivative_profile_id: 'mp4'
+                    end
+                  end
+                else
+                  puts "DERIVATIVE with content_type #{derivative[:content_type]} NOT HANDLED YET "
                 end
               end
+
             else
-              puts "DERIVATIVE NOT HANDLED YET #{derivative.as_json}"
+              puts "MEDIA_FILE with type #{media_type} NOT HANDLED YET "
             end
+
           end
+
         end
       end
   end
