@@ -914,6 +914,27 @@ $$;
 
 
 --
+-- Name: static_pages_check_content_for_default_locale(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.static_pages_check_content_for_default_locale() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $_$
+DECLARE
+  default_locale_from_app_settings varchar(5);
+BEGIN
+  default_locale_from_app_settings := (SELECT default_locale FROM app_settings LIMIT 1);
+  IF
+    NEW.contents->(default_locale_from_app_settings) ~ '^ *$'
+    OR NEW.contents->(default_locale_from_app_settings) IS NULL
+  THEN RAISE EXCEPTION 'Content for % locale cannot be blank!', upper(default_locale_from_app_settings);
+  END IF;
+  RETURN NEW;
+END;
+$_$;
+
+
+--
 -- Name: update_updated_at_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -1791,6 +1812,20 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: static_pages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.static_pages (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    name character varying NOT NULL,
+    contents public.hstore DEFAULT ''::public.hstore NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    CONSTRAINT name_non_blank CHECK (((name)::text !~ '^ *$'::text))
+);
+
+
+--
 -- Name: usage_terms; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2320,6 +2355,14 @@ ALTER TABLE ONLY public.roles
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: static_pages static_pages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.static_pages
+    ADD CONSTRAINT static_pages_pkey PRIMARY KEY (id);
 
 
 --
@@ -3627,6 +3670,13 @@ CREATE UNIQUE INDEX index_roles_on_meta_key_id_and_labels ON public.roles USING 
 
 
 --
+-- Name: index_static_pages_on_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_static_pages_on_name ON public.static_pages USING btree (name);
+
+
+--
 -- Name: index_users_on_autocomplete; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3764,6 +3814,13 @@ CREATE INDEX users_searchable_idx ON public.users USING gin (searchable public.g
 --
 
 CREATE INDEX users_to_tsvector_idx ON public.users USING gin (to_tsvector('english'::regconfig, searchable));
+
+
+--
+-- Name: static_pages check_contents_of_static_pages; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER check_contents_of_static_pages BEFORE INSERT OR UPDATE ON public.static_pages FOR EACH ROW EXECUTE PROCEDURE public.static_pages_check_content_for_default_locale();
 
 
 --
@@ -5346,6 +5403,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('407'),
 ('408'),
 ('409'),
+('410'),
 ('5'),
 ('6'),
 ('7'),
