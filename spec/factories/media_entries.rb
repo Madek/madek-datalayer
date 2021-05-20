@@ -77,6 +77,22 @@ FactoryGirl.define do
       end
       rand(1..3).times do
         me.meta_data << \
+          create(:meta_datum_text_date,
+                 meta_key: \
+                 create(:meta_key_text_date,
+                        id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                        vocabulary: vocabulary))
+      end
+      rand(1..3).times do
+        me.meta_data << \
+          create(:meta_datum_json,
+                 meta_key: \
+                 create(:meta_key_json,
+                        id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                        vocabulary: vocabulary))
+      end
+      rand(1..3).times do
+        me.meta_data << \
           create(:meta_datum_keywords,
                  meta_key: \
                    create(:meta_key_keywords,
@@ -90,6 +106,13 @@ FactoryGirl.define do
                    create(:meta_key_people,
                           id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
                           vocabulary: vocabulary))
+      end
+      rand(1..3).times do
+        me.meta_data <<
+          create(:meta_datum_roles,
+                 meta_key: create(:meta_key_roles,
+                                  id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                                  vocabulary: vocabulary))
       end
 
       rand(1..3).times do
