@@ -55,12 +55,14 @@ class MediaStores < ActiveRecord::Migration[5.2]
 
     reversible do |dir|
       dir.up do
-        if MediaFile.count > 0
-          ms = MediaStore.create type: :filesystem,
-            id: 'legacy-file-store',
-            configuration: {
-              originals_storage_dir: Madek::Constants::FILE_STORAGE_DIR,
-              previews_storage_dir: Madek::Constants::THUMBNAIL_STORAGE_DIR }
+        ms = MediaStore.create type: :filesystem,
+          id: 'legacy-file-store',
+          configuration: {
+            originals_storage_dir: Madek::Constants::FILE_STORAGE_DIR,
+            previews_storage_dir: Madek::Constants::THUMBNAIL_STORAGE_DIR,
+            uploads_storage_dir: \
+              Pathname.new(Madek::Constants::FILE_STORAGE_DIR) \
+                .join("..").join("uploads").to_s }
 
           MediaFile.in_batches.each do |mfs|
             mfs.each do |mf|
@@ -68,8 +70,11 @@ class MediaStores < ActiveRecord::Migration[5.2]
             end
           end
 
-        end
-
+          execute <<-SQL.strip_heredoc
+            INSERT INTO media_stores_groups
+              (group_id, media_store_id)
+              VALUES ('#{Madek::Constants::SIGNED_IN_USERS_GROUP_ID}', '#{ms.id}');
+          SQL
       end
     end
   end

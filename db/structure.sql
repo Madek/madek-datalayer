@@ -1041,34 +1041,14 @@ CREATE TABLE public.app_settings (
 
 
 --
--- Name: app_settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.app_settings_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: app_settings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.app_settings_id_seq OWNED BY public.app_settings.id;
-
-
---
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.ar_internal_metadata (
     key character varying NOT NULL,
     value character varying,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
@@ -1197,8 +1177,8 @@ CREATE TABLE public.collections (
 CREATE TABLE public.confidential_links (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     user_id uuid NOT NULL,
-    resource_type character varying,
     resource_id uuid,
+    resource_type character varying,
     token character varying(45) NOT NULL,
     revoked boolean DEFAULT false NOT NULL,
     description text,
@@ -1508,7 +1488,7 @@ CREATE TABLE public.groups (
     type character varying DEFAULT 'Group'::character varying NOT NULL,
     person_id uuid,
     searchable text DEFAULT ''::text NOT NULL,
-    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['AuthenticationGroup'::character varying, 'InstitutionalGroup'::character varying, 'Group'::character varying])::text[])))
+    CONSTRAINT check_valid_type CHECK (((type)::text = ANY (ARRAY[('AuthenticationGroup'::character varying)::text, ('InstitutionalGroup'::character varying)::text, ('Group'::character varying)::text])))
 );
 
 
@@ -1716,7 +1696,7 @@ CREATE TABLE public.meta_data (
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     json jsonb,
     other_media_entry_id uuid,
-    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['MetaDatum::Groups'::character varying, 'MetaDatum::Keywords'::character varying, 'MetaDatum::Licenses'::character varying, 'MetaDatum::People'::character varying, 'MetaDatum::Roles'::character varying, 'MetaDatum::Text'::character varying, 'MetaDatum::TextDate'::character varying, 'MetaDatum::Users'::character varying, 'MetaDatum::Vocables'::character varying, 'MetaDatum::JSON'::character varying, 'MetaDatum::MediaEntry'::character varying])::text[]))),
+    CONSTRAINT check_valid_type CHECK (((type)::text = ANY (ARRAY[('MetaDatum::Groups'::character varying)::text, ('MetaDatum::Keywords'::character varying)::text, ('MetaDatum::Licenses'::character varying)::text, ('MetaDatum::People'::character varying)::text, ('MetaDatum::Roles'::character varying)::text, ('MetaDatum::Text'::character varying)::text, ('MetaDatum::TextDate'::character varying)::text, ('MetaDatum::Users'::character varying)::text, ('MetaDatum::Vocables'::character varying)::text, ('MetaDatum::JSON'::character varying)::text, ('MetaDatum::MediaEntry'::character varying)::text]))),
     CONSTRAINT meta_data_is_related CHECK ((((media_entry_id IS NULL) AND (collection_id IS NULL) AND (filter_set_id IS NOT NULL)) OR ((media_entry_id IS NULL) AND (collection_id IS NOT NULL) AND (filter_set_id IS NULL)) OR ((media_entry_id IS NOT NULL) AND (collection_id IS NULL) AND (filter_set_id IS NULL))))
 );
 
@@ -1877,6 +1857,34 @@ CREATE TABLE public.schema_migrations (
 CREATE TABLE public.system_admins (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL
+);
+
+
+--
+-- Name: upload_parts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.upload_parts (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    upload_id uuid NOT NULL,
+    idx integer NOT NULL,
+    size integer NOT NULL,
+    md5 text NOT NULL
+);
+
+
+--
+-- Name: uploads; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.uploads (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    md5 text NOT NULL,
+    uploader uuid NOT NULL,
+    size integer NOT NULL,
+    state text DEFAULT 'announced'::text NOT NULL,
+    media_store_id text NOT NULL,
+    CONSTRAINT valid_state CHECK ((state = ANY (ARRAY['announced'::text, 'uploading'::text])))
 );
 
 
@@ -2437,19 +2445,27 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.schema_migrations
-    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
-
-
---
 -- Name: system_admins system_admins_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.system_admins
     ADD CONSTRAINT system_admins_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: upload_parts upload_parts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.upload_parts
+    ADD CONSTRAINT upload_parts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: uploads uploads_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.uploads
+    ADD CONSTRAINT uploads_pkey PRIMARY KEY (id);
 
 
 --
@@ -3932,6 +3948,13 @@ CREATE UNIQUE INDEX unique_login_idx ON public.users USING btree (login);
 
 
 --
+-- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX unique_schema_migrations ON public.schema_migrations USING btree (version);
+
+
+--
 -- Name: users_searchable_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4209,13 +4232,6 @@ CREATE TRIGGER update_updated_at_column_of_api_tokens BEFORE UPDATE ON public.ap
 --
 
 CREATE TRIGGER update_updated_at_column_of_app_settings BEFORE UPDATE ON public.app_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
-
-
---
--- Name: ar_internal_metadata update_updated_at_column_of_ar_internal_metadata; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_ar_internal_metadata BEFORE UPDATE ON public.ar_internal_metadata FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
@@ -4780,6 +4796,14 @@ ALTER TABLE ONLY public.media_files
 
 
 --
+-- Name: uploads fk_rails_294a544fe7; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.uploads
+    ADD CONSTRAINT fk_rails_294a544fe7 FOREIGN KEY (uploader) REFERENCES public.users(id);
+
+
+--
 -- Name: context_keys fk_rails_2957e036b5; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4849,14 +4873,6 @@ ALTER TABLE ONLY public.previews
 
 ALTER TABLE ONLY public.confidential_links
     ADD CONSTRAINT fk_rails_8c2cb96882 FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: collection_user_permissions fk_rails_8f830fb7e7; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.collection_user_permissions
-    ADD CONSTRAINT fk_rails_8f830fb7e7 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -4956,11 +4972,27 @@ ALTER TABLE ONLY public.media_entries
 
 
 --
+-- Name: uploads fk_rails_c569a13d0d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.uploads
+    ADD CONSTRAINT fk_rails_c569a13d0d FOREIGN KEY (media_store_id) REFERENCES public.media_stores(id);
+
+
+--
 -- Name: media_entry_group_permissions fk_rails_c5e91a50bb; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.media_entry_group_permissions
     ADD CONSTRAINT fk_rails_c5e91a50bb FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: upload_parts fk_rails_ccc0185ce6; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.upload_parts
+    ADD CONSTRAINT fk_rails_ccc0185ce6 FOREIGN KEY (upload_id) REFERENCES public.uploads(id);
 
 
 --
@@ -5017,14 +5049,6 @@ ALTER TABLE ONLY public.keywords
 
 ALTER TABLE ONLY public.delegations_groups
     ADD CONSTRAINT fk_rails_f6b29853e0 FOREIGN KEY (group_id) REFERENCES public.groups(id);
-
-
---
--- Name: filter_set_user_permissions fk_rails_fe38b294ce; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_user_permissions
-    ADD CONSTRAINT fk_rails_fe38b294ce FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -5585,6 +5609,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('500'),
 ('501'),
 ('502'),
+('503'),
 ('6'),
 ('7'),
 ('8'),
