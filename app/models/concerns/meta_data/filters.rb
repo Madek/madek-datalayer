@@ -17,6 +17,9 @@ module Concerns
         scope :of_filter_set, lambda { |id|
           where(filter_set_id: id)
         }
+        scope :of_meta_key, lambda { |id|
+          where(meta_key_id: id)
+        }
       end
     end
   end
