@@ -20,6 +20,9 @@ class MediaStores < ActiveRecord::Migration[5.2]
             CHECK (
               type IN ('database', 'filesystem', 'S3' )
             );
+          ALTER TABLE media_stores
+            ADD CONSTRAINT check_at_most_one_database
+            CHECK (type <> 'database' OR (id = 'database' AND type = 'database'));
         SQL
       end
     end
@@ -55,7 +58,7 @@ class MediaStores < ActiveRecord::Migration[5.2]
 
     reversible do |dir|
       dir.up do
-        ms = MediaStore.create type: :filesystem,
+        legacy_fs = MediaStore.create type: :filesystem,
           id: 'legacy-file-store',
           configuration: {
             originals_storage_dir: Madek::Constants::FILE_STORAGE_DIR,
@@ -66,15 +69,26 @@ class MediaStores < ActiveRecord::Migration[5.2]
 
           MediaFile.in_batches.each do |mfs|
             mfs.each do |mf|
-              mf.update_attributes(media_store_id: ms.id)
+              mf.update_attributes(media_store_id: legacy_fs.id)
             end
           end
 
           execute <<-SQL.strip_heredoc
             INSERT INTO media_stores_groups
-              (group_id, media_store_id)
-              VALUES ('#{Madek::Constants::SIGNED_IN_USERS_GROUP_ID}', '#{ms.id}');
+              (group_id, media_store_id, priority)
+              VALUES ('#{Madek::Constants::SIGNED_IN_USERS_GROUP_ID}', '#{legacy_fs.id}', 1);
           SQL
+
+
+        db_fs = MediaStore.create type: :database,
+          id: 'database'
+
+        execute <<-SQL.strip_heredoc
+          INSERT INTO media_stores_groups
+            (group_id, media_store_id, priority)
+            VALUES ('#{Madek::Constants::SIGNED_IN_USERS_GROUP_ID}', '#{db_fs.id}', 0);
+        SQL
+
       end
     end
   end

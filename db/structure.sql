@@ -1652,7 +1652,8 @@ CREATE TABLE public.media_stores (
     description text,
     configuration jsonb,
     type text DEFAULT 'database'::text NOT NULL,
-    CONSTRAINT check_allowed_types CHECK ((type = ANY (ARRAY['database'::text, 'filesystem'::text, 'S3'::text])))
+    CONSTRAINT check_allowed_types CHECK ((type = ANY (ARRAY['database'::text, 'filesystem'::text, 'S3'::text]))),
+    CONSTRAINT check_at_most_one_database CHECK (((type <> 'database'::text) OR ((id = 'database'::text) AND (type = 'database'::text))))
 );
 
 
