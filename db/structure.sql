@@ -4921,7 +4921,7 @@ ALTER TABLE ONLY public.delegations_users
 --
 
 ALTER TABLE ONLY public.meta_data
-    ADD CONSTRAINT fk_rails_ee76aad01f FOREIGN KEY (meta_key_id) REFERENCES public.meta_keys(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT fk_rails_ee76aad01f FOREIGN KEY (meta_key_id) REFERENCES public.meta_keys(id) ON UPDATE CASCADE;
 
 
 --
@@ -5504,6 +5504,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('409'),
 ('410'),
 ('411'),
+('412'),
 ('5'),
 ('6'),
 ('7'),

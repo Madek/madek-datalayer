@@ -4,7 +4,7 @@ class MetaKey < ApplicationRecord
   include Concerns::Orderable
   include Concerns::LocalizedFields
 
-  has_many :meta_data, dependent: :destroy
+  has_many :meta_data
   belongs_to :vocabulary
   has_many :context_keys
   has_many :roles
