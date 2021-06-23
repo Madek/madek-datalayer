@@ -27,6 +27,7 @@ class MediaStores < ActiveRecord::Migration[5.2]
       end
     end
 
+
     create_table :media_stores_users, id: :uuid do |t|
       t.uuid :user_id, null: false
       t.index :user_id

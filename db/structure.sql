@@ -914,6 +914,22 @@ $$;
 
 
 --
+-- Name: set_properties_media_file_parts(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.set_properties_media_file_parts() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW.md5 = md5(NEW.blob);
+  NEW.sha256 = encode(digest(NEW.blob, 'sha256'), 'hex');
+  NEW.size = length(NEW.blob);
+  RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: update_updated_at_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -1619,6 +1635,23 @@ CREATE TABLE public.media_entry_user_permissions (
 
 
 --
+-- Name: media_file_parts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.media_file_parts (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    blob bytea NOT NULL,
+    part integer,
+    start integer,
+    size integer,
+    upload_id uuid,
+    media_file_id uuid,
+    md5 text,
+    sha256 text
+);
+
+
+--
 -- Name: media_files; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1862,19 +1895,6 @@ CREATE TABLE public.system_admins (
 
 
 --
--- Name: upload_parts; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.upload_parts (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
-    upload_id uuid NOT NULL,
-    idx integer NOT NULL,
-    size integer NOT NULL,
-    md5 text NOT NULL
-);
-
-
---
 -- Name: uploads; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1885,7 +1905,7 @@ CREATE TABLE public.uploads (
     size integer NOT NULL,
     state text DEFAULT 'announced'::text NOT NULL,
     media_store_id text NOT NULL,
-    CONSTRAINT valid_state CHECK ((state = ANY (ARRAY['announced'::text, 'uploading'::text])))
+    CONSTRAINT valid_state CHECK ((state = ANY (ARRAY['announced'::text, 'uploading'::text, 'completed'::text, 'finished'::text])))
 );
 
 
@@ -2342,6 +2362,14 @@ ALTER TABLE ONLY public.media_entry_user_permissions
 
 
 --
+-- Name: media_file_parts media_file_parts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_file_parts
+    ADD CONSTRAINT media_file_parts_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: media_files media_files_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2451,14 +2479,6 @@ ALTER TABLE ONLY public.roles
 
 ALTER TABLE ONLY public.system_admins
     ADD CONSTRAINT system_admins_pkey PRIMARY KEY (id);
-
-
---
--- Name: upload_parts upload_parts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.upload_parts
-    ADD CONSTRAINT upload_parts_pkey PRIMARY KEY (id);
 
 
 --
@@ -4026,6 +4046,13 @@ CREATE TRIGGER propagate_people_updates_to_meta_data_people AFTER INSERT OR UPDA
 
 
 --
+-- Name: media_file_parts set_properties_media_file_parts; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER set_properties_media_file_parts BEFORE INSERT OR UPDATE ON public.media_file_parts FOR EACH ROW EXECUTE PROCEDURE public.set_properties_media_file_parts();
+
+
+--
 -- Name: collection_media_entry_arcs trigger_check_collection_cover_uniqueness; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -4829,6 +4856,14 @@ ALTER TABLE ONLY public.api_clients
 
 
 --
+-- Name: media_file_parts fk_rails_47587feb67; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_file_parts
+    ADD CONSTRAINT fk_rails_47587feb67 FOREIGN KEY (media_file_id) REFERENCES public.media_files(id);
+
+
+--
 -- Name: groups_users fk_rails_4e63edbd27; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4850,6 +4885,14 @@ ALTER TABLE ONLY public.media_stores_groups
 
 ALTER TABLE ONLY public.system_admins
     ADD CONSTRAINT fk_rails_53b10fbe11 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: media_file_parts fk_rails_5f6f1c956c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_file_parts
+    ADD CONSTRAINT fk_rails_5f6f1c956c FOREIGN KEY (upload_id) REFERENCES public.uploads(id);
 
 
 --
@@ -4986,14 +5029,6 @@ ALTER TABLE ONLY public.uploads
 
 ALTER TABLE ONLY public.media_entry_group_permissions
     ADD CONSTRAINT fk_rails_c5e91a50bb FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: upload_parts fk_rails_ccc0185ce6; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.upload_parts
-    ADD CONSTRAINT fk_rails_ccc0185ce6 FOREIGN KEY (upload_id) REFERENCES public.uploads(id);
 
 
 --
