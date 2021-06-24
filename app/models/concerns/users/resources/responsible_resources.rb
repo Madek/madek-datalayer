@@ -8,6 +8,7 @@ module Concerns
                    foreign_key: :responsible_user_id,
                    class_name: 'Collection'
           has_many :responsible_media_entries,
+                   -> { not_part_of_workflow },
                    foreign_key: :responsible_user_id,
                    class_name: 'MediaEntry'
           has_many :responsible_filter_sets,

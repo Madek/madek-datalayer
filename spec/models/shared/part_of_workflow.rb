@@ -64,4 +64,12 @@ RSpec.shared_examples 'part of workflow' do
       end
     end
   end
+
+  describe '.not_part_of_workflow' do
+    context 'when media entry belongs to workflow' do
+      it 'is not returned' do
+        expect(MediaEntry.not_part_of_workflow).not_to include @media_entry
+      end
+    end
+  end
 end

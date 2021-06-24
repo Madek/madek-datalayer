@@ -43,7 +43,11 @@ module Concerns
           "collection_#{table_name.singularize}_arcs"
         end
 
-        def parent_collections_query(resource_id)
+        # rubocop:disable Metrics/MethodLength
+        def parent_collections_query(resource_id = nil)
+          raise 'Not an UUID!' if resource_id && !valid_uuid?(resource_id)
+
+          id_or_fk = Arel.sql(resource_id ? "'#{resource_id}'" : "#{table_name}.id")
           <<-SQL.strip_heredoc
             WITH RECURSIVE parents as (
               SELECT parent_id
@@ -51,7 +55,7 @@ module Concerns
               WHERE child_id IN (
                 SELECT #{arcs_parent_fk}
                 FROM #{arcs_table_name}
-                WHERE #{arcs_child_fk} = '#{resource_id}'
+                WHERE #{arcs_child_fk} = #{id_or_fk}
               )
               UNION
               SELECT cca.parent_id
@@ -62,10 +66,11 @@ module Concerns
             UNION
             SELECT cra.#{arcs_parent_fk}
             FROM #{arcs_table_name} cra
-            WHERE #{arcs_child_fk} = '#{resource_id}'
+            WHERE #{arcs_child_fk} = #{id_or_fk}
           SQL
         end
       end
+      # rubocop:enable Metrics/MethodLength
 
       def workflow
         (super rescue nil) || Workflow.find_by(id: self.class.workflow_ids(id))
