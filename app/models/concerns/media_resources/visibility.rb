@@ -21,7 +21,7 @@ module Concerns
           where(Hash[self::VIEW_PERMISSION_NAME, true])
         end
 
-        def viewable_by_user(user)
+        def viewable_by_user(user, join_from_active_workflow: false)
           conditions = arel_table[self::VIEW_PERMISSION_NAME].eq(true)
             .or(arel_table[:responsible_user_id].eq(user.id))
             .or(arel_table[:responsible_delegation_id].in(user.delegation_ids))
@@ -32,13 +32,12 @@ module Concerns
                   .group_permission_for_user_exists_condition \
                     self::VIEW_PERMISSION_NAME, user)
 
-          if self == MediaEntry
+          if join_from_active_workflow && self == MediaEntry
             scope_to_reuse = current_scope ? current_scope : self
-
             where(conditions)
               .or(
                 scope_to_reuse
-                  .with_unpublished
+                  .rewhere(is_published: false)
                   .where(arel_table[:id].in(ids_viewable_by_workflow_member(user)))
               )
           else
@@ -46,8 +45,12 @@ module Concerns
           end
         end
 
-        def viewable_by_user_or_public(user = nil)
-          user ? viewable_by_user(user) : viewable_by_public
+        def viewable_by_user_or_public(user = nil, join_from_active_workflow: false)
+          if user
+            viewable_by_user(user, join_from_active_workflow: join_from_active_workflow)
+          else
+            viewable_by_public
+          end
         end
 
         def ids_viewable_by_workflow_member(user)

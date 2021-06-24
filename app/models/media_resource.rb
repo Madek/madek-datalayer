@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ClassLength
 class MediaResource < ApplicationRecord
   self.table_name = :vw_media_resources
   self.primary_key = :id
@@ -6,8 +7,10 @@ class MediaResource < ApplicationRecord
 
   include Concerns::MediaResources::CustomOrderBy
 
-  def self.viewable_by_user_or_public(user)
-    scope_helper(:viewable_by_user_or_public, user)
+  def self.viewable_by_user_or_public(user, join_from_active_workflow: false)
+    scope_helper(:viewable_by_user_or_public,
+                 user,
+                 join_from_active_workflow: join_from_active_workflow)
   end
 
   def self.filter_by(user = nil, filter_opts)
@@ -151,3 +154,4 @@ class MediaResource < ApplicationRecord
     @_casted_to_type ||= becomes(type.constantize)
   end
 end
+# rubocop:enable Metrics/ClassLength
