@@ -71,8 +71,16 @@ module Concerns
         (super rescue nil) || Workflow.find_by(id: self.class.workflow_ids(id))
       end
 
-      def part_of_workflow?
-        self.class.parent_collections(id).joins(:workflow).any?
+      def part_of_workflow?(active: nil)
+        if [true, false].include?(active)
+          parent_collections_with_workflows.where(workflows: { is_active: active }).any?
+        else
+          parent_collections_with_workflows.any?
+        end
+      end
+
+      def parent_collections_with_workflows
+        self.class.parent_collections(id).joins(:workflow)
       end
     end
   end
