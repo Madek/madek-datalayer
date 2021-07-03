@@ -10,7 +10,7 @@ gem 'pg_tasks', git: 'https://github.com/drtom/rails_pg-tasks', branch: 'master_
 gem 'textacular', '~> 5.0'
 
 gem 'base32-crockford'
-gem 'bcrypt'
+gem 'bcrypt', '~> 3.1.13'
 gem 'chronic_duration'
 gem 'rspec-rails', '~> 3.1', group: [:test, :development]
 gem 'rubocop', '= 0.39.0', require: false
