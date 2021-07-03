@@ -55,7 +55,7 @@ GEM
     arel (9.0.0)
     ast (2.2.0)
     base32-crockford (0.1.0)
-    bcrypt (3.1.11)
+    bcrypt (3.1.16)
     builder (3.2.4)
     chronic_duration (0.10.6)
       numerizer (~> 0.1.1)
@@ -219,7 +219,7 @@ PLATFORMS
 
 DEPENDENCIES
   base32-crockford
-  bcrypt
+  bcrypt (~> 3.1.13)
   chronic_duration
   cider_ci-support (= 3.2)
   factory_girl (~> 4.8.1)
@@ -245,4 +245,4 @@ RUBY VERSION
    ruby 2.7.2p137
 
 BUNDLED WITH
-   2.2.14
+   2.2.21
