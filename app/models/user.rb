@@ -71,6 +71,7 @@ class User < ApplicationRecord
       resource.delegation_with_user?(self) or
       resource
         .user_permissions
-        .where(user_id: id, edit_permissions: true).exists?
+        .where(user_id: id, edit_permissions: true).exists? or
+      Permissions::UserPermission.permitted_for?(:edit_permissions, resource: resource, user: self)
   end
 end

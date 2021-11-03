@@ -3,6 +3,7 @@ require Rails.root.join 'spec',
                         'models',
                         'shared',
                         'destroy_ineffective_permissions.rb'
+require 'models/shared/permittable_for'
 
 describe Permissions::MediaEntryUserPermission do
 
@@ -56,4 +57,7 @@ describe Permissions::MediaEntryUserPermission do
 
   end
 
+  it_implements '.permitted_for?' do
+    let(:resource) { create(:media_entry) }
+  end
 end

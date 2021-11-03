@@ -1181,10 +1181,12 @@ CREATE TABLE public.collection_user_permissions (
     edit_metadata_and_relations boolean DEFAULT false NOT NULL,
     edit_permissions boolean DEFAULT false NOT NULL,
     collection_id uuid NOT NULL,
-    user_id uuid NOT NULL,
+    user_id uuid,
     updator_id uuid,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    delegation_id uuid,
+    CONSTRAINT user_id_or_delegation_id_not_null_at_the_same_time CHECK ((((user_id IS NOT NULL) AND (delegation_id IS NULL)) OR ((user_id IS NULL) AND (delegation_id IS NOT NULL))))
 );
 
 
@@ -1420,10 +1422,12 @@ CREATE TABLE public.filter_set_user_permissions (
     edit_metadata_and_filter boolean DEFAULT false NOT NULL,
     edit_permissions boolean DEFAULT false NOT NULL,
     filter_set_id uuid NOT NULL,
-    user_id uuid NOT NULL,
+    user_id uuid,
     updator_id uuid,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    delegation_id uuid,
+    CONSTRAINT user_id_or_delegation_id_not_null_at_the_same_time CHECK ((((user_id IS NOT NULL) AND (delegation_id IS NULL)) OR ((user_id IS NULL) AND (delegation_id IS NOT NULL))))
 );
 
 
@@ -1591,10 +1595,12 @@ CREATE TABLE public.media_entry_user_permissions (
     edit_metadata boolean DEFAULT false NOT NULL,
     edit_permissions boolean DEFAULT false NOT NULL,
     media_entry_id uuid NOT NULL,
-    user_id uuid NOT NULL,
+    user_id uuid,
     updator_id uuid,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    delegation_id uuid,
+    CONSTRAINT user_id_or_delegation_id_not_null_at_the_same_time CHECK ((((user_id IS NOT NULL) AND (delegation_id IS NULL)) OR ((user_id IS NULL) AND (delegation_id IS NOT NULL))))
 );
 
 
@@ -2880,6 +2886,13 @@ CREATE INDEX index_collection_user_permissions_on_collection_id ON public.collec
 
 
 --
+-- Name: index_collection_user_permissions_on_delegation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_collection_user_permissions_on_delegation_id ON public.collection_user_permissions USING btree (delegation_id);
+
+
+--
 -- Name: index_collection_user_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3174,6 +3187,13 @@ CREATE INDEX index_filter_set_group_permissions_on_updator_id ON public.filter_s
 
 
 --
+-- Name: index_filter_set_user_permissions_on_delegation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_filter_set_user_permissions_on_delegation_id ON public.filter_set_user_permissions USING btree (delegation_id);
+
+
+--
 -- Name: index_filter_set_user_permissions_on_edit_metadata_and_filter; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3458,6 +3478,13 @@ CREATE INDEX index_media_entry_group_permissions_on_media_entry_id ON public.med
 --
 
 CREATE INDEX index_media_entry_group_permissions_on_updator_id ON public.media_entry_group_permissions USING btree (updator_id);
+
+
+--
+-- Name: index_media_entry_user_permissions_on_delegation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_media_entry_user_permissions_on_delegation_id ON public.media_entry_user_permissions USING btree (delegation_id);
 
 
 --
@@ -4901,6 +4928,22 @@ ALTER TABLE ONLY public.media_entry_group_permissions
 
 
 --
+-- Name: collection_user_permissions fk_rails_c83ae69464; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.collection_user_permissions
+    ADD CONSTRAINT fk_rails_c83ae69464 FOREIGN KEY (delegation_id) REFERENCES public.delegations(id);
+
+
+--
+-- Name: filter_set_user_permissions fk_rails_db103dd649; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.filter_set_user_permissions
+    ADD CONSTRAINT fk_rails_db103dd649 FOREIGN KEY (delegation_id) REFERENCES public.delegations(id);
+
+
+--
 -- Name: io_mappings fk_rails_dbf6e7c067; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4954,6 +4997,14 @@ ALTER TABLE ONLY public.delegations_groups
 
 ALTER TABLE ONLY public.filter_set_user_permissions
     ADD CONSTRAINT fk_rails_fe38b294ce FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: media_entry_user_permissions fk_rails_fef198d897; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.media_entry_user_permissions
+    ADD CONSTRAINT fk_rails_fef198d897 FOREIGN KEY (delegation_id) REFERENCES public.delegations(id);
 
 
 --
@@ -5505,6 +5556,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('410'),
 ('411'),
 ('412'),
+('413'),
 ('5'),
 ('6'),
 ('7'),

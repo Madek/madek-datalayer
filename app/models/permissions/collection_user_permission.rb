@@ -2,8 +2,10 @@ module Permissions
   class CollectionUserPermission < ApplicationRecord
     include ::Permissions::Modules::Collection
     include ::Permissions::Modules::ArelConditions
+    include ::Permissions::Modules::PermittableFor
 
     belongs_to :user
+    belongs_to :delegation
 
     define_destroy_ineffective(
       [{ get_metadata_and_previews: false,

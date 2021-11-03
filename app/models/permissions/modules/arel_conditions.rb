@@ -3,20 +3,26 @@ module Permissions
     module ArelConditions
       extend ActiveSupport::Concern
 
-      included do
-        def self.build_where_conditions(resources_table,
-                                        perm,
-                                        arel_attribute,
-                                        id)
+      class_methods do
+        def build_where_conditions(resources_table,
+                                   perm,
+                                   arel_attribute,
+                                   id,
+                                   or_condition: nil)
           permissions = arel_table
           resources = Arel::Table.new(resources_table)
 
           permissions["#{resources_table.singularize}_id"].eq(resources[:id])
             .and(permissions[perm].eq(true))
-            .and(arel_attribute.eq(id))
+            .and(
+              apply_or_condition(
+                arel_attribute.eq(id),
+                or_condition
+              )
+            )
         end
 
-        def self.define_group_permission_for_user_exists_condition(resources_table)
+        def define_group_permission_for_user_exists_condition(resources_table)
           define_singleton_method \
             :group_permission_for_user_exists_condition do |perm, user|
 
@@ -36,18 +42,18 @@ module Permissions
           end
         end
 
-        def self.define_user_permission_exists_condition(resources_table)
+        def define_user_permission_exists_condition(resources_table)
           define_singleton_method \
             :user_permission_exists_condition do |perm, user|
 
             permissions_exists_condition_helper(resources_table,
                                                 perm,
-                                                arel_table[:user_id],
+                                                [arel_table[:user_id], arel_table[:delegation_id]],
                                                 user)
           end
         end
 
-        def self.define_group_permission_exists_condition(resources_table)
+        def define_group_permission_exists_condition(resources_table)
           define_singleton_method \
             :group_permission_exists_condition do |perm, group|
 
@@ -58,7 +64,7 @@ module Permissions
           end
         end
 
-        def self.define_api_client_permission_exists_condition(resources_table)
+        def define_api_client_permission_exists_condition(resources_table)
           define_singleton_method \
             :api_client_permission_exists_condition do |perm, api_client|
 
@@ -69,19 +75,46 @@ module Permissions
           end
         end
 
-        def self.permissions_exists_condition_helper(resources_table,
-                                                     perm,
-                                                     arel_attribute,
-                                                     subject)
+        def permissions_exists_condition_helper(resources_table,
+                                                perm,
+                                                arel_attribute,
+                                                subject)
           permissions = arel_table
+          arel_attributes = Array.wrap(arel_attribute)
+          arel_attribute = arel_attributes.first
+          or_condition = or_condition_for_delegation(resources_table,
+                                                     arel_attributes,
+                                                     subject)
+
           permissions
             .project(1)
             .where(build_where_conditions(resources_table,
                                           perm,
                                           arel_attribute,
-                                          subject.try(:id)))
+                                          subject.try(:id),
+                                          or_condition: or_condition))
             .exists
         end
+
+        def or_condition_for_delegation(resources_table, arel_attributes, subject)
+          if resources_table.presence_in(%w(media_entries collections)) &&
+             (arel_attribute = arel_attributes.detect { |attr| attr.name.to_s == 'delegation_id' })
+
+            arel_attribute.in(subject.delegation_ids)
+          end
+        end
+
+        def apply_or_condition(condition, or_condition)
+          return condition unless or_condition
+
+          condition.or(or_condition)
+        end
+      end
+
+      included do
+        private_class_method :build_where_conditions,
+                             :or_condition_for_delegation,
+                             :apply_or_condition
       end
     end
   end

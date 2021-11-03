@@ -3,6 +3,7 @@ require Rails.root.join 'spec',
                         'models',
                         'shared',
                         'destroy_ineffective_permissions.rb'
+require 'models/shared/permittable_for'
 
 describe Permissions::CollectionUserPermission do
 
@@ -54,4 +55,7 @@ describe Permissions::CollectionUserPermission do
 
   end
 
+  it_implements '.permitted_for?' do
+    let(:resource) { create(:collection) }
+  end
 end
