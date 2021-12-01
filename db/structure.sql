@@ -1250,6 +1250,7 @@ CREATE TABLE public.context_keys (
     labels public.hstore DEFAULT ''::public.hstore NOT NULL,
     descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
     hints public.hstore DEFAULT ''::public.hstore NOT NULL,
+    documentation_urls public.hstore DEFAULT ''::public.hstore NOT NULL,
     CONSTRAINT descriptions_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(descriptions)))),
     CONSTRAINT hints_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(hints)))),
     CONSTRAINT labels_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(labels))))
@@ -1723,6 +1724,7 @@ CREATE TABLE public.meta_keys (
     labels public.hstore DEFAULT ''::public.hstore NOT NULL,
     descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
     hints public.hstore DEFAULT ''::public.hstore NOT NULL,
+    documentation_urls public.hstore DEFAULT ''::public.hstore NOT NULL,
     CONSTRAINT check_allowed_people_subtypes_not_empty_for_meta_datum_people CHECK ((((allowed_people_subtypes IS NOT NULL) AND (COALESCE(array_length(allowed_people_subtypes, 1), 0) > 0)) OR (meta_datum_object_type <> 'MetaDatum::People'::text))),
     CONSTRAINT check_is_extensible_list_is_boolean_for_meta_datum_keywords CHECK (((((is_extensible_list = true) OR (is_extensible_list = false)) AND (meta_datum_object_type = 'MetaDatum::Keywords'::text)) OR (meta_datum_object_type <> 'MetaDatum::Keywords'::text))),
     CONSTRAINT check_keywords_alphabetical_order_is_boolean_for_meta_datum_key CHECK (((((keywords_alphabetical_order = true) OR (keywords_alphabetical_order = false)) AND (meta_datum_object_type = 'MetaDatum::Keywords'::text)) OR (meta_datum_object_type <> 'MetaDatum::Keywords'::text))),
@@ -5574,6 +5576,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('412'),
 ('413'),
 ('414'),
+('415'),
 ('5'),
 ('6'),
 ('7'),

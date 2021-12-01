@@ -3,6 +3,7 @@ class MetaKey < ApplicationRecord
   include Concerns::MetaKeys::Filters
   include Concerns::Orderable
   include Concerns::LocalizedFields
+  include Concerns::HasDocumentationUrl
 
   has_many :meta_data
   belongs_to :vocabulary
@@ -41,7 +42,7 @@ class MetaKey < ApplicationRecord
   }
 
   enable_ordering parent_scope: :vocabulary
-  localize_fields :labels, :descriptions, :hints
+  localize_fields :labels, :descriptions, :hints, :documentation_urls
   before_validation :sanitize_allowed_people_subtypes
   before_save :keep_keywords_order_if_needed
 
