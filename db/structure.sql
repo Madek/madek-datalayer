@@ -1209,6 +1209,7 @@ CREATE TABLE public.collections (
     is_master boolean DEFAULT false NOT NULL,
     sorting public.collection_sorting DEFAULT 'created_at DESC'::public.collection_sorting NOT NULL,
     responsible_delegation_id uuid,
+    default_context_id character varying,
     CONSTRAINT one_responsible_column_is_not_null_at_the_same_time CHECK ((((responsible_user_id IS NULL) AND (responsible_delegation_id IS NOT NULL)) OR ((responsible_user_id IS NOT NULL) AND (responsible_delegation_id IS NULL))))
 );
 
@@ -2925,6 +2926,13 @@ CREATE INDEX index_collections_on_created_at ON public.collections USING btree (
 --
 
 CREATE INDEX index_collections_on_creator_id ON public.collections USING btree (creator_id);
+
+
+--
+-- Name: index_collections_on_default_context_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_collections_on_default_context_id ON public.collections USING btree (default_context_id);
 
 
 --
@@ -4984,6 +4992,14 @@ ALTER TABLE ONLY public.keywords
 
 
 --
+-- Name: collections fk_rails_f465012c79; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.collections
+    ADD CONSTRAINT fk_rails_f465012c79 FOREIGN KEY (default_context_id) REFERENCES public.contexts(id) ON DELETE SET NULL;
+
+
+--
 -- Name: delegations_groups fk_rails_f6b29853e0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5557,6 +5573,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('411'),
 ('412'),
 ('413'),
+('414'),
 ('5'),
 ('6'),
 ('7'),
