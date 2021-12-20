@@ -8,17 +8,6 @@ class MetaDatum::MediaEntry < MetaDatum::Text
     self
   end
 
-  def value=(new_value)
-    uuid, description = extract_values(new_value)
-    return unless uuid
-    # FIXME: use a DB constraint instead
-    if uuid and not UUIDTools::UUID.parse(uuid)
-      raise ActionController::InvalidParameterValue, 'Invalid UUID!'
-    end
-    assign_value(uuid, :other_media_entry_id)
-    assign_value(description, :string)
-  end
-
   def set_value!(new_value, _created_by_user = nil)
     self.value = new_value.first
     if !other_media_entry_id.present?
@@ -41,5 +30,13 @@ class MetaDatum::MediaEntry < MetaDatum::Text
     uuid = values.shift
     description = values.join(';')
     [uuid, description]
+  end
+
+  def value=(new_value)
+    uuid, description = extract_values(new_value)
+    # FIXME: use a DB constraint instead
+    UUIDTools::UUID.parse(uuid) if uuid.present?
+    assign_value(uuid, :other_media_entry_id)
+    assign_value(description, :string)
   end
 end
