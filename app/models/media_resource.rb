@@ -8,46 +8,50 @@ class MediaResource < ApplicationRecord
   include Concerns::MediaResources::CustomOrderBy
 
   def self.viewable_by_user_or_public(user, join_from_active_workflow: false)
-    scope_helper(:viewable_by_user_or_public,
-                 user,
-                 join_from_active_workflow: join_from_active_workflow)
-  end
-
-  def self.filter_by(user = nil, filter_opts)
-    scope_helper(:filter_by, user, filter_opts)
-  end
-
-  def self.scope_helper(method_name, *args)
-    part_of_workflow = args
-      .detect { |a| a.is_a?(Hash) && a.key?(:part_of_workflow) }&.fetch(:part_of_workflow)
-
-    view_scope = \
-      unified_scope(MediaEntry.send(method_name, *args).reorder(nil),
-                    Collection.send(method_name, *args).reorder(nil),
-                    FilterSet.send(method_name, *args).reorder(nil),
-                    part_of_workflow: part_of_workflow)
-
-    sql = "((#{(current_scope or all).to_sql}) INTERSECT " \
-           "(#{view_scope.to_sql})) AS vw_media_resources"
-    from(sql)
-  end
-
-  private_class_method :scope_helper
-
-  def self.unified_scope(scope1, scope2, scope3, opts = {})
-    memoize_collection_id(opts[:collection_id])
-    scope1, scope2, scope3 = [scope1, scope2, scope3].map do |s|
-      if opts[:part_of_workflow] == true && s.respond_to?(:with_unpublished)
-        s = s.with_unpublished
-      end
-      s
+    scopes = [MediaEntry, Collection, FilterSet].map do |mr_klass|
+      mr_klass
+        .viewable_by_user_or_public(user, join_from_active_workflow: join_from_active_workflow)
+        .reorder(nil)
     end
 
-    where(
-      "vw_media_resources.id IN (#{scope1.select(:id).to_sql}) " \
-      "OR vw_media_resources.id IN (#{scope2.select(:id).to_sql}) " \
-      "OR vw_media_resources.id IN (#{scope3.select(:id).to_sql})"
-    )
+    scope_to_use.unified_scope(scopes)
+  end
+
+  def self.filter_by(user = nil, opts)
+    part_of_workflow = opts.delete(:part_of_workflow)
+
+    if opts.blank?
+      scope_to_use
+    else
+      scopes = [
+        MediaEntry
+        .try { |s| part_of_workflow ? s.with_unpublished : s }
+        .filter_by(user, **opts)
+        .reorder(nil),
+        Collection.filter_by(user, **opts).reorder(nil),
+        FilterSet.filter_by(user, **opts).reorder(nil)
+      ]
+
+      scope_to_use.unified_scope(scopes)
+    end
+  end
+
+  def self.unified_scope(scopes, collection_id = nil)
+    memoize_collection_id(collection_id)
+    where_in(scopes)
+  end
+
+  def self.scope_to_use
+    current_scope or all
+  end
+
+  def self.where_in(scopes)
+    clause =
+      scopes
+      .map { |s| "vw_media_resources.id IN (#{s.select(:id).to_sql})" }
+      .join(' OR ')
+
+    where(clause)
   end
 
   def self.memoize_collection_id(id)

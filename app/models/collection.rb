@@ -86,17 +86,21 @@ class Collection < ApplicationRecord
   # validate :validate_existence_of_meta_data_for_required_context_keys
 
   def child_media_resources(media_entries_scope: :media_entries)
-    MediaResource.unified_scope(public_send(media_entries_scope),
-                                collections,
-                                filter_sets,
-                                part_of_workflow: part_of_workflow?,
-                                collection_id: id)
+    scopes = [
+      public_send(media_entries_scope)
+      .try { |s| part_of_workflow? ? s.with_unpublished : s }
+      .reorder(nil),
+      collections.reorder(nil),
+      filter_sets.reorder(nil)
+    ]
+
+    MediaResource.unified_scope(scopes, id)
   end
 
   def highlighted_media_resources
-    MediaResource.unified_scope(highlighted_media_entries,
-                                highlighted_collections,
-                                highlighted_filter_sets)
+    MediaResource.unified_scope([highlighted_media_entries,
+                                 highlighted_collections,
+                                 highlighted_filter_sets])
   end
 
   def cover
