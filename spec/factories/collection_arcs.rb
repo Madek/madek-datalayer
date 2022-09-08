@@ -10,8 +10,4 @@ FactoryGirl.define do
     association :child, factory: :collection
   end
 
-  factory :collection_filter_set_arc, class: Arcs::CollectionFilterSetArc do
-    collection
-    filter_set
-  end
 end

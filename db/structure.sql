@@ -165,28 +165,6 @@ CREATE FUNCTION public.check_collection_primary_uniqueness() RETURNS trigger
 
 
 --
--- Name: check_filter_set_primary_uniqueness(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.check_filter_set_primary_uniqueness() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-        BEGIN
-          IF
-            (SELECT
-              (SELECT COUNT(1)
-               FROM custom_urls
-               WHERE custom_urls.is_primary IS true
-               AND custom_urls.filter_set_id = NEW.filter_set_id)
-            > 1)
-            THEN RAISE EXCEPTION 'There exists already a primary id for filter_set %.', NEW.filter_set_id;
-          END IF;
-          RETURN NEW;
-        END;
-        $$;
-
-
---
 -- Name: check_madek_core_meta_key_immutability(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -718,23 +696,6 @@ $$;
 
 
 --
--- Name: propagate_edit_session_insert_to_filter_sets(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.propagate_edit_session_insert_to_filter_sets() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  UPDATE filter_sets SET edit_session_updated_at = now()
-    FROM edit_sessions
-    WHERE edit_sessions.id = NEW.id
-    AND filter_sets.id = edit_sessions.filter_set_id;
-  RETURN NULL;
-END;
-$$;
-
-
---
 -- Name: propagate_edit_session_insert_to_media_entries(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -865,36 +826,29 @@ $$;
 CREATE FUNCTION public.propagate_meta_data_updates_to_media_resource() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
-DECLARE
-  md_id UUID;
-BEGIN
-  CASE
-    WHEN TG_OP = 'DELETE' THEN
-      md_id = OLD.id;
-    ELSE
-      md_id = NEW.id;
-  END CASE;
+      DECLARE
+        md_id UUID;
+      BEGIN
+        CASE
+          WHEN TG_OP = 'DELETE' THEN
+            md_id = OLD.id;
+          ELSE
+            md_id = NEW.id;
+        END CASE;
 
+        UPDATE media_entries SET meta_data_updated_at = now()
+          FROM meta_data
+          WHERE meta_data.media_entry_id = media_entries.id
+          AND meta_data.id = md_id;
 
-  UPDATE media_entries SET meta_data_updated_at = now()
-    FROM meta_data
-    WHERE meta_data.media_entry_id = media_entries.id
-    AND meta_data.id = md_id;
+        UPDATE collections SET meta_data_updated_at = now()
+          FROM meta_data
+          WHERE meta_data.collection_id = collections.id
+          AND meta_data.id = md_id;
 
-  UPDATE collections SET meta_data_updated_at = now()
-    FROM meta_data
-    WHERE meta_data.collection_id = collections.id
-    AND meta_data.id = md_id;
-
-  UPDATE filter_sets SET meta_data_updated_at = now()
-    FROM meta_data
-    WHERE meta_data.media_entry_id = filter_sets.id
-    AND meta_data.id = md_id;
-
-
-  RETURN NULL;
-END;
-$$;
+        RETURN NULL;
+      END;
+      $$;
 
 
 --
@@ -1126,19 +1080,6 @@ CREATE TABLE public.collection_collection_arcs (
 
 
 --
--- Name: collection_filter_set_arcs; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.collection_filter_set_arcs (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
-    filter_set_id uuid NOT NULL,
-    collection_id uuid NOT NULL,
-    highlight boolean DEFAULT false,
-    "position" integer
-);
-
-
---
 -- Name: collection_group_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1283,8 +1224,6 @@ CREATE TABLE public.custom_urls (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     media_entry_id uuid,
     collection_id uuid,
-    filter_set_id uuid,
-    CONSTRAINT custom_url_is_related CHECK ((((media_entry_id IS NULL) AND (collection_id IS NULL) AND (filter_set_id IS NOT NULL)) OR ((media_entry_id IS NULL) AND (collection_id IS NOT NULL) AND (filter_set_id IS NULL)) OR ((media_entry_id IS NOT NULL) AND (collection_id IS NULL) AND (filter_set_id IS NULL)))),
     CONSTRAINT custom_urls_id_format CHECK (((id)::text ~ '^[a-z][a-z0-9\-\_]+$'::text)),
     CONSTRAINT custom_urls_id_is_not_uuid CHECK ((NOT ((id)::text ~* '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'::text)))
 );
@@ -1342,8 +1281,7 @@ CREATE TABLE public.edit_sessions (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     media_entry_id uuid,
     collection_id uuid,
-    filter_set_id uuid,
-    CONSTRAINT edit_sessions_is_related CHECK ((((media_entry_id IS NULL) AND (collection_id IS NULL) AND (filter_set_id IS NOT NULL)) OR ((media_entry_id IS NULL) AND (collection_id IS NOT NULL) AND (filter_set_id IS NULL)) OR ((media_entry_id IS NOT NULL) AND (collection_id IS NULL) AND (filter_set_id IS NULL))))
+    CONSTRAINT edit_sessions_is_related CHECK ((((media_entry_id IS NOT NULL) AND (collection_id IS NULL)) OR ((media_entry_id IS NULL) AND (collection_id IS NOT NULL))))
 );
 
 
@@ -1360,18 +1298,6 @@ CREATE TABLE public.favorite_collections (
 
 
 --
--- Name: favorite_filter_sets; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.favorite_filter_sets (
-    user_id uuid NOT NULL,
-    filter_set_id uuid NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
 -- Name: favorite_media_entries; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1380,75 +1306,6 @@ CREATE TABLE public.favorite_media_entries (
     media_entry_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: filter_set_api_client_permissions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.filter_set_api_client_permissions (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
-    get_metadata_and_previews boolean DEFAULT false NOT NULL,
-    edit_metadata_and_filter boolean DEFAULT false NOT NULL,
-    filter_set_id uuid NOT NULL,
-    api_client_id uuid NOT NULL,
-    updator_id uuid,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: filter_set_group_permissions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.filter_set_group_permissions (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
-    get_metadata_and_previews boolean DEFAULT false NOT NULL,
-    filter_set_id uuid NOT NULL,
-    group_id uuid NOT NULL,
-    updator_id uuid,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: filter_set_user_permissions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.filter_set_user_permissions (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
-    get_metadata_and_previews boolean DEFAULT false NOT NULL,
-    edit_metadata_and_filter boolean DEFAULT false NOT NULL,
-    edit_permissions boolean DEFAULT false NOT NULL,
-    filter_set_id uuid NOT NULL,
-    user_id uuid,
-    updator_id uuid,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    delegation_id uuid,
-    CONSTRAINT user_id_or_delegation_id_not_null_at_the_same_time CHECK ((((user_id IS NOT NULL) AND (delegation_id IS NULL)) OR ((user_id IS NULL) AND (delegation_id IS NOT NULL))))
-);
-
-
---
--- Name: filter_sets; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.filter_sets (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
-    get_metadata_and_previews boolean DEFAULT false NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    definition jsonb DEFAULT '{}'::jsonb NOT NULL,
-    responsible_user_id uuid,
-    creator_id uuid NOT NULL,
-    edit_session_updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    responsible_delegation_id uuid,
-    CONSTRAINT one_responsible_column_is_not_null_at_the_same_time CHECK ((((responsible_user_id IS NULL) AND (responsible_delegation_id IS NOT NULL)) OR ((responsible_user_id IS NOT NULL) AND (responsible_delegation_id IS NULL))))
 );
 
 
@@ -1641,13 +1498,11 @@ CREATE TABLE public.meta_data (
     string text,
     media_entry_id uuid,
     collection_id uuid,
-    filter_set_id uuid,
     created_by_id uuid,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     json jsonb,
     other_media_entry_id uuid,
-    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['MetaDatum::Groups'::character varying, 'MetaDatum::Keywords'::character varying, 'MetaDatum::Licenses'::character varying, 'MetaDatum::People'::character varying, 'MetaDatum::Roles'::character varying, 'MetaDatum::Text'::character varying, 'MetaDatum::TextDate'::character varying, 'MetaDatum::Users'::character varying, 'MetaDatum::Vocables'::character varying, 'MetaDatum::JSON'::character varying, 'MetaDatum::MediaEntry'::character varying])::text[]))),
-    CONSTRAINT meta_data_is_related CHECK ((((media_entry_id IS NULL) AND (collection_id IS NULL) AND (filter_set_id IS NOT NULL)) OR ((media_entry_id IS NULL) AND (collection_id IS NOT NULL) AND (filter_set_id IS NULL)) OR ((media_entry_id IS NOT NULL) AND (collection_id IS NULL) AND (filter_set_id IS NULL))))
+    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['MetaDatum::Groups'::character varying, 'MetaDatum::Keywords'::character varying, 'MetaDatum::Licenses'::character varying, 'MetaDatum::People'::character varying, 'MetaDatum::Roles'::character varying, 'MetaDatum::Text'::character varying, 'MetaDatum::TextDate'::character varying, 'MetaDatum::Users'::character varying, 'MetaDatum::Vocables'::character varying, 'MetaDatum::JSON'::character varying, 'MetaDatum::MediaEntry'::character varying])::text[])))
 );
 
 
@@ -1715,7 +1570,6 @@ CREATE TABLE public.meta_keys (
     "position" integer DEFAULT 0 NOT NULL,
     is_enabled_for_media_entries boolean DEFAULT false NOT NULL,
     is_enabled_for_collections boolean DEFAULT false NOT NULL,
-    is_enabled_for_filter_sets boolean DEFAULT false NOT NULL,
     vocabulary_id character varying NOT NULL,
     admin_comment text,
     allowed_people_subtypes text[],
@@ -2007,16 +1861,7 @@ UNION
     collections.created_at,
     collections.updated_at,
     'Collection'::text AS type
-   FROM public.collections
-UNION
- SELECT filter_sets.id,
-    filter_sets.get_metadata_and_previews,
-    filter_sets.responsible_user_id,
-    filter_sets.creator_id,
-    filter_sets.created_at,
-    filter_sets.updated_at,
-    'FilterSet'::text AS type
-   FROM public.filter_sets;
+   FROM public.collections;
 
 
 --
@@ -2120,14 +1965,6 @@ ALTER TABLE ONLY public.collection_collection_arcs
 
 
 --
--- Name: collection_filter_set_arcs collection_filter_set_arcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.collection_filter_set_arcs
-    ADD CONSTRAINT collection_filter_set_arcs_pkey PRIMARY KEY (id);
-
-
---
 -- Name: collection_group_permissions collection_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2197,38 +2034,6 @@ ALTER TABLE ONLY public.delegations
 
 ALTER TABLE ONLY public.edit_sessions
     ADD CONSTRAINT edit_sessions_pkey PRIMARY KEY (id);
-
-
---
--- Name: filter_set_api_client_permissions filter_set_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_api_client_permissions
-    ADD CONSTRAINT filter_set_api_client_permissions_pkey PRIMARY KEY (id);
-
-
---
--- Name: filter_set_group_permissions filter_set_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_group_permissions
-    ADD CONSTRAINT filter_set_group_permissions_pkey PRIMARY KEY (id);
-
-
---
--- Name: filter_set_user_permissions filter_set_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_user_permissions
-    ADD CONSTRAINT filter_set_user_permissions_pkey PRIMARY KEY (id);
-
-
---
--- Name: filter_sets filter_sets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_sets
-    ADD CONSTRAINT filter_sets_pkey PRIMARY KEY (id);
 
 
 --
@@ -2567,13 +2372,6 @@ CREATE UNIQUE INDEX idx_colgrpp_on_collection_id_and_group_id ON public.collecti
 
 
 --
--- Name: idx_colgrpp_on_filter_set_id_and_group_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX idx_colgrpp_on_filter_set_id_and_group_id ON public.filter_set_group_permissions USING btree (filter_set_id, group_id);
-
-
---
 -- Name: idx_collapiclp_edit_mdata_and_relations; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2620,34 +2418,6 @@ CREATE INDEX idx_colluserperm_edit_permissions ON public.collection_user_permiss
 --
 
 CREATE INDEX idx_colluserperm_get_metadata_and_previews ON public.collection_user_permissions USING btree (get_metadata_and_previews);
-
-
---
--- Name: idx_fsetapiclp_edit_mdata_and_filter; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_fsetapiclp_edit_mdata_and_filter ON public.filter_set_api_client_permissions USING btree (edit_metadata_and_filter);
-
-
---
--- Name: idx_fsetapiclp_get_mdata_and_previews; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_fsetapiclp_get_mdata_and_previews ON public.filter_set_api_client_permissions USING btree (get_metadata_and_previews);
-
-
---
--- Name: idx_fsetapiclp_on_filter_set_id_and_api_client_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX idx_fsetapiclp_on_filter_set_id_and_api_client_id ON public.filter_set_api_client_permissions USING btree (filter_set_id, api_client_id);
-
-
---
--- Name: idx_fsetusrp_on_filter_set_id_and_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX idx_fsetusrp_on_filter_set_id_and_user_id ON public.filter_set_user_permissions USING btree (filter_set_id, user_id);
 
 
 --
@@ -2788,41 +2558,6 @@ CREATE UNIQUE INDEX index_collection_collection_arcs_on_parent_id_and_child_id O
 --
 
 CREATE INDEX index_collection_collection_arcs_on_parent_id_and_position ON public.collection_collection_arcs USING btree (parent_id, "position");
-
-
---
--- Name: index_collection_filter_set_arcs_on_collection_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_collection_filter_set_arcs_on_collection_id ON public.collection_filter_set_arcs USING btree (collection_id);
-
-
---
--- Name: index_collection_filter_set_arcs_on_collection_id_and_filter_se; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_collection_filter_set_arcs_on_collection_id_and_filter_se ON public.collection_filter_set_arcs USING btree (collection_id, filter_set_id);
-
-
---
--- Name: index_collection_filter_set_arcs_on_collection_id_and_position; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_collection_filter_set_arcs_on_collection_id_and_position ON public.collection_filter_set_arcs USING btree (collection_id, "position");
-
-
---
--- Name: index_collection_filter_set_arcs_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_collection_filter_set_arcs_on_filter_set_id ON public.collection_filter_set_arcs USING btree (filter_set_id);
-
-
---
--- Name: index_collection_filter_set_arcs_on_filter_set_id_and_collectio; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_collection_filter_set_arcs_on_filter_set_id_and_collectio ON public.collection_filter_set_arcs USING btree (filter_set_id, collection_id);
 
 
 --
@@ -3106,27 +2841,6 @@ CREATE UNIQUE INDEX index_favorite_collections_on_user_id_and_collection_id ON p
 
 
 --
--- Name: index_favorite_filter_sets_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_favorite_filter_sets_on_filter_set_id ON public.favorite_filter_sets USING btree (filter_set_id);
-
-
---
--- Name: index_favorite_filter_sets_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_favorite_filter_sets_on_user_id ON public.favorite_filter_sets USING btree (user_id);
-
-
---
--- Name: index_favorite_filter_sets_on_user_id_and_filter_set_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_favorite_filter_sets_on_user_id_and_filter_set_id ON public.favorite_filter_sets USING btree (user_id, filter_set_id);
-
-
---
 -- Name: index_favorite_media_entries_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3145,153 +2859,6 @@ CREATE INDEX index_favorite_media_entries_on_user_id ON public.favorite_media_en
 --
 
 CREATE UNIQUE INDEX index_favorite_media_entries_on_user_id_and_media_entry_id ON public.favorite_media_entries USING btree (user_id, media_entry_id);
-
-
---
--- Name: index_filter_set_api_client_permissions_on_api_client_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_set_api_client_permissions_on_api_client_id ON public.filter_set_api_client_permissions USING btree (api_client_id);
-
-
---
--- Name: index_filter_set_api_client_permissions_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_set_api_client_permissions_on_filter_set_id ON public.filter_set_api_client_permissions USING btree (filter_set_id);
-
-
---
--- Name: index_filter_set_api_client_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_set_api_client_permissions_on_updator_id ON public.filter_set_api_client_permissions USING btree (updator_id);
-
-
---
--- Name: index_filter_set_group_permissions_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_set_group_permissions_on_filter_set_id ON public.filter_set_group_permissions USING btree (filter_set_id);
-
-
---
--- Name: index_filter_set_group_permissions_on_get_metadata_and_previews; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_set_group_permissions_on_get_metadata_and_previews ON public.filter_set_group_permissions USING btree (get_metadata_and_previews);
-
-
---
--- Name: index_filter_set_group_permissions_on_group_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_set_group_permissions_on_group_id ON public.filter_set_group_permissions USING btree (group_id);
-
-
---
--- Name: index_filter_set_group_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_set_group_permissions_on_updator_id ON public.filter_set_group_permissions USING btree (updator_id);
-
-
---
--- Name: index_filter_set_user_permissions_on_delegation_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_set_user_permissions_on_delegation_id ON public.filter_set_user_permissions USING btree (delegation_id);
-
-
---
--- Name: index_filter_set_user_permissions_on_edit_metadata_and_filter; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_set_user_permissions_on_edit_metadata_and_filter ON public.filter_set_user_permissions USING btree (edit_metadata_and_filter);
-
-
---
--- Name: index_filter_set_user_permissions_on_edit_permissions; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_set_user_permissions_on_edit_permissions ON public.filter_set_user_permissions USING btree (edit_permissions);
-
-
---
--- Name: index_filter_set_user_permissions_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_set_user_permissions_on_filter_set_id ON public.filter_set_user_permissions USING btree (filter_set_id);
-
-
---
--- Name: index_filter_set_user_permissions_on_get_metadata_and_previews; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_set_user_permissions_on_get_metadata_and_previews ON public.filter_set_user_permissions USING btree (get_metadata_and_previews);
-
-
---
--- Name: index_filter_set_user_permissions_on_updator_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_set_user_permissions_on_updator_id ON public.filter_set_user_permissions USING btree (updator_id);
-
-
---
--- Name: index_filter_set_user_permissions_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_set_user_permissions_on_user_id ON public.filter_set_user_permissions USING btree (user_id);
-
-
---
--- Name: index_filter_sets_on_created_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_sets_on_created_at ON public.filter_sets USING btree (created_at);
-
-
---
--- Name: index_filter_sets_on_creator_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_sets_on_creator_id ON public.filter_sets USING btree (creator_id);
-
-
---
--- Name: index_filter_sets_on_edit_session_updated_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_sets_on_edit_session_updated_at ON public.filter_sets USING btree (edit_session_updated_at);
-
-
---
--- Name: index_filter_sets_on_meta_data_updated_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_sets_on_meta_data_updated_at ON public.filter_sets USING btree (meta_data_updated_at);
-
-
---
--- Name: index_filter_sets_on_responsible_delegation_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_sets_on_responsible_delegation_id ON public.filter_sets USING btree (responsible_delegation_id);
-
-
---
--- Name: index_filter_sets_on_responsible_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_sets_on_responsible_user_id ON public.filter_sets USING btree (responsible_user_id);
-
-
---
--- Name: index_filter_sets_on_updated_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_filter_sets_on_updated_at ON public.filter_sets USING btree (updated_at);
 
 
 --
@@ -3624,20 +3191,6 @@ CREATE UNIQUE INDEX index_meta_data_on_collection_id_and_meta_key_id ON public.m
 
 
 --
--- Name: index_meta_data_on_filter_set_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_meta_data_on_filter_set_id ON public.meta_data USING btree (filter_set_id);
-
-
---
--- Name: index_meta_data_on_filter_set_id_and_meta_key_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_meta_data_on_filter_set_id_and_meta_key_id ON public.meta_data USING btree (filter_set_id, meta_key_id);
-
-
---
 -- Name: index_meta_data_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3967,13 +3520,6 @@ CREATE TRIGGER propagate_edit_session_insert_to_collections AFTER INSERT ON publ
 
 
 --
--- Name: edit_sessions propagate_edit_session_insert_to_filter_sets; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER propagate_edit_session_insert_to_filter_sets AFTER INSERT ON public.edit_sessions FOR EACH ROW EXECUTE PROCEDURE public.propagate_edit_session_insert_to_filter_sets();
-
-
---
 -- Name: edit_sessions propagate_edit_session_insert_to_media_entries; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -4027,13 +3573,6 @@ CREATE CONSTRAINT TRIGGER trigger_check_collection_cover_uniqueness AFTER INSERT
 --
 
 CREATE CONSTRAINT TRIGGER trigger_check_collection_primary_uniqueness AFTER INSERT OR UPDATE ON public.custom_urls DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.check_collection_primary_uniqueness();
-
-
---
--- Name: custom_urls trigger_check_filter_set_primary_uniqueness; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE CONSTRAINT TRIGGER trigger_check_filter_set_primary_uniqueness AFTER INSERT OR UPDATE ON public.custom_urls DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE PROCEDURE public.check_filter_set_primary_uniqueness();
 
 
 --
@@ -4303,45 +3842,10 @@ CREATE TRIGGER update_updated_at_column_of_favorite_collections BEFORE UPDATE ON
 
 
 --
--- Name: favorite_filter_sets update_updated_at_column_of_favorite_filter_sets; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_favorite_filter_sets BEFORE UPDATE ON public.favorite_filter_sets FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
-
-
---
 -- Name: favorite_media_entries update_updated_at_column_of_favorite_media_entries; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_favorite_media_entries BEFORE UPDATE ON public.favorite_media_entries FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
-
-
---
--- Name: filter_set_api_client_permissions update_updated_at_column_of_filter_set_api_client_permissions; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_filter_set_api_client_permissions BEFORE UPDATE ON public.filter_set_api_client_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
-
-
---
--- Name: filter_set_group_permissions update_updated_at_column_of_filter_set_group_permissions; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_filter_set_group_permissions BEFORE UPDATE ON public.filter_set_group_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
-
-
---
--- Name: filter_set_user_permissions update_updated_at_column_of_filter_set_user_permissions; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_filter_set_user_permissions BEFORE UPDATE ON public.filter_set_user_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
-
-
---
--- Name: filter_sets update_updated_at_column_of_filter_sets; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_filter_sets BEFORE UPDATE ON public.filter_sets FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE PROCEDURE public.update_updated_at_column();
 
 
 --
@@ -4498,22 +4002,6 @@ ALTER TABLE ONLY public.collection_collection_arcs
 
 
 --
--- Name: collection_filter_set_arcs collection-filter-set-arcs_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.collection_filter_set_arcs
-    ADD CONSTRAINT "collection-filter-set-arcs_collections_fkey" FOREIGN KEY (collection_id) REFERENCES public.collections(id) ON DELETE CASCADE;
-
-
---
--- Name: collection_filter_set_arcs collection-filter-set-arcs_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.collection_filter_set_arcs
-    ADD CONSTRAINT "collection-filter-set-arcs_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
-
-
---
 -- Name: collection_group_permissions collection-group-permissions_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4602,14 +4090,6 @@ ALTER TABLE ONLY public.custom_urls
 
 
 --
--- Name: custom_urls custom-urls_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.custom_urls
-    ADD CONSTRAINT "custom-urls_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
-
-
---
 -- Name: custom_urls custom-urls_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4631,14 +4111,6 @@ ALTER TABLE ONLY public.custom_urls
 
 ALTER TABLE ONLY public.edit_sessions
     ADD CONSTRAINT "edit-sessions_collections_fkey" FOREIGN KEY (collection_id) REFERENCES public.collections(id) ON DELETE CASCADE;
-
-
---
--- Name: edit_sessions edit-sessions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.edit_sessions
-    ADD CONSTRAINT "edit-sessions_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
 
 
 --
@@ -4674,22 +4146,6 @@ ALTER TABLE ONLY public.favorite_collections
 
 
 --
--- Name: favorite_filter_sets favorite-filter-sets_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.favorite_filter_sets
-    ADD CONSTRAINT "favorite-filter-sets_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
-
-
---
--- Name: favorite_filter_sets favorite-filter-sets_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.favorite_filter_sets
-    ADD CONSTRAINT "favorite-filter-sets_users_fkey" FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
-
-
---
 -- Name: favorite_media_entries favorite-media-entries_media-entries_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4703,86 +4159,6 @@ ALTER TABLE ONLY public.favorite_media_entries
 
 ALTER TABLE ONLY public.favorite_media_entries
     ADD CONSTRAINT "favorite-media-entries_users_fkey" FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
-
-
---
--- Name: filter_set_api_client_permissions filter-set-api-client-permissions-updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_api_client_permissions
-    ADD CONSTRAINT "filter-set-api-client-permissions-updators_fkey" FOREIGN KEY (updator_id) REFERENCES public.users(id);
-
-
---
--- Name: filter_set_api_client_permissions filter-set-api-client-permissions_api-clients_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_api_client_permissions
-    ADD CONSTRAINT "filter-set-api-client-permissions_api-clients_fkey" FOREIGN KEY (api_client_id) REFERENCES public.api_clients(id) ON DELETE CASCADE;
-
-
---
--- Name: filter_set_api_client_permissions filter-set-api-client-permissions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_api_client_permissions
-    ADD CONSTRAINT "filter-set-api-client-permissions_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
-
-
---
--- Name: filter_set_group_permissions filter-set-group-permissions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_group_permissions
-    ADD CONSTRAINT "filter-set-group-permissions_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
-
-
---
--- Name: filter_set_group_permissions filter-set-group-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_group_permissions
-    ADD CONSTRAINT "filter-set-group-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES public.users(id);
-
-
---
--- Name: filter_set_user_permissions filter-set-user-permissions_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_user_permissions
-    ADD CONSTRAINT "filter-set-user-permissions_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
-
-
---
--- Name: filter_set_user_permissions filter-set-user-permissions_updators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_user_permissions
-    ADD CONSTRAINT "filter-set-user-permissions_updators_fkey" FOREIGN KEY (updator_id) REFERENCES public.users(id);
-
-
---
--- Name: filter_set_user_permissions filter-set-user-permissions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_user_permissions
-    ADD CONSTRAINT "filter-set-user-permissions_users_fkey" FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
-
-
---
--- Name: filter_sets filter-sets_creators_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_sets
-    ADD CONSTRAINT "filter-sets_creators_fkey" FOREIGN KEY (creator_id) REFERENCES public.users(id);
-
-
---
--- Name: filter_sets filter-sets_responsible-users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_sets
-    ADD CONSTRAINT "filter-sets_responsible-users_fkey" FOREIGN KEY (responsible_user_id) REFERENCES public.users(id);
 
 
 --
@@ -4858,14 +4234,6 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- Name: filter_set_group_permissions fk_rails_9cf683b9d3; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_group_permissions
-    ADD CONSTRAINT fk_rails_9cf683b9d3 FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
 -- Name: delegations_groups fk_rails_a507ac19bd; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4879,14 +4247,6 @@ ALTER TABLE ONLY public.delegations_groups
 
 ALTER TABLE ONLY public.workflows
     ADD CONSTRAINT fk_rails_ad47ad12fc FOREIGN KEY (creator_id) REFERENCES public.users(id);
-
-
---
--- Name: filter_sets fk_rails_afb3012934; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_sets
-    ADD CONSTRAINT fk_rails_afb3012934 FOREIGN KEY (responsible_delegation_id) REFERENCES public.delegations(id);
 
 
 --
@@ -4946,14 +4306,6 @@ ALTER TABLE ONLY public.collection_user_permissions
 
 
 --
--- Name: filter_set_user_permissions fk_rails_db103dd649; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_user_permissions
-    ADD CONSTRAINT fk_rails_db103dd649 FOREIGN KEY (delegation_id) REFERENCES public.delegations(id);
-
-
---
 -- Name: io_mappings fk_rails_dbf6e7c067; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5007,14 +4359,6 @@ ALTER TABLE ONLY public.collections
 
 ALTER TABLE ONLY public.delegations_groups
     ADD CONSTRAINT fk_rails_f6b29853e0 FOREIGN KEY (group_id) REFERENCES public.groups(id);
-
-
---
--- Name: filter_set_user_permissions fk_rails_fe38b294ce; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.filter_set_user_permissions
-    ADD CONSTRAINT fk_rails_fe38b294ce FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -5199,14 +4543,6 @@ ALTER TABLE ONLY public.meta_data_people
 
 ALTER TABLE ONLY public.meta_data
     ADD CONSTRAINT "meta-data_collections_fkey" FOREIGN KEY (collection_id) REFERENCES public.collections(id) ON DELETE CASCADE;
-
-
---
--- Name: meta_data meta-data_filter-sets_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.meta_data
-    ADD CONSTRAINT "meta-data_filter-sets_fkey" FOREIGN KEY (filter_set_id) REFERENCES public.filter_sets(id) ON DELETE CASCADE;
 
 
 --
@@ -5578,6 +4914,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('414'),
 ('415'),
 ('416'),
+('417'),
 ('5'),
 ('6'),
 ('7'),

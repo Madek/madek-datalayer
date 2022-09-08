@@ -24,12 +24,6 @@ module Concerns
                  class_name: '::Arcs::CollectionCollectionArc',
                  foreign_key: :parent_id
 
-        has_many :collection_filter_set_arcs,
-                 class_name: '::Arcs::CollectionFilterSetArc'
-
-        has_many :collection_filter_set_highlighted_arcs,
-                 -> { where(highlight: true) },
-                 class_name: '::Arcs::CollectionFilterSetArc'
       end
     end
   end

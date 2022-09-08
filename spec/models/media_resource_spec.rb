@@ -19,14 +19,5 @@ describe MediaResource do
           .to be_instance_of(Collection)
       end
     end
-
-    context 'when its type of FilterSet' do
-      it 'returns FilterSet instance' do
-        allow(subject).to receive(:type).and_return('FilterSet')
-
-        expect(subject.cast_to_type)
-          .to be_instance_of(FilterSet)
-      end
-    end
   end
 end

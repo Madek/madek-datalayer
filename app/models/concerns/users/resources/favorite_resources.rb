@@ -11,9 +11,6 @@ module Concerns
           has_and_belongs_to_many :favorite_collections,
                                   join_table: 'favorite_collections',
                                   class_name: 'Collection'
-          has_and_belongs_to_many :favorite_filter_sets,
-                                  join_table: 'favorite_filter_sets',
-                                  class_name: 'FilterSet'
         end
       end
     end

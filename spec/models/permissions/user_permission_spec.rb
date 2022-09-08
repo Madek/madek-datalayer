@@ -31,15 +31,5 @@ describe Permissions::UserPermission do
                                        user: user)
       end
     end
-
-    context 'when passed resource is different class' do
-      it 'raises error' do
-        expect do
-          described_class.permitted_for?(:fake_permission,
-                                         resource: FilterSet.new,
-                                         user: user)
-        end.to raise_error 'Unsupported resource class: FilterSet'
-      end
-    end
   end
 end

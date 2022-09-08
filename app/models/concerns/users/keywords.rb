@@ -16,8 +16,7 @@ module Concerns
                    'ON media_entries.id = meta_data.media_entry_id')
             .where('(meta_data.media_entry_id IS NOT NULL ' \
                     'AND media_entries.is_published) OR ' \
-                    'meta_data.collection_id IS NOT NULL OR ' \
-                    'meta_data.filter_set_id IS NOT NULL')
+                    'meta_data.collection_id IS NOT NULL ')
             .where('meta_data_keywords.created_by_id = ?', id)
         end
       end

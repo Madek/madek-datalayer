@@ -24,42 +24,6 @@ FactoryGirl.define do
 
   end
 
-  factory :filter_set_group_permission,
-          class: Permissions::FilterSetGroupPermission do
-
-    get_metadata_and_previews { FactoryHelper.rand_bool 1 / 2.0 }
-
-    group { Group.find_random || (FactoryGirl.create :group) }
-    updator { User.find_random || (FactoryGirl.create :user) }
-    filter_set { FilterSet.find_random || (FactoryGirl.create :filter_set) }
-
-  end
-
-  factory :filter_set_api_client_permission,
-          class: Permissions::FilterSetApiClientPermission do
-
-    get_metadata_and_previews { FactoryHelper.rand_bool 1 / 2.0 }
-    edit_metadata_and_filter { FactoryHelper.rand_bool 1 / 4.0 }
-
-    api_client { ApiClient.find_random || (FactoryGirl.create :api_client) }
-    updator { User.find_random || (FactoryGirl.create :user) }
-    filter_set { FilterSet.find_random || (FactoryGirl.create :filter_set) }
-
-  end
-
-  factory :filter_set_user_permission,
-          class: Permissions::FilterSetUserPermission do
-
-    get_metadata_and_previews { FactoryHelper.rand_bool }
-    edit_metadata_and_filter { FactoryHelper.rand_bool 1 / 2.0 }
-    edit_permissions { FactoryHelper.rand_bool }
-
-    user { User.find_random || (FactoryGirl.create :user) }
-    updator { User.find_random || (FactoryGirl.create :user) }
-    filter_set { FilterSet.find_random || (FactoryGirl.create :filter_set) }
-
-  end
-
   factory :media_entry_user_permission,
           class: Permissions::MediaEntryUserPermission do
 

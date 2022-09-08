@@ -38,23 +38,6 @@ module Concerns
             .exists?
         end
 
-        def entrusted_filter_set_to_groups?(filter_set)
-          responsible_filter_sets
-            .joins(:group_permissions)
-            .where(filter_set_group_permissions:
-              { filter_set_id: filter_set.id,
-                get_metadata_and_previews: true })
-            .exists?
-        end
-
-        def entrusted_filter_set_to_users?(filter_set)
-          responsible_filter_sets
-            .joins(:user_permissions)
-            .where(filter_set_user_permissions:
-              { filter_set_id: filter_set.id,
-                get_metadata_and_previews: true })
-            .exists?
-        end
       end
     end
   end

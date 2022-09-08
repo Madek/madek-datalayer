@@ -56,14 +56,6 @@ class Collection < ApplicationRecord
 
   #################################################################################
 
-  has_many :filter_sets, through: :collection_filter_set_arcs
-
-  has_many :highlighted_filter_sets,
-           through: :collection_filter_set_highlighted_arcs,
-           source: :filter_set
-
-  #################################################################################
-
   belongs_to :workflow, optional: true
 
   #################################################################################
@@ -90,8 +82,7 @@ class Collection < ApplicationRecord
       public_send(media_entries_scope)
       .try { |s| part_of_workflow? ? s.with_unpublished : s }
       .reorder(nil),
-      collections.reorder(nil),
-      filter_sets.reorder(nil)
+      collections.reorder(nil)
     ]
 
     MediaResource.unified_scope(scopes, id)
@@ -99,8 +90,7 @@ class Collection < ApplicationRecord
 
   def highlighted_media_resources
     MediaResource.unified_scope([highlighted_media_entries,
-                                 highlighted_collections,
-                                 highlighted_filter_sets])
+                                 highlighted_collections])
   end
 
   def cover

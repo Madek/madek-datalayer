@@ -19,7 +19,7 @@ FactoryGirl.define do
      # we need app_setting for required context keys validation
      AppSetting.first.presence || create(:app_setting)
 
-     unless md.media_entry or md.collection or md.filter_set
+     unless md.media_entry or md.collection
        md.media_entry = FactoryGirl.create(:media_entry, is_published: true)
      end
    end
@@ -49,9 +49,6 @@ FactoryGirl.define do
          collection { FactoryGirl.create(:collection) }
        end
 
-       factory :meta_datum_title_with_filter_set do
-         filter_set { FactoryGirl.create(:filter_set) }
-       end
      end
    end
 

@@ -10,9 +10,6 @@ module Concerns
           has_many :responsible_media_entries,
                    foreign_key: :responsible_user_id,
                    class_name: 'MediaEntry'
-          has_many :responsible_filter_sets,
-                   foreign_key: :responsible_user_id,
-                   class_name: 'FilterSet'
 
           define_delegated_association_for_resource(Collection)
           define_delegated_association_for_resource(MediaEntry)

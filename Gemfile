@@ -1,7 +1,5 @@
 source 'https://rubygems.org'
 
-ruby '2.7.6'
-
 gem 'rails', '~> 5.2.4'
 gem "sprockets", "<4" # DO NOT UPGRADE SPROCKETS!
 

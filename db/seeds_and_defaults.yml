@@ -44,7 +44,6 @@ MADEK_CORE_VOCABULARY:
       position: 1
       is_enabled_for_media_entries: true
       is_enabled_for_collections: true
-      is_enabled_for_filter_sets: true
       vocabulary_id: madek_core
       admin_comment: NULL
 
@@ -63,7 +62,6 @@ MADEK_CORE_VOCABULARY:
       position: 2
       is_enabled_for_media_entries: true
       is_enabled_for_collections: true
-      is_enabled_for_filter_sets: true
       vocabulary_id: madek_core
       admin_comment: NULL
 
@@ -81,7 +79,6 @@ MADEK_CORE_VOCABULARY:
       position: 3
       is_enabled_for_media_entries: true
       is_enabled_for_collections: true
-      is_enabled_for_filter_sets: false
       vocabulary_id: madek_core
       admin_comment: NULL
 
@@ -99,7 +96,6 @@ MADEK_CORE_VOCABULARY:
       position: 4
       is_enabled_for_media_entries: true
       is_enabled_for_collections: true
-      is_enabled_for_filter_sets: false
       vocabulary_id: madek_core
       admin_comment: NULL
 
@@ -119,7 +115,6 @@ MADEK_CORE_VOCABULARY:
       position: 5
       is_enabled_for_media_entries: true
       is_enabled_for_collections: true
-      is_enabled_for_filter_sets: true
       vocabulary_id: madek_core
       admin_comment: NULL
 
@@ -138,7 +133,6 @@ MADEK_CORE_VOCABULARY:
       position: 6
       is_enabled_for_media_entries: true
       is_enabled_for_collections: true
-      is_enabled_for_filter_sets: true
       vocabulary_id: madek_core
       admin_comment: NULL
 
@@ -157,7 +151,6 @@ MADEK_CORE_VOCABULARY:
       position: 7
       is_enabled_for_media_entries: true
       is_enabled_for_collections: true
-      is_enabled_for_filter_sets: false
       vocabulary_id: madek_core
       admin_comment: NULL
 
@@ -175,7 +168,6 @@ MADEK_CORE_VOCABULARY:
       position: 8
       is_enabled_for_media_entries: true
       is_enabled_for_collections: false
-      is_enabled_for_filter_sets: false
       vocabulary_id: madek_core
       admin_comment: |
         Equivalent to "IsVersionOf", a Controlled List Value for the DataCite-Property "relationType",

@@ -1,4 +1,3 @@
-# rubocop:disable Metrics/ClassLength
 class MediaResource < ApplicationRecord
   self.table_name = :vw_media_resources
   self.primary_key = :id
@@ -8,7 +7,7 @@ class MediaResource < ApplicationRecord
   include Concerns::MediaResources::CustomOrderBy
 
   def self.viewable_by_user_or_public(user, join_from_active_workflow: false)
-    scopes = [MediaEntry, Collection, FilterSet].map do |mr_klass|
+    scopes = [MediaEntry, Collection].map do |mr_klass|
       mr_klass
         .viewable_by_user_or_public(user, join_from_active_workflow: join_from_active_workflow)
         .reorder(nil)
@@ -28,8 +27,7 @@ class MediaResource < ApplicationRecord
         .try { |s| part_of_workflow ? s.with_unpublished : s }
         .filter_by(user, **opts)
         .reorder(nil),
-        Collection.filter_by(user, **opts).reorder(nil),
-        FilterSet.filter_by(user, **opts).reorder(nil)
+        Collection.filter_by(user, **opts).reorder(nil)
       ]
 
       scope_to_use.unified_scope(scopes)
@@ -67,9 +65,7 @@ class MediaResource < ApplicationRecord
       ON meta_data.meta_key_id = 'madek_core:title'
       AND (
         meta_data.media_entry_id = vw_media_resources.id
-        OR meta_data.collection_id = vw_media_resources.id
-        OR meta_data.filter_set_id = vw_media_resources.id
-      )
+        OR meta_data.collection_id = vw_media_resources.id)
     SQL
   end
 
@@ -80,8 +76,7 @@ class MediaResource < ApplicationRecord
         vw_media_resources.*,
         coalesce(
           media_entries.edit_session_updated_at,
-          collections.edit_session_updated_at,
-          filter_sets.edit_session_updated_at
+          collections.edit_session_updated_at
         ) AS last_change
       SQL
     )
@@ -95,12 +90,6 @@ class MediaResource < ApplicationRecord
       <<-SQL
         LEFT JOIN collections
         ON (collections.id = vw_media_resources.id AND vw_media_resources.type = 'Collection')
-      SQL
-    )
-    .joins(
-      <<-SQL
-        LEFT JOIN filter_sets
-        ON (filter_sets.id = vw_media_resources.id AND vw_media_resources.type = 'FilterSet')
       SQL
     )
   end
@@ -124,7 +113,7 @@ class MediaResource < ApplicationRecord
     select(
       <<-SQL
         vw_media_resources.*,
-        coalesce(cmea.position, cca.position, cfsa.position) AS arc_position
+        coalesce(cmea.position, cca.position) AS arc_position
       SQL
     )
     .joins(
@@ -145,12 +134,6 @@ class MediaResource < ApplicationRecord
         ON (cca.child_id = vw_media_resources.id AND vw_media_resources.type = 'Collection')
       SQL
     )
-    .joins(
-      <<-SQL
-        LEFT JOIN collection_filter_set_arcs cfsa
-        ON (cfsa.filter_set_id = vw_media_resources.id AND vw_media_resources.type = 'FilterSet')
-      SQL
-    )
   end
   # rubocop:enable Metrics/MethodLength
 
@@ -158,4 +141,3 @@ class MediaResource < ApplicationRecord
     @_casted_to_type ||= becomes(type.constantize)
   end
 end
-# rubocop:enable Metrics/ClassLength

@@ -2,7 +2,7 @@ FactoryGirl.define do
 
   factory :role do
     labels do
-      { AppSetting.default_locale => Faker::Name.title }
+      { AppSetting.default_locale => Faker::Name.unique.title }
     end
     association :creator, factory: :user
     meta_key do

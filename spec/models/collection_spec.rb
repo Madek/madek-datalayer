@@ -88,19 +88,10 @@ describe Collection do
         child: child_coll,
         highlight: true
 
-      filter_set = create(:filter_set)
-      FactoryGirl.create \
-        :collection_filter_set_arc,
-        collection: @collection,
-        filter_set: filter_set,
-        highlight: true
-
       expect(@collection.highlighted_media_entries.count).to be == 1
       expect(@collection.highlighted_media_entries).to include @media_entry
       expect(@collection.highlighted_collections.count).to be == 1
       expect(@collection.highlighted_collections).to include child_coll
-      expect(@collection.highlighted_filter_sets.count).to be == 1
-      expect(@collection.highlighted_filter_sets).to include filter_set
     end
 
     it 'cover' do
@@ -127,19 +118,6 @@ describe Collection do
 
     expect(@parent.collections.count).to be == 1
     expect(@parent.collections).to include @child
-  end
-
-  it 'filter_sets association' do
-    @collection = FactoryGirl.create(:collection)
-    @filter_set = FactoryGirl.create(:filter_set)
-
-    FactoryGirl.create \
-      :collection_filter_set_arc,
-      collection: @collection,
-      filter_set: @filter_set
-
-    expect(@collection.filter_sets.count).to be == 1
-    expect(@collection.filter_sets).to include @filter_set
   end
 
   context 'reader methods for meta_data' do
