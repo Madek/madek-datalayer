@@ -201,7 +201,7 @@ GEM
       activerecord (>= 5.0, < 6.0)
     thor (1.1.0)
     thread_safe (0.3.6)
-    tzinfo (1.2.9)
+    tzinfo (1.2.10)
       thread_safe (~> 0.1)
     unicode-display_width (1.0.5)
     uuidtools (2.1.5)
