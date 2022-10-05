@@ -1502,7 +1502,8 @@ CREATE TABLE public.meta_data (
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     json jsonb,
     other_media_entry_id uuid,
-    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['MetaDatum::Groups'::character varying, 'MetaDatum::Keywords'::character varying, 'MetaDatum::Licenses'::character varying, 'MetaDatum::People'::character varying, 'MetaDatum::Roles'::character varying, 'MetaDatum::Text'::character varying, 'MetaDatum::TextDate'::character varying, 'MetaDatum::Users'::character varying, 'MetaDatum::Vocables'::character varying, 'MetaDatum::JSON'::character varying, 'MetaDatum::MediaEntry'::character varying])::text[])))
+    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['MetaDatum::JSON'::character varying, 'MetaDatum::Keywords'::character varying, 'MetaDatum::MediaEntry'::character varying, 'MetaDatum::People'::character varying, 'MetaDatum::Roles'::character varying, 'MetaDatum::Text'::character varying, 'MetaDatum::TextDate'::character varying])::text[]))),
+    CONSTRAINT media_entry_type_consistent CHECK (((((type)::text <> 'MetaDatum::MediaEntry'::text) AND (other_media_entry_id IS NULL)) OR (((type)::text = 'MetaDatum::MediaEntry'::text) AND (other_media_entry_id IS NOT NULL))))
 );
 
 
@@ -1550,10 +1551,9 @@ CREATE TABLE public.meta_data_people (
 
 CREATE TABLE public.meta_data_roles (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
-    meta_datum_id uuid,
+    meta_datum_id uuid NOT NULL,
     person_id uuid NOT NULL,
     role_id uuid,
-    created_by_id uuid,
     "position" integer DEFAULT 0 NOT NULL
 );
 
@@ -4250,14 +4250,6 @@ ALTER TABLE ONLY public.workflows
 
 
 --
--- Name: meta_data_roles fk_rails_b1e57448c0; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.meta_data_roles
-    ADD CONSTRAINT fk_rails_b1e57448c0 FOREIGN KEY (created_by_id) REFERENCES public.users(id);
-
-
---
 -- Name: context_keys fk_rails_b297363c89; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4578,6 +4570,30 @@ ALTER TABLE ONLY public.meta_data_keywords
 
 
 --
+-- Name: meta_data_roles meta_data_roles_meta_datum_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.meta_data_roles
+    ADD CONSTRAINT meta_data_roles_meta_datum_fkey FOREIGN KEY (meta_datum_id) REFERENCES public.meta_data(id) ON DELETE CASCADE;
+
+
+--
+-- Name: meta_data_roles meta_data_roles_person_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.meta_data_roles
+    ADD CONSTRAINT meta_data_roles_person_fkey FOREIGN KEY (person_id) REFERENCES public.people(id) ON DELETE CASCADE;
+
+
+--
+-- Name: meta_data_roles meta_data_roles_role_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.meta_data_roles
+    ADD CONSTRAINT meta_data_roles_role_fkey FOREIGN KEY (role_id) REFERENCES public.roles(id) ON DELETE CASCADE;
+
+
+--
 -- Name: meta_keys meta_keys_allowed_rdf_class_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4586,11 +4602,43 @@ ALTER TABLE ONLY public.meta_keys
 
 
 --
+-- Name: meta_data other_media_entry_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.meta_data
+    ADD CONSTRAINT other_media_entry_fkey FOREIGN KEY (other_media_entry_id) REFERENCES public.media_entries(id) ON DELETE CASCADE;
+
+
+--
 -- Name: previews previews_media-files_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.previews
     ADD CONSTRAINT "previews_media-files_fkey" FOREIGN KEY (media_file_id) REFERENCES public.media_files(id) ON DELETE CASCADE;
+
+
+--
+-- Name: previous_group_ids previous_group_ids_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.previous_group_ids
+    ADD CONSTRAINT previous_group_ids_group_id_fkey FOREIGN KEY (group_id) REFERENCES public.groups(id) ON DELETE CASCADE;
+
+
+--
+-- Name: previous_keyword_ids previous_keyword_ids_keyword_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.previous_keyword_ids
+    ADD CONSTRAINT previous_keyword_ids_keyword_id_fkey FOREIGN KEY (keyword_id) REFERENCES public.keywords(id) ON DELETE CASCADE;
+
+
+--
+-- Name: previous_person_ids previous_person_ids_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.previous_person_ids
+    ADD CONSTRAINT previous_person_ids_person_id_fkey FOREIGN KEY (person_id) REFERENCES public.people(id) ON DELETE CASCADE;
 
 
 --
@@ -4915,6 +4963,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('415'),
 ('416'),
 ('417'),
+('418'),
+('419'),
+('420'),
 ('5'),
 ('6'),
 ('7'),

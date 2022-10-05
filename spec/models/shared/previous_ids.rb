@@ -9,11 +9,12 @@ RSpec.shared_examples 'previous ids' do
         resource_3 = create(factory_name)
         receiver = create(factory_name)
 
-        resource_1.merge_to(resource_2)
+        resource_1.merge_to(receiver)
         resource_2.merge_to(receiver)
         resource_3.merge_to(receiver)
 
-        expect(receiver.previous_ids).to eq([resource_2.id, resource_3.id, resource_1.id])
+        expect(Set.new(receiver.previous_ids)).to \
+          eq(Set.new([resource_2.id, resource_3.id, resource_1.id]))
       end
     end
 
@@ -32,7 +33,7 @@ RSpec.shared_examples 'previous ids' do
       resource_2 = create(factory_name)
       receiver = create(factory_name)
 
-      resource_1.merge_to(resource_2)
+      resource_1.merge_to(receiver)
       resource_2.merge_to(receiver)
 
       expect(

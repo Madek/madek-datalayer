@@ -21,6 +21,11 @@ module Concerns::PreviousId
     def find_current_id(id)
       mns = name.downcase
 
+      # the recursive implementation is now unnecessary; it was either keep the
+      # possibility to support chained merges and add code and complexity to
+      # properly clean-up the database; or use simple fkeys which only work for
+      # the case of one level depth; simple fkeys it is
+
       query = <<-SQL
         WITH RECURSIVE current_ids_tree as (
           SELECT #{mns}_id
@@ -46,6 +51,8 @@ module Concerns::PreviousId
 
   def previous_ids
     mns = model_name.singular
+
+    # see comment about find_current_id
 
     query = <<-SQL
       WITH RECURSIVE previous_ids_tree as (
