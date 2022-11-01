@@ -9,6 +9,11 @@ module Concerns
         singleton_class.send(:alias_method,
                              :with_responsible_user,
                              :in_responsibility_of)
+
+        def responsible_entity_name
+          responsible_user.try(&:person).try(&:to_s) \
+            or responsible_delegation.try(&:name).try(:concat, ' (Delegation)')
+        end
       end
     end
   end
