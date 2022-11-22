@@ -1,5 +1,6 @@
 # require 'digest'
 
+# rubocop:disable Metrics/ClassLength
 class MediaFile < ApplicationRecord
   include Concerns::MediaType
   include Concerns::MediaFiles::Filters
@@ -58,6 +59,17 @@ class MediaFile < ApplicationRecord
 
   # actions
 
+  def get_dimensions(file_path)
+    # try to get the actual dimensions of the preview image
+    begin
+      new_dimensions = FileConversion.get_dimensions(file_path)
+    rescue => e
+      Rails.logger.warn 'Silently ignored exception getting dimensions of preview file. '\
+        "Class: #{e.class}. Message: #{e.message}"
+    end
+    new_dimensions
+  end
+
   def create_previews!(alternative_store_location = nil)
     store_location = alternative_store_location || original_store_location
     raise "Input file doesn't exist!" unless File.exist?(store_location)
@@ -76,13 +88,14 @@ class MediaFile < ApplicationRecord
       w = dimensions.try(:fetch, :width)
       h = dimensions.try(:fetch, :height)
 
-      FileConversion.convert(store_location,
-                             store_location_new_file, w, h)
+      FileConversion.convert(store_location, store_location_new_file, w, h)
+
+      new_dimensions = get_dimensions(store_location_new_file) || {}
 
       previews.create!(content_type: 'image/jpeg',
                        filename: store_location_new_file.split('/').last,
-                       height: h,
-                       width: w,
+                       height: new_dimensions[:height] || h,
+                       width: new_dimensions[:width] || w,
                        thumbnail: thumb_size)
     end
   end
