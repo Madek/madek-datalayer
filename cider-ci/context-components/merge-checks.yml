@@ -2,9 +2,6 @@
 
 task_defaults:
   max_trials: 1
-  traits:
-    Linux: yes
-    git: yes
   git_options:
     submodules:
       include_match: ^.*$

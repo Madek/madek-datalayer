@@ -16,8 +16,6 @@ task_defaults:
   dispatch_storm_delay_duration: 1 Second
 
   environment_variables:
-    RUBY_ENGINE: ruby
-    RUBY_VERSION: 2.7.6
     RAILS_ENV: test
     DATABASE: madek_datalayer_test_{{CIDER_CI_TRIAL_ID}}
     LANG: 'en_US.UTF-8'
@@ -36,11 +34,9 @@ task_defaults:
 
   traits:
     ImageMagick: true
-    nodejs: true
 
   scripts:
     test:
       body: |
         set -eux
-        export PATH=~/.rubies/$RUBY/bin:$PATH
         bundle exec rspec $CIDER_CI_TASK_FILE

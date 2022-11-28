@@ -1,7 +1,6 @@
 FactoryGirl.define do
 
-  factory :media_file  do
-    meta_data { { key: :value } }
+  factory :media_file do
     height { 640 }
     width { 429 }
     content_type 'image/jpeg'

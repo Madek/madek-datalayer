@@ -1,44 +1,20 @@
-environment_variables:
-  RUBY_ENGINE: ruby
-  RUBY_VERSION: 2.7.6
-  RUBY: '{{RUBY_ENGINE}}-{{RUBY_VERSION}}'
-
 traits:
-  curl: true
-  ruby-install: true
+  asdf: true
 
 scripts:
   bundle:
-    exclusive_executor_resource: ruby-install_{{$RUBY}}
+    exclusive_executor_resource: asdf-ruby
     timeout: 20 Minutes
     body: |
       #!/usr/bin/env bash
-      set -eux
-      export PATH=~/.rubies/$RUBY/bin:$PATH
-
-      rm -f .bundle/config
-
-      if [ ! -d ~/.rubies/$RUBY ]; then
-        ruby-install --no-install-deps $RUBY_ENGINE $RUBY_VERSION
+      set -euxo pipefail
+      if [[ ! -d ~/.asdf/plugins/ruby ]]; then
+        asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git
+      else
+        asdf plugin update ruby
       fi
-
-      if [ ! -f ~/.rubies/$RUBY/bin/bundle ]; then
-        gem install bundler
-      fi
-
-      DIGEST=$(git ls-tree HEAD --\
-        cider-ci.yml cider-ci Gemfile.lock \
-        | openssl dgst -sha1 | cut -d ' ' -f 2)
-
-      DIGEST=$(echo "$DIGEST $PATH" \
-       | openssl dgst -sha1 | cut -d ' ' -f 2)
-
-      CACHE_SIGNATURE_FILE="/tmp/bundle_cache_signature_${DIGEST}"
-
-      if [ ! -f  $CACHE_SIGNATURE_FILE ] ; then
-        bundle install
-        touch $CACHE_SIGNATURE_FILE
-      fi
+      asdf install ruby
+      bundle install
 
   test:
     start_when:
