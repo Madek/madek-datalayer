@@ -7,14 +7,30 @@ module Concerns
         has_and_belongs_to_many :workflows
       end
 
-      def with_delegated_workflows
-        workflows_table = Workflow.arel_table
-        delegations_workflows = Arel::Table.new(:delegations_workflows)
-        delegated_workflow_ids = delegations_workflows
-          .project(:workflow_id)
-          .where(delegations_workflows[:delegation_id].in(delegation_ids))
+      def delegated_workflows
+        Workflow
+          .joins('INNER JOIN delegations_workflows ON delegations_workflows.workflow_id = workflows.id')
+          .joins('INNER JOIN delegations_users ON delegations_users.delegation_id = delegations_workflows.delegation_id')
+          .where(delegations_users: { user_id: self.id })
+          .distinct
+      end
 
-        Workflow.where(workflows_table[:id].in(delegated_workflow_ids.union(workflows.select(:id))))
+      def delegated_workflows_via_groups
+        Workflow
+          .joins('INNER JOIN delegations_workflows ON delegations_workflows.workflow_id = workflows.id')
+          .joins('INNER JOIN delegations_groups ON delegations_groups.delegation_id = delegations_workflows.delegation_id')
+          .joins('INNER JOIN groups_users ON groups_users.group_id = delegations_groups.group_id')
+          .where(groups_users: { user_id: self.id })
+          .distinct
+      end
+
+      def with_delegated_workflows
+        ids =
+          workflows.map(&:id)
+          .union(delegated_workflows.map(&:id))
+          .union(delegated_workflows_via_groups.map(&:id))
+
+        Workflow.where(id: ids)
       end
     end
   end

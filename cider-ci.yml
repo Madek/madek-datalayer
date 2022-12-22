@@ -47,7 +47,6 @@ jobs:
         include:
           - path: cider-ci/context-components/lint/git-lint.yml
           - path: cider-ci/context-components/lint/rspec-lint.yml
-          - path: cider-ci/context-components/lint/ruby-lint.yml
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # GITHUB BRANCH PROTECTION                                                        #

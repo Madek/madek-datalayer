@@ -12,7 +12,7 @@ module Concerns
                    'ON meta_data_keywords.keyword_id = keywords.id')
             .where('meta_data_keywords.created_by_id = ?', user_id)
             .group('keywords.id')
-            .as('keywords')
+            .arel.as('keywords')
         end
 
         def self.filter_by(meta_key_id = nil, term = nil, used_by_id = nil)

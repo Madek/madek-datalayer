@@ -1,16 +1,16 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 5.2.4'
+gem 'rails', '~> 6.0.0'
 gem "sprockets", "<4" # DO NOT UPGRADE SPROCKETS!
 
 gem 'pg'
-gem 'pg_tasks', git: 'https://github.com/drtom/rails_pg-tasks', branch: 'master_rails_5'
+gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks', branch: 'mk/rails-upgrade-6.0.0'
 gem 'textacular', '~> 5.0'
 
 gem 'base32-crockford'
 gem 'bcrypt', '~> 3.1.13'
 gem 'chronic_duration'
-gem 'rspec-rails', '~> 3.1', group: [:test, :development]
+gem 'rspec-rails', '~> 4', group: [:test, :development]
 gem 'rubocop', '= 0.39.0', require: false
 gem 'strong_password'
 gem 'uuidtools'

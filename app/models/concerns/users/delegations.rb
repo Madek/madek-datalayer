@@ -9,8 +9,8 @@ module Concerns
 
       def all_delegations
         delegations_table = Delegation.arel_table
-        delegation_ids = delegations.select(:id)
-        ids_through_groups = Delegation.joins(groups: :users).where('users.id = ?', id).select(:id)
+        delegation_ids = delegations.select(:id).map(&:id)
+        ids_through_groups = Delegation.joins(groups: :users).where('users.id = ?', id).select(:id).map(&:id)
         Delegation.where(delegations_table[:id].in(delegation_ids.union(ids_through_groups)))
       end
     end
