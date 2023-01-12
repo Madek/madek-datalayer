@@ -39,4 +39,4 @@ task_defaults:
     test:
       body: |
         set -eux
-        bundle exec rspec $CIDER_CI_TASK_FILE
+        ./bin/rspec $CIDER_CI_TASK_FILE
