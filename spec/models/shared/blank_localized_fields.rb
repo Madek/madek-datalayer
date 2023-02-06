@@ -18,7 +18,7 @@ RSpec.shared_examples 'blank localized fields' do |without_hints = true|
 
     it 'does not raise error for nil labels' do
       expect do
-        FactoryGirl.create(
+        FactoryBot.create(
           factory_name,
           labels: {
             de: nil,
@@ -41,7 +41,7 @@ RSpec.shared_examples 'blank localized fields' do |without_hints = true|
 
     it 'does not raise error for nil descriptions' do
       expect do
-        FactoryGirl.create(
+        FactoryBot.create(
           factory_name,
           descriptions: {
             de: nil,
@@ -65,7 +65,7 @@ RSpec.shared_examples 'blank localized fields' do |without_hints = true|
 
       it 'does not raise error for nil hints' do
         expect do
-          FactoryGirl.create(
+          FactoryBot.create(
             factory_name,
             hints: {
               de: nil,

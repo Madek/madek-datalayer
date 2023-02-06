@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :collection_api_client_permission,
           class: Permissions::CollectionApiClientPermission do
@@ -6,9 +6,9 @@ FactoryGirl.define do
     get_metadata_and_previews { FactoryHelper.rand_bool 1 / 2.0 }
     edit_metadata_and_relations { FactoryHelper.rand_bool 1 / 4.0 }
 
-    api_client { ApiClient.find_random || (FactoryGirl.create :api_client) }
-    updator { User.find_random || (FactoryGirl.create :user) }
-    collection { Collection.find_random || (FactoryGirl.create :collection) }
+    api_client { ApiClient.find_random || (FactoryBot.create :api_client) }
+    updator { User.find_random || (FactoryBot.create :user) }
+    collection { Collection.find_random || (FactoryBot.create :collection) }
 
   end
 
@@ -18,9 +18,9 @@ FactoryGirl.define do
     get_metadata_and_previews { FactoryHelper.rand_bool 1 / 2.0 }
     edit_metadata_and_relations { FactoryHelper.rand_bool 1 / 4.0 }
 
-    group { Group.find_random || (FactoryGirl.create :group) }
-    updator { User.find_random || (FactoryGirl.create :user) }
-    collection { Collection.find_random || (FactoryGirl.create :collection) }
+    group { Group.find_random || (FactoryBot.create :group) }
+    updator { User.find_random || (FactoryBot.create :user) }
+    collection { Collection.find_random || (FactoryBot.create :collection) }
 
   end
 
@@ -32,9 +32,9 @@ FactoryGirl.define do
     edit_metadata { FactoryHelper.rand_bool 1 / 4.0 }
     edit_permissions { edit_metadata and FactoryHelper.rand_bool }
 
-    user { User.find_random || (FactoryGirl.create :user) }
-    updator { User.find_random || (FactoryGirl.create :user) }
-    media_entry { MediaEntry.find_random || (FactoryGirl.create :media_entry) }
+    user { User.find_random || (FactoryBot.create :user) }
+    updator { User.find_random || (FactoryBot.create :user) }
+    media_entry { MediaEntry.find_random || (FactoryBot.create :media_entry) }
 
   end
 
@@ -46,9 +46,9 @@ FactoryGirl.define do
       edit_metadata { FactoryHelper.rand_bool 1 / 4.0 }
       edit_permissions { edit_metadata and FactoryHelper.rand_bool }
 
-      delegation { Delegation.find_random || (FactoryGirl.create :delegation) }
-      updator { User.find_random || (FactoryGirl.create :user) }
-      media_entry { MediaEntry.find_random || (FactoryGirl.create :media_entry) }
+      delegation { Delegation.find_random || (FactoryBot.create :delegation) }
+      updator { User.find_random || (FactoryBot.create :user) }
+      media_entry { MediaEntry.find_random || (FactoryBot.create :media_entry) }
 
   end
 
@@ -59,9 +59,9 @@ FactoryGirl.define do
     edit_metadata_and_relations { FactoryHelper.rand_bool 1 / 4.0 }
     edit_permissions { FactoryHelper.rand_bool 1 / 4.0 }
 
-    user { User.find_random || (FactoryGirl.create :user) }
-    updator { User.find_random || (FactoryGirl.create :user) }
-    collection { Collection.find_random || (FactoryGirl.create :collection) }
+    user { User.find_random || (FactoryBot.create :user) }
+    updator { User.find_random || (FactoryBot.create :user) }
+    collection { Collection.find_random || (FactoryBot.create :collection) }
 
   end
 
@@ -72,9 +72,9 @@ FactoryGirl.define do
       edit_metadata_and_relations { FactoryHelper.rand_bool 1 / 4.0 }
       edit_permissions { FactoryHelper.rand_bool 1 / 4.0 }
 
-      delegation { Delegation.find_random || (FactoryGirl.create :delegation) }
-      updator { User.find_random || (FactoryGirl.create :user) }
-      collection { Collection.find_random || (FactoryGirl.create :collection) }
+      delegation { Delegation.find_random || (FactoryBot.create :delegation) }
+      updator { User.find_random || (FactoryBot.create :user) }
+      collection { Collection.find_random || (FactoryBot.create :collection) }
 
   end
 
@@ -85,9 +85,9 @@ FactoryGirl.define do
     get_full_size { get_metadata_and_previews and FactoryHelper.rand_bool }
     edit_metadata { FactoryHelper.rand_bool 1 / 4.0 }
 
-    group { Group.find_random || (FactoryGirl.create :group) }
-    updator { User.find_random || (FactoryGirl.create :user) }
-    media_entry { MediaEntry.find_random || (FactoryGirl.create :media_entry) }
+    group { Group.find_random || (FactoryBot.create :group) }
+    updator { User.find_random || (FactoryBot.create :user) }
+    media_entry { MediaEntry.find_random || (FactoryBot.create :media_entry) }
 
   end
 
@@ -97,33 +97,34 @@ FactoryGirl.define do
     get_metadata_and_previews { FactoryHelper.rand_bool 1 / 4.0 }
     get_full_size { get_metadata_and_previews and FactoryHelper.rand_bool }
 
-    api_client { ApiClient.find_random || (FactoryGirl.create :api_client) }
-    updator { User.find_random || (FactoryGirl.create :user) }
-    media_entry { MediaEntry.find_random || (FactoryGirl.create :media_entry) }
+    api_client { ApiClient.find_random || (FactoryBot.create :api_client) }
+    updator { User.find_random || (FactoryBot.create :user) }
+    media_entry { MediaEntry.find_random || (FactoryBot.create :media_entry) }
 
   end
 
-  factory :vocabulary_permission do
-
+  factory :vocabulary_api_client_permission,
+          class: Permissions::VocabularyApiClientPermission do
     use { FactoryHelper.rand_bool 1 / 4.0 }
     view { FactoryHelper.rand_bool 1 / 2.0 }
-    vocabulary { Vocabulary.find_random || (FactoryGirl.create :vocabulary) }
+    vocabulary { Vocabulary.find_random || (FactoryBot.create :vocabulary) }
+    api_client { FactoryBot.create :api_client }
+  end
 
-    factory :vocabulary_api_client_permission,
-            class: Permissions::VocabularyApiClientPermission do
-      api_client { FactoryGirl.create :api_client }
-    end
+  factory :vocabulary_group_permission,
+          class: Permissions::VocabularyGroupPermission do
+    use { FactoryHelper.rand_bool 1 / 4.0 }
+    view { FactoryHelper.rand_bool 1 / 2.0 }
+    vocabulary { Vocabulary.find_random || (FactoryBot.create :vocabulary) }
+    group { FactoryBot.create :group }
+  end
 
-    factory :vocabulary_group_permission,
-            class: Permissions::VocabularyGroupPermission do
-      group { FactoryGirl.create :group }
-    end
-
-    factory :vocabulary_user_permission,
-            class: Permissions::VocabularyUserPermission do
-      user { FactoryGirl.create :user }
-    end
-
+  factory :vocabulary_user_permission,
+          class: Permissions::VocabularyUserPermission do
+    use { FactoryHelper.rand_bool 1 / 4.0 }
+    view { FactoryHelper.rand_bool 1 / 2.0 }
+    vocabulary { Vocabulary.find_random || (FactoryBot.create :vocabulary) }
+    user { FactoryBot.create :user }
   end
 
 end

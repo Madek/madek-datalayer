@@ -31,7 +31,7 @@ describe MediaEntry do
         create(:meta_datum_text,
                meta_key: \
                  create(:meta_key_text,
-                        id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                        id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 20)}",
                         vocabulary: vocabulary))
       media_entry_1.meta_data << meta_datum_text
 

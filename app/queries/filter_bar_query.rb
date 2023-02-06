@@ -164,7 +164,7 @@ SQL
   private_class_method
 
   def self.run(query)
-    connection.exec_query(query).to_hash
+    connection.exec_query(query).to_a
   end
 end
 # rubocop:enable all

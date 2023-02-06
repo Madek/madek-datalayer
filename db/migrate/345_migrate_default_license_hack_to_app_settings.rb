@@ -29,7 +29,7 @@ class MigrateDefaultLicenseHackToAppSettings < ActiveRecord::Migration[4.2]
 
     license = MigrationLicense.where(is_default: true).first
 
-    MigrationAppSetting.first.update_attributes!({
+    MigrationAppSetting.first.update!({
       media_entry_default_license_id: license.try(:id),
       media_entry_default_license_meta_key: meta_key_license.try(:id),
       media_entry_default_license_usage_text: license.try(:usage),

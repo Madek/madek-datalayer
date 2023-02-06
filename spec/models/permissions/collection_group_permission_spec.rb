@@ -7,15 +7,15 @@ require Rails.root.join 'spec',
 describe Permissions::CollectionGroupPermission do
 
   it 'is creatable via a factory' do
-    expect { FactoryGirl.create :collection_group_permission }.not_to raise_error
+    expect { FactoryBot.create :collection_group_permission }.not_to raise_error
   end
 
   context 'Group and Collection ' do
 
     before :each do
-      @group = FactoryGirl.create :group
-      @creator = FactoryGirl.create :group
-      @collection = FactoryGirl.create :collection
+      @group = FactoryBot.create :group
+      @creator = FactoryBot.create :group
+      @collection = FactoryBot.create :collection
     end
 
     describe 'destroy_ineffective' do
@@ -23,10 +23,10 @@ describe Permissions::CollectionGroupPermission do
       context %(for permission where all permission values are false \
                 and group is not the responsible_group) do
         before :each do
-          @permission = FactoryGirl.create(:collection_group_permission,
+          @permission = FactoryBot.create(:collection_group_permission,
                                            get_metadata_and_previews: false,
                                            edit_metadata_and_relations: false,
-                                           group: (FactoryGirl.create :group),
+                                           group: (FactoryBot.create :group),
                                            collection: @collection)
         end
 

@@ -23,7 +23,7 @@ describe Collection do
   describe 'Creation' do
 
     it 'should be producible by a factory' do
-      expect { FactoryGirl.create :collection }.not_to raise_error
+      expect { FactoryBot.create :collection }.not_to raise_error
     end
 
     context 'when neither responsible_user nor resposible_delegation columns are set' do
@@ -54,7 +54,7 @@ describe Collection do
   context 'an existing Collection' do
 
     it_behaves_like 'a favoritable' do
-      let(:resource) { FactoryGirl.create :collection }
+      let(:resource) { FactoryBot.create :collection }
     end
 
     it_has 'edit sessions' do
@@ -70,19 +70,19 @@ describe Collection do
   context 'media_entries association' do
 
     before :example do
-      @collection = FactoryGirl.create(:collection)
-      @media_entry = FactoryGirl.create(:media_entry)
+      @collection = FactoryBot.create(:collection)
+      @media_entry = FactoryBot.create(:media_entry)
     end
 
     it 'highlights' do
-      FactoryGirl.create \
+      FactoryBot.create \
         :collection_media_entry_arc,
         collection: @collection,
         media_entry: @media_entry,
         highlight: true
 
       child_coll = create(:collection)
-      FactoryGirl.create \
+      FactoryBot.create \
         :collection_collection_arc,
         parent: @collection,
         child: child_coll,
@@ -108,10 +108,10 @@ describe Collection do
   end
 
   it 'collections association' do
-    @parent = FactoryGirl.create(:collection)
-    @child = FactoryGirl.create(:collection)
+    @parent = FactoryBot.create(:collection)
+    @child = FactoryBot.create(:collection)
 
-    FactoryGirl.create \
+    FactoryBot.create \
       :collection_collection_arc,
       parent: @parent,
       child: @child

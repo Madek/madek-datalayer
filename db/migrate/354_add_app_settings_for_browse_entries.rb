@@ -18,7 +18,7 @@ class AddAppSettingsForBrowseEntries < ActiveRecord::Migration[4.2]
       .find_by(id: MigrationAppSetting.first.media_entry_default_license_meta_key)
 
     if meta_key_license
-      MigrationAppSetting.first.update_attributes!(KEY => meta_key_license.id)
+      MigrationAppSetting.first.update!(KEY => meta_key_license.id)
     end
 
   end

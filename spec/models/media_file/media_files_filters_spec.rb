@@ -110,8 +110,8 @@ end
 private
 
 def create_mf(content_type, file:, profiles:)
-  user = FactoryGirl.create(:user)
-  entry = FactoryGirl.create(:media_entry, creator: user, responsible_user: user)
+  user = FactoryBot.create(:user)
+  entry = FactoryBot.create(:media_entry, creator: user, responsible_user: user)
   type = content_type.split('/').first
 
   mf = MediaFile.create!(

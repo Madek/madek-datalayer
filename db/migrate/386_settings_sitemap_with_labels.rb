@@ -24,7 +24,7 @@ class SettingsSitemapWithLabels < ActiveRecord::Migration[4.2]
 
     old_sitemap = MigrationSetting.first.sitemap.as_json
     new_sitemap = available_locales.map { |lang| { lang => old_sitemap } }.reduce(&:merge)
-    MigrationSetting.first.update_attributes!(sitemap: new_sitemap)
+    MigrationSetting.first.update!(sitemap: new_sitemap)
 
     change_column_default(:app_settings, :sitemap, NEW_FIELD_DEFAULT.as_json)
   end

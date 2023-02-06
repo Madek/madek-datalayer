@@ -1,7 +1,7 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :group do
-    name { Faker::Lorem.words(7).join(' ') }
+    name { Faker::Lorem.words(number: 7).join(' ') }
 
     trait :with_user do
       after(:create) do |group|
@@ -10,12 +10,12 @@ FactoryGirl.define do
     end
 
     factory :institutional_group do
-      type 'InstitutionalGroup'
+      type { 'InstitutionalGroup' }
       institutional_id { SecureRandom.uuid }
     end
 
     factory :authentication_group do
-      type 'AuthenticationGroup'
+      type { 'AuthenticationGroup' }
     end
   end
 

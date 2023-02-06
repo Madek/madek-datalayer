@@ -5,37 +5,37 @@ end
 RSpec.shared_examples 'entrusted to user' do
 
   before :example do
-    @user = FactoryGirl.create :user
-    group1 = FactoryGirl.create(:group)
-    group2 = FactoryGirl.create(:group)
+    @user = FactoryBot.create :user
+    group1 = FactoryBot.create(:group)
+    group2 = FactoryBot.create(:group)
     @user.groups << group1
     @user.groups << group2
 
     model_name = described_class.model_name.singular
 
-    resource = FactoryGirl.create(model_name.to_sym)
+    resource = FactoryBot.create(model_name.to_sym)
     arg_hash = { get_metadata_and_previews: true }
 
-    FactoryGirl.create "#{model_name}_user_permission".to_sym,
+    FactoryBot.create "#{model_name}_user_permission".to_sym,
                        arg_hash.merge(Hash['user',
                                            @user,
                                            model_name,
-                                           FactoryGirl.create(model_name.to_sym)])
-    FactoryGirl.create "#{model_name}_user_permission".to_sym,
+                                           FactoryBot.create(model_name.to_sym)])
+    FactoryBot.create "#{model_name}_user_permission".to_sym,
                        arg_hash.merge(Hash['user',
                                            @user,
                                            model_name,
                                            resource])
-    FactoryGirl.create "#{model_name}_group_permission".to_sym,
+    FactoryBot.create "#{model_name}_group_permission".to_sym,
                        arg_hash.merge(Hash['group',
                                            group1,
                                            model_name,
                                            resource])
-    FactoryGirl.create "#{model_name}_group_permission".to_sym,
+    FactoryBot.create "#{model_name}_group_permission".to_sym,
                        arg_hash.merge(Hash['group',
                                            group2,
                                            model_name,
-                                           FactoryGirl.create(model_name.to_sym)])
+                                           FactoryBot.create(model_name.to_sym)])
   end
 
   it 'union of entrusted_to_user_directly and entrusted_to_user_through_groups' do

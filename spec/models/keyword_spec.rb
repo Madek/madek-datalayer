@@ -5,14 +5,14 @@ require_relative 'shared/previous_ids'
 describe Keyword do
   describe '#creator' do
     it 'returns an user who created a keyword term' do
-      keyword = FactoryGirl.create :keyword
-      creator_user = FactoryGirl.create :user
-      common_user  = FactoryGirl.create :user
+      keyword = FactoryBot.create :keyword
+      creator_user = FactoryBot.create :user
+      common_user  = FactoryBot.create :user
 
-      FactoryGirl.create(:meta_datum_keyword,
+      FactoryBot.create(:meta_datum_keyword,
                          created_by: creator_user,
                          keyword: keyword)
-      FactoryGirl.create(:meta_datum_keyword,
+      FactoryBot.create(:meta_datum_keyword,
                          created_by: common_user,
                          keyword: keyword)
 
@@ -23,7 +23,7 @@ describe Keyword do
   it 'trims whitespace when creating a kw' do
     spaces = (Madek::Constants::SPECIAL_WHITESPACE_CHARS + ['', "\n"]).shuffle.join
     spaced_term = spaces + 'term' + spaces
-    expect(FactoryGirl.create(:keyword, term: spaced_term).term)
+    expect(FactoryBot.create(:keyword, term: spaced_term).term)
       .to be == 'term'
   end
 
@@ -35,9 +35,9 @@ describe Keyword do
     only_spaces = (
       Madek::Constants::SPECIAL_WHITESPACE_CHARS + ['', "\n"]).shuffle.join
 
-    expect { FactoryGirl.create(:keyword, term: empty_string) }
+    expect { FactoryBot.create(:keyword, term: empty_string) }
       .to raise_error(*expected_error)
-    expect { FactoryGirl.create(:keyword, term: only_spaces) }
+    expect { FactoryBot.create(:keyword, term: only_spaces) }
       .to raise_error(*expected_error)
   end
 
@@ -49,16 +49,16 @@ describe Keyword do
     end
 
     it 'converts to NFC when creating a kw' do
-      expect(FactoryGirl.create(
+      expect(FactoryBot.create(
         :keyword, term: 'Überweiß'.unicode_normalize(:nfd)
       ).term).to \
         be == 'Überweiß'.unicode_normalize(:nfc)
     end
 
     it 'converts to NFC when updating a kw ' do
-      kw = FactoryGirl.create(:keyword, \
+      kw = FactoryBot.create(:keyword, \
                               term: 'Blah'.unicode_normalize(:nfd))
-      kw.update_attributes! term: 'Überweiß'.unicode_normalize(:nfd)
+      kw.update! term: 'Überweiß'.unicode_normalize(:nfd)
       expect(kw.term).to be == 'Überweiß'.unicode_normalize(:nfc)
     end
 

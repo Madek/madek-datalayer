@@ -7,16 +7,16 @@ require Rails.root.join 'spec',
 describe Permissions::CollectionApiClientPermission do
 
   it 'is creatable via a factory' do
-    expect { FactoryGirl.create :collection_api_client_permission }
+    expect { FactoryBot.create :collection_api_client_permission }
       .not_to raise_error
   end
 
   context 'ApiClient and Collection ' do
 
     before :each do
-      @api_client = FactoryGirl.create :api_client
-      @creator = FactoryGirl.create :api_client
-      @collection = FactoryGirl.create :collection
+      @api_client = FactoryBot.create :api_client
+      @creator = FactoryBot.create :api_client
+      @collection = FactoryBot.create :collection
     end
 
     describe 'destroy_ineffective' do
@@ -25,10 +25,10 @@ describe Permissions::CollectionApiClientPermission do
                 and api_client is not the responsible_api_client) do
         before :each do
           @permission = \
-            FactoryGirl.create(:collection_api_client_permission,
+            FactoryBot.create(:collection_api_client_permission,
                                get_metadata_and_previews: false,
                                edit_metadata_and_relations: false,
-                               api_client: (FactoryGirl.create :api_client),
+                               api_client: (FactoryBot.create :api_client),
                                collection: @collection)
         end
 

@@ -23,5 +23,5 @@ end
 
 def arrayize_uri(row)
   uri = row.external_uri.strip.presence
-  row.update_attributes!(external_uris: [uri]) if uri
+  row.update!(external_uris: [uri]) if uri
 end

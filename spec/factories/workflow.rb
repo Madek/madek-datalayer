@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :workflow do
     creator { create(:user) }
@@ -15,7 +15,7 @@ FactoryGirl.define do
     end
 
     factory :finished_workflow do
-      is_active false
+      is_active { false }
     end
   end
 

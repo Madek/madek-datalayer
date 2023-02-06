@@ -31,7 +31,7 @@ module SettingsHelper
       settings_locations.push(DEV_SETTINGS) if Rails.env.development?
       conf = {}.with_indifferent_access
       settings_locations.each do |rel_location|
-        if File.exists? (conf_file = DATALAYER_PATHNAME.join(*rel_location))
+        if File.exist? (conf_file = DATALAYER_PATHNAME.join(*rel_location))
           conf.deep_merge! YAML.load_file conf_file
         end
       end

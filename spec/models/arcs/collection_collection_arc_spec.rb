@@ -37,7 +37,7 @@ describe Arcs::CollectionCollectionArc do
   def prepare_data
     prepare_madek_core
 
-    @user = FactoryGirl.create :user
+    @user = FactoryBot.create :user
 
     @parent = create_collection('Parent')
     @child = create_collection('Child')
@@ -48,12 +48,12 @@ describe Arcs::CollectionCollectionArc do
       raise 'madek_core:title should not exist'
     end
     with_disabled_triggers do
-      FactoryGirl.create(:meta_key_core_title)
+      FactoryBot.create(:meta_key_core_title)
     end
   end
 
   def create_collection(title)
-    collection = FactoryGirl.create(:collection,
+    collection = FactoryBot.create(:collection,
                                     get_metadata_and_previews: true,
                                     responsible_user: @user,
                                     creator: @user)

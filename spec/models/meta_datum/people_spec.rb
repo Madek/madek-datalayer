@@ -6,11 +6,11 @@ describe MetaDatum::People do
 
     before :all do
       PgTasks.truncate_tables
-      @meta_key_people = FactoryGirl.create :meta_key_people
-      @person1 = FactoryGirl.create :person
-      @person2 = FactoryGirl.create :person
-      @person3 = FactoryGirl.create :person
-      @collection = FactoryGirl.create :collection
+      @meta_key_people = FactoryBot.create :meta_key_people
+      @person1 = FactoryBot.create :person
+      @person2 = FactoryBot.create :person
+      @person3 = FactoryBot.create :person
+      @collection = FactoryBot.create :collection
     end
 
     after :all do
@@ -25,14 +25,14 @@ describe MetaDatum::People do
     describe ':meta_datum people factory' do
 
       it "invocation doesn't raise an error" do
-        FactoryGirl.create :meta_datum_people,
+        FactoryBot.create :meta_datum_people,
                            collection: @collection,
                            meta_key: @meta_key_people
       end
 
       context 'a factory created instance' do
         before :each do
-          @meta_datum_people = FactoryGirl.create :meta_datum_people,
+          @meta_datum_people = FactoryBot.create :meta_datum_people,
                                                   collection: @collection,
                                                   meta_key: @meta_key_people
         end

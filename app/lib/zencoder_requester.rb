@@ -25,16 +25,16 @@ class ZencoderRequester
   private
 
   def create_zencoder_job
-    @zencoder_job.update_attributes(request: request_params)
+    @zencoder_job.update(request: request_params)
 
-    if (response = Zencoder::Job.create(request_params)).success?
-      @zencoder_job.update_attributes(
+    if (response = Zencoder::Job.create(**request_params)).success?
+      @zencoder_job.update(
         state: 'submitted',
         response: response.body,
         zencoder_id: response.body['id']
       )
     else
-      @zencoder_job.update_attributes(
+      @zencoder_job.update(
         state: 'failed',
         error: response.try(:body)
       )

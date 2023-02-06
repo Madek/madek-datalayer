@@ -4,10 +4,10 @@ require 'spec_helper_no_tx'
 describe 'relations between meta_data and meta_keys' do
 
   before :all do
-    @user = FactoryGirl.create(:user)
-    @collection = FactoryGirl.create :collection
-    FactoryGirl.create :meta_key_title
-    FactoryGirl.create(:meta_datum_text,
+    @user = FactoryBot.create(:user)
+    @collection = FactoryBot.create :collection
+    FactoryBot.create :meta_key_title
+    FactoryBot.create(:meta_datum_text,
                        collection: @collection,
                        value: 'Blah',
                        meta_key_id: 'test:title')
@@ -31,8 +31,8 @@ describe 'relations between meta_data and meta_keys' do
     to an imcompatible meta_key).strip do
       it 'raises an error' do
         meta_key = \
-          FactoryGirl.create(:meta_key,
-                             id: "test:#{Faker::Lorem.characters(10)}",
+          FactoryBot.create(:meta_key,
+                             id: "test:#{Faker::Lorem.characters(number: 10)}",
                              meta_datum_object_type: 'MetaDatum::Text')
         expect do
           MetaDatum::TextDate.transaction do
@@ -58,8 +58,8 @@ describe 'relations between meta_data and meta_keys' do
     collection_id and meta_key_id already exists).strip do
       it 'raises an error' do
         meta_key = \
-          FactoryGirl.create(:meta_key,
-                             id: "test:#{Faker::Lorem.characters(10)}",
+          FactoryBot.create(:meta_key,
+                             id: "test:#{Faker::Lorem.characters(number: 10)}",
                              meta_datum_object_type: 'MetaDatum::Text')
         MetaDatum::Text.transaction do
           ActiveRecord::Base.connection.execute <<-SQL
@@ -91,12 +91,12 @@ describe 'relations between meta_data and meta_keys' do
   describe MetaDatum::Keyword do
 
     it 'raises if meta_key_id is inconsistent for meta_data and keywords' do
-      meta_datum_keywords = FactoryGirl.create(:meta_datum_keywords)
-      vocabulary = FactoryGirl.create(:vocabulary, id: Faker::Lorem.characters(8))
+      meta_datum_keywords = FactoryBot.create(:meta_datum_keywords)
+      vocabulary = FactoryBot.create(:vocabulary, id: Faker::Lorem.characters(number: 8))
       meta_key = \
-        FactoryGirl.create(:meta_key_keywords,
-                           id: "#{vocabulary.id}:#{Faker::Lorem.characters(8)}")
-      keyword = FactoryGirl.create(:keyword, meta_key: meta_key)
+        FactoryBot.create(:meta_key_keywords,
+                           id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 8)}")
+      keyword = FactoryBot.create(:keyword, meta_key: meta_key)
 
       expect do
         MetaDatum::Keyword.transaction do

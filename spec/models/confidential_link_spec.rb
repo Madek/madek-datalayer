@@ -5,7 +5,7 @@ describe ConfidentialLink do
 
   context 'when user exists' do
 
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
     describe 'Creating' do
       it 'works' do

@@ -1,7 +1,7 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :context do
-    id { Faker::Internet.slug(nil, '-') }
+    id { Faker::Internet.slug(words: nil, glue: '-') }
     labels do
       { AppSetting.default_locale => Faker::Lorem.word }
     end
@@ -12,7 +12,7 @@ FactoryGirl.define do
 
     factory :context_with_context_keys do
       transient do
-        context_keys_count 3
+        context_keys_count { 3 }
       end
 
       after(:create) do |context, evaluator|

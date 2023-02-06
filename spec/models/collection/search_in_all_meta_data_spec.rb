@@ -32,7 +32,7 @@ describe Collection do
         create(:meta_datum_text,
                meta_key: \
                  create(:meta_key_text,
-                        id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                        id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 20)}",
                         vocabulary: vocabulary),
                collection: collection_1)
 

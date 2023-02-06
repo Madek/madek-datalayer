@@ -5,9 +5,9 @@ end
 RSpec.shared_examples 'created by user' do
 
   before :example do
-    @user = FactoryGirl.create(:user)
+    @user = FactoryBot.create(:user)
     2.times do
-      FactoryGirl.create(described_class.model_name.singular,
+      FactoryBot.create(described_class.model_name.singular,
                          creator: @user)
     end
   end

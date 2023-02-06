@@ -1,7 +1,7 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :static_page do
-    name { Faker::Name.title }
+    name { Faker::Lorem.characters(number: 10) }
     contents do
       { AppSetting.default_locale => Faker::Lorem.paragraph }
     end

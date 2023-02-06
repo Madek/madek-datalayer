@@ -8,7 +8,7 @@ describe 'the namespace madek_core' do
     ActiveRecord::Base.connection.execute  \
       'SET session_replication_role = REPLICA;'
 
-    FactoryGirl.create :meta_key_core_title
+    FactoryBot.create :meta_key_core_title
 
     ActiveRecord::Base.connection.execute  \
       'SET session_replication_role = DEFAULT;'

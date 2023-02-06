@@ -7,16 +7,16 @@ require Rails.root.join 'spec',
 describe Permissions::VocabularyUserPermission do
 
   it 'is creatable via a factory' do
-    expect { FactoryGirl.create :vocabulary_user_permission }
+    expect { FactoryBot.create :vocabulary_user_permission }
       .not_to raise_error
   end
 
   context 'User and Vocabulary ' do
 
     before :each do
-      @user = FactoryGirl.create :user
-      @creator = FactoryGirl.create :user
-      @vocabulary = FactoryGirl.create :vocabulary
+      @user = FactoryBot.create :user
+      @creator = FactoryBot.create :user
+      @vocabulary = FactoryBot.create :vocabulary
     end
 
     describe 'destroy_ineffective' do
@@ -25,10 +25,10 @@ describe Permissions::VocabularyUserPermission do
                 and user is not the responsible_user) do
         before :each do
           @permission = \
-            FactoryGirl.create(:vocabulary_user_permission,
+            FactoryBot.create(:vocabulary_user_permission,
                                view: false,
                                use: false,
-                               user: (FactoryGirl.create :user),
+                               user: (FactoryBot.create :user),
                                vocabulary: @vocabulary)
         end
 

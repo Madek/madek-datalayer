@@ -65,7 +65,7 @@ class CopyrightsToLicenses < ActiveRecord::Migration[4.2]
       MetaDatum.where(meta_key_id: 'copyright url').find_each do |copyright_url|
         license= License.find_or_create_by url: copyright_url.string, label: copyright_url.string
 
-        copyright_url.update_attributes!  \
+        copyright_url.update!  \
           license_id: license.id,
           type: 'MetaDatum::License',
           string: nil,

@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   VOCABULARY_ID = 'video_research_project'
   ANNOTATION_META_KEY_ID = 'video_research_project:annotation'
@@ -28,39 +28,39 @@ FactoryGirl.define do
     # TODO: remove the follwoing line
     # responsible_user_id '653bf621-45c8-4a23-a15e-b29036aa9b10'
 
-    get_full_size true
-    get_metadata_and_previews true
-    is_published true
+    get_full_size { true }
+    get_metadata_and_previews { true }
+    is_published { true }
 
     after :create do |me|
-      mf = FactoryGirl.create :research_video_media_file, media_entry: me
+      mf = FactoryBot.create :research_video_media_file, media_entry: me
 
-      FactoryGirl.create :zencoder_job, media_file_id: mf.id, state: 'finished'
+      FactoryBot.create :zencoder_job, media_file_id: mf.id, state: 'finished'
 
       Vocabulary.find_by(id: VOCABULARY_ID) ||
-        FactoryGirl.create(:vocabulary,
+        FactoryBot.create(:vocabulary,
                            id: VOCABULARY_ID,
                            enabled_for_public_view: true,
                            labels: { de: 'Research Video' })
 
       annotation_meta_key = MetaKey.find_by(id: ANNOTATION_META_KEY_ID) || \
-         FactoryGirl.create(:meta_key,
+         FactoryBot.create(:meta_key,
                             id: ANNOTATION_META_KEY_ID,
                             is_enabled_for_media_entries: true,
                             meta_datum_object_type: 'MetaDatum::JSON',
                             labels: { de: 'Annotation' })
 
       context = Context.find_by(id: VOCABULARY_ID) ||
-        FactoryGirl.create(:context, id: VOCABULARY_ID)
+        FactoryBot.create(:context, id: VOCABULARY_ID)
 
       ContextKey.find_by(context_id: context.id,
                          meta_key_id: annotation_meta_key.id) || \
-         FactoryGirl.create(
+         FactoryBot.create(
            :context_key,
            context_id: context.id,
            meta_key_id: annotation_meta_key.id)
 
-      FactoryGirl.create(
+      FactoryBot.create(
         :meta_datum_json,
         meta_key_id: annotation_meta_key.id,
         media_entry: me,
@@ -73,22 +73,22 @@ FactoryGirl.define do
   factory :research_video_media_file, parent: :media_file do
 
     before :create do
-      FactoryGirl.create :research_video_files
+      FactoryBot.create :research_video_files
     end
 
     association :media_entry, factory: :research_video_entry
-    media_type 'video'
-    media_entry_id 'f5b78e56-a229-4295-a4cc-0311e6534207'
-    content_type 'video/mp4'
-    size '11061375'
-    width nil
-    height nil
-    access_hash '8d59e5b1-750a-4865-94fb-29c2c59453c9'
-    conversion_profiles %w(mp4 webm)
+    media_type { 'video' }
+    media_entry_id { 'f5b78e56-a229-4295-a4cc-0311e6534207' }
+    content_type { 'video/mp4' }
+    size { '11061375' }
+    width { nil }
+    height { nil }
+    access_hash { '8d59e5b1-750a-4865-94fb-29c2c59453c9' }
+    conversion_profiles { %w(mp4 webm) }
     # id  'e563a508-094a-4fc3-83b3-b55ccbdfebb2'
-    filename 'video.m4v'
-    guid '8d9ad8d759094ed7a7dba75547b2c18d'
-    extension 'm4v'
+    filename { 'video.m4v' }
+    guid { '8d9ad8d759094ed7a7dba75547b2c18d' }
+    extension { 'm4v' }
 
     after :create do |mf|
 

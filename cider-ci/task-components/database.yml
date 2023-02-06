@@ -6,6 +6,10 @@ scripts:
 
   configure-database:
     # NOTE: also sets up 'production', needed for asset precompilation
+    start_when:
+      ruby has been bundled:
+        script_key: bundle
+
     body: |
       #!/usr/bin/env ruby
       require 'yaml'

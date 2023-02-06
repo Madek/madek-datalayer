@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'spec_helper_no_tx'
 
 def create_meta_datum
-  FactoryGirl.create :meta_datum_keywords
+  FactoryBot.create :meta_datum_keywords
 end
 
 describe MetaDatum::Keywords do
@@ -12,9 +12,9 @@ describe MetaDatum::Keywords do
     before :each do
       ActiveRecord::Base.transaction do
         PgTasks.truncate_tables
-        @collection = FactoryGirl.create :collection
-        @meta_key_keywords = FactoryGirl.create :meta_key_keywords
-        @meta_datum = FactoryGirl.create :meta_datum_keywords,
+        @collection = FactoryBot.create :collection
+        @meta_key_keywords = FactoryBot.create :meta_key_keywords
+        @meta_datum = FactoryBot.create :meta_datum_keywords,
                                          collection: @collection,
                                          meta_key: @meta_key_keywords
       end
@@ -33,15 +33,15 @@ describe MetaDatum::Keywords do
 
     before :each do
       PgTasks.truncate_tables
-      @collection = FactoryGirl.create :collection
-      @meta_key_keywords = FactoryGirl.create :meta_key_keywords
+      @collection = FactoryBot.create :collection
+      @meta_key_keywords = FactoryBot.create :meta_key_keywords
     end
 
     it 'will be deleted after closing the transaction' do
 
       ActiveRecord::Base.transaction do
 
-        @meta_datum = FactoryGirl.create :meta_datum_keywords,
+        @meta_datum = FactoryBot.create :meta_datum_keywords,
                                          collection: @collection,
                                          meta_key: @meta_key_keywords,
                                          keywords: []

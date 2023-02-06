@@ -6,8 +6,8 @@ describe [ApiClient, User] do
       it 'raises login must be unique' do
         expect do
           ActiveRecord::Base.transaction do
-            FactoryGirl.create :user, login: 'hans'
-            FactoryGirl.create :api_client, login: 'hans'
+            FactoryBot.create :user, login: 'hans'
+            FactoryBot.create :api_client, login: 'hans'
           end
         end.to raise_exception /login .* must be unique/
       end
@@ -18,8 +18,8 @@ describe [ApiClient, User] do
       it 'raises login must be unique' do
         expect do
           ActiveRecord::Base.transaction do
-            FactoryGirl.create :user, login: 'hans'
-            FactoryGirl.create :api_client, login: 'hans'
+            FactoryBot.create :user, login: 'hans'
+            FactoryBot.create :api_client, login: 'hans'
           end
         end.to raise_exception /login .* must be unique/
       end

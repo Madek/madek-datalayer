@@ -1,48 +1,48 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :meta_key do
 
     vocabulary do
       vocabulary_id = id.split(':').first
       Vocabulary.find_by(id: vocabulary_id) \
-        || FactoryGirl.create(:vocabulary, id: vocabulary_id)
+        || FactoryBot.create(:vocabulary, id: vocabulary_id)
     end
 
-    is_enabled_for_media_entries true
-    is_enabled_for_collections true
+    is_enabled_for_media_entries { true }
+    is_enabled_for_collections { true }
 
     labels do
-      { AppSetting.default_locale => Faker::Lorem.characters(10) }
+      { AppSetting.default_locale => Faker::Lorem.characters(number: 10) }
     end
 
     factory :meta_key_text, class: MetaKey do
       id { 'test:string' }
-      meta_datum_object_type 'MetaDatum::Text'
+      meta_datum_object_type { 'MetaDatum::Text' }
     end
 
     factory :meta_key_json, class: MetaKey do
       id { 'test:json' }
-      meta_datum_object_type 'MetaDatum::JSON'
+      meta_datum_object_type { 'MetaDatum::JSON' }
     end
 
     factory :meta_key_media_entry do
       id { 'test:media_entry' }
-      meta_datum_object_type 'MetaDatum::MediaEntry'
+      meta_datum_object_type { 'MetaDatum::MediaEntry' }
     end
 
     factory :meta_key_text_date, class: MetaKey do
       id { 'test:textdate' }
-      meta_datum_object_type 'MetaDatum::TextDate'
+      meta_datum_object_type { 'MetaDatum::TextDate' }
     end
 
     factory :meta_key_title, class: MetaKey do
       id { 'test:title' }
-      meta_datum_object_type 'MetaDatum::Text'
+      meta_datum_object_type { 'MetaDatum::Text' }
     end
 
     factory :meta_key_keywords, class: MetaKey do
       id { 'test:keywords' }
-      meta_datum_object_type 'MetaDatum::Keywords'
+      meta_datum_object_type { 'MetaDatum::Keywords' }
     end
 
     factory :meta_key_keywords_license, class: MetaKey do
@@ -50,24 +50,24 @@ FactoryGirl.define do
       allowed_rdf_class do
         RdfClass.find_by(id: 'License') || create(:rdf_class, id: 'License')
       end
-      meta_datum_object_type 'MetaDatum::Keywords'
+      meta_datum_object_type { 'MetaDatum::Keywords' }
     end
 
     factory :meta_key_people, class: MetaKey do
       id { 'test:people' }
-      meta_datum_object_type 'MetaDatum::People'
-      allowed_people_subtypes %w(Person PeopleGroup)
+      meta_datum_object_type { 'MetaDatum::People' }
+      allowed_people_subtypes { %w(Person PeopleGroup) }
     end
 
     factory :meta_key_people_instgroup, class: MetaKey do
       id { 'test:peopleinstgroup' }
-      meta_datum_object_type 'MetaDatum::People'
-      allowed_people_subtypes ['PeopleInstitutionalGroup']
+      meta_datum_object_type { 'MetaDatum::People' }
+      allowed_people_subtypes { ['PeopleInstitutionalGroup'] }
     end
 
     factory :meta_key_roles, class: MetaKey do
       id { 'test:roles' }
-      meta_datum_object_type 'MetaDatum::Roles'
+      meta_datum_object_type { 'MetaDatum::Roles' }
     end
   end
 
@@ -75,22 +75,22 @@ FactoryGirl.define do
 
     vocabulary do
       Vocabulary.find_by(id: 'madek_core') \
-        || FactoryGirl.create(:vocabulary, id: 'madek_core')
+        || FactoryBot.create(:vocabulary, id: 'madek_core')
     end
 
     factory :meta_key_core_description, class: MetaKey do
-      id 'madek_core:description'
-      meta_datum_object_type 'MetaDatum::Text'
+      id { 'madek_core:description' }
+      meta_datum_object_type { 'MetaDatum::Text' }
     end
 
     factory :meta_key_core_keywords, class: MetaKey do
-      id 'madek_core:keywords'
-      meta_datum_object_type 'MetaDatum::Keywords'
+      id { 'madek_core:keywords' }
+      meta_datum_object_type { 'MetaDatum::Keywords' }
     end
 
     factory :meta_key_core_title, class: MetaKey do
-      id 'madek_core:title'
-      meta_datum_object_type 'MetaDatum::Text'
+      id { 'madek_core:title' }
+      meta_datum_object_type { 'MetaDatum::Text' }
     end
 
   end

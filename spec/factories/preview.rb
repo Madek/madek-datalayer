@@ -1,11 +1,11 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :preview do
-    height 348
-    width 620
-    content_type 'video/webm'
+    height { 348 }
+    width { 620 }
+    content_type { 'video/webm' }
     filename do
       [
-        Faker::Lorem.characters(24),
+        Faker::Lorem.characters(number: 24),
         content_type.split('/').last
       ]
         .join('.')

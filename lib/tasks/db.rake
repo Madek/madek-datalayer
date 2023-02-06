@@ -48,18 +48,18 @@ namespace :db do
       settings = AppSetting.first
 
       DEFAULT_CONTEXT_SETTINGS.each do |key, val|
-        settings.update_attributes!(key => val)
+        settings.update!(key => val)
       end
 
       DEFAULT_CKEY_SETTINGS.each do |key, cfg|
         ckeys = ContextKey.where(
           context_id: cfg[:context_id], meta_key_id: meta_key_ids_from_config(cfg))
 
-        settings.update_attributes!(key => ckeys.map(&:id))
+        settings.update!(key => ckeys.map(&:id))
       end
 
       DEFAULT_STRING_SETTINGS.each do |key, value|
-        settings.update_attributes!(key => value)
+        settings.update!(key => value)
       end
 
     end

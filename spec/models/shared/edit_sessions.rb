@@ -6,10 +6,10 @@ RSpec.shared_examples 'edit sessions' do
 
   it 'has editors' do
 
-    resource = FactoryGirl.create resource_type
+    resource = FactoryBot.create resource_type
 
     2.times do
-      edit_session = FactoryGirl.build(:edit_session)
+      edit_session = FactoryBot.build(:edit_session)
       edit_session.send("#{resource_type}=", resource)
       edit_session.save
     end

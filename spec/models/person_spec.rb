@@ -5,73 +5,73 @@ describe Person do
 
   it 'usage count in meta data' do
 
-    person_1_first_name = Faker::Lorem.characters(8)
-    person_1 = FactoryGirl.create(:person, first_name: person_1_first_name)
+    person_1_first_name = Faker::Lorem.characters(number: 8)
+    person_1 = FactoryBot.create(:person, first_name: person_1_first_name)
 
-    person_2_first_name = Faker::Lorem.characters(8)
-    FactoryGirl.create(:person, first_name: person_2_first_name)
+    person_2_first_name = Faker::Lorem.characters(number: 8)
+    FactoryBot.create(:person, first_name: person_2_first_name)
 
-    media_entry = FactoryGirl.create(:media_entry)
+    media_entry = FactoryBot.create(:media_entry)
     2.times do
-      FactoryGirl.create(:meta_datum_people,
+      FactoryBot.create(:meta_datum_people,
                          people: [person_1],
-                         meta_key: FactoryGirl.create(
+                         meta_key: FactoryBot.create(
                            :meta_key,
                            meta_datum_object_type: 'MetaDatum::People',
                            allowed_people_subtypes: ['Person'],
-                           id: "test:#{Faker::Lorem.characters(8)}"
+                           id: "test:#{Faker::Lorem.characters(number: 8)}"
                          ),
                          media_entry: media_entry,
                          collection: nil)
     end
-    FactoryGirl.create(:meta_datum_people,
+    FactoryBot.create(:meta_datum_people,
                        people: [person_1],
-                       meta_key: FactoryGirl.create(
+                       meta_key: FactoryBot.create(
                          :meta_key,
                          meta_datum_object_type: 'MetaDatum::People',
                          allowed_people_subtypes: ['Person'],
-                         id: "test:#{Faker::Lorem.characters(8)}"
+                         id: "test:#{Faker::Lorem.characters(number: 8)}"
                        ),
-                       media_entry: FactoryGirl.create(:media_entry),
+                       media_entry: FactoryBot.create(:media_entry),
                        collection: nil)
     # ######################################################################
     # unpublished entry
-    FactoryGirl.create(:meta_datum_people,
+    FactoryBot.create(:meta_datum_people,
                        people: [person_1],
-                       meta_key: FactoryGirl.create(
+                       meta_key: FactoryBot.create(
                          :meta_key,
                          meta_datum_object_type: 'MetaDatum::People',
                          allowed_people_subtypes: ['Person'],
-                         id: "test:#{Faker::Lorem.characters(8)}"
+                         id: "test:#{Faker::Lorem.characters(number: 8)}"
                        ),
-                       media_entry: FactoryGirl.create(:media_entry,
+                       media_entry: FactoryBot.create(:media_entry,
                                                        is_published: false),
                        collection: nil)
     # ######################################################################
 
-    collection = FactoryGirl.create(:collection)
+    collection = FactoryBot.create(:collection)
     2.times do
-      FactoryGirl.create(:meta_datum_people,
+      FactoryBot.create(:meta_datum_people,
                          people: [person_1],
-                         meta_key: FactoryGirl.create(
+                         meta_key: FactoryBot.create(
                            :meta_key,
                            meta_datum_object_type: 'MetaDatum::People',
                            allowed_people_subtypes: ['Person'],
-                           id: "test:#{Faker::Lorem.characters(8)}"
+                           id: "test:#{Faker::Lorem.characters(number: 8)}"
                          ),
                          media_entry: nil,
                          collection: collection)
     end
-    FactoryGirl.create(:meta_datum_people,
+    FactoryBot.create(:meta_datum_people,
                        people: [person_1],
-                       meta_key: FactoryGirl.create(
+                       meta_key: FactoryBot.create(
                          :meta_key,
                          meta_datum_object_type: 'MetaDatum::People',
                          allowed_people_subtypes: ['Person'],
-                         id: "test:#{Faker::Lorem.characters(8)}"
+                         id: "test:#{Faker::Lorem.characters(number: 8)}"
                        ),
                        media_entry: nil,
-                       collection: FactoryGirl.create(:collection))
+                       collection: FactoryBot.create(:collection))
 
     expect(find_person(person_1_first_name)).to eq \
       Hash[:meta_data_usage_count, 6,

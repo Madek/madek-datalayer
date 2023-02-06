@@ -1,23 +1,23 @@
 RSpec.shared_context 'meta data shared context' do
-  let(:vocabulary) { FactoryGirl.create(:vocabulary, id: 'filter') }
-  let(:responsible_user) { FactoryGirl.create(:user) }
-  let(:entrusted_user) { FactoryGirl.create(:user) }
-  let(:entrusted_group) { FactoryGirl.create(:group) }
+  let(:vocabulary) { FactoryBot.create(:vocabulary, id: 'filter') }
+  let(:responsible_user) { FactoryBot.create(:user) }
+  let(:entrusted_user) { FactoryBot.create(:user) }
+  let(:entrusted_group) { FactoryBot.create(:group) }
   let(:not_meta_key) do
-    FactoryGirl.create(:meta_key_keywords,
-                       id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+    FactoryBot.create(:meta_key_keywords,
+                       id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 20)}",
                        vocabulary: vocabulary)
   end
   let (:media_entry) do
-    media_entry = FactoryGirl.create(:media_entry_with_image_media_file,
+    media_entry = FactoryBot.create(:media_entry_with_image_media_file,
                                      get_metadata_and_previews: 'true',
                                      responsible_user: responsible_user)
     media_entry.user_permissions << \
-      FactoryGirl.create(:media_entry_user_permission,
+      FactoryBot.create(:media_entry_user_permission,
                          get_metadata_and_previews: 'true',
                          user: entrusted_user)
     media_entry.group_permissions << \
-      FactoryGirl.create(:media_entry_group_permission,
+      FactoryBot.create(:media_entry_group_permission,
                          get_metadata_and_previews: 'true',
                          group: entrusted_group)
     media_entry
@@ -37,7 +37,7 @@ RSpec.shared_context 'meta data shared context' do
 
   # META DATA  ##########################################################
   let(:meta_datum_text) do
-    meta_datum_text = FactoryGirl.create(:meta_datum_text,
+    meta_datum_text = FactoryBot.create(:meta_datum_text,
                                          value: 'a par tial match')
     media_entry.meta_data << meta_datum_text
     meta_datum_text
@@ -45,11 +45,11 @@ RSpec.shared_context 'meta data shared context' do
 
   let(:meta_datum_keywords_1) do
     meta_datum_keywords_1 = \
-      FactoryGirl.create \
+      FactoryBot.create \
         :meta_datum_keywords,
         meta_key: \
-        FactoryGirl.create(:meta_key_keywords,
-                           id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+        FactoryBot.create(:meta_key_keywords,
+                           id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 20)}",
                            vocabulary: vocabulary)
     media_entry.meta_data << meta_datum_keywords_1
     meta_datum_keywords_1
@@ -57,11 +57,11 @@ RSpec.shared_context 'meta data shared context' do
 
   let(:meta_datum_keywords_2) do
     meta_datum_keywords_2 = \
-      FactoryGirl.create \
+      FactoryBot.create \
         :meta_datum_keywords,
         meta_key: \
-        FactoryGirl.create(:meta_key_keywords,
-                           id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+        FactoryBot.create(:meta_key_keywords,
+                           id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 20)}",
                            vocabulary: vocabulary)
     media_entry.meta_data << meta_datum_keywords_2
     meta_datum_keywords_2
@@ -69,16 +69,16 @@ RSpec.shared_context 'meta data shared context' do
 
   let(:meta_datum_keywords_licenses) do
     meta_key = MetaKey.find_by(id: 'test:licenses') \
-             || FactoryGirl.create(:meta_key_keywords_license)
-    FactoryGirl.create(
+             || FactoryBot.create(:meta_key_keywords_license)
+    FactoryBot.create(
       :meta_datum_keywords,
       media_entry: media_entry,
       meta_key: meta_key,
-      keywords: [FactoryGirl.create(:keyword, :license)])
+      keywords: [FactoryBot.create(:keyword, :license)])
   end
 
   let(:meta_datum_people) do
-    meta_datum_people = FactoryGirl.create(:meta_datum_people)
+    meta_datum_people = FactoryBot.create(:meta_datum_people)
     media_entry.meta_data << meta_datum_people
     meta_datum_people
   end

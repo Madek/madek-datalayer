@@ -11,7 +11,7 @@ class MoreStringentMetaKeys < ActiveRecord::Migration[4.2]
 
         %w(is_extensible_list is_extensible keywords_alphabetical_order).each do |field|
           MetaKey.find_each do |mk|
-            mk.update_attributes! field => !!mk[field]
+            mk.update! field => !!mk[field]
           end
           change_column :meta_keys, field, :boolean, default: false, null: false
         end
@@ -19,21 +19,21 @@ class MoreStringentMetaKeys < ActiveRecord::Migration[4.2]
 
         %w(position).each do |field|
           MetaKey.find_each do |mk|
-            mk.update_attributes! field => mk[field] || 0
+            mk.update! field => mk[field] || 0
           end
           change_column :meta_keys, field, :int, default: 0, null: false
         end
 
         %w(is_required).each do |field|
           ContextKey.find_each do |ck|
-            ck.update_attributes! field => !!ck[field]
+            ck.update! field => !!ck[field]
           end
           change_column :context_keys, field, :boolean, default: false, null: false
         end
 
         %w(position).each do |field|
           ContextKey.find_each do |ck|
-            ck.update_attributes! field => ck[field] || 0
+            ck.update! field => ck[field] || 0
           end
           change_column :context_keys, field, :int, default: 0, null: false
         end
@@ -46,7 +46,7 @@ class MoreStringentMetaKeys < ActiveRecord::Migration[4.2]
         ContextKey.reset_column_information
 
         ContextKey.find_each do |ck|
-          ck.update_attributes! text_element: \
+          ck.update! text_element: \
             case ck['input_type']
             when 0
               'input'

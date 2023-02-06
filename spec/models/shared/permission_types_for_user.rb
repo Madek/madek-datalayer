@@ -6,12 +6,12 @@ RSpec.shared_examples 'permission_types_for_user' do
   let(:model_name) { described_class.model_name }
 
   it 'as responsible' do
-    user = FactoryGirl.create(:user)
-    group1 = FactoryGirl.create(:group)
-    group2 = FactoryGirl.create(:group)
+    user = FactoryBot.create(:user)
+    group1 = FactoryBot.create(:group)
+    group2 = FactoryBot.create(:group)
     user.groups << group1
     user.groups << group2
-    resource = FactoryGirl.create(model_name.singular,
+    resource = FactoryBot.create(model_name.singular,
                                   responsible_user: user)
 
     perm_types = \
@@ -19,15 +19,15 @@ RSpec.shared_examples 'permission_types_for_user' do
         .constantize
     group_perm_types = (perm_types - irrelevant_group_perm_types)
 
-    FactoryGirl.create("#{model_name.singular}_user_permission",
+    FactoryBot.create("#{model_name.singular}_user_permission",
                        Hash[:user, user,
                             model_name.singular, resource,
                             perm_types.sample, true])
-    FactoryGirl.create("#{model_name.singular}_group_permission",
+    FactoryBot.create("#{model_name.singular}_group_permission",
                        Hash[:group, group1,
                             model_name.singular, resource,
                             group_perm_types.sample, true])
-    FactoryGirl.create("#{model_name.singular}_group_permission",
+    FactoryBot.create("#{model_name.singular}_group_permission",
                        Hash[:group, group2,
                             model_name.singular, resource,
                             group_perm_types.sample, true])
@@ -37,9 +37,9 @@ RSpec.shared_examples 'permission_types_for_user' do
   end
 
   it 'as user and group permission' do
-    user = FactoryGirl.create(:user)
-    resource = FactoryGirl.create(model_name.singular,
-                                  responsible_user: FactoryGirl.create(:user))
+    user = FactoryBot.create(:user)
+    resource = FactoryBot.create(model_name.singular,
+                                  responsible_user: FactoryBot.create(:user))
 
     perm_types = \
       "Permissions::Modules::#{model_name.name}::PERMISSION_TYPES"
@@ -50,15 +50,15 @@ RSpec.shared_examples 'permission_types_for_user' do
 
     group_perm_types = (perm_types - irrelevant_group_perm_types)
 
-    FactoryGirl.create("#{model_name.singular}_user_permission",
+    FactoryBot.create("#{model_name.singular}_user_permission",
                        Hash[:user, user,
                             model_name.singular, resource]
                         .merge(perm_attributes))
 
     group_perm_types.each do |group_perm_type|
-      group = FactoryGirl.create(:group)
+      group = FactoryBot.create(:group)
       user.groups << group
-      FactoryGirl.create("#{model_name.singular}_group_permission",
+      FactoryBot.create("#{model_name.singular}_group_permission",
                          Hash[:group, group,
                               model_name.singular, resource,
                               group_perm_type, true])

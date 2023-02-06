@@ -1,9 +1,9 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :context_key do
     context { create(:context) }
     meta_key { MetaKey.first || create(:meta_key_text) }
-    id { Faker::Internet.slug(nil, '-') }
+    id { Faker::Internet.slug(words: nil, glue: '-') }
     labels do
       { AppSetting.default_locale => Faker::Lorem.word }
     end
@@ -15,9 +15,9 @@ FactoryGirl.define do
     end
     admin_comment { Faker::Lorem.sentence }
     sequence(:position) { |n| n }
-    is_required false
-    length_min 16
-    length_max 128
+    is_required { false }
+    length_min { 16 }
+    length_max { 128 }
   end
 
 end

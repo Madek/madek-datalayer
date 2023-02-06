@@ -25,7 +25,7 @@ class CleanupAppSettings < ActiveRecord::Migration[4.2]
     # delete invalid contexts from configs
     settings = MigrationAppSetting.first
     settings.attribute_names.select {|key| key.starts_with? 'context'}.each do |key|
-      settings.update_attributes!(key => clean_context_ids(settings[key]))
+      settings.update!(key => clean_context_ids(settings[key]))
     end
   end
 

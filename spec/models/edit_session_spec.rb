@@ -7,13 +7,13 @@ describe EditSession do
     it 'should be producible by a factory' do
 
       expect do
-        FactoryGirl.create :edit_session,
-                           media_entry: FactoryGirl.create(:media_entry)
+        FactoryBot.create :edit_session,
+                           media_entry: FactoryBot.create(:media_entry)
       end.not_to raise_error
 
       expect do
-        FactoryGirl.create :edit_session,
-                           collection: FactoryGirl.create(:collection)
+        FactoryBot.create :edit_session,
+                           collection: FactoryBot.create(:collection)
       end.not_to raise_error
 
     end
@@ -21,7 +21,7 @@ describe EditSession do
     it %(should raise an error if neither media entry, \
          no collection is provided) do
 
-      expect { FactoryGirl.create :edit_session }
+      expect { FactoryBot.create :edit_session }
         .to raise_error ActiveRecord::RecordInvalid
 
     end
@@ -30,9 +30,9 @@ describe EditSession do
          collection is provided) do
 
       expect do
-        FactoryGirl.create :edit_session,
-                           media_entry: FactoryGirl.create(:media_entry),
-                           collection: FactoryGirl.create(:collection)
+        FactoryBot.create :edit_session,
+                           media_entry: FactoryBot.create(:media_entry),
+                           collection: FactoryBot.create(:collection)
       end
         .to raise_error ActiveRecord::StatementInvalid
 

@@ -30,7 +30,7 @@ class MetaKey < ApplicationRecord
   #################################################################################
 
   scope :order_by_name_part, lambda {
-    reorder("substring(meta_keys.id FROM ':(.*)$') ASC, meta_keys.id")
+    reorder(Arel.sql "substring(meta_keys.id FROM ':(.*)$') ASC, meta_keys.id")
   }
   scope :with_keywords_count, lambda {
     joins(

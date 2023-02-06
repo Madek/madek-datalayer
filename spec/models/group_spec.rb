@@ -8,9 +8,9 @@ describe Group do
 
     before :each do
       PgTasks.truncate_tables
-      @group = FactoryGirl.create(:group)
+      @group = FactoryBot.create(:group)
       5.times do
-        @group.users << FactoryGirl.create(:user)
+        @group.users << FactoryBot.create(:user)
       end
     end
 
@@ -30,7 +30,7 @@ describe Group do
     end
 
     it 'will be not be auto-deleted' do
-      @group = FactoryGirl.create(:group)
+      @group = FactoryBot.create(:group)
       expect(Group.find_by id: @group.id).to be
     end
   end

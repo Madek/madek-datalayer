@@ -4,7 +4,7 @@ end
 
 RSpec.shared_examples 'be found via custom id' do
   before(:example) do
-    @resource = FactoryGirl.create(described_class.model_name.singular,
+    @resource = FactoryBot.create(described_class.model_name.singular,
                                    get_metadata_and_previews: true)
   end
 
@@ -12,7 +12,7 @@ RSpec.shared_examples 'be found via custom id' do
     context 'find' do
       it 'with custom url' do
         custom_url = \
-          FactoryGirl.create(:custom_url,
+          FactoryBot.create(:custom_url,
                              Hash["#{described_class.model_name.singular}_id",
                                   @resource.id])
         expect(described_class.find(custom_url.id)).to be
@@ -26,7 +26,7 @@ RSpec.shared_examples 'be found via custom id' do
     context 'find_by_id' do
       it 'with custom url' do
         custom_url = \
-          FactoryGirl.create(:custom_url,
+          FactoryBot.create(:custom_url,
                              Hash["#{described_class.model_name.singular}_id",
                                   @resource.id])
         expect(described_class.find_by_id(custom_url.id)).to be
@@ -56,7 +56,7 @@ RSpec.shared_examples 'be found via custom id' do
     context 'find' do
       it 'with custom url' do
         custom_url = \
-          FactoryGirl.create(:custom_url,
+          FactoryBot.create(:custom_url,
                              Hash["#{described_class.model_name.singular}_id",
                                   @resource.id,
                                   :is_primary, true])
@@ -80,7 +80,7 @@ RSpec.shared_examples 'be found via custom id' do
     context 'find_by_id' do
       it 'with custom url' do
         custom_url = \
-          FactoryGirl.create(:custom_url,
+          FactoryBot.create(:custom_url,
                              Hash["#{described_class.model_name.singular}_id",
                                   @resource.id,
                                   :is_primary, true])

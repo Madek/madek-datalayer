@@ -24,7 +24,7 @@ describe Arcs::CollectionMediaEntryArc do
                    collection: collection,
                    cover: false)
 
-      expect { arc.update_attributes(cover: true) }
+      expect { arc.update(cover: true) }
         .to raise_error(/there exists already a cover/i)
 
       expect(described_class.where(collection: collection, cover: true).count)

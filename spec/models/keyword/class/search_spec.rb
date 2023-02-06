@@ -4,7 +4,7 @@ describe Keyword do
 
   before :each do
     3.times do
-      FactoryGirl.create :keyword
+      FactoryBot.create :keyword
     end
   end
 

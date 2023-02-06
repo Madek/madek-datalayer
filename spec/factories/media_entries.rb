@@ -1,10 +1,10 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :media_entry do
     created_at { Time.now }
 
     # factory "publishes" by default, set to false to test publishing itself
-    is_published true
+    is_published { true }
 
     association :responsible_user, factory: :user
     association :creator, factory: :user
@@ -13,7 +13,7 @@ FactoryGirl.define do
       app_setting = AppSetting.first.presence || create(:app_setting)
       # NOTE: default in personas for historical reasons,
       # needs to be disabled when using factories
-      app_setting.update_attributes!(contexts_for_entry_validation: [])
+      app_setting.update!(contexts_for_entry_validation: [])
     end
 
     factory :media_entry_with_title do
@@ -33,31 +33,31 @@ FactoryGirl.define do
 
     factory :media_entry_with_image_media_file do
       after(:create) do |me|
-        FactoryGirl.create :media_file_for_image, media_entry: me
+        FactoryBot.create :media_file_for_image, media_entry: me
       end
     end
 
     factory :media_entry_with_audio_media_file do
       after(:create) do |me|
-        FactoryGirl.create :media_file_for_audio, media_entry: me
+        FactoryBot.create :media_file_for_audio, media_entry: me
       end
     end
 
     factory :media_entry_with_video_media_file do
       after(:create) do |me|
-        FactoryGirl.create :media_file_for_movie, media_entry: me
+        FactoryBot.create :media_file_for_movie, media_entry: me
       end
     end
 
     factory :media_entry_with_document_media_file do
       after(:create) do |me|
-        FactoryGirl.create :media_file_for_document, media_entry: me
+        FactoryBot.create :media_file_for_document, media_entry: me
       end
     end
 
     factory :media_entry_with_other_media_file do
       after(:create) do |me|
-        FactoryGirl.create :media_file_for_other, media_entry: me
+        FactoryBot.create :media_file_for_other, media_entry: me
       end
     end
   end
@@ -65,14 +65,14 @@ FactoryGirl.define do
   trait :fat do
     after(:create) do |me|
       vocabulary = create(:vocabulary,
-                          id: Faker::Lorem.characters(10))
+                          id: Faker::Lorem.characters(number: 10))
 
       rand(1..3).times do
         me.meta_data << \
           create(:meta_datum_text,
                  meta_key: \
                  create(:meta_key_text,
-                        id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                        id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 20)}",
                         vocabulary: vocabulary))
       end
       rand(1..3).times do
@@ -80,7 +80,7 @@ FactoryGirl.define do
           create(:meta_datum_text_date,
                  meta_key: \
                  create(:meta_key_text_date,
-                        id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                        id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 20)}",
                         vocabulary: vocabulary))
       end
       rand(1..3).times do
@@ -88,7 +88,7 @@ FactoryGirl.define do
           create(:meta_datum_json,
                  meta_key: \
                  create(:meta_key_json,
-                        id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                        id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 20)}",
                         vocabulary: vocabulary))
       end
       rand(1..3).times do
@@ -96,7 +96,7 @@ FactoryGirl.define do
           create(:meta_datum_keywords,
                  meta_key: \
                    create(:meta_key_keywords,
-                          id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                          id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 20)}",
                           vocabulary: vocabulary))
       end
       rand(1..3).times do
@@ -104,14 +104,14 @@ FactoryGirl.define do
           create(:meta_datum_people,
                  meta_key: \
                    create(:meta_key_people,
-                          id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                          id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 20)}",
                           vocabulary: vocabulary))
       end
       rand(1..3).times do
         me.meta_data <<
           create(:meta_datum_roles,
                  meta_key: create(:meta_key_roles,
-                                  id: "#{vocabulary.id}:#{Faker::Lorem.characters(20)}",
+                                  id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 20)}",
                                   vocabulary: vocabulary))
       end
 

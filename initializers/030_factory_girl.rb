@@ -1,8 +1,8 @@
-require 'factory_girl'
+require 'factory_bot'
 
 if %(development test).include? Rails.env
-  FactoryGirl.definition_file_paths = [
+  FactoryBot.definition_file_paths = [
     Madek::Constants::DATALAYER_ROOT_DIR.join('spec', 'factories')
   ]
-  FactoryGirl.find_definitions
+  FactoryBot.find_definitions
 end

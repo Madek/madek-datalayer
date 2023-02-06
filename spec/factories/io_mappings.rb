@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :io_mapping do
     io_interface { IoInterface.first || create(:io_interface) }

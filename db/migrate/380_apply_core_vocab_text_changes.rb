@@ -161,7 +161,7 @@ class ApplyCoreVocabTextChanges < ActiveRecord::Migration[4.2]
     # to import the english translations into newly transalatable fields
     # (2019-04-24)
     execute 'SET session_replication_role = REPLICA;'
-    MigrationVocabulary.find(CORE_VOCAB[:id]).update_attributes!(
+    MigrationVocabulary.find(CORE_VOCAB[:id]).update!(
       CORE_VOCAB.slice(:labels, :descriptions)
         .map { |k, v| [k, v.try(:map) { |k, v| [k, v.try(:strip)] }.to_h] }.to_h)
     ActiveRecord::Base.connection.execute 'SET session_replication_role = DEFAULT;'

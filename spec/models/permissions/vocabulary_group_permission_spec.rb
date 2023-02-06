@@ -7,16 +7,16 @@ require Rails.root.join 'spec',
 describe Permissions::VocabularyGroupPermission do
 
   it 'is creatable via a factory' do
-    expect { FactoryGirl.create :vocabulary_group_permission }
+    expect { FactoryBot.create :vocabulary_group_permission }
       .not_to raise_error
   end
 
   context 'Group and Vocabulary ' do
 
     before :each do
-      @group = FactoryGirl.create :group
-      @creator = FactoryGirl.create :group
-      @vocabulary = FactoryGirl.create :vocabulary
+      @group = FactoryBot.create :group
+      @creator = FactoryBot.create :group
+      @vocabulary = FactoryBot.create :vocabulary
     end
 
     describe 'destroy_ineffective' do
@@ -25,10 +25,10 @@ describe Permissions::VocabularyGroupPermission do
                 and group is not the responsible_group) do
         before :each do
           @permission = \
-            FactoryGirl.create(:vocabulary_group_permission,
+            FactoryBot.create(:vocabulary_group_permission,
                                view: false,
                                use: false,
-                               group: (FactoryGirl.create :group),
+                               group: (FactoryBot.create :group),
                                vocabulary: @vocabulary)
         end
 

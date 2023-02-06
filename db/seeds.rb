@@ -15,7 +15,7 @@ ActiveRecord::Base.transaction do
   # needs disabled triggers to temporarily make it mutable
   ActiveRecord::Base.connection.execute 'SET session_replication_role = replica;'
 
-  Vocabulary.find_or_create_by(id: CORE_VOCAB[:id]).update_attributes!(
+  Vocabulary.find_or_create_by(id: CORE_VOCAB[:id]).update!(
     CORE_VOCAB.slice(:labels, :descriptions, :admin_comment)
       .map do |k, v|
         if v.is_a?(Hash)
@@ -26,7 +26,7 @@ ActiveRecord::Base.transaction do
       end.to_h)
 
   CORE_VOCAB[:meta_keys].each do |id, attrs|
-    MetaKey.find_or_initialize_by(id: id).update_attributes!(attrs)
+    MetaKey.find_or_initialize_by(id: id).update!(attrs)
   end
   # enable DB triggers!
   ActiveRecord::Base.connection.execute 'SET session_replication_role = DEFAULT;'

@@ -3,7 +3,7 @@ shared_examples 'tokenable' do
 
   context 'when user exists' do
 
-    let(:user) { FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
 
     describe "Creating a #{described_class}" do
       it 'works' do

@@ -11,7 +11,7 @@ class MoveTextElementFromContextKeysToMetaKeys < ActiveRecord::Migration[4.2]
     MetaKey.where("vocabulary_id <> 'madek_core'") \
       .where("meta_datum_object_type = 'MetaDatum::Text'").each do |mk|
       text_elements = mk.context_keys.map(&:text_element)
-      mk.update_attributes! text_type: \
+      mk.update! text_type: \
         if text_elements.include? 'textarea'
           'block'
         else
@@ -22,7 +22,7 @@ class MoveTextElementFromContextKeysToMetaKeys < ActiveRecord::Migration[4.2]
     execute "SET session_replication_role = REPLICA"
     MetaKey.where("vocabulary_id = 'madek_core'") \
       .where("meta_datum_object_type = 'MetaDatum::Text'").each do |mk|
-        mk.update_attributes! text_type: 'line'
+        mk.update! text_type: 'line'
     end
     execute "SET session_replication_role = DEFAULT"
 

@@ -6,7 +6,7 @@ describe MetaDatum::Keywords do
       vocab = create(:vocabulary)
       meta_key = create(:meta_key_keywords,
                         vocabulary: vocab,
-                        id: "#{vocab.id}:#{Faker::Lorem.characters(10)}")
+                        id: "#{vocab.id}:#{Faker::Lorem.characters(number: 10)}")
       expect { create(:meta_datum_keywords, created_by: nil, meta_key: meta_key) }
         .to raise_error /created_by in table meta_data may not be null/
     end

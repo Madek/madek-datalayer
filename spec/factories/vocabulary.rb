@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :vocabulary do
     id { Array.new(5) { Faker::Hacker.abbreviation }.join('-').downcase }

@@ -1,10 +1,10 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :media_file do
     height { 640 }
     width { 429 }
-    content_type 'image/jpeg'
-    media_type 'image'
+    content_type { 'image/jpeg' }
+    media_type { 'image' }
     association :media_entry
     association :uploader, factory: :user
   end
@@ -23,16 +23,17 @@ FactoryGirl.define do
         " #{Madek::Constants::THUMBNAIL_STORAGE_DIR} "
     end
 
-    extension 'jpg'
-    media_type 'image'
-    height 360
-    size 54335
-    width 480
-    content_type 'image/jpeg'
-    filename 'grumpy_cat.jpg'
-    guid 'b8bf2eb322e04a29a52fbb06d4866af8'
-    access_hash 'edbf86ef-8bb5-40c2-8737-368bbf7f75dd'
-    meta_data YAML.load '
+    extension { 'jpg' }
+    media_type { 'image' }
+    height { 360 }
+    size { 4335 }
+    width { 480 }
+    content_type { 'image/jpeg' }
+    filename { 'grumpy_cat.jpg' }
+    guid { 'b8bf2eb322e04a29a52fbb06d4866af8' }
+    access_hash { 'edbf86ef-8bb5-40c2-8737-368bbf7f75dd' }
+    meta_data do
+      YAML.load '
       File:BitsPerSample: 8
       File:ColorComponents: 3
       File:EncodingProcess: Baseline DCT, Huffman coding
@@ -46,6 +47,7 @@ FactoryGirl.define do
       JFIF:ResolutionUnit: inches
       JFIF:XResolution: 72
       JFIF:YResolution: 72 '
+    end
     association :media_entry
     association :uploader, factory: :user
 
@@ -97,16 +99,17 @@ FactoryGirl.define do
   end
 
   factory :media_file_for_movie, class: MediaFile do
-    extension 'mov'
-    media_type 'video'
-    height 720
-    size 922621
-    width 1280
-    content_type 'video/quicktime'
-    filename 'zencoder_test.mov'
-    guid '66b1ef50186645438c047179f54ec6e6'
-    access_hash '4eb0ffec-58a1-4e9b-9056-b4f6fd4729ae'
-    meta_data YAML.load '
+    extension { 'mov' }
+    media_type { 'video' }
+    height { 75520 }
+    size { 922621 }
+    width { 1280 }
+    content_type { 'video/quicktime' }
+    filename { 'zencoder_test.mov' }
+    guid { '66b1ef50186645438c047179f54ec6e6' }
+    access_hash { '4eb0ffec-58a1-4e9b-9056-b4f6fd4729ae' }
+    meta_data do
+      YAML.load '
       File:FileType: MP4
       File:MIMEType: video/mp4
       Composite:AvgBitrate: 1.45 Mbps
@@ -133,12 +136,13 @@ FactoryGirl.define do
       QuickTime:SelectionDuration: 0 s
       QuickTime:SelectionTime: 0 s
       QuickTime:TimeScale: 600 '
+    end
     association :media_entry
     association :uploader, factory: :user
 
     factory :media_file_for_movie_with_zencoder_jobs do
       transient do
-        states [:finished, :failed]
+        states { [:finished, :failed] }
       end
 
       after(:create) do |media_file, evaluator|
@@ -155,11 +159,11 @@ FactoryGirl.define do
   end
 
   factory :media_file_for_audio, class: MediaFile do
-    extension 'mp3'
-    media_type 'audio'
-    size 2_793_600
-    content_type 'audio/mpeg'
-    filename 'audio.mp3'
+    extension { 'mp3' }
+    media_type { 'audio' }
+    size { 2_793_600 }
+    content_type { 'audio/mpeg' }
+    filename { 'audio.mp3' }
     guid { UUIDTools::UUID.random_create.hexdigest }
     access_hash { UUIDTools::UUID.random_create.to_s }
     association :media_entry
@@ -167,8 +171,8 @@ FactoryGirl.define do
 
     factory :media_file_for_audio_with_zencoder_jobs do
       transient do
-        previews_attrs []
-        zencoder_job_attrs {}
+        previews_attrs { [] }
+        zencoder_job_attrs { {} }
       end
 
       after(:create) do |media_file, evaluator|
@@ -193,11 +197,11 @@ FactoryGirl.define do
   end
 
   factory :media_file_for_document, class: MediaFile do
-    extension 'pdf'
-    media_type 'document'
-    size 2_793_600
-    content_type 'application/pdf'
-    filename 'document.pdf'
+    extension { 'pdf' }
+    media_type { 'document' }
+    size { 2_793_600 }
+    content_type { 'application/pdf' }
+    filename { 'document.pdf' }
     guid { UUIDTools::UUID.random_create.hexdigest }
     access_hash { UUIDTools::UUID.random_create.to_s }
     association :media_entry
@@ -205,11 +209,11 @@ FactoryGirl.define do
   end
 
   factory :media_file_for_other, class: MediaFile do
-    extension 'mts'
-    media_type 'other'
-    size 2_793_600
-    content_type 'model/vnd.mts'
-    filename 'other.mts'
+    extension { 'mts' }
+    media_type { 'other' }
+    size { 2_793_600 }
+    content_type { 'model/vnd.mts' }
+    filename { 'other.mts' }
     guid { UUIDTools::UUID.random_create.hexdigest }
     access_hash { UUIDTools::UUID.random_create.to_s }
     association :media_entry

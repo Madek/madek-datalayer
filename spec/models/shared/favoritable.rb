@@ -1,7 +1,7 @@
 RSpec.shared_examples 'a favoritable' do
 
   before :example do
-    @user = FactoryGirl.create :user
+    @user = FactoryBot.create :user
   end
 
   it 'favor' do

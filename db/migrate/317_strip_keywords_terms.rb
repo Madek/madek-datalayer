@@ -43,7 +43,7 @@ class StripKeywordsTerms < ActiveRecord::Migration[4.2]
 
           # else simply update term to the new stripped value
           else
-            keyword.update_attributes term: new_term
+            keyword.update term: new_term
           end
         end
       end

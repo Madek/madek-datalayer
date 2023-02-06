@@ -16,7 +16,7 @@ module Concerns
           # we need to supply the user information, because we need to scope
           # the meta_data by meta_keys/vocabularies a particular user is
           # allowed to see. In case of public, the user is nil per default.
-          def filter_by(user = nil, **filter_opts)
+          def filter_by(user = nil, filter_opts)
             if filter_opts.blank?
               all
             else
@@ -97,7 +97,10 @@ module Concerns
             end
           end
 
-          def filter_by_media_file_helper(key: nil, value: nil)
+          def filter_by_media_file_helper(opts)
+            key = opts[:key]
+            value = opts[:value]
+
             if key == 'filename'
               joins(:media_file).where(
                 'media_files.filename ILIKE :filename', filename: "%#{value}%")
@@ -107,10 +110,13 @@ module Concerns
             end
           end
 
-          def filter_by_permission_helper(key: nil, value: nil)
+          def filter_by_permission_helper(opts)
             # NOTE: Both public and visibility allow to filter for public
             # resources. The latter is newer and not in the API but used
             # in the side filter.
+            key = opts[:key]
+            value = opts[:value]
+
             case key
             when 'responsible_user'
               with_responsible_user(value)

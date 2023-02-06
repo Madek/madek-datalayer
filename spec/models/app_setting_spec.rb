@@ -144,28 +144,28 @@ describe AppSetting do
 
   it 'catalog context keys types validation' do
     meta_key_keywords = \
-      FactoryGirl.create(:meta_key_keywords,
-                         id: "test:#{Faker::Lorem.characters(8)}")
+      FactoryBot.create(:meta_key_keywords,
+                         id: "test:#{Faker::Lorem.characters(number: 8)}")
     context_key_keywords = \
-      FactoryGirl.create(:context_key, meta_key: meta_key_keywords)
+      FactoryBot.create(:context_key, meta_key: meta_key_keywords)
 
     meta_key_text = \
-      FactoryGirl.create(:meta_key_text,
-                         id: "test:#{Faker::Lorem.characters(8)}")
+      FactoryBot.create(:meta_key_text,
+                         id: "test:#{Faker::Lorem.characters(number: 8)}")
     context_key_text = \
-      FactoryGirl.create(:context_key, meta_key: meta_key_text)
+      FactoryBot.create(:context_key, meta_key: meta_key_text)
 
     meta_key_text_date = \
-      FactoryGirl.create(:meta_key_text_date,
-                         id: "test:#{Faker::Lorem.characters(8)}")
+      FactoryBot.create(:meta_key_text_date,
+                         id: "test:#{Faker::Lorem.characters(number: 8)}")
     context_key_text_date = \
-      FactoryGirl.create(:context_key, meta_key: meta_key_text_date)
+      FactoryBot.create(:context_key, meta_key: meta_key_text_date)
 
     meta_key_people = \
-      FactoryGirl.create(:meta_key_people,
-                         id: "test:#{Faker::Lorem.characters(8)}")
+      FactoryBot.create(:meta_key_people,
+                         id: "test:#{Faker::Lorem.characters(number: 8)}")
     context_key_people = \
-    FactoryGirl.create(:context_key, meta_key: meta_key_people)
+    FactoryBot.create(:context_key, meta_key: meta_key_people)
 
     app_setting.catalog_context_keys = [context_key_keywords.id,
                                         context_key_text.id,

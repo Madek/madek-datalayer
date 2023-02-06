@@ -5,10 +5,10 @@ end
 RSpec.shared_examples 'favored by user' do
 
   before :example do
-    @user = FactoryGirl.create(:user)
+    @user = FactoryBot.create(:user)
     2.times do
       @user.send("favorite_#{described_class.table_name}") << \
-        FactoryGirl.create(described_class.model_name.singular)
+        FactoryBot.create(described_class.model_name.singular)
     end
   end
 

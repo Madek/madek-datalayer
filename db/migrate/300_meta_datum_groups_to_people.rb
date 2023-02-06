@@ -134,7 +134,7 @@ class MetaDatumGroupsToPeople < ActiveRecord::Migration[4.2]
     ::Group.find_each do |group|
       person= ::Person.create! is_bunch: true, last_name: group.name,
         pseudonym: group.institutional_group_name, institutional_id: group.institutional_group_id
-      group.update_attributes person_id: person.id
+      group.update person_id: person.id
     end
 
     add_column :meta_keys, :allowed_people_subtypes, :text, array: true
@@ -166,7 +166,7 @@ class MetaDatumGroupsToPeople < ActiveRecord::Migration[4.2]
         mdgs.destroy
 
         mdp = MetaDatum::People.find_or_create_by(mdgs_attrs.except!(:created_by_id))
-        mdp.update_attributes!(mdgs_attrs)
+        mdp.update!(mdgs_attrs)
 
         mdgxs.each do |mdg|
           person = Group.find(mdg[:group_id]).person

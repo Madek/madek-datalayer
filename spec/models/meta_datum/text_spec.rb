@@ -9,24 +9,24 @@ describe MetaDatum::Text do
   describe 'Creation' do
 
     it 'should not raise an error ' do
-      expect { FactoryGirl.create :meta_datum_text }.not_to raise_error
+      expect { FactoryBot.create :meta_datum_text }.not_to raise_error
     end
 
     it 'should not be nil' do
-      expect(FactoryGirl.create :meta_datum_text).to be
+      expect(FactoryBot.create :meta_datum_text).to be
     end
 
     it 'should be persisted' do
-      expect(FactoryGirl.create :meta_datum_text).to be_persisted
+      expect(FactoryBot.create :meta_datum_text).to be_persisted
     end
 
     it 'should raise an error for empty created_by' do
-      expect { FactoryGirl.create :meta_datum_text, created_by: nil }
+      expect { FactoryBot.create :meta_datum_text, created_by: nil }
         .to raise_error /created_by in table meta_data may not be null/
     end
 
     it 'should auto delete for empty string' do
-      expect { FactoryGirl.create :meta_datum_text, string: nil }
+      expect { FactoryBot.create :meta_datum_text, string: nil }
         .not_to change { MetaDatum.count }
     end
 
@@ -34,13 +34,13 @@ describe MetaDatum::Text do
       it 'should sanitize special whitespace char and auto delete' do
         string = Madek::Constants::SPECIAL_WHITESPACE_CHARS.sample
         # using value= because of sanitization
-        expect { FactoryGirl.create :meta_datum_text, value: string }
+        expect { FactoryBot.create :meta_datum_text, value: string }
           .not_to change { MetaDatum.count }
       end
 
       it 'whitespace regexp should not match on newlines' do
         string = 'foo\n\r\n\rbar'
-        expect { FactoryGirl.create :meta_datum_text, value: string }
+        expect { FactoryBot.create :meta_datum_text, value: string }
           .to change { MetaDatum.count }
       end
     end
@@ -54,16 +54,16 @@ describe MetaDatum::Text do
     end
 
     it 'converts to NFC when creating a meta datum' do
-      expect(FactoryGirl.create(
+      expect(FactoryBot.create(
         :meta_datum_text, string: 'Überweiß'.unicode_normalize(:nfd)
       ).value).to \
         be == 'Überweiß'.unicode_normalize(:nfc)
     end
 
     it 'converts to NFC when updating a meta datum' do
-      mdt = FactoryGirl.create(:meta_datum_text, \
+      mdt = FactoryBot.create(:meta_datum_text, \
                                string: 'Blah'.unicode_normalize(:nfd))
-      mdt.update_attributes! string: 'Überweiß'.unicode_normalize(:nfd)
+      mdt.update! string: 'Überweiß'.unicode_normalize(:nfd)
       expect(mdt.value).to be == 'Überweiß'.unicode_normalize(:nfc)
     end
 
@@ -72,7 +72,7 @@ describe MetaDatum::Text do
   context 'an existing MetaDatumString instance ' do
 
     before :each do
-      @mds = FactoryGirl.create :meta_datum_text, string: 'original value'
+      @mds = FactoryBot.create :meta_datum_text, string: 'original value'
     end
 
     describe 'the string field' do
@@ -120,21 +120,21 @@ describe MetaDatum::Text do
     describe 'required context keys validation' do
 
       it 'validates correctly' do
-        media_entry = FactoryGirl.create(:media_entry, is_published: true)
-        meta_datum_text = FactoryGirl.create(:meta_datum_text,
+        media_entry = FactoryBot.create(:media_entry, is_published: true)
+        meta_datum_text = FactoryBot.create(:meta_datum_text,
                                              meta_key_id: 'test:string',
                                              media_entry: media_entry)
 
         validation_context_id = 'upload'
         Context.find_by_id(validation_context_id) \
-          or FactoryGirl.create(:context, id: validation_context_id)
-        AppSetting.first.update_attributes! \
+          or FactoryBot.create(:context, id: validation_context_id)
+        AppSetting.first.update! \
           contexts_for_entry_validation: [validation_context_id]
-        FactoryGirl.create(:context_key,
+        FactoryBot.create(:context_key,
                            context_id: validation_context_id,
                            is_required: true)
 
-        expect(meta_datum_text.update_attributes(value: nil)).to be false
+        expect(meta_datum_text.update(value: nil)).to be false
         meta_datum_text.reload
         expect(meta_datum_text.value).not_to be_blank
       end

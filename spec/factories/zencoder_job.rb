@@ -1,6 +1,6 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :zencoder_job do
-    state 'submitted'
-    media_file { FactoryGirl.create :media_file_for_movie }
+    state { 'submitted' }
+    media_file { FactoryBot.create :media_file_for_movie }
   end
 end

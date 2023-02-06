@@ -125,7 +125,7 @@ class MigrateMetaDataToVocabulary < ActiveRecord::Migration[4.2]
 
           # create vocabulary based on context:
           vocabulary = Vocabulary.find_or_create_by(id: sanitize_namespace_id(context.id))
-          vocabulary.update_attributes(
+          vocabulary.update(
             enabled_for_public_view: is_public,
             enabled_for_public_use: is_public,
             label: context.label,

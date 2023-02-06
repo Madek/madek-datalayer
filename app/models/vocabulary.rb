@@ -17,7 +17,7 @@ class Vocabulary < ApplicationRecord
            through: :meta_keys
 
   scope :sorted, lambda { |locale = AppSetting.default_locale|
-    unscoped.order("vocabularies.labels->'#{locale}'")
+    unscoped.order(Arel.sql "vocabularies.labels->'#{locale}'")
   }
   scope :with_meta_keys_count, lambda {
     joins('LEFT OUTER JOIN meta_keys ON meta_keys.vocabulary_id = vocabularies.id')

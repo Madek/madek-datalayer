@@ -5,15 +5,15 @@ describe Arcs::CollectionMediaEntryArc do
   context 'A MediaEntry and a Collection' do
 
     before :each do
-      @media_entry = FactoryGirl.create :media_entry
-      @collection = FactoryGirl.create :collection
+      @media_entry = FactoryBot.create :media_entry
+      @collection = FactoryBot.create :collection
     end
 
     describe Arcs::CollectionMediaEntryArc do
 
       it 'is producible by a factory ' do
         expect do
-          FactoryGirl.create :collection_media_entry_arc,
+          FactoryBot.create :collection_media_entry_arc,
                              media_entry: @media_entry,
                              collection: @collection
         end.not_to raise_error
@@ -23,7 +23,7 @@ describe Arcs::CollectionMediaEntryArc do
                 with the collection ) do
 
         before :each do
-          @arc = FactoryGirl.create :collection_media_entry_arc,
+          @arc = FactoryBot.create :collection_media_entry_arc,
                                     media_entry: @media_entry,
                                     collection: @collection
         end

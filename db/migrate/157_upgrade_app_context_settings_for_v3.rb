@@ -63,7 +63,7 @@ class UpgradeAppContextSettingsForV3 < ActiveRecord::Migration[4.2]
     ].flatten.compact
 
     AppSetting.reset_column_information
-    app_setting.update_attributes!(new_settings)
+    app_setting.update!(new_settings)
 
     # CLEANUP
     remove_column :app_settings, :third_displayed_context_id

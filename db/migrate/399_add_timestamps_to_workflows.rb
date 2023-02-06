@@ -10,7 +10,7 @@ class AddTimestampsToWorkflows < ActiveRecord::Migration[4.2]
     MigrationWorkflow.reset_column_information
 
     MigrationWorkflow.all.each do |wf|
-      wf.update_attributes!(created_at: DateTime.now, updated_at: DateTime.now)
+      wf.update!(created_at: DateTime.now, updated_at: DateTime.now)
     end
   end
 end

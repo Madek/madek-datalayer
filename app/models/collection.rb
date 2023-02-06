@@ -101,10 +101,10 @@ class Collection < ApplicationRecord
     ActiveRecord::Base.transaction do
       Arcs::CollectionMediaEntryArc
         .find_by(collection: self, cover: true)
-        .try(:update_attributes!, cover: false)
+        .try(:update!, cover: false)
       Arcs::CollectionMediaEntryArc
         .find_by(collection: self, media_entry: media_entry)
-        .update_attributes!(cover: true)
+        .update!(cover: true)
     end
   end
 
