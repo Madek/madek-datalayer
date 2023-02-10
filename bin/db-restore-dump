@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+
+SPARSE="${SPARSE:-YES}"
+if [ $SPARSE == "YES" ] ||  [ $SPARSE == "NO" ]; then
+  echo "SPARSE=$SPARSE"
+else
+  echo 'SPARSE must be unset, or "YES", or "NO"'
+  exit 1
+fi
+
+
+DEV_MODE="${DEV_MODE:-YES}"
+if [ $DEV_MODE == "YES" ] ||  [ $DEV_MODE == "NO" ]; then
+  echo "DEV_MODE=$DEV_MODE"
+else
+  echo 'DEV_MODE must be unset, or "YES", or "NO"'
+  exit 1
+fi
+
+
+
+START_DIR=$(pwd)
+
+PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
+cd $PROJECT_DIR
+./bin/env/ruby-setup
+
+RAILS_ENV=${RAILS_ENV:-test}
+source bin/db-set-env
+
+FILE=${FILE:-tmp/latest.pgbin}
+if [ -z ${1:-''} ]; then    
+  set -- "${FILE}"
+fi
+
+
+
+################################################################################
+
+terminate_connections
+
+psql -c "DROP DATABASE IF EXISTS $PGDATABASE"
+psql -c "CREATE DATABASE $PGDATABASE"
+
+cd $START_DIR
+
+pg_restore --disable-triggers -j $J -x -O -d $PGDATABASE --schema-only "$@"
+
+
+if [ $SPARSE == "YES" ]; then
+  pg_restore --disable-triggers -j $J -x -O -d $PGDATABASE --data-only \
+    -L <(pg_restore -l ${FILE} | grep -v -E -e 'audits') $FILE
+
+  echo "WARNING some tables have been skipped, set SPRASE=NO to avoid this"
+
+else
+  pg_restore --disable-triggers -j $J -x -O -d $PGDATABASE --data-only $FILE
+fi
+
+
+
+################################################################################
+
+
+if [[ $DEV_MODE == 'YES' ]]; then
+  set_dev_and_debug_values
+fi

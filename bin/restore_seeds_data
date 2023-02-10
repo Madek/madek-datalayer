@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-set -eux
-export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
+set -euo pipefail
 
+PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
+cd $PROJECT_DIR
+source bin/db-set-env
+
+export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
 bundle exec rake db:pg:truncate_tables db:pg:data:restore FILE=db/seeds.pgbin

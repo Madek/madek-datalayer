@@ -16,6 +16,7 @@ task_defaults:
   dispatch_storm_delay_duration: 1 Second
 
   environment_variables:
+    DATALAYER_DIR: '{{CIDER_CI_WORKING_DIR}}'
     RAILS_ENV: test
     DATABASE: madek_datalayer_test_{{CIDER_CI_TRIAL_ID}}
     LANG: 'en_US.UTF-8'
@@ -39,4 +40,6 @@ task_defaults:
     test:
       body: |
         set -eux
-        ./bin/rspec $CIDER_CI_TASK_FILE
+        unset PGPORT; unset PGUSER
+        PGPORT=${PG10PORT} PGUSER=${PG10USER} \
+          ./bin/rspec $CIDER_CI_TASK_FILE

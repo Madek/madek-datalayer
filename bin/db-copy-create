@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+set -x
+
+PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
+cd $PROJECT_DIR
+./bin/env/ruby-setup
+
+RAILS_ENV=${RAILS_ENV:-test}
+source bin/db-set-env
+
+PGDATABASE_COPY="${PGDATABASE_COPY:-${PGDATABASE}_copy}"
+dropdb --if-exists $PGDATABASE_COPY
+
+terminate_connections
+
+psql -d template1 <<HERE
+  DROP DATABASE IF EXISTS "${PGDATABASE_COPY}";
+  CREATE DATABASE "${PGDATABASE_COPY}" WITH TEMPLATE "${PGDATABASE}";
+HERE
+
+# vi: ft=sh

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+set -x
+
+PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
+cd $PROJECT_DIR
+./bin/env/ruby-setup
+
+RAILS_ENV=${RAILS_ENV:-test}
+source bin/db-set-env
+
+terminate_connections
+
+psql -c "DROP DATABASE IF EXISTS $PGDATABASE"
+psql -c "CREATE DATABASE $PGDATABASE"
+
+bundle exec rake db:migrate "$@"
+
+# vi: ft=sh

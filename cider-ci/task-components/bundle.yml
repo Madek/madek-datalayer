@@ -2,21 +2,16 @@ traits:
   asdf: true
 
 scripts:
-  bundle:
+  datalayer-bundle-ruby:
     exclusive_executor_resource: asdf-ruby
     timeout: 20 Minutes
     body: |
       #!/usr/bin/env bash
-      set -euxo pipefail
-      if [[ ! -d ~/.asdf/plugins/ruby ]]; then
-        asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git
-      else
-        asdf plugin update ruby
-      fi
-      asdf install ruby
-      bundle install
+      set -euo pipefail
+      cd $DATALAYER_DIR
+      ./bin/env/ruby-setup 
 
   test:
     start_when:
-      bundle has passed:
-        script_key: bundle
+      datalayer-bundle-ruby has passed:
+        script_key: datalayer-bundle-ruby

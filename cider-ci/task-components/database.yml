@@ -1,47 +1,49 @@
+include:
+  - cider-ci/task-components/bundle.yml
+
 traits:
-  Ruby: true
+  asdf: true
   PostgreSQL: true
 
 scripts:
 
-  configure-database:
+  datalayer-configure-rails-db:
     # NOTE: also sets up 'production', needed for asset precompilation
     start_when:
       ruby has been bundled:
-        script_key: bundle
-
+        script_key: datalayer-bundle-ruby 
     body: |
-      #!/usr/bin/env ruby
-      require 'yaml'
-      db_config = {
-        'adapter' => 'postgresql',
-        'encoding' => 'unicode',
-        'host' => 'localhost',
-        'pool' => 10,
-        'username' => ENV['PGUSER'],
-        'password' =>  ENV['PGPASSWORD'],
-        'database' => ENV['DATABASE']}
-      config = { 'test' => db_config, 'production' => db_config }
-      File.open('config/database.yml','w') { |file| file.write config.to_yaml }
+      #!/usr/bin/env bash
+      set -euo pipefail
+      cd $DATALAYER_DIR
+      unset PGPORT; unset PGUSER
+      PGPORT=${PG10PORT} PGUSER=${PG10USER} \
+        ./cider-ci/bin/configure-rails-db
 
   create-database:
     body: |
       #!/usr/bin/env bash
-      set -eux
-      createdb "$DATABASE"
-      psql -d "$DATABASE" -f db/structure.sql
+      set -euo pipefail
+      unset PGPORT; unset PGUSER
+      export PGPORT=${PG10PORT} 
+      export PGUSER=${PG10USER} 
+      createdb "$DATABASE" 
+      psql -d "$DATABASE" -f ${DATALAYER_DIR}/db/structure.sql
 
   test:
     start_when:
       database has been created:
         script_key: create-database
       database has been configured:
-        script_key: configure-database
+        script_key: datalayer-configure-rails-db
 
   delete-database:
     body: |
       #!/usr/bin/env bash
-      set -eux
+      set -euo pipefail
+      unset PGPORT; unset PGUSER
+      export PGPORT=${PG10PORT} 
+      export PGUSER=${PG10USER} 
       dropdb "$DATABASE"
     start_when:
       test is in termial state:

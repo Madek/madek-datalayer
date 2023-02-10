@@ -1,0 +1,18 @@
+pg: &default
+  adapter: postgresql
+  host: localhost
+  port: 5432
+  pool: 5
+  encoding: unicode
+  username: <%= ENV['DB_USER'].presence || ENV['PGUSER'].presence || 'madek' %>
+  password: <%= ENV['DB_PASSWORD'].presence || ENV['PGPASSWORD'].presence || 'madek' %>
+  database: <%= ENV['DB_NAME'].presence || ENV['PGDATABASE'].presence || 'madek' %>
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
