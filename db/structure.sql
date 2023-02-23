@@ -1569,7 +1569,7 @@ CREATE TABLE public.meta_keys (
     hints public.hstore DEFAULT ''::public.hstore NOT NULL,
     documentation_urls public.hstore DEFAULT ''::public.hstore NOT NULL,
     CONSTRAINT check_allowed_people_subtypes_not_empty_for_meta_datum_people CHECK ((((allowed_people_subtypes IS NOT NULL) AND (COALESCE(array_length(allowed_people_subtypes, 1), 0) > 0)) OR (meta_datum_object_type <> 'MetaDatum::People'::text))),
-    CONSTRAINT check_is_extensible_list_is_boolean_for_meta_datum_keywords CHECK (((((is_extensible_list = true) OR (is_extensible_list = false)) AND (meta_datum_object_type = 'MetaDatum::Keywords'::text)) OR (meta_datum_object_type <> 'MetaDatum::Keywords'::text))),
+    CONSTRAINT check_is_extensible_list_is_boolean_for_respective_meta_datum_t CHECK (((((is_extensible_list = true) OR (is_extensible_list = false)) AND (meta_datum_object_type = ANY (ARRAY['MetaDatum::Keywords'::text, 'MetaDatum::Roles'::text]))) OR (meta_datum_object_type <> ALL (ARRAY['MetaDatum::Keywords'::text, 'MetaDatum::Roles'::text])))),
     CONSTRAINT check_keywords_alphabetical_order_is_boolean_for_meta_datum_key CHECK (((((keywords_alphabetical_order = true) OR (keywords_alphabetical_order = false)) AND (meta_datum_object_type = 'MetaDatum::Keywords'::text)) OR (meta_datum_object_type <> 'MetaDatum::Keywords'::text))),
     CONSTRAINT check_valid_meta_datum_object_type CHECK ((meta_datum_object_type = ANY (ARRAY['MetaDatum::Groups'::text, 'MetaDatum::Keywords'::text, 'MetaDatum::Licenses'::text, 'MetaDatum::People'::text, 'MetaDatum::Roles'::text, 'MetaDatum::Text'::text, 'MetaDatum::TextDate'::text, 'MetaDatum::Users'::text, 'MetaDatum::Vocables'::text, 'MetaDatum::JSON'::text, 'MetaDatum::MediaEntry'::text]))),
     CONSTRAINT check_valid_text_type CHECK ((text_type = ANY (ARRAY['line'::text, 'block'::text]))),
@@ -4775,6 +4775,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('0'),
 ('1'),
+('10'),
 ('2'),
 ('3');
 

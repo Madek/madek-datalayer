@@ -31,7 +31,7 @@ class MetaDatum::Roles < MetaDatum
     end
   end
 
-  def set_value!(roles, _created_by_user)
+  def set_value!(roles, created_by_user)
     if roles.delete_if(&:blank?).empty?
       destroy! and return
     end
@@ -44,7 +44,23 @@ class MetaDatum::Roles < MetaDatum
           person = ::Person.find_or_build_resource!(person_params, self)
           person.save! if person.new_record?
 
-          result << { person => person_with_role.values.first }
+          role_uuid_or_labels = person_with_role.values.first
+          if !role_uuid_or_labels
+            result << { person => nil }
+          else
+            role_uuid = begin
+                          UUIDTools::UUID.parse(role_uuid_or_labels).to_s
+                        rescue
+                          labels = { de: role_uuid_or_labels[:term],
+                                    en: role_uuid_or_labels[:term] }
+                          new_role = ::Role.create!(labels: labels,
+                                                    meta_key_id: self.meta_key.id,
+                                                    creator_id: created_by_user.id)
+                          new_role.id
+                        end
+
+            result << { person => role_uuid }
+          end
         end
       end
 

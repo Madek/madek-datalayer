@@ -4,8 +4,12 @@ module Concerns
       extend ActiveSupport::Concern
 
       class_methods do
-        def filter_by(term)
+        def filter_by(term = nil, meta_key_id = nil)
           roles = all
+
+          if meta_key_id
+            roles = Role.where('roles.meta_key_id = ?', meta_key_id)
+          end
 
           return roles if term.nil?
 
