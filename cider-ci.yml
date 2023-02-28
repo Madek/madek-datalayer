@@ -43,6 +43,7 @@ jobs:
       task_defaults:
         environment_variables:
           GIT_LINEAR_HISTORY_CHECK_START_SHA: ec23e77651c3b80d4343ead339514512aff946c1
+          DATALAYER_DIR: '{{CIDER_CI_WORKING_DIR}}'
       contexts:
         include:
           - path: cider-ci/context-components/lint/git-lint.yml

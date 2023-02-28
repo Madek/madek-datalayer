@@ -4,7 +4,7 @@ set -x
 
 PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
 cd $PROJECT_DIR
-./bin/env/ruby-setup
+./bin/env/ruby-setup --quiet
 
 RAILS_ENV=${RAILS_ENV:-test}
 source bin/db-set-env

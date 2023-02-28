@@ -24,19 +24,13 @@
                 test -z $(git rev-list --merges ${GIT_LINEAR_HISTORY_CHECK_START_SHA}...HEAD)
               }
 
-    git-branch-current:
-      name: "git: tree contains latest commit from origin/master"
-      aggregate_state: satisfy-last # relies on external state!
-      scripts:
-        test:
-          body:
-            read_and_replace_with: cider-ci/bin/check-git-branch-current
-
-    git-submodules-current:
-      name: "git: submodules trees all contain latest commit from origin/master"
+    git-check-ahead-of-origin-master:
+      name: "git: check if this commit is ahead of origin/master for this repo and all submodules"
       aggregate_state: satisfy-last # relies on external state!
       git_options: { submodules: { include_match: ^.*$ } }
       scripts:
         test:
-          body:
-            read_and_replace_with: cider-ci/bin/check-git-submodules-current
+          body: | 
+            #!/usr/bin/env bash
+            set -euo pipefail
+            ${DATALAYER_DIR}/bin/git-check-ahead-of-origin-master

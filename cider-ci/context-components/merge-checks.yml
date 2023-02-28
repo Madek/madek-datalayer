@@ -12,5 +12,7 @@ tasks:
     name: "git submodules are all merged to origin/master"
     scripts:
       test:
-        body:
-          read_and_replace_with: cider-ci/bin/check-git-submodules-are-merged
+        body: |
+          #/usr/bin/env bash
+          set -euo pipefail
+          ${DATALAYER_DIR}/bin/git-check-submodules-merged-to-origin-master
