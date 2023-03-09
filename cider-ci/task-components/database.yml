@@ -3,7 +3,7 @@ include:
 
 traits:
   asdf: true
-  PostgreSQL: true
+  PostgreSQL 15: true
 
 scripts:
 
@@ -16,17 +16,14 @@ scripts:
       #!/usr/bin/env bash
       set -euo pipefail
       cd $DATALAYER_DIR
-      unset PGPORT; unset PGUSER
-      PGPORT=${PG10PORT} PGUSER=${PG10USER} \
-        ./cider-ci/bin/configure-rails-db
+      source $DATALAYER_DIR/cider-ci/bin/pg_env_set 
+      ./cider-ci/bin/configure-rails-db
 
   create-database:
     body: |
       #!/usr/bin/env bash
       set -euo pipefail
-      unset PGPORT; unset PGUSER
-      export PGPORT=${PG10PORT} 
-      export PGUSER=${PG10USER} 
+      source $DATALAYER_DIR/cider-ci/bin/pg_env_set 
       createdb "$DATABASE" 
       psql -d "$DATABASE" -f ${DATALAYER_DIR}/db/structure.sql
 
@@ -41,10 +38,8 @@ scripts:
     body: |
       #!/usr/bin/env bash
       set -euo pipefail
-      unset PGPORT; unset PGUSER
-      export PGPORT=${PG10PORT} 
-      export PGUSER=${PG10USER} 
-      dropdb "$DATABASE"
+      source $DATALAYER_DIR/cider-ci/bin/pg_env_set 
+      dropdb --if-exists -f "$DATABASE"
     start_when:
       test is in termial state:
         script_key: test

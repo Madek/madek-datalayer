@@ -1,3 +1,24 @@
-#!/bin/sh
-echo 'this script was renamed, this is just an alias to not break any workflows'
-bin/rerun_db_migrations 
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
+cd $PROJECT_DIR
+source bin/db-set-env
+
+SQUASHED_MIGRATIONS_VERSION=000
+
+export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
+
+env | sort
+
+dropdb -e --if-exists $PGDATABASE
+createdb -e $PGDATABASE
+bundle exec rails db:migrate:up VERSION=${SQUASHED_MIGRATIONS_VERSION}
+bundle exec rails db:pg:data:restore FILE=db/personas.$SQUASHED_MIGRATIONS_VERSION.pgbin
+bundle exec rails db:migrate
+bundle exec rails db:seed
+rm -f db/personas.pgbin
+bundle exec rails db:pg:structure_and_data:dump FILE=db/personas.pgbin
+
+# needed because db:drop runs for all databases while db:migrate runs only in current env
+RAILS_ENV=test rails db:migrate

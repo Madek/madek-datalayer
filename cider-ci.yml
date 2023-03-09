@@ -18,6 +18,10 @@ jobs:
         type: job
         job_key: lint
         states: [passed]
+      'meta passed':
+        type: job
+        job_key: meta
+        states: [passed]
     context:
       task: "echo '✔︎ All dependencies have passed' ; exit 0"
 
@@ -32,12 +36,19 @@ jobs:
     context:
       include: cider-ci/context-components/rspec.yml
 
+  meta: 
+    name: DB Meta Checks
+    run_when: *DEFAULT_TRIGGERS
+    priority: 2
+    context:
+      include: cider-ci/context-components/meta.yml
+
   lint:
     name: "Linting"
     description: |
       Code checks: static checks and metrics: complexity, duplication, and format,
       also other consistency checks.
-    priority: 3
+    priority: 2
     run_when: *DEFAULT_TRIGGERS
     context:
       task_defaults:

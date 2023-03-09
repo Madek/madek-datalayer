@@ -45,7 +45,7 @@ namespace :db do
 
       # Default Settings ##########################################################
 
-      settings = AppSetting.first
+      settings = AppSetting.first || AppSetting.create
 
       DEFAULT_CONTEXT_SETTINGS.each do |key, val|
         settings.update!(key => val)

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
+cd $PROJECT_DIR
+source bin/db-set-env
+
+export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
+
+# seeds (only seeds, like the core vocab)
+bundle exec rails db:pg:terminate_connections db:drop db:create db:migrate 
+bundle exec rails db:seed
+rm -f db/seeds.pgbin
+bundle exec rails db:pg:structure_and_data:dump FILE=db/seeds.pgbin
+
+

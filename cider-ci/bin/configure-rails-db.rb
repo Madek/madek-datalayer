@@ -9,8 +9,8 @@ db_config = {
   'encoding' => 'unicode',
   'host' => 'localhost',
   'pool' => 3,
-  'port' => ENV['PGPORT'],
-  'username' => ENV['PGUSER'],
+  'port' => ENV['PG15PORT'],
+  'username' => ENV['PG15USER'],
   'password' =>  ENV['PGPASSWORD'],
   'database' => ENV['DATABASE']}
 

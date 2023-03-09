@@ -7,6 +7,7 @@ if [ ! -e $PROJECT_DIR/config/database.yml ]; then
   ln -s $PROJECT_DIR/config/database_dev.yml $PROJECT_DIR/config/database.yml
 fi
 
+export RAILS_ENV=${RAILS_ENV:-test}
 DBCONFIG=$(bundle exec rails runner "print(ActiveRecord::Base.configurations[Rails.env].to_json)")
 PGDATABASE=$(echo "$DBCONFIG" | jq -r .database)
 PGPORT=$(echo $DBCONFIG | jq -r .port)

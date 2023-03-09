@@ -4,7 +4,11 @@ gem 'rails', '~> 6.1.0'
 gem "sprockets", "<4" # DO NOT UPGRADE SPROCKETS!
 
 gem 'pg'
-gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks'
+
+# gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks'
+# gem 'pg_tasks', path: '/Users/tom/Programming/RUBY/rails_pg-tasks'
+gem 'pg_tasks', git: 'https://github.com/drtom/rails_pg-tasks'
+ 
 gem 'textacular', '~> 5.0'
 
 gem 'base32-crockford'

@@ -78,6 +78,7 @@ MADEK_CORE_VOCABULARY:
         de: NULL
       position: 3
       is_enabled_for_media_entries: true
+      allowed_people_subtypes: ['Person', 'PeopleGroup']
       is_enabled_for_collections: true
       vocabulary_id: madek_core
       admin_comment: NULL

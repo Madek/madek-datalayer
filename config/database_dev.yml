@@ -1,8 +1,8 @@
 pg: &default
   adapter: postgresql
   host: localhost
-  port: 5432
-  pool: 5
+  port: <%= ENV['PGPORT'].presence || '5432' %>
+  pool: 3
   encoding: unicode
   username: <%= ENV['DB_USER'].presence || ENV['PGUSER'].presence || 'madek' %>
   password: <%= ENV['DB_PASSWORD'].presence || ENV['PGPASSWORD'].presence || 'madek' %>

@@ -1,0 +1,7 @@
+unset PGPORT; unset PGUSER; unset PGPASSWORD
+eval "PGPORT=\$PG${PGVERSION}PORT" && export PGPORT
+eval "PGUSER=\$PG${PGVERSION}USER" && export PGUSER
+eval "PGPASSWORD=\$PG${PGVERSION}PASSWORD" && export PGPASSWORD
+export PATH=/usr/lib/postgresql/${PGVERSION}/bin:${PATH}
+
+# vim: ft=sh

@@ -1,0 +1,40 @@
+include: 
+  - cider-ci/context-components/env.yml
+task_defaults:
+  include:
+    - cider-ci/task-components/bundle.yml
+    - cider-ci/task-components/database.yml
+tasks:
+
+  db-remigrate-from-scratch:
+    name: Remigrate from scratch
+    scripts:
+      test:
+        body: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd $DATALAYER_DIR
+          source $DATALAYER_DIR/cider-ci/bin/pg_env_set 
+          ./bin/db-remigrate-from-scratch
+
+  rerun_personas_migrations:
+    name: Rerun personas migrations
+    scripts:
+      test:
+        body: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd $DATALAYER_DIR
+          source $DATALAYER_DIR/cider-ci/bin/pg_env_set 
+          ./bin/rerun_personas_migrations
+
+  rerun_seeds_migrations:
+    name: Rerun seeds migrations
+    scripts:
+      test:
+        body: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd $DATALAYER_DIR
+          source $DATALAYER_DIR/cider-ci/bin/pg_env_set 
+          ./bin/rerun_seeds_migrations

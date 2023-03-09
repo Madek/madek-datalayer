@@ -1,5 +1,8 @@
 name: Tests
 
+include:
+  cider-ci/context-components/env.yml
+
 generate_tasks:
   include_match: spec/.*_spec.rb
 
@@ -15,16 +18,6 @@ task_defaults:
   max_trials: 1
   dispatch_storm_delay_duration: 1 Second
 
-  environment_variables:
-    DATALAYER_DIR: '{{CIDER_CI_WORKING_DIR}}'
-    RAILS_ENV: test
-    DATABASE: madek_datalayer_test_{{CIDER_CI_TRIAL_ID}}
-    LANG: 'en_US.UTF-8'
-
-  git_options:
-    submodules:
-      include_match: ^.*$
-
   trial_attachments:
     logs:
       content_type: text/plain
@@ -33,13 +26,10 @@ task_defaults:
       content_type: text/yaml
       include_match: 'config\/.*\.ya?ml$'
 
-  traits:
-    ImageMagick: true
-
   scripts:
     test:
       body: |
-        set -eux
-        unset PGPORT; unset PGUSER
-        PGPORT=${PG10PORT} PGUSER=${PG10USER} \
-          ./bin/rspec $CIDER_CI_TASK_FILE
+        #!/usr/bin/env bash
+        set -euo pipefail
+        source $DATALAYER_DIR/cider-ci/bin/pg_env_set 
+        ./bin/rspec $CIDER_CI_TASK_FILE

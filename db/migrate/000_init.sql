@@ -1022,18 +1022,6 @@ ALTER SEQUENCE public.app_settings_id_seq OWNED BY public.app_settings.id;
 
 
 --
--- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.ar_internal_metadata (
-    key character varying NOT NULL,
-    value character varying,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
 -- Name: collection_api_client_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1317,7 +1305,7 @@ CREATE TABLE public.groups (
     type character varying DEFAULT 'Group'::character varying NOT NULL,
     person_id uuid,
     searchable text DEFAULT ''::text NOT NULL,
-    CONSTRAINT check_valid_type CHECK (((type)::text = ANY (ARRAY[('AuthenticationGroup'::character varying)::text, ('InstitutionalGroup'::character varying)::text, ('Group'::character varying)::text])))
+    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['AuthenticationGroup'::character varying, 'InstitutionalGroup'::character varying, 'Group'::character varying])::text[])))
 );
 
 
@@ -1488,7 +1476,7 @@ CREATE TABLE public.meta_data (
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     json jsonb,
     other_media_entry_id uuid,
-    CONSTRAINT check_valid_type CHECK (((type)::text = ANY (ARRAY[('MetaDatum::JSON'::character varying)::text, ('MetaDatum::Keywords'::character varying)::text, ('MetaDatum::MediaEntry'::character varying)::text, ('MetaDatum::People'::character varying)::text, ('MetaDatum::Roles'::character varying)::text, ('MetaDatum::Text'::character varying)::text, ('MetaDatum::TextDate'::character varying)::text]))),
+    CONSTRAINT check_valid_type CHECK (((type)::text = ANY ((ARRAY['MetaDatum::JSON'::character varying, 'MetaDatum::Keywords'::character varying, 'MetaDatum::MediaEntry'::character varying, 'MetaDatum::People'::character varying, 'MetaDatum::Roles'::character varying, 'MetaDatum::Text'::character varying, 'MetaDatum::TextDate'::character varying])::text[]))),
     CONSTRAINT media_entry_type_consistent CHECK (((((type)::text <> 'MetaDatum::MediaEntry'::text) AND (other_media_entry_id IS NULL)) OR (((type)::text = 'MetaDatum::MediaEntry'::text) AND (other_media_entry_id IS NOT NULL))))
 );
 
@@ -1681,15 +1669,6 @@ CREATE TABLE public.roles (
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     CONSTRAINT labels_non_blank CHECK ((array_to_string(public.avals(labels), ''::text) !~ '^ *$'::text))
-);
-
-
---
--- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.schema_migrations (
-    version character varying NOT NULL
 );
 
 
@@ -1924,14 +1903,6 @@ ALTER TABLE ONLY public.api_tokens
 
 ALTER TABLE ONLY public.app_settings
     ADD CONSTRAINT app_settings_pkey PRIMARY KEY (id);
-
-
---
--- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ar_internal_metadata
-    ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
 
 
 --
@@ -2204,14 +2175,6 @@ ALTER TABLE ONLY public.rdf_classes
 
 ALTER TABLE ONLY public.roles
     ADD CONSTRAINT roles_pkey PRIMARY KEY (id);
-
-
---
--- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.schema_migrations
-    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
 
 
 --
@@ -4697,8 +4660,3 @@ ALTER TABLE ONLY public.zencoder_jobs
 --
 
 SET search_path TO "$user", public;
-
-INSERT INTO "schema_migrations" (version) VALUES
-('0');
-
-

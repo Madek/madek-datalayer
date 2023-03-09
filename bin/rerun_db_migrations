@@ -3,28 +3,6 @@ set -euo pipefail
 
 PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
 cd $PROJECT_DIR
-source bin/db-set-env
 
-
-SQUASHED_MIGRATIONS_VERSION=340
-
-export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
-
-# seeds (only seeds, like the core vocab)
-bundle exec rails db:pg:terminate_connections db:drop db:create db:migrate VERSION=$SQUASHED_MIGRATIONS_VERSION
-# bundle exec rails db:pg:truncate_tables db:pg:data:restore FILE=db/seeds.$SQUASHED_MIGRATIONS_VERSION.pgbin
-bundle exec rails db:migrate
-bundle exec rails db:seed
-rm -f db/seeds.pgbin
-bundle exec rails db:pg:structure_and_data:dump FILE=db/seeds.pgbin
-
-# personas (seeds and example data)
-bundle exec rails db:pg:terminate_connections db:drop db:create db:migrate VERSION=$SQUASHED_MIGRATIONS_VERSION
-bundle exec rails db:pg:truncate_tables db:pg:data:restore FILE=db/personas.$SQUASHED_MIGRATIONS_VERSION.pgbin
-bundle exec rails db:migrate
-bundle exec rails db:seed
-rm -f db/personas.pgbin
-bundle exec rails db:pg:structure_and_data:dump FILE=db/personas.pgbin
-
-# needed because db:drop runs for all databases while db:migrate runs only in current env
-RAILS_ENV=test rails db:migrate
+$PROJECT_DIR/bin/rerun_seeds_migrations
+$PROJECT_DIR/bin/rerun_personas_migrations
