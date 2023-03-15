@@ -32,6 +32,10 @@ FactoryBot.define do
           || FactoryBot.create(:rdf_class, id: 'License')
       end
     end
+
+    trait :with_section do
+      section { |k| Section.new({ labels: { de: k.term }, color: Faker::Color.hex_color }) }
+    end
   end
 
 end

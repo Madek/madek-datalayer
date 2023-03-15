@@ -12,6 +12,7 @@ class Keyword < ApplicationRecord
   belongs_to :creator, class_name: 'User'
   has_and_belongs_to_many :meta_data, join_table: :meta_data_keywords
   has_many :meta_data_keywords, class_name: '::MetaDatum::Keyword'
+  has_one :section
 
   validate do
     if self.term.blank? or

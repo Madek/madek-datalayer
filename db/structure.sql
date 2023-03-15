@@ -997,6 +997,7 @@ CREATE TABLE public.app_settings (
     time_zone character varying DEFAULT 'Europe/Zurich'::character varying NOT NULL,
     copyright_notice_templates text[] DEFAULT '{}'::text[],
     copyright_notice_default_text character varying,
+    section_meta_key_id character varying,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -1694,6 +1695,21 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: sections; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sections (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    keyword_id uuid NOT NULL,
+    color character varying,
+    index_collection_id uuid,
+    labels public.hstore DEFAULT ''::public.hstore NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: static_pages; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2215,6 +2231,14 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: sections sections_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sections
+    ADD CONSTRAINT sections_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: static_pages static_pages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2488,6 +2512,13 @@ CREATE UNIQUE INDEX index_api_clients_on_login ON public.api_clients USING btree
 --
 
 CREATE INDEX index_app_settings_on_copyright_notice_templates ON public.app_settings USING gin (copyright_notice_templates);
+
+
+--
+-- Name: index_app_settings_on_section_meta_key_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_app_settings_on_section_meta_key_id ON public.app_settings USING btree (section_meta_key_id);
 
 
 --
@@ -3359,6 +3390,13 @@ CREATE UNIQUE INDEX index_roles_on_meta_key_id_and_labels ON public.roles USING 
 
 
 --
+-- Name: index_sections_on_keyword_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_sections_on_keyword_id ON public.sections USING btree (keyword_id);
+
+
+--
 -- Name: index_static_pages_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4203,6 +4241,14 @@ ALTER TABLE ONLY public.confidential_links
 
 
 --
+-- Name: sections fk_rails_8cce90e786; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sections
+    ADD CONSTRAINT fk_rails_8cce90e786 FOREIGN KEY (keyword_id) REFERENCES public.keywords(id);
+
+
+--
 -- Name: collection_user_permissions fk_rails_8f830fb7e7; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4251,6 +4297,14 @@ ALTER TABLE ONLY public.context_keys
 
 
 --
+-- Name: app_settings fk_rails_b46f728e32; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.app_settings
+    ADD CONSTRAINT fk_rails_b46f728e32 FOREIGN KEY (section_meta_key_id) REFERENCES public.meta_keys(id);
+
+
+--
 -- Name: delegations_users fk_rails_b5f7f9c898; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4288,6 +4342,14 @@ ALTER TABLE ONLY public.media_entry_group_permissions
 
 ALTER TABLE ONLY public.collection_user_permissions
     ADD CONSTRAINT fk_rails_c83ae69464 FOREIGN KEY (delegation_id) REFERENCES public.delegations(id);
+
+
+--
+-- Name: sections fk_rails_cafaf13ff4; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sections
+    ADD CONSTRAINT fk_rails_cafaf13ff4 FOREIGN KEY (index_collection_id) REFERENCES public.collections(id);
 
 
 --
@@ -4714,6 +4776,7 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('0'),
-('1');
+('1'),
+('2');
 
 
