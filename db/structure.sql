@@ -2890,6 +2890,13 @@ CREATE UNIQUE INDEX index_groups_users_on_user_id_and_group_id ON public.groups_
 
 
 --
+-- Name: index_keywords_on_external_uris; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_keywords_on_external_uris ON public.keywords USING gin (external_uris);
+
+
+--
 -- Name: index_keywords_on_meta_key_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3237,6 +3244,13 @@ CREATE INDEX index_meta_data_roles_on_position ON public.meta_data_roles USING b
 --
 
 CREATE INDEX index_meta_data_roles_on_role_id ON public.meta_data_roles USING btree (role_id);
+
+
+--
+-- Name: index_people_on_external_uris; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_people_on_external_uris ON public.people USING gin (external_uris);
 
 
 --
@@ -4699,6 +4713,7 @@ ALTER TABLE ONLY public.zencoder_jobs
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
-('0');
+('0'),
+('1');
 
 
