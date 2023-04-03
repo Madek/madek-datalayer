@@ -5,6 +5,8 @@ gem "sprockets", "<4" # DO NOT UPGRADE SPROCKETS!
 
 gem 'pg'
 
+gem 'listen'
+
 # gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks'
 # gem 'pg_tasks', path: '/Users/tom/Programming/RUBY/rails_pg-tasks'
 gem 'pg_tasks', git: 'https://github.com/drtom/rails_pg-tasks'

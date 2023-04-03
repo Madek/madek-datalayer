@@ -8,7 +8,7 @@ FactoryBot.define do
     end
     login { Faker::Internet.user_name + (SecureRandom.uuid.first 8) }
     accepted_usage_terms { UsageTerms.most_recent or create(:usage_terms) }
-    password { SecureRandom.uuid }
+    password { Faker::Internet.password }
     is_deactivated { false }
   end
 
@@ -20,7 +20,7 @@ FactoryBot.define do
     end
     login { Faker::Internet.user_name + (SecureRandom.uuid.first 8) }
     accepted_usage_terms { UsageTerms.most_recent or create(:usage_terms) }
-    password { SecureRandom.uuid }
+    password { Faker::Internet.password }
     admin { FactoryBot.create :admin }
     is_deactivated { false }
   end

@@ -4,5 +4,6 @@ set -euo pipefail
 PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
 cd $PROJECT_DIR
 
+$PROJECT_DIR/bin/db-remigrate-from-scratch
 $PROJECT_DIR/bin/rerun_seeds_migrations
 $PROJECT_DIR/bin/rerun_personas_migrations

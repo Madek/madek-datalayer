@@ -7,8 +7,11 @@ class User < ApplicationRecord
   include Concerns::Users::Keywords
   include Concerns::Users::ResourcesAssociations
   include Concerns::Users::Workflows
+  include Concerns::PasswordAuthentication
 
-  has_secure_password validations: false
+
+  #############################################################################
+
 
   attr_accessor 'act_as_uberadmin'
 

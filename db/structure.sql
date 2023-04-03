@@ -930,7 +930,9 @@ CREATE TABLE public.api_clients (
     password_digest character varying,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT name_format CHECK (((login)::text ~ '^[a-z][a-z0-9\-\_]+$'::text))
+    password_hash text,
+    CONSTRAINT name_format CHECK (((login)::text ~ '^[a-z][a-z0-9\-\_]+$'::text)),
+    CONSTRAINT one_password CHECK (((password_hash IS NULL) OR (password_digest IS NULL)))
 );
 
 
@@ -1758,7 +1760,10 @@ CREATE TABLE public.users (
     last_signed_in_at timestamp with time zone,
     settings jsonb DEFAULT '{}'::jsonb NOT NULL,
     is_deactivated boolean DEFAULT false,
+    password_hash text,
     CONSTRAINT email_format CHECK ((((email)::text ~ '\S+@\S+'::text) OR (email IS NULL))),
+    CONSTRAINT login_not_uuid CHECK ((login !~* '^[[:xdigit:]]{8}-([[:xdigit:]]{4}-){3}[[:xdigit:]]{12}$'::text)),
+    CONSTRAINT one_password CHECK (((password_hash IS NULL) OR (password_digest IS NULL))),
     CONSTRAINT users_login_simple CHECK ((login ~* '^[a-z0-9\.\-\_]+$'::text))
 );
 
@@ -3418,13 +3423,6 @@ CREATE UNIQUE INDEX index_users_on_institutional_id ON public.users USING btree 
 
 
 --
--- Name: index_users_on_login; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_users_on_login ON public.users USING btree (login);
-
-
---
 -- Name: index_users_workflows_on_user_id_and_workflow_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4777,6 +4775,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('0'),
 ('1'),
-('2');
+('2'),
+('3');
 
 

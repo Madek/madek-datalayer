@@ -34,12 +34,12 @@ module MadekOpenSession
 
   def create_user_signature(user)
     CiderCi::OpenSession::Signature.create \
-      secret, user.password_digest
+      secret, ""
   end
 
   def validate_user_signature!(user, signature)
     CiderCi::OpenSession::Signature.validate! \
-      signature, secret, user.password_digest
+      signature, secret, ""
   end
 
 end
