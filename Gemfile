@@ -5,8 +5,6 @@ gem "sprockets", "<4" # DO NOT UPGRADE SPROCKETS!
 
 gem 'pg'
 
-gem 'listen'
-
 # gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks'
 # gem 'pg_tasks', path: '/Users/tom/Programming/RUBY/rails_pg-tasks'
 gem 'pg_tasks', git: 'https://github.com/drtom/rails_pg-tasks'
@@ -25,11 +23,11 @@ gem 'zencoder', '~> 2.4'
 
 gem 'cider_ci-support', '3.2', group: [:development, :test]
 gem 'factory_bot', group: [:test, :development]
-gem 'faker', '~> 3.0.0', group: [:test, :development] # There is a bug in 3.1.0 (as per 30.12.2022)
+gem 'faker', group: [:test, :development] # There is a bug in 3.1.0 (as per 30.12.2022)
 gem 'pry', group: [:test, :development]
 gem 'pry-nav', group: [:test, :development]
 gem 'pry-rails', group: [:development]
 gem 'webmock', group: [:test]
 
 # fix: the version that rails requires vanished, force newer version. see <https://github.com/rails/rails/issues/41750>
-gem 'mimemagic', '0.3.10'
+gem 'mimemagic'

@@ -2,6 +2,7 @@
 set -euo pipefail
 
 PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
+cd ${PROJECT_DIR}
 
 if [ ! -e $PROJECT_DIR/config/database.yml ]; then
   ln -s $PROJECT_DIR/config/database_dev.yml $PROJECT_DIR/config/database.yml

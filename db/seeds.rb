@@ -10,6 +10,11 @@ DEFAULT_LOCALE = AppSetting.default_locale
 ####################################################################################
 ActiveRecord::Base.transaction do
 
+  # SystemSettings.first_or_create!
+  AuthSystem.where(id: 'password') \
+  .first_or_create(id: 'password', type: 'password', name: 'Madek Password Authentication')
+  
+
   # Core Vocab #####################################################################
 
   # needs disabled triggers to temporarily make it mutable

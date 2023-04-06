@@ -889,6 +889,31 @@ $$;
 
 
 --
+-- Name: user_sessions_clean_expired(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.user_sessions_clean_expired() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  DELETE FROM user_sessions
+    USING auth_systems
+    WHERE user_sessions.auth_system_id = auth_systems.id
+    AND user_sessions.user_id = NEW.user_id
+    AND (user_sessions.created_at + auth_systems.session_max_lifetime_minutes * interval '1 minute') < now();
+  RETURN NULL;
+END
+$$;
+
+
+--
+-- Name: FUNCTION user_sessions_clean_expired(); Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON FUNCTION public.user_sessions_clean_expired() IS 'Delete expired sessions on INSERT for same user (audits) only';
+
+
+--
 -- Name: users_update_searchable_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -1033,6 +1058,62 @@ CREATE TABLE public.ar_internal_metadata (
     value character varying,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: auth_systems; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.auth_systems (
+    id character varying NOT NULL,
+    create_account_email_match text,
+    create_account_enabled boolean DEFAULT false NOT NULL,
+    description text,
+    session_max_lifetime_minutes integer DEFAULT (60 * 18) NOT NULL,
+    enabled boolean DEFAULT false NOT NULL,
+    external_public_key text,
+    external_sign_in_url text,
+    external_sign_out_url text,
+    internal_private_key text,
+    internal_public_key text,
+    name character varying NOT NULL,
+    priority integer DEFAULT 0 NOT NULL,
+    send_email boolean DEFAULT true NOT NULL,
+    send_login boolean DEFAULT false NOT NULL,
+    send_org_id boolean DEFAULT false NOT NULL,
+    type text DEFAULT 'external'::text NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    CONSTRAINT allowed_type CHECK ((type = ANY (ARRAY['password'::text, 'external'::text]))),
+    CONSTRAINT password_special CHECK ((((type = 'external'::text) AND ((id)::text <> 'password'::text)) OR ((type = 'password'::text) AND ((id)::text = 'password'::text)))),
+    CONSTRAINT simple_id CHECK (((id)::text ~ '^[a-z][a-z0-9_-]*$'::text))
+);
+
+
+--
+-- Name: auth_systems_groups; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.auth_systems_groups (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    group_id uuid NOT NULL,
+    auth_system_id character varying NOT NULL,
+    created_at timestamp with time zone DEFAULT now()
+);
+
+
+--
+-- Name: auth_systems_users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.auth_systems_users (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    auth_system_id character varying NOT NULL,
+    data text,
+    user_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
 );
 
 
@@ -1741,6 +1822,21 @@ CREATE TABLE public.usage_terms (
 
 
 --
+-- Name: user_sessions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_sessions (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    auth_system_id text NOT NULL,
+    meta_data jsonb,
+    token_hash text NOT NULL,
+    token_part text NOT NULL,
+    user_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now()
+);
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1953,6 +2049,30 @@ ALTER TABLE ONLY public.app_settings
 
 ALTER TABLE ONLY public.ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: auth_systems_groups auth_systems_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.auth_systems_groups
+    ADD CONSTRAINT auth_systems_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_systems auth_systems_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.auth_systems
+    ADD CONSTRAINT auth_systems_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_systems_users auth_systems_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.auth_systems_users
+    ADD CONSTRAINT auth_systems_users_pkey PRIMARY KEY (id);
 
 
 --
@@ -2260,6 +2380,22 @@ ALTER TABLE ONLY public.usage_terms
 
 
 --
+-- Name: user_sessions user_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_sessions
+    ADD CONSTRAINT user_sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_sessions user_sessions_token_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_sessions
+    ADD CONSTRAINT user_sessions_token_hash_key UNIQUE (token_hash);
+
+
+--
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2363,6 +2499,34 @@ CREATE INDEX groups_searchable_idx ON public.groups USING gin (searchable public
 --
 
 CREATE INDEX groups_to_tsvector_idx ON public.groups USING gin (to_tsvector('english'::regconfig, searchable));
+
+
+--
+-- Name: idx_auth_sys_groups; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_auth_sys_groups ON public.auth_systems_groups USING btree (group_id, auth_system_id);
+
+
+--
+-- Name: idx_auth_sys_users; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_auth_sys_users ON public.auth_systems_users USING btree (user_id, auth_system_id);
+
+
+--
+-- Name: idx_auth_system_users_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_auth_system_users_on_user_id ON public.auth_systems_users USING btree (user_id);
+
+
+--
+-- Name: idx_auth_systems_users_on_auth_system_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_auth_systems_users_on_auth_system_id ON public.auth_systems_users USING btree (auth_system_id);
 
 
 --
@@ -2478,6 +2642,13 @@ CREATE UNIQUE INDEX idx_megrpp_on_media_entry_id_and_group_id ON public.media_en
 
 
 --
+-- Name: idx_user_sessions_on_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_user_sessions_on_created_at ON public.user_sessions USING btree (created_at);
+
+
+--
 -- Name: idx_vocabulary_api_client; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2524,6 +2695,20 @@ CREATE INDEX index_app_settings_on_copyright_notice_templates ON public.app_sett
 --
 
 CREATE INDEX index_app_settings_on_section_meta_key_id ON public.app_settings USING btree (section_meta_key_id);
+
+
+--
+-- Name: index_auth_systems_groups_on_auth_system_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_auth_systems_groups_on_auth_system_id ON public.auth_systems_groups USING btree (auth_system_id);
+
+
+--
+-- Name: index_auth_systems_groups_on_group_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_auth_systems_groups_on_group_id ON public.auth_systems_groups USING btree (group_id);
 
 
 --
@@ -3801,6 +3986,27 @@ CREATE TRIGGER update_updated_at_column_of_app_settings BEFORE UPDATE ON public.
 
 
 --
+-- Name: auth_systems update_updated_at_column_of_auth_systems; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_auth_systems BEFORE UPDATE ON public.auth_systems FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: auth_systems_groups update_updated_at_column_of_auth_systems_groups; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_auth_systems_groups BEFORE UPDATE ON public.auth_systems_groups FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: auth_systems_users update_updated_at_column_of_auth_systems_users; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_auth_systems_users BEFORE UPDATE ON public.auth_systems_users FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
 -- Name: collection_api_client_permissions update_updated_at_column_of_collection_api_client_permissions; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -3980,6 +4186,13 @@ CREATE TRIGGER update_updated_at_column_of_workflows BEFORE UPDATE ON public.wor
 --
 
 CREATE TRIGGER update_updated_at_column_of_zencoder_jobs BEFORE UPDATE ON public.zencoder_jobs FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: user_sessions user_sessions_clean_expired; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER user_sessions_clean_expired AFTER INSERT ON public.user_sessions FOR EACH ROW EXECUTE FUNCTION public.user_sessions_clean_expired();
 
 
 --
@@ -4188,6 +4401,38 @@ ALTER TABLE ONLY public.favorite_media_entries
 
 ALTER TABLE ONLY public.favorite_media_entries
     ADD CONSTRAINT "favorite-media-entries_users_fkey" FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auth_systems_users fk_auth_sys; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.auth_systems_users
+    ADD CONSTRAINT fk_auth_sys FOREIGN KEY (auth_system_id) REFERENCES public.auth_systems(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auth_systems_groups fk_auth_sys; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.auth_systems_groups
+    ADD CONSTRAINT fk_auth_sys FOREIGN KEY (auth_system_id) REFERENCES public.auth_systems(id) ON DELETE CASCADE;
+
+
+--
+-- Name: user_sessions fk_auth_system; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_sessions
+    ADD CONSTRAINT fk_auth_system FOREIGN KEY (auth_system_id) REFERENCES public.auth_systems(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auth_systems_groups fk_group; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.auth_systems_groups
+    ADD CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES public.groups(id) ON DELETE CASCADE;
 
 
 --
@@ -4412,6 +4657,22 @@ ALTER TABLE ONLY public.delegations_groups
 
 ALTER TABLE ONLY public.media_entry_user_permissions
     ADD CONSTRAINT fk_rails_fef198d897 FOREIGN KEY (delegation_id) REFERENCES public.delegations(id);
+
+
+--
+-- Name: auth_systems_users fk_user; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.auth_systems_users
+    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: user_sessions fk_user; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_sessions
+    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -4777,6 +5038,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('1'),
 ('10'),
 ('2'),
-('3');
+('3'),
+('4');
 
 
