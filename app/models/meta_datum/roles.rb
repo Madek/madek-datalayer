@@ -52,10 +52,10 @@ class MetaDatum::Roles < MetaDatum
                           UUIDTools::UUID.parse(role_uuid_or_labels).to_s
                         rescue
                           labels = { de: role_uuid_or_labels[:term],
-                                    en: role_uuid_or_labels[:term] }
-                          new_role = ::Role.create!(labels: labels,
-                                                    meta_key_id: self.meta_key.id,
-                                                    creator_id: created_by_user.id)
+                                     en: role_uuid_or_labels[:term] }
+                          new_role = ::Role.find_or_create_by!(labels: labels,
+                                                               meta_key_id: self.meta_key.id,
+                                                               creator_id: created_by_user.id)
                           new_role.id
                         end
 

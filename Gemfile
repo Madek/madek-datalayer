@@ -30,7 +30,6 @@ gem 'pry', group: [:test, :development]
 gem 'pry-nav', group: [:test, :development]
 gem 'pry-rails', group: [:development]
 gem 'webmock', group: [:test]
-gem 'listen', group: [:test, :development]
 
 # fix: the version that rails requires vanished, force newer version. see <https://github.com/rails/rails/issues/41750>
 gem 'mimemagic', '0.3.10'
