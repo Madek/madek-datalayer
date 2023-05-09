@@ -37,7 +37,7 @@ module Permissions
               .where(build_where_conditions(resources_table,
                                             perm,
                                             groups_users[:user_id],
-                                            user))
+                                            user.try(:id)))
               .exists
           end
         end
