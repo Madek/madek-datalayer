@@ -60,6 +60,7 @@ class Person < ApplicationRecord
                           .viewable_by_user_or_public(user)
                           .joins(media_file: :previews)
                           .where(previews: { media_type: 'image' })
+                          .reorder(nil)
         }
       )
       .limit(limit)

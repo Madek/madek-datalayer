@@ -114,6 +114,7 @@ class Keyword < ApplicationRecord
                           .joins('INNER JOIN previews ' \
                                  'ON previews.media_file_id = media_files.id')
                           .where(previews: { media_type: 'image' })
+                          .reorder(nil)
         }
       )
       .limit(limit)
