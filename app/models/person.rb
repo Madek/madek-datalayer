@@ -52,7 +52,8 @@ class Person < ApplicationRecord
   def self.for_meta_key_and_used_in_visible_entries_with_previews(meta_key,
                                                                   user,
                                                                   limit)
-    joins(meta_data: :meta_key)
+    distinct
+      .joins(meta_data: :meta_key)
       .where(meta_keys: { id: meta_key.id })
       .where(
         meta_data: {
