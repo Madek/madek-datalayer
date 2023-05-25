@@ -1,10 +1,11 @@
 class ApiClient < ApplicationRecord
   include Concerns::ApiClients::Filters
-  include Concerns::PasswordAuthentication
 
   belongs_to :user
 
   attr_accessor :authorization_header
+
+  has_secure_password validations: false
 
   default_scope { reorder(id: :asc) }
 
