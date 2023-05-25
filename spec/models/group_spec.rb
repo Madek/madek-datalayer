@@ -7,7 +7,6 @@ describe Group do
   describe 'with few users' do
 
     before :each do
-      PgTasks.truncate_tables
       @group = FactoryBot.create(:group)
       5.times do
         @group.users << FactoryBot.create(:user)
@@ -24,10 +23,6 @@ describe Group do
   end
 
   describe 'creating an empty one' do
-
-    before :each do
-      PgTasks.truncate_tables
-    end
 
     it 'will be not be auto-deleted' do
       @group = FactoryBot.create(:group)

@@ -35,21 +35,9 @@ describe Arcs::CollectionCollectionArc do
   end
 
   def prepare_data
-    prepare_madek_core
-
     @user = FactoryBot.create :user
-
     @parent = create_collection('Parent')
     @child = create_collection('Child')
-  end
-
-  def prepare_madek_core
-    if meta_key_title
-      raise 'madek_core:title should not exist'
-    end
-    with_disabled_triggers do
-      FactoryBot.create(:meta_key_core_title)
-    end
   end
 
   def create_collection(title)

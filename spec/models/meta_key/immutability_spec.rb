@@ -22,7 +22,7 @@ describe 'the namespace madek_core' do
         MetaKey.transaction do
           MetaKey.connection.execute \
             %(INSERT INTO meta_keys (id, meta_datum_object_type, vocabulary_id) \
-              VALUES ('madek_core:description','MetaDatum::Text','madek_core'))
+              VALUES ('madek_core:foo','MetaDatum::Text','madek_core'))
         end
       end.to raise_error(/may not be extended/)
     end

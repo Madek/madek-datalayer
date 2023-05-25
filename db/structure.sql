@@ -955,9 +955,7 @@ CREATE TABLE public.api_clients (
     password_digest character varying,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    password_hash text,
-    CONSTRAINT name_format CHECK (((login)::text ~ '^[a-z][a-z0-9\-\_]+$'::text)),
-    CONSTRAINT one_password CHECK (((password_hash IS NULL) OR (password_digest IS NULL)))
+    CONSTRAINT name_format CHECK (((login)::text ~ '^[a-z][a-z0-9\-\_]+$'::text))
 );
 
 
@@ -1112,6 +1110,7 @@ CREATE TABLE public.auth_systems_users (
     auth_system_id character varying NOT NULL,
     data text,
     user_id uuid NOT NULL,
+    expires_at timestamp with time zone,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now()
 );
@@ -1847,7 +1846,6 @@ CREATE TABLE public.users (
     notes text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    password_digest character varying,
     person_id uuid NOT NULL,
     institutional_id text,
     autocomplete text DEFAULT ''::text NOT NULL,
@@ -1856,10 +1854,8 @@ CREATE TABLE public.users (
     last_signed_in_at timestamp with time zone,
     settings jsonb DEFAULT '{}'::jsonb NOT NULL,
     is_deactivated boolean DEFAULT false,
-    password_hash text,
     CONSTRAINT email_format CHECK ((((email)::text ~ '\S+@\S+'::text) OR (email IS NULL))),
     CONSTRAINT login_not_uuid CHECK ((login !~* '^[[:xdigit:]]{8}-([[:xdigit:]]{4}-){3}[[:xdigit:]]{12}$'::text)),
-    CONSTRAINT one_password CHECK (((password_hash IS NULL) OR (password_digest IS NULL))),
     CONSTRAINT users_login_simple CHECK ((login ~* '^[a-z0-9\.\-\_]+$'::text))
 );
 
@@ -5039,6 +5035,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('10'),
 ('2'),
 ('3'),
-('4');
+('4'),
+('5');
 
 

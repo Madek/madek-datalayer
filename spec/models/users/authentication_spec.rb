@@ -22,9 +22,18 @@ describe [User] do
 
   context "User with given legacy bcrypt password" do
     before :each do 
-      @user = FactoryBot.create :user, 
-        {password: nil,
-         password_digest: "$2a$04$ogvMlPxYisDRQFIPfC2IjOpXT76Oin9voAzSTz3iLf.ZS4DXvDHuy"}
+      @user = FactoryBot.create :user
+      sql= <<-SQL.strip_heredoc
+        DELETE FROM auth_systems_users 
+          WHERE user_id = :user_id
+            AND auth_system_id = 'password';
+        INSERT INTO auth_systems_users (auth_system_id, user_id, data)
+          VALUES('password', :user_id, :data); 
+      SQL
+      ActiveRecord::Base.connection.execute(
+        ApplicationRecord.sanitize_sql(
+          [sql, user_id: @user.id, 
+           data: "$2a$04$ogvMlPxYisDRQFIPfC2IjOpXT76Oin9voAzSTz3iLf.ZS4DXvDHuy"]))
     end
 
     it "passes authorization with proper password and " \

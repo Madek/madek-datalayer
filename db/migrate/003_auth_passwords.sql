@@ -1,12 +1,12 @@
---- change users and api_clients  ----------------------------------------------
-
-ALTER TABLE users ADD COLUMN password_hash text;
-ALTER TABLE users ADD CONSTRAINT one_password CHECK (password_hash IS NULL OR password_digest IS NULL);
-
-ALTER TABLE api_clients ADD COLUMN password_hash text;
-ALTER TABLE api_clients ADD CONSTRAINT one_password CHECK (password_hash IS NULL OR password_digest IS NULL);
- 
-
+-- --- reworked in migration 05 -----------------------------------------------
+-- 
+-- ALTER TABLE users ADD COLUMN password_hash text;
+-- ALTER TABLE users ADD CONSTRAINT one_password CHECK (password_hash IS NULL OR password_digest IS NULL);
+-- 
+-- ALTER TABLE api_clients ADD COLUMN password_hash text;
+-- ALTER TABLE api_clients ADD CONSTRAINT one_password CHECK (password_hash IS NULL OR password_digest IS NULL);
+--  
+-- 
 --- users table fixes ---------------------------------------------------------
 
 -- duplicate, there is also a unique constraint / index

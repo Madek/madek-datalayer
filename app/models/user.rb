@@ -7,7 +7,7 @@ class User < ApplicationRecord
   include Concerns::Users::Keywords
   include Concerns::Users::ResourcesAssociations
   include Concerns::Users::Workflows
-  include Concerns::PasswordAuthentication
+  #include Concerns::PasswordAuthentication
 
 
   #############################################################################
@@ -69,6 +69,40 @@ class User < ApplicationRecord
   def reset_usage_terms
     update!(accepted_usage_terms_id: nil)
   end
+
+  ### password authentication #################################
+
+  attr_accessor :password
+
+  after_create :save_new_password
+
+  def save_new_password
+    if @password.presence
+      sql= <<-SQL.strip_heredoc
+        INSERT INTO auth_systems_users (auth_system_id, user_id, data)
+        SELECT 'password', :user_id , crypt(:password, gen_salt('bf')) 
+        ON CONFLICT (user_id, auth_system_id)
+        DO UPDATE SET data = crypt(:password, gen_salt('bf'))
+      SQL
+      ActiveRecord::Base.connection.execute(
+        ApplicationRecord.sanitize_sql([sql, user_id: self.id, password: @password]))
+    end
+  end
+
+  def authenticate(pw)
+    sql= <<-SQL.strip_heredoc
+        SELECT (auth_systems_users.data = crypt(:password, auth_systems_users.data)) AS pw_matches 
+        FROM auth_systems_users
+        WHERE auth_systems_users.user_id = :user_id
+        AND auth_systems_users.auth_system_id = 'password'
+        AND ( auth_systems_users.expires_at IS NULL
+              OR auth_systems_users.expires_at < NOW() )
+    SQL
+    res = ActiveRecord::Base.connection.execute(
+      ApplicationRecord.sanitize_sql([sql, password: pw, user_id: self.id]))
+    res.first["pw_matches"] && self
+  end
+
 
   #############################################################
 

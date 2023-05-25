@@ -3,7 +3,7 @@ require 'spec_helper_no_tx'
 
 describe 'relations between meta_data and meta_keys' do
 
-  before :all do
+  before :each do
     @user = FactoryBot.create(:user)
     @collection = FactoryBot.create :collection
     FactoryBot.create :meta_key_title
@@ -120,8 +120,13 @@ describe 'relations between meta_data and meta_keys' do
       it 'raises an error ' do
         expect do
           ActiveRecord::Base.transaction do
-            ActiveRecord::Base.connection.execute \
-              "UPDATE meta_keys SET meta_datum_object_type = 'MetaDatum::TextDate'"
+            ActiveRecord::Base.connection.execute(
+              <<-SQL.strip_heredoc
+                UPDATE meta_keys 
+                  SET meta_datum_object_type = 'MetaDatum::TextDate'
+                  WHERE meta_keys.id ilike 'test%'
+              SQL
+            )
           end
         end.to raise_error \
           /types of related meta_data and meta_keys must be identical/

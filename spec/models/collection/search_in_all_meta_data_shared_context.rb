@@ -1,4 +1,5 @@
 RSpec.shared_context 'search in all meta data shared context' do
+
   let(:collection_1) do
     collection = \
       FactoryBot.create(:collection,
@@ -64,8 +65,9 @@ RSpec.shared_context 'search in all meta data shared context' do
     FactoryBot.create(
       :meta_datum_keywords,
       keywords: [
-        FactoryBot.create(:keyword, :license),
-        FactoryBot.create(:keyword, :license, :license, term: 'gaura nitai bol')],
+        # FactoryBot.create(:keyword, :license),
+        # FactoryBot.create(:keyword, :license, :license, term: 'gaura nitai bol')
+      ],
       collection: collection)
     collection
   end

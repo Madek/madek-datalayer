@@ -12,7 +12,7 @@ module Concerns
         SQL
         res = ActiveRecord::Base.connection.execute(
           ApplicationRecord.sanitize_sql([sql, new_pw]))
-        self.password_hash = res.first["crypt"]
+        self.password_digest = res.first["crypt"]
       end
 
       def password 
@@ -20,9 +20,9 @@ module Concerns
       end
 
       def authenticate(pw)
-        if self.password_hash
+        if self.password_digest
           sql= <<-SQL.strip_heredoc
-            SELECT (users.password_hash = crypt(?, users.password_hash)) 
+            SELECT (users.password_digest = crypt(?, users.password_digest)) 
             AS pw_matches FROM users WHERE id = ?
           SQL
           res = ActiveRecord::Base.connection.execute(

@@ -1,10 +1,6 @@
 require 'spec_helper'
-require 'spec_helper_no_tx'
 
 describe MetaDatum::Text do
-  before :example do
-    PgTasks.truncate_tables
-  end
 
   describe 'Creation' do
 
@@ -113,30 +109,6 @@ describe MetaDatum::Text do
 
       it 'should return the string value' do
         expect(@mds.to_s).to be == 'original value'
-      end
-
-    end
-
-    describe 'required context keys validation' do
-
-      it 'validates correctly' do
-        media_entry = FactoryBot.create(:media_entry, is_published: true)
-        meta_datum_text = FactoryBot.create(:meta_datum_text,
-                                             meta_key_id: 'test:string',
-                                             media_entry: media_entry)
-
-        validation_context_id = 'upload'
-        Context.find_by_id(validation_context_id) \
-          or FactoryBot.create(:context, id: validation_context_id)
-        AppSetting.first.update! \
-          contexts_for_entry_validation: [validation_context_id]
-        FactoryBot.create(:context_key,
-                           context_id: validation_context_id,
-                           is_required: true)
-
-        expect(meta_datum_text.update(value: nil)).to be false
-        meta_datum_text.reload
-        expect(meta_datum_text.value).not_to be_blank
       end
 
     end

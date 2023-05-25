@@ -6,14 +6,6 @@ end
 
 RSpec.shared_examples 'title' do
 
-  before :example do
-    # TODO: remove as soon as the madek_core meta data is part of the test db
-    with_disabled_triggers do
-      MetaKey.find_by(id: 'madek_core:title') \
-        || FactoryBot.create(:meta_key_core_title)
-    end
-  end
-
   it 'title' do
     model_name_singular = described_class.model_name.singular.to_sym
     resource = FactoryBot.create(model_name_singular)
@@ -55,14 +47,6 @@ end
 
 RSpec.shared_examples 'keywords' do
 
-  before :example do
-    # TODO: remove as soon as the madek_core meta data is part of the test db
-    with_disabled_triggers do
-      MetaKey.find_by(id: 'madek_core:keywords') \
-        || FactoryBot.create(:meta_key_core_keywords)
-    end
-  end
-
   it 'keywords' do
     model_name_singular = described_class.model_name.singular.to_sym
     resource = FactoryBot.create(model_name_singular)
@@ -74,7 +58,10 @@ RSpec.shared_examples 'keywords' do
                          Hash[:meta_key, meta_key,
                               model_name_singular, resource]
 
-    mdk = create(:meta_datum_keyword, meta_datum: meta_datum)
+    kw = create(:keyword, meta_key: meta_key)
+
+    mdk = create(:meta_datum_keyword, keyword: kw, meta_datum: meta_datum)
+
     meta_datum.meta_data_keywords << mdk
 
     expect(resource.keywords).not_to be_empty

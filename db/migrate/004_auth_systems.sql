@@ -43,6 +43,7 @@ CREATE TABLE public.auth_systems_users (
     auth_system_id character varying NOT NULL,
     data text,
     user_id uuid NOT NULL,
+    expires_at timestamp with time zone,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     CONSTRAINT fk_auth_sys FOREIGN KEY(auth_system_id) 

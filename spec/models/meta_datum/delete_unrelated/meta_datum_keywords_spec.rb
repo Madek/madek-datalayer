@@ -11,7 +11,6 @@ describe MetaDatum::Keywords do
 
     before :each do
       ActiveRecord::Base.transaction do
-        PgTasks.truncate_tables
         @collection = FactoryBot.create :collection
         @meta_key_keywords = FactoryBot.create :meta_key_keywords
         @meta_datum = FactoryBot.create :meta_datum_keywords,
@@ -32,7 +31,6 @@ describe MetaDatum::Keywords do
   describe 'creating an empty one' do
 
     before :each do
-      PgTasks.truncate_tables
       @collection = FactoryBot.create :collection
       @meta_key_keywords = FactoryBot.create :meta_key_keywords
     end

@@ -10,7 +10,6 @@ describe MetaDatum::People do
   describe 'with a few people' do
 
     before :each do
-      PgTasks.truncate_tables
       @collection = FactoryBot.create :collection
       @meta_key_people = FactoryBot.create :meta_key_people
       @meta_datum = FactoryBot.create :meta_datum_people,
@@ -30,7 +29,6 @@ describe MetaDatum::People do
   describe 'creating an empty one' do
 
     before :each do
-      PgTasks.truncate_tables
       @collection = FactoryBot.create :collection
       @meta_key_people = FactoryBot.create :meta_key_people
     end

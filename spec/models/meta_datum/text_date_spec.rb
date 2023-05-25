@@ -2,9 +2,6 @@ require 'spec_helper'
 require 'spec_helper_no_tx'
 
 describe MetaDatum::TextDate do
-  before :example do
-    PgTasks.truncate_tables
-  end
 
   describe 'Creation' do
     it 'should auto delete for empty string' do

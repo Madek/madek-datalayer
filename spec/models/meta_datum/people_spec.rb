@@ -4,17 +4,12 @@ describe MetaDatum::People do
 
   context 'existing meta key test:people, collection, some people' do
 
-    before :all do
-      PgTasks.truncate_tables
+    before :each do
       @meta_key_people = FactoryBot.create :meta_key_people
       @person1 = FactoryBot.create :person
       @person2 = FactoryBot.create :person
       @person3 = FactoryBot.create :person
       @collection = FactoryBot.create :collection
-    end
-
-    after :all do
-      PgTasks.truncate_tables
     end
 
     it 'truly exists' do

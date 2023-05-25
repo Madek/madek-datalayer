@@ -49,6 +49,16 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
 
+  config.use_transactional_fixtures = false
+  # config.infer_base_class_for_anonymous_controllers = true
+  # config.order = 'random'
+
+  config.before(:each) do |example|
+    truncate_tables
+    PgTasks.data_restore Rails.root.join('db', 'seeds.pgbin')
+  end
+
+
   # Note: rails test provides some sort of mock for for cookies and sessions;
   # we patch the controller instance with a
   # validate_services_session_cookie_and_get_user, it extracts the user from
