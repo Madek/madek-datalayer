@@ -12,8 +12,9 @@ ActiveRecord::Base.transaction do
 
   # SystemSettings.first_or_create!
   AuthSystem.where(id: 'password') \
-  .first_or_create(id: 'password', type: 'password', name: 'Madek Password Authentication')
-  
+    .first_or_create(id: 'password', type: 'password', enabled: true,
+                     name: 'Madek Password Authentication')
+
 
   # Core Vocab #####################################################################
 

@@ -33,7 +33,7 @@ CREATE TRIGGER update_updated_at_column_of_auth_systems
     EXECUTE PROCEDURE public.update_updated_at_column();
 
 INSERT INTO auth_systems 
-  (id, type, name) VALUES ('password', 'password', 'Madek Password Authentication');
+  (id, type, name, enabled) VALUES ('password', 'password', 'Madek Password Authentication', true);
 
 
 --- users ---------------------------------------------------------------------
