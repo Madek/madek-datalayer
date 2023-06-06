@@ -80,6 +80,17 @@ COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UU
 
 
 --
+-- Name: collection_default_resource_type; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.collection_default_resource_type AS ENUM (
+    'collections',
+    'entries',
+    'all'
+);
+
+
+--
 -- Name: collection_layout; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -1220,6 +1231,7 @@ CREATE TABLE public.collections (
     sorting public.collection_sorting DEFAULT 'created_at DESC'::public.collection_sorting NOT NULL,
     responsible_delegation_id uuid,
     default_context_id character varying,
+    default_resource_type public.collection_default_resource_type DEFAULT 'all'::public.collection_default_resource_type NOT NULL,
     CONSTRAINT one_responsible_column_is_not_null_at_the_same_time CHECK ((((responsible_user_id IS NULL) AND (responsible_delegation_id IS NOT NULL)) OR ((responsible_user_id IS NOT NULL) AND (responsible_delegation_id IS NULL))))
 );
 
@@ -5033,6 +5045,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('0'),
 ('1'),
 ('10'),
+('11'),
 ('2'),
 ('3'),
 ('4'),
