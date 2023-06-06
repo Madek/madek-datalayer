@@ -7,7 +7,6 @@ class User < ApplicationRecord
   include Concerns::Users::Keywords
   include Concerns::Users::ResourcesAssociations
   include Concerns::Users::Workflows
-  #include Concerns::PasswordAuthentication
 
 
   #############################################################################
@@ -93,7 +92,9 @@ class User < ApplicationRecord
     sql= <<-SQL.strip_heredoc
         SELECT (auth_systems_users.data = crypt(:password, auth_systems_users.data)) AS pw_matches 
         FROM auth_systems_users
-        WHERE auth_systems_users.user_id = :user_id
+        JOIN users ON auth_systems_users.user_id = users.id
+        WHERE users.id = :user_id
+        AND users.is_deactivated = false
         AND auth_systems_users.auth_system_id = 'password'
         AND ( auth_systems_users.expires_at IS NULL
               OR auth_systems_users.expires_at < NOW() )
