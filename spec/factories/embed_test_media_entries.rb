@@ -72,6 +72,19 @@ FactoryBot.define do
       end
     end
 
+    factory :embed_test_image_landscape_entry_with_unknown_size do
+      after :create do |me|
+        FactoryBot.create :embed_test_image_landscape_file_with_unknown_size, media_entry: me
+        FactoryBot.create :meta_datum_title, media_entry: me, string: 'madek-test-image-landscape'
+      end
+    end
+
+    factory :embed_test_image_portrait_entry_with_unknown_size do
+      after :create do |me|
+        FactoryBot.create :embed_test_image_portrait_file_with_unknown_size, media_entry: me
+        FactoryBot.create :meta_datum_title, media_entry: me, string: 'madek-test-image-portrait'
+      end
+    end
   end
 
   factory :embed_test_media_file, parent: :media_file do
@@ -140,7 +153,7 @@ FactoryBot.define do
       end
     end
 
-    factory :embed_test_image_landscape_file do
+    factory :embed_test_image_landscape_file_with_unknown_size do
       previews_json = <<-JSON.strip_heredoc
         [ {"height":null,"width":null,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_maximum.jpg","thumbnail":"maximum","media_type":"image","conversion_profile":null},
           {"height":768,"width":1024,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_x_large.jpg","thumbnail":"x_large","media_type":"image","conversion_profile":null},
@@ -169,7 +182,7 @@ FactoryBot.define do
       end
     end
 
-    factory :embed_test_image_portrait_file do
+    factory :embed_test_image_portrait_file_with_unknown_size do
       media_type { 'image' }
       content_type { 'image/tiff' }
       size { '327516' }
@@ -189,6 +202,64 @@ FactoryBot.define do
           {"height":300,"width":300,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null},
           {"height":125,"width":125,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_small_125.jpg","thumbnail":"small_125","media_type":"image","conversion_profile":null},
           {"height":100,"width":100,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_small.jpg","thumbnail":"small","media_type":"image","conversion_profile":null} ]
+        JSON
+
+        previews_data = JSON.parse previews_json
+        previews_data.map(&:with_indifferent_access).each do |pd|
+          Preview.create! pd.merge(media_file: mf)
+        end
+      end
+    end
+
+    factory :embed_test_image_landscape_file do
+      previews_json = <<-JSON.strip_heredoc
+        [ {"height":1063,"width":1535,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_maximum.jpg","thumbnail":"maximum","media_type":"image","conversion_profile":null},
+          {"height":709,"width":1024,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_x_large.jpg","thumbnail":"x_large","media_type":"image","conversion_profile":null},
+          {"height":429,"width":620,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_large.jpg","thumbnail":"large","media_type":"image","conversion_profile":null},
+          {"height":208,"width":300,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null},
+          {"height":87,"width":125,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_small_125.jpg","thumbnail":"small_125","media_type":"image","conversion_profile":null},
+          {"height":69,"width":100,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_small.jpg","thumbnail":"small","media_type":"image","conversion_profile":null} ]
+      JSON
+
+      media_type { 'image' }
+      content_type { 'image/tiff' }
+      size { '318996' }
+      width { 1535 }
+      height { 1063 }
+      access_hash { '36e3898a-8a27-4354-a758-e9f24fd287bb' }
+      conversion_profiles { %w() }
+      filename { 'test-image-wide.tif' }
+      guid { 'f7df90537cd547f2a82127229a52b452' }
+      extension { 'tif' }
+
+      after :create do |mf|
+        previews_data = JSON.parse previews_json
+        previews_data.map(&:with_indifferent_access).each do |pd|
+          Preview.create! pd.merge(media_file: mf)
+        end
+      end
+    end
+    
+    factory :embed_test_image_portrait_file do
+      media_type { 'image' }
+      content_type { 'image/tiff' }
+      size { '327516' }
+      width { 1063 }
+      height { 1535 }
+      access_hash { '7674c885-3f6f-4c1c-ace1-33d4e21858d1' }
+      conversion_profiles { %w() }
+      filename { 'test-image-high.tif' }
+      guid { '16bb9f7f388e4b4eb4908f9d457718dc' }
+      extension { 'tif' }
+
+      after :create do |mf|
+        previews_json = <<-JSON.strip_heredoc
+        [ {"height":1535,"width":1063,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_maximum.jpg","thumbnail":"maximum","media_type":"image","conversion_profile":null},
+          {"height":768,"width":532,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_x_large.jpg","thumbnail":"x_large","media_type":"image","conversion_profile":null},
+          {"height":500,"width":346,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_large.jpg","thumbnail":"large","media_type":"image","conversion_profile":null},
+          {"height":300,"width":208,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null},
+          {"height":125,"width":87,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_small_125.jpg","thumbnail":"small_125","media_type":"image","conversion_profile":null},
+          {"height":100,"width":69,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_small.jpg","thumbnail":"small","media_type":"image","conversion_profile":null} ]
         JSON
 
         previews_data = JSON.parse previews_json
