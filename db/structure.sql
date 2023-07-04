@@ -911,7 +911,7 @@ BEGIN
     USING auth_systems
     WHERE user_sessions.auth_system_id = auth_systems.id
     AND user_sessions.user_id = NEW.user_id
-    AND (user_sessions.created_at + auth_systems.session_max_lifetime_minutes * interval '1 minute') < now();
+    AND (user_sessions.created_at + auth_systems.session_max_lifetime_hours * interval '1 hour') < now();
   RETURN NULL;
 END
 $$;
@@ -1079,7 +1079,6 @@ CREATE TABLE public.auth_systems (
     create_account_email_match text,
     create_account_enabled boolean DEFAULT false NOT NULL,
     description text,
-    session_max_lifetime_minutes integer DEFAULT (60 * 18) NOT NULL,
     enabled boolean DEFAULT false NOT NULL,
     external_public_key text,
     external_sign_in_url text,
@@ -1094,7 +1093,9 @@ CREATE TABLE public.auth_systems (
     type text DEFAULT 'external'::text NOT NULL,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
+    session_max_lifetime_hours double precision DEFAULT 15,
     CONSTRAINT allowed_type CHECK ((type = ANY (ARRAY['password'::text, 'external'::text]))),
+    CONSTRAINT auth_systems_session_max_lifetime_hours_check CHECK ((session_max_lifetime_hours >= (0)::double precision)),
     CONSTRAINT password_special CHECK ((((type = 'external'::text) AND ((id)::text <> 'password'::text)) OR ((type = 'password'::text) AND ((id)::text = 'password'::text)))),
     CONSTRAINT simple_id CHECK (((id)::text ~ '^[a-z][a-z0-9_-]*$'::text))
 );
@@ -5039,7 +5040,7 @@ ALTER TABLE ONLY public.zencoder_jobs
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('0'),
@@ -5049,6 +5050,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('2'),
 ('3'),
 ('4'),
-('5');
+('5'),
+('6');
 
 

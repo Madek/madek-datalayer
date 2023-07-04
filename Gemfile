@@ -21,7 +21,6 @@ gem 'strong_password'
 gem 'uuidtools'
 gem 'zencoder', '~> 2.4'
 
-gem 'cider_ci-support', '3.2', group: [:development, :test]
 gem 'factory_bot', group: [:test, :development]
 gem 'faker', group: [:test, :development] # There is a bug in 3.1.0 (as per 30.12.2022)
 gem 'pry', group: [:test, :development]

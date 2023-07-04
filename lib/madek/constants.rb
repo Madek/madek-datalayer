@@ -81,10 +81,7 @@ module Madek
 
     MADEK_V2_PERMISSION_ACTIONS = [:download, :edit, :manage, :view]
 
-    MADEK_SESSION_COOKIE_NAME = Settings.madek_session_cookie_name.presence
-
-    MADEK_SESSION_VALIDITY_DURATION =
-      ChronicDuration.parse(Settings.madek_session_validity_duration).seconds
+    MADEK_SESSION_COOKIE_NAME = 'madek-session'
 
     # only for testing:
     MADEK_DISABLE_HTTPS = ENV['DISABLE_HTTPS_THIS_IS_A_BAD_IDEA'].present?
