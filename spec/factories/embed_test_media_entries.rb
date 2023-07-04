@@ -85,6 +85,13 @@ FactoryBot.define do
         FactoryBot.create :meta_datum_title, media_entry: me, string: 'madek-test-image-portrait'
       end
     end
+
+    factory :embed_test_pdf_entry do
+      after :create do |me|
+        FactoryBot.create :embed_test_pdf_file, media_entry: me
+        FactoryBot.create :meta_datum_title, media_entry: me, string: 'madek-test-pdf'
+      end
+    end
   end
 
   factory :embed_test_media_file, parent: :media_file do
@@ -260,6 +267,35 @@ FactoryBot.define do
           {"height":300,"width":208,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null},
           {"height":125,"width":87,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_small_125.jpg","thumbnail":"small_125","media_type":"image","conversion_profile":null},
           {"height":100,"width":69,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_small.jpg","thumbnail":"small","media_type":"image","conversion_profile":null} ]
+        JSON
+
+        previews_data = JSON.parse previews_json
+        previews_data.map(&:with_indifferent_access).each do |pd|
+          Preview.create! pd.merge(media_file: mf)
+        end
+      end
+    end
+
+    factory :embed_test_pdf_file do
+      media_type { 'document' }
+      content_type { 'application/pdf' }
+      size { '13805' }
+      width { nil }
+      height { nil }
+      access_hash { '9beebc62-0674-49d1-8b76-c937c9169d27' }
+      conversion_profiles { %w() }
+      filename { 'pdf-beispiel.pdf' }
+      guid { '6e86d8474b3143c698f7d53121d280ac' }
+      extension { 'pdf' }
+
+      after :create do |mf|
+        previews_json = <<-JSON.strip_heredoc
+        [ {"height":842,"width":595,"content_type":"image/jpeg","filename":"6e86d8474b3143c698f7d53121d280ac_maximum.jpg","thumbnail":"maximum","media_type":"image","conversion_profile":null},
+          {"height":768,"width":543,"content_type":"image/jpeg","filename":"6e86d8474b3143c698f7d53121d280ac_x_large.jpg","thumbnail":"x_large","media_type":"image","conversion_profile":null},
+          {"height":500,"width":353,"content_type":"image/jpeg","filename":"6e86d8474b3143c698f7d53121d280ac_large.jpg","thumbnail":"large","media_type":"image","conversion_profile":null},
+          {"height":300,"width":212,"content_type":"image/jpeg","filename":"6e86d8474b3143c698f7d53121d280ac_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null},
+          {"height":125,"width":88,"content_type":"image/jpeg","filename":"6e86d8474b3143c698f7d53121d280ac_small_125.jpg","thumbnail":"small_125","media_type":"image","conversion_profile":null},
+          {"height":100,"width":71,"content_type":"image/jpeg","filename":"6e86d8474b3143c698f7d53121d280ac_small.jpg","thumbnail":"small","media_type":"image","conversion_profile":null} ]
         JSON
 
         previews_data = JSON.parse previews_json
