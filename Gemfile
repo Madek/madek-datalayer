@@ -15,6 +15,7 @@ gem 'base32-crockford'
 gem 'bcrypt', '~> 3.1.13'
 gem 'chronic_duration'
 # https://stackoverflow.com/questions/71191685/visit-psych-nodes-alias-unknown-alias-default-psychbadalias
+gem 'listen'
 gem 'psych', '< 4'
 gem 'rspec-rails', '~> 6', group: [:test, :development]
 gem 'strong_password'

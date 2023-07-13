@@ -1669,8 +1669,7 @@ CREATE TABLE public.meta_keys (
     CONSTRAINT descriptions_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(descriptions)))),
     CONSTRAINT hints_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(hints)))),
     CONSTRAINT labels_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(labels)))),
-    CONSTRAINT meta_key_id_chars CHECK (((id)::text ~* '^[a-z0-9\-\_\:]+$'::text)),
-    CONSTRAINT start_id_like_vocabulary_id CHECK (((id)::text ~~ ((vocabulary_id)::text || ':%'::text)))
+    CONSTRAINT meta_key_id_chars CHECK (((id)::text ~* (('^'::text || (vocabulary_id)::text) || ':[-_a-z0-9]+$'::text)))
 );
 
 
@@ -5040,13 +5039,14 @@ ALTER TABLE ONLY public.zencoder_jobs
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO public;
+SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('0'),
 ('1'),
 ('10'),
 ('11'),
+('12'),
 ('2'),
 ('3'),
 ('4'),
