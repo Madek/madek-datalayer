@@ -168,26 +168,23 @@ CREATE FUNCTION public.check_collection_primary_uniqueness() RETURNS trigger
 CREATE FUNCTION public.check_madek_core_meta_key_immutability() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
-          BEGIN
-            IF (TG_OP = 'DELETE') THEN
-              IF (OLD.id ilike 'madek_core:%') THEN
-                RAISE EXCEPTION 'The madek_core meta_key % may not be deleted', OLD.id;
-              END IF;
-            ELSIF  (TG_OP = 'UPDATE') THEN
-              IF (OLD.id ilike 'madek_core:%') THEN
-                RAISE EXCEPTION 'The madek_core meta_key % may not be modified', OLD.id;
-              END IF;
-              IF (NEW.id ilike 'madek_core:%') THEN
-                RAISE EXCEPTION 'The madek_core meta_key namespace may not be extended by %', NEW.id;
-              END IF;
-            ELSIF  (TG_OP = 'INSERT') THEN
-              IF (NEW.id ilike 'madek_core:%') THEN
-                RAISE EXCEPTION 'The madek_core meta_key namespace may not be extended by %', NEW.id;
-              END IF;
-            END IF;
-            RETURN NEW;
-          END;
-          $$;
+BEGIN
+  IF (TG_OP = 'DELETE') THEN
+    IF (OLD.id ilike 'madek_core:%') THEN
+      RAISE EXCEPTION 'The madek_core meta_key % may not be deleted', OLD.id;
+    END IF;
+  ELSIF (TG_OP = 'UPDATE') THEN
+    IF (OLD.id ilike 'madek_core:%' AND NOT readonly_core_meta_key_columns_unchanged(OLD, NEW)) THEN
+      RAISE EXCEPTION 'Only certain attributes of madek_core meta_key % may be modified', OLD.id;
+    END IF;
+  ELSIF  (TG_OP = 'INSERT') THEN
+    IF (NEW.id ilike 'madek_core:%') THEN
+      RAISE EXCEPTION 'The madek_core meta_key namespace may not be extended by %', NEW.id;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
 
 
 --
@@ -864,6 +861,69 @@ END;
 $$;
 
 
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: meta_keys; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.meta_keys (
+    id character varying NOT NULL,
+    is_extensible_list boolean DEFAULT false NOT NULL,
+    meta_datum_object_type text DEFAULT 'MetaDatum::Text'::text NOT NULL,
+    keywords_alphabetical_order boolean DEFAULT true NOT NULL,
+    "position" integer DEFAULT 0 NOT NULL,
+    is_enabled_for_media_entries boolean DEFAULT false NOT NULL,
+    is_enabled_for_collections boolean DEFAULT false NOT NULL,
+    vocabulary_id character varying NOT NULL,
+    admin_comment text,
+    allowed_people_subtypes text[],
+    text_type text DEFAULT 'line'::text NOT NULL,
+    allowed_rdf_class character varying,
+    labels public.hstore DEFAULT ''::public.hstore NOT NULL,
+    descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
+    hints public.hstore DEFAULT ''::public.hstore NOT NULL,
+    documentation_urls public.hstore DEFAULT ''::public.hstore NOT NULL,
+    CONSTRAINT check_allowed_people_subtypes_not_empty_for_meta_datum_people CHECK ((((allowed_people_subtypes IS NOT NULL) AND (COALESCE(array_length(allowed_people_subtypes, 1), 0) > 0)) OR (meta_datum_object_type <> 'MetaDatum::People'::text))),
+    CONSTRAINT check_is_extensible_list_is_boolean_for_respective_meta_datum_t CHECK (((((is_extensible_list = true) OR (is_extensible_list = false)) AND (meta_datum_object_type = ANY (ARRAY['MetaDatum::Keywords'::text, 'MetaDatum::Roles'::text]))) OR (meta_datum_object_type <> ALL (ARRAY['MetaDatum::Keywords'::text, 'MetaDatum::Roles'::text])))),
+    CONSTRAINT check_keywords_alphabetical_order_is_boolean_for_meta_datum_key CHECK (((((keywords_alphabetical_order = true) OR (keywords_alphabetical_order = false)) AND (meta_datum_object_type = 'MetaDatum::Keywords'::text)) OR (meta_datum_object_type <> 'MetaDatum::Keywords'::text))),
+    CONSTRAINT check_valid_meta_datum_object_type CHECK ((meta_datum_object_type = ANY (ARRAY['MetaDatum::Groups'::text, 'MetaDatum::Keywords'::text, 'MetaDatum::Licenses'::text, 'MetaDatum::People'::text, 'MetaDatum::Roles'::text, 'MetaDatum::Text'::text, 'MetaDatum::TextDate'::text, 'MetaDatum::Users'::text, 'MetaDatum::Vocables'::text, 'MetaDatum::JSON'::text, 'MetaDatum::MediaEntry'::text]))),
+    CONSTRAINT check_valid_text_type CHECK ((text_type = ANY (ARRAY['line'::text, 'block'::text]))),
+    CONSTRAINT descriptions_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(descriptions)))),
+    CONSTRAINT hints_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(hints)))),
+    CONSTRAINT labels_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(labels)))),
+    CONSTRAINT meta_key_id_chars CHECK (((id)::text ~* (('^'::text || (vocabulary_id)::text) || ':[-_a-z0-9]+$'::text)))
+);
+
+
+--
+-- Name: readonly_core_meta_key_columns_unchanged(public.meta_keys, public.meta_keys); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.readonly_core_meta_key_columns_unchanged(old public.meta_keys, new public.meta_keys) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  RETURN (
+    new.id                           IS NOT DISTINCT FROM old.id AND
+    new.is_extensible_list           IS NOT DISTINCT FROM old.is_extensible_list AND
+    new.meta_datum_object_type       IS NOT DISTINCT FROM old.meta_datum_object_type AND
+    new.keywords_alphabetical_order  IS NOT DISTINCT FROM old.keywords_alphabetical_order AND
+    new.position                     IS NOT DISTINCT FROM old.position AND
+    new.is_enabled_for_media_entries IS NOT DISTINCT FROM old.is_enabled_for_media_entries AND
+    new.is_enabled_for_collections   IS NOT DISTINCT FROM old.is_enabled_for_collections AND
+    new.vocabulary_id                IS NOT DISTINCT FROM old.vocabulary_id AND
+    new.admin_comment                IS NOT DISTINCT FROM old.admin_comment AND
+    new.allowed_people_subtypes      IS NOT DISTINCT FROM old.allowed_people_subtypes AND
+    new.text_type                    IS NOT DISTINCT FROM old.text_type AND
+    new.allowed_rdf_class            IS NOT DISTINCT FROM old.allowed_rdf_class
+  );
+END;
+$$;
+
+
 --
 -- Name: static_pages_check_content_for_default_locale(); Type: FUNCTION; Schema: public; Owner: -
 --
@@ -937,10 +997,6 @@ BEGIN
 END;
 $$;
 
-
-SET default_tablespace = '';
-
-SET default_table_access_method = heap;
 
 --
 -- Name: admins; Type: TABLE; Schema: public; Owner: -
@@ -1637,39 +1693,6 @@ CREATE TABLE public.meta_data_roles (
     person_id uuid NOT NULL,
     role_id uuid,
     "position" integer DEFAULT 0 NOT NULL
-);
-
-
---
--- Name: meta_keys; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.meta_keys (
-    id character varying NOT NULL,
-    is_extensible_list boolean DEFAULT false NOT NULL,
-    meta_datum_object_type text DEFAULT 'MetaDatum::Text'::text NOT NULL,
-    keywords_alphabetical_order boolean DEFAULT true NOT NULL,
-    "position" integer DEFAULT 0 NOT NULL,
-    is_enabled_for_media_entries boolean DEFAULT false NOT NULL,
-    is_enabled_for_collections boolean DEFAULT false NOT NULL,
-    vocabulary_id character varying NOT NULL,
-    admin_comment text,
-    allowed_people_subtypes text[],
-    text_type text DEFAULT 'line'::text NOT NULL,
-    allowed_rdf_class character varying,
-    labels public.hstore DEFAULT ''::public.hstore NOT NULL,
-    descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
-    hints public.hstore DEFAULT ''::public.hstore NOT NULL,
-    documentation_urls public.hstore DEFAULT ''::public.hstore NOT NULL,
-    CONSTRAINT check_allowed_people_subtypes_not_empty_for_meta_datum_people CHECK ((((allowed_people_subtypes IS NOT NULL) AND (COALESCE(array_length(allowed_people_subtypes, 1), 0) > 0)) OR (meta_datum_object_type <> 'MetaDatum::People'::text))),
-    CONSTRAINT check_is_extensible_list_is_boolean_for_respective_meta_datum_t CHECK (((((is_extensible_list = true) OR (is_extensible_list = false)) AND (meta_datum_object_type = ANY (ARRAY['MetaDatum::Keywords'::text, 'MetaDatum::Roles'::text]))) OR (meta_datum_object_type <> ALL (ARRAY['MetaDatum::Keywords'::text, 'MetaDatum::Roles'::text])))),
-    CONSTRAINT check_keywords_alphabetical_order_is_boolean_for_meta_datum_key CHECK (((((keywords_alphabetical_order = true) OR (keywords_alphabetical_order = false)) AND (meta_datum_object_type = 'MetaDatum::Keywords'::text)) OR (meta_datum_object_type <> 'MetaDatum::Keywords'::text))),
-    CONSTRAINT check_valid_meta_datum_object_type CHECK ((meta_datum_object_type = ANY (ARRAY['MetaDatum::Groups'::text, 'MetaDatum::Keywords'::text, 'MetaDatum::Licenses'::text, 'MetaDatum::People'::text, 'MetaDatum::Roles'::text, 'MetaDatum::Text'::text, 'MetaDatum::TextDate'::text, 'MetaDatum::Users'::text, 'MetaDatum::Vocables'::text, 'MetaDatum::JSON'::text, 'MetaDatum::MediaEntry'::text]))),
-    CONSTRAINT check_valid_text_type CHECK ((text_type = ANY (ARRAY['line'::text, 'block'::text]))),
-    CONSTRAINT descriptions_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(descriptions)))),
-    CONSTRAINT hints_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(hints)))),
-    CONSTRAINT labels_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(labels)))),
-    CONSTRAINT meta_key_id_chars CHECK (((id)::text ~* (('^'::text || (vocabulary_id)::text) || ':[-_a-z0-9]+$'::text)))
 );
 
 
@@ -5047,6 +5070,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('10'),
 ('11'),
 ('12'),
+('13'),
 ('2'),
 ('3'),
 ('4'),

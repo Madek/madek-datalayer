@@ -46,6 +46,10 @@ class MetaKey < ApplicationRecord
   before_validation :sanitize_allowed_people_subtypes
   before_save :keep_keywords_order_if_needed
 
+  def core?
+    vocabulary_id == 'madek_core'
+  end
+
   def self.object_types
     MetaDatum
       .descendants

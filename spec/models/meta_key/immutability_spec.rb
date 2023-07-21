@@ -47,17 +47,39 @@ describe 'the namespace madek_core' do
     end
 
     describe 'mutating it' do
-      it "raises an exception 'may not be modified'" do
-        expect do
-          MetaKey.transaction do
-            MetaKey.connection.execute <<-SQL
+      it "is allowed for editable columns" do
+        mk = MetaKey.find_by_id('madek_core:title')
+        mk.update(labels: { de: 'Neuer Titel', en: 'New Title' })
+        mk.reload
+        expect(mk.labels['en']).to eq 'New Title'
+        expect(mk.labels['de']).to eq 'Neuer Titel'
+      end
+
+      context "raises an exception for readonly columns" do
+        it "normal value comparison" do
+          expect do
+            MetaKey.transaction do
+              MetaKey.connection.execute <<-SQL
               UPDATE meta_keys
               SET meta_datum_object_type = 'MetaDatum::People',
                   allowed_people_subtypes = ARRAY['Person']
               WHERE id = 'madek_core:title'
-            SQL
-          end
-        end.to raise_error(/may not be modified/)
+              SQL
+            end
+          end.to raise_error(/only certain attributes.*may be modified/i)
+        end
+
+        it "normal value with null comparison" do
+          expect do
+            MetaKey.transaction do
+              MetaKey.connection.execute <<-SQL
+                UPDATE meta_keys
+                SET admin_comment = 'some admin comment'
+                WHERE id = 'madek_core:title'
+              SQL
+            end
+          end.to raise_error(/only certain attributes.*may be modified/i)
+        end
       end
     end
 
