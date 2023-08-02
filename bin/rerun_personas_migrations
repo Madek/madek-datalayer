@@ -5,7 +5,7 @@ PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && p
 cd $PROJECT_DIR
 source bin/db-set-env
 
-SQUASHED_MIGRATIONS_VERSION=000
+SQUASHED_MIGRATIONS_VERSION=013
 
 export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
 
@@ -13,8 +13,20 @@ env | sort
 
 dropdb -e --if-exists $PGDATABASE
 createdb -e $PGDATABASE
-bundle exec rails db:migrate:up VERSION=${SQUASHED_MIGRATIONS_VERSION}
-bundle exec rails db:pg:data:restore FILE=db/personas.$SQUASHED_MIGRATIONS_VERSION.pgbin
+
+###########################################################################################################################
+# This combo (structure, then data) does not work with changed personas dump:
+#
+# pg_restore: error: COPY failed for table "auth_systems":
+# ERROR:  duplicate key value violates unique constraint "auth_systems_pkey"
+# DETAIL:  Key (id)=(password) already exists.
+
+# bundle exec rails db:migrate VERSION=${SQUASHED_MIGRATIONS_VERSION}
+# bundle exec rails db:pg:data:restore FILE=db/personas.$SQUASHED_MIGRATIONS_VERSION.pgbin
+
+bundle exec rails db:pg:structure_and_data:restore FILE=db/personas.$SQUASHED_MIGRATIONS_VERSION.pgbin
+###########################################################################################################################
+
 bundle exec rails db:migrate
 bundle exec rails db:seed
 rm -f db/personas.pgbin

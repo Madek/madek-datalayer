@@ -1090,6 +1090,7 @@ CREATE TABLE public.app_settings (
     copyright_notice_templates text[] DEFAULT '{}'::text[],
     copyright_notice_default_text character varying,
     section_meta_key_id character varying,
+    edit_meta_data_power_users_group_id uuid,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -4547,6 +4548,14 @@ ALTER TABLE ONLY public.roles
 
 
 --
+-- Name: app_settings fk_rails_a3b6dc9d69; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.app_settings
+    ADD CONSTRAINT fk_rails_a3b6dc9d69 FOREIGN KEY (edit_meta_data_power_users_group_id) REFERENCES public.groups(id);
+
+
+--
 -- Name: delegations_groups fk_rails_a507ac19bd; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5071,6 +5080,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('11'),
 ('12'),
 ('13'),
+('14'),
 ('2'),
 ('3'),
 ('4'),
