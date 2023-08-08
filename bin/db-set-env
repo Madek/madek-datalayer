@@ -49,9 +49,19 @@ psql -d $PGDATABASE << 'SQL'
   UPDATE users 
     SET 
       is_deactivated = false,
-      login = 'admin_localhost',
-      password_digest = '$2a$12$7m8yn13DwAz13YG8Pseyq.rSNl5GYrv0RoZG2dc42LXZYRbz.r5IK'
+      login = 'root_localhost'
     WHERE email = 'root@localhost';
+
+
+  INSERT INTO auth_systems_users
+      (user_id, auth_system_id, data)
+  SELECT users.id, 'password', '$2a$12$7m8yn13DwAz13YG8Pseyq.rSNl5GYrv0RoZG2dc42LXZYRbz.r5IK'
+  FROM users
+  WHERE users.email = 'root@localhost'
+  ON CONFLICT (user_id, auth_system_id) DO UPDATE 
+  SET data = EXCLUDED.data ;
+
+
 
 SQL
 echo '# The database has been adjusted for debugging and development'

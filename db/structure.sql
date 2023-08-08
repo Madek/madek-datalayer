@@ -118,6 +118,47 @@ CREATE TYPE public.collection_sorting AS ENUM (
 
 
 --
+-- Name: audit_change(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.audit_change() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+  DECLARE
+    changed JSONB;
+    j_new JSONB := '{}'::JSONB;
+    j_old JSONB := '{}'::JSONB;
+    pkey TEXT;
+    pkey_col TEXT := (
+                SELECT attname
+                FROM pg_index
+                JOIN pg_attribute ON
+                    attrelid = indrelid
+                    AND attnum = ANY(indkey)
+                WHERE indrelid = TG_RELID AND indisprimary);
+BEGIN
+  IF (TG_OP = 'DELETE') THEN
+    j_old := row_to_json(OLD)::JSONB;
+    pkey := j_old ->> pkey_col;
+  ELSIF (TG_OP = 'INSERT') THEN
+    j_new := row_to_json(NEW)::JSONB;
+    pkey := j_new ->> pkey_col;
+  ELSIF (TG_OP = 'UPDATE') THEN
+    j_old := row_to_json(OLD)::JSONB;
+    j_new := row_to_json(NEW)::JSONB;
+    pkey := j_old ->> pkey_col;
+  END IF;
+  changed := public.jsonb_changed(j_old, j_new);
+  if ( changed <> '{}'::JSONB ) THEN
+    INSERT INTO public.audited_changes (tg_op, table_name, changed, pkey)
+      VALUES (TG_OP, TG_TABLE_NAME, changed, pkey);
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: check_collection_cover_uniqueness(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -626,6 +667,35 @@ $$;
 
 
 --
+-- Name: jsonb_changed(jsonb, jsonb); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.jsonb_changed(jold jsonb, jnew jsonb) RETURNS jsonb
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  result JSONB := '{}'::JSONB;
+  k TEXT;
+  v_new JSONB;
+  v_old JSONB;
+BEGIN
+  FOR k IN SELECT * FROM jsonb_object_keys(jold || jnew) LOOP
+    if jnew ? k
+      THEN v_new := jnew -> k;
+      ELSE v_new := 'null'::JSONB; END IF;
+    if jold ? k
+      THEN v_old := jold -> k;
+      ELSE v_old := 'null'::JSONB; END IF;
+    IF k = 'updated_at' THEN CONTINUE; END IF;
+    IF v_new = v_old THEN CONTINUE; END IF;
+    result := result || jsonb_build_object(k, jsonb_build_array(v_old, v_new));
+  END LOOP;
+  RETURN result;
+END;
+$$;
+
+
+--
 -- Name: licenses_update_searchable_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -946,6 +1016,19 @@ $_$;
 
 
 --
+-- Name: txid(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.txid() RETURNS uuid
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  RETURN public.uuid_generate_v5(public.uuid_nil(), current_date::TEXT || ' ' || txid_current()::TEXT);
+END;
+$$;
+
+
+--
 -- Name: update_updated_at_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -1128,13 +1211,55 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
+-- Name: audited_changes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.audited_changes (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    txid uuid DEFAULT public.txid() NOT NULL,
+    tg_op text NOT NULL,
+    table_name text NOT NULL,
+    changed jsonb,
+    created_at timestamp with time zone DEFAULT now(),
+    pkey text
+);
+
+
+--
+-- Name: audited_requests; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.audited_requests (
+    txid uuid DEFAULT public.txid() NOT NULL,
+    user_id uuid,
+    path text,
+    method text,
+    created_at timestamp with time zone DEFAULT now(),
+    http_uid text,
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    CONSTRAINT check_absolute_path CHECK ((path ~ '^/.*$'::text))
+);
+
+
+--
+-- Name: audited_responses; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.audited_responses (
+    txid uuid NOT NULL,
+    status integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    tx2id uuid
+);
+
+
+--
 -- Name: auth_systems; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.auth_systems (
     id character varying NOT NULL,
-    create_account_email_match text,
-    create_account_enabled boolean DEFAULT false NOT NULL,
     description text,
     enabled boolean DEFAULT false NOT NULL,
     external_public_key text,
@@ -1151,9 +1276,12 @@ CREATE TABLE public.auth_systems (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     session_max_lifetime_hours double precision DEFAULT 15,
-    CONSTRAINT allowed_type CHECK ((type = ANY (ARRAY['password'::text, 'external'::text]))),
+    email_or_login_match text,
+    manage_accounts boolean DEFAULT false NOT NULL,
+    managed_domain text,
+    CONSTRAINT allowed_type CHECK ((type = ANY (ARRAY['password'::text, 'external'::text, 'legacy'::text]))),
     CONSTRAINT auth_systems_session_max_lifetime_hours_check CHECK ((session_max_lifetime_hours >= (0)::double precision)),
-    CONSTRAINT password_special CHECK ((((type = 'external'::text) AND ((id)::text <> 'password'::text)) OR ((type = 'password'::text) AND ((id)::text = 'password'::text)))),
+    CONSTRAINT password_special CHECK ((((type = 'password'::text) AND ((id)::text = 'password'::text)) OR ((type <> 'password'::text) AND ((id)::text <> 'password'::text)))),
     CONSTRAINT simple_id CHECK (((id)::text ~ '^[a-z][a-z0-9_-]*$'::text))
 );
 
@@ -1470,6 +1598,7 @@ CREATE TABLE public.groups (
     type character varying DEFAULT 'Group'::character varying NOT NULL,
     person_id uuid,
     searchable text DEFAULT ''::text NOT NULL,
+    institution text DEFAULT 'local'::text NOT NULL,
     CONSTRAINT check_valid_type CHECK (((type)::text = ANY (ARRAY[('AuthenticationGroup'::character varying)::text, ('InstitutionalGroup'::character varying)::text, ('Group'::character varying)::text])))
 );
 
@@ -1890,6 +2019,7 @@ CREATE TABLE public.users (
     last_signed_in_at timestamp with time zone,
     settings jsonb DEFAULT '{}'::jsonb NOT NULL,
     is_deactivated boolean DEFAULT false,
+    institution text DEFAULT 'local'::text NOT NULL,
     CONSTRAINT email_format CHECK ((((email)::text ~ '\S+@\S+'::text) OR (email IS NULL))),
     CONSTRAINT login_not_uuid CHECK ((login !~* '^[[:xdigit:]]{8}-([[:xdigit:]]{4}-){3}[[:xdigit:]]{12}$'::text)),
     CONSTRAINT users_login_simple CHECK ((login ~* '^[a-z0-9\.\-\_]+$'::text))
@@ -2081,6 +2211,30 @@ ALTER TABLE ONLY public.app_settings
 
 ALTER TABLE ONLY public.ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: audited_changes audited_changes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.audited_changes
+    ADD CONSTRAINT audited_changes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: audited_requests audited_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.audited_requests
+    ADD CONSTRAINT audited_requests_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: audited_responses audited_responses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.audited_responses
+    ADD CONSTRAINT audited_responses_pkey PRIMARY KEY (id);
 
 
 --
@@ -2492,6 +2646,97 @@ ALTER TABLE ONLY public.zencoder_jobs
 
 
 --
+-- Name: audited_changes_changed_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX audited_changes_changed_idx ON public.audited_changes USING gin (to_tsvector('english'::regconfig, changed));
+
+
+--
+-- Name: audited_changes_table_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX audited_changes_table_name ON public.audited_changes USING btree (table_name);
+
+
+--
+-- Name: audited_changes_tg_op; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX audited_changes_tg_op ON public.audited_changes USING btree (tg_op);
+
+
+--
+-- Name: audited_changes_txid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX audited_changes_txid ON public.audited_changes USING btree (txid);
+
+
+--
+-- Name: audited_requests_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX audited_requests_created_at ON public.audited_requests USING btree (created_at);
+
+
+--
+-- Name: audited_requests_method; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX audited_requests_method ON public.audited_requests USING btree (method);
+
+
+--
+-- Name: audited_requests_txid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX audited_requests_txid ON public.audited_requests USING btree (txid);
+
+
+--
+-- Name: audited_requests_url; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX audited_requests_url ON public.audited_requests USING btree (path);
+
+
+--
+-- Name: audited_requests_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX audited_requests_user_id ON public.audited_requests USING btree (user_id);
+
+
+--
+-- Name: audited_responses_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX audited_responses_created_at ON public.audited_responses USING btree (created_at);
+
+
+--
+-- Name: audited_responses_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX audited_responses_status ON public.audited_responses USING btree (status);
+
+
+--
+-- Name: audited_responses_tx2id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX audited_responses_tx2id ON public.audited_responses USING btree (tx2id);
+
+
+--
+-- Name: audited_responses_txid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX audited_responses_txid ON public.audited_responses USING btree (txid);
+
+
+--
 -- Name: collection_collection_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2517,6 +2762,13 @@ CREATE INDEX full_texts_text_idx ON public.full_texts USING gin (text public.gin
 --
 
 CREATE INDEX full_texts_to_tsvector_idx ON public.full_texts USING gin (to_tsvector('english'::regconfig, text));
+
+
+--
+-- Name: groups_on_institution_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX groups_on_institution_idx ON public.groups USING btree (institution, institutional_id);
 
 
 --
@@ -3104,7 +3356,7 @@ CREATE UNIQUE INDEX index_favorite_media_entries_on_user_id_and_media_entry_id O
 -- Name: index_groups_on_institutional_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_groups_on_institutional_id ON public.groups USING btree (institutional_id);
+CREATE INDEX index_groups_on_institutional_id ON public.groups USING btree (institutional_id);
 
 
 --
@@ -3636,7 +3888,7 @@ CREATE INDEX index_users_on_autocomplete ON public.users USING btree (autocomple
 -- Name: index_users_on_institutional_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_users_on_institutional_id ON public.users USING btree (institutional_id);
+CREATE INDEX index_users_on_institutional_id ON public.users USING btree (institutional_id);
 
 
 --
@@ -3745,6 +3997,13 @@ CREATE UNIQUE INDEX unique_login_idx ON public.users USING btree (login);
 
 
 --
+-- Name: users_on_institution_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX users_on_institution_idx ON public.users USING btree (institution, institutional_id);
+
+
+--
 -- Name: users_searchable_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3759,10 +4018,332 @@ CREATE INDEX users_to_tsvector_idx ON public.users USING gin (to_tsvector('engli
 
 
 --
+-- Name: admins admins_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER admins_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.admins FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: api_clients api_clients_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER api_clients_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.api_clients FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: api_tokens api_tokens_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER api_tokens_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.api_tokens FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: app_settings app_settings_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER app_settings_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.app_settings FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: auth_systems auth_systems_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER auth_systems_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.auth_systems FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: auth_systems_groups auth_systems_groups_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER auth_systems_groups_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.auth_systems_groups FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: auth_systems_users auth_systems_users_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER auth_systems_users_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.auth_systems_users FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
 -- Name: static_pages check_contents_of_static_pages; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER check_contents_of_static_pages BEFORE INSERT OR UPDATE ON public.static_pages FOR EACH ROW EXECUTE FUNCTION public.static_pages_check_content_for_default_locale();
+
+
+--
+-- Name: collection_api_client_permissions collection_api_client_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER collection_api_client_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.collection_api_client_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: collection_collection_arcs collection_collection_arcs_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER collection_collection_arcs_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.collection_collection_arcs FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: collection_group_permissions collection_group_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER collection_group_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.collection_group_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: collection_media_entry_arcs collection_media_entry_arcs_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER collection_media_entry_arcs_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.collection_media_entry_arcs FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: collection_user_permissions collection_user_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER collection_user_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.collection_user_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: collections collections_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER collections_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.collections FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: confidential_links confidential_links_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER confidential_links_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.confidential_links FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: context_keys context_keys_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER context_keys_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.context_keys FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: contexts contexts_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER contexts_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.contexts FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: custom_urls custom_urls_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER custom_urls_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.custom_urls FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: delegations delegations_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER delegations_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.delegations FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: delegations_groups delegations_groups_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER delegations_groups_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.delegations_groups FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: delegations_users delegations_users_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER delegations_users_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.delegations_users FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: delegations_workflows delegations_workflows_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER delegations_workflows_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.delegations_workflows FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: edit_sessions edit_sessions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER edit_sessions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.edit_sessions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: favorite_collections favorite_collections_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER favorite_collections_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.favorite_collections FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: favorite_media_entries favorite_media_entries_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER favorite_media_entries_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.favorite_media_entries FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: full_texts full_texts_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER full_texts_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.full_texts FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: groups groups_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER groups_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.groups FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: groups_users groups_users_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER groups_users_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.groups_users FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: io_interfaces io_interfaces_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER io_interfaces_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.io_interfaces FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: io_mappings io_mappings_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER io_mappings_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.io_mappings FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: keywords keywords_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER keywords_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.keywords FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: media_entries media_entries_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER media_entries_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.media_entries FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: media_entry_api_client_permissions media_entry_api_client_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER media_entry_api_client_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.media_entry_api_client_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: media_entry_group_permissions media_entry_group_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER media_entry_group_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.media_entry_group_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: media_entry_user_permissions media_entry_user_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER media_entry_user_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.media_entry_user_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: media_files media_files_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER media_files_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.media_files FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: meta_data meta_data_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER meta_data_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.meta_data FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: meta_data_keywords meta_data_keywords_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER meta_data_keywords_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.meta_data_keywords FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: meta_data_meta_terms meta_data_meta_terms_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER meta_data_meta_terms_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.meta_data_meta_terms FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: meta_data_people meta_data_people_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER meta_data_people_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.meta_data_people FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: meta_data_roles meta_data_roles_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER meta_data_roles_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.meta_data_roles FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: meta_keys meta_keys_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER meta_keys_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.meta_keys FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: people people_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER people_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.people FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: previews previews_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER previews_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.previews FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: previous_group_ids previous_group_ids_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER previous_group_ids_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.previous_group_ids FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: previous_keyword_ids previous_keyword_ids_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER previous_keyword_ids_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.previous_keyword_ids FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: previous_person_ids previous_person_ids_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER previous_person_ids_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.previous_person_ids FOR EACH ROW EXECUTE FUNCTION public.audit_change();
 
 
 --
@@ -3812,6 +4393,34 @@ CREATE TRIGGER propagate_meta_data_updates_to_media_resource AFTER INSERT OR DEL
 --
 
 CREATE TRIGGER propagate_people_updates_to_meta_data_people AFTER INSERT OR UPDATE ON public.people FOR EACH ROW EXECUTE FUNCTION public.propagate_people_updates_to_meta_data_people();
+
+
+--
+-- Name: rdf_classes rdf_classes_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER rdf_classes_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.rdf_classes FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: roles roles_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER roles_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.roles FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: sections sections_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER sections_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.sections FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: static_pages static_pages_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER static_pages_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.static_pages FOR EACH ROW EXECUTE FUNCTION public.audit_change();
 
 
 --
@@ -4221,10 +4830,87 @@ CREATE TRIGGER update_updated_at_column_of_zencoder_jobs BEFORE UPDATE ON public
 
 
 --
+-- Name: usage_terms usage_terms_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER usage_terms_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.usage_terms FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: user_sessions user_sessions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER user_sessions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.user_sessions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
 -- Name: user_sessions user_sessions_clean_expired; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER user_sessions_clean_expired AFTER INSERT ON public.user_sessions FOR EACH ROW EXECUTE FUNCTION public.user_sessions_clean_expired();
+
+
+--
+-- Name: users users_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER users_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: users_workflows users_workflows_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER users_workflows_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.users_workflows FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: visualizations visualizations_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER visualizations_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.visualizations FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: vocabularies vocabularies_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER vocabularies_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.vocabularies FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: vocabulary_api_client_permissions vocabulary_api_client_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER vocabulary_api_client_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.vocabulary_api_client_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: vocabulary_group_permissions vocabulary_group_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER vocabulary_group_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.vocabulary_group_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: vocabulary_user_permissions vocabulary_user_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER vocabulary_user_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.vocabulary_user_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: workflows workflows_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER workflows_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.workflows FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: zencoder_jobs zencoder_jobs_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER zencoder_jobs_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.zencoder_jobs FOR EACH ROW EXECUTE FUNCTION public.audit_change();
 
 
 --
@@ -5071,7 +5757,7 @@ ALTER TABLE ONLY public.zencoder_jobs
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('0'),
@@ -5085,6 +5771,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('3'),
 ('4'),
 ('5'),
-('6');
+('6'),
+('7'),
+('8');
 
 
