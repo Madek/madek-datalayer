@@ -44,7 +44,7 @@ class AuthSystems2 < ActiveRecord::Migration[6.0]
           (type <> 'password' AND id <> 'password'));
 
       UPDATE auth_systems SET 
-          email_or_login_match = '*+@zhdk.ch',
+          email_or_login_match = '^.+@zhdk\.ch$',
           enabled = true,
           external_sign_in_url = '/login/zhdk',
           priority = 10,
