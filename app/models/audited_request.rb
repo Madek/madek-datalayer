@@ -1,0 +1,2 @@
+class AuditedRequest < ApplicationRecord
+end
