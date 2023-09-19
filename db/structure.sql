@@ -5757,7 +5757,7 @@ ALTER TABLE ONLY public.zencoder_jobs
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO public;
+SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('0'),
@@ -5767,6 +5767,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('12'),
 ('13'),
 ('14'),
+('15'),
 ('2'),
 ('3'),
 ('4'),
