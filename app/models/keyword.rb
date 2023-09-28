@@ -42,13 +42,20 @@ class Keyword < ApplicationRecord
 
   def merge_to(receiver)
     ActiveRecord::Base.transaction do
-      meta_data_keywords.each do |mdk|
-        mdk.update_columns(
-          keyword_id: receiver.id,
-          created_by_id: receiver.creator_id
-        )
+      meta_data.each do |md|
+        old_mdk = md.meta_data_keywords.find_by(keyword_id: self.id)
+        if md.meta_data_keywords.find_by(keyword_id: receiver.id)
+          old_mdk.destroy!
+        else 
+          old_mdk.update_columns(
+            keyword_id: receiver.id,
+            created_by_id: receiver.creator_id
+          )
+        end
       end
-      receiver.remember_id(id)
+      previous_ids = previous.map(&:previous_id)
+      previous.destroy_all
+      previous_ids.push(id).each { |p_id| receiver.remember_id(p_id) }
       destroy!
     end
   end
