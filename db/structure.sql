@@ -1174,6 +1174,7 @@ CREATE TABLE public.app_settings (
     copyright_notice_default_text character varying,
     section_meta_key_id character varying,
     edit_meta_data_power_users_group_id uuid,
+    users_active_until_ui_default integer DEFAULT 99999,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -2018,8 +2019,8 @@ CREATE TABLE public.users (
     accepted_usage_terms_id uuid,
     last_signed_in_at timestamp with time zone,
     settings jsonb DEFAULT '{}'::jsonb NOT NULL,
-    is_deactivated boolean DEFAULT false,
     institution text DEFAULT 'local'::text NOT NULL,
+    active_until timestamp with time zone DEFAULT (CURRENT_DATE + '100000 days -00:00:01'::interval) NOT NULL,
     CONSTRAINT email_format CHECK ((((email)::text ~ '\S+@\S+'::text) OR (email IS NULL))),
     CONSTRAINT login_not_uuid CHECK ((login !~* '^[[:xdigit:]]{8}-([[:xdigit:]]{4}-){3}[[:xdigit:]]{12}$'::text)),
     CONSTRAINT users_login_simple CHECK ((login ~* '^[a-z0-9\.\-\_]+$'::text))
@@ -5721,7 +5722,7 @@ ALTER TABLE ONLY public.zencoder_jobs
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO public;
+SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('0'),
@@ -5733,6 +5734,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('14'),
 ('15'),
 ('16'),
+('17'),
 ('2'),
 ('3'),
 ('4'),

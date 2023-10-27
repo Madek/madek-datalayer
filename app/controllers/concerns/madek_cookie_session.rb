@@ -53,8 +53,15 @@ module Concerns
     def validate_services_session_cookie_and_get_user
       begin
         @session = get_valid_session(session_cookie!)
-        @session || raise(StandardError, 'No valid user_session found')
-        @session.user
+
+        if not @session
+          raise(StandardError, 'No valid user_session found')
+        elsif not @session.user.activated?
+          raise(StandartError, 'User is deactivated')
+        else
+          @session.user
+        end
+
       rescue Exception => e
         Rails.logger.warn e
         cookies.delete COOKIE_NAME

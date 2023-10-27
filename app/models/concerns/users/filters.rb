@@ -6,7 +6,8 @@ module Concerns
 
       included do
         scope :admins, -> { joins(:admin) }
-        scope :deactivated, -> { where(is_deactivated: true) }
+        scope :activated, -> { where('now() <= active_until') }
+        scope :deactivated, -> { where('now() > active_until') }
         scope :order_by, lambda { |attribute|
           case attribute.to_sym
           when :first_name_last_name
@@ -22,7 +23,7 @@ module Concerns
         def filter_by(term,
                       search_also_in_person = false,
                       with_deactivated = false)
-          result = with_deactivated ? all : where(is_deactivated: false)
+          result = with_deactivated ? all : activated
           exact_match = find_exact_matching(term, result)
           return exact_match if exact_match
           search_attributes = ['users.searchable']

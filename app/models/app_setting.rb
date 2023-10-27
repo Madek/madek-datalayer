@@ -27,7 +27,7 @@ class AppSetting < ApplicationRecord
     define_singleton_method method_name do
       begin
         fallback = Settings.send("madek_#{method_name}")
-        first.try(method_name) || fallback
+        first.try(method_name).presence || fallback
       rescue ActiveRecord::StatementInvalid
         fallback
       end
@@ -83,6 +83,11 @@ class AppSetting < ApplicationRecord
     else
       []
     end
+  end
+
+  def time_zone_offset
+    utc_offset = Time.now.in_time_zone(time_zone).utc_offset/60/60
+    format('%+d', utc_offset)
   end
 
   private

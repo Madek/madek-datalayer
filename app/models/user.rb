@@ -57,6 +57,27 @@ class User < ApplicationRecord
     write_attribute :email, (value ? value.downcase : nil)
   end
 
+  def active_until=(value)
+    write_attribute(
+      :active_until,
+      value
+      .to_datetime
+      .change(offset: AppSetting.first.time_zone_offset)
+      .end_of_day
+    )
+  end
+
+  #############################################################
+
+  def activated?
+    Time.now.before?(active_until)
+  end
+
+  def deactivated?
+    not activated?
+  end
+  alias_method(:is_deactivated, :deactivated?)
+
   #############################################################
 
   def admin?
@@ -94,7 +115,7 @@ class User < ApplicationRecord
         FROM auth_systems_users
         JOIN users ON auth_systems_users.user_id = users.id
         WHERE users.id = :user_id
-        AND users.is_deactivated = false
+        AND ( now() <= users.active_until )
         AND auth_systems_users.auth_system_id = 'password'
         AND ( auth_systems_users.expires_at IS NULL
               OR auth_systems_users.expires_at < NOW() )

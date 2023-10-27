@@ -36,6 +36,12 @@ FactoryBot.define do
     updator { User.find_random || (FactoryBot.create :user) }
     media_entry { MediaEntry.find_random || (FactoryBot.create :media_entry) }
 
+    trait :full do
+      get_metadata_and_previews { true }
+      get_full_size { true }
+      edit_metadata { true }
+      edit_permissions { true }
+    end
   end
 
   factory :media_entry_delegation_permission,
