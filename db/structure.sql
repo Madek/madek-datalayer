@@ -2037,19 +2037,6 @@ CREATE TABLE public.users_workflows (
 
 
 --
--- Name: visualizations; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.visualizations (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    user_id uuid NOT NULL,
-    resource_identifier character varying NOT NULL,
-    control_settings text,
-    layout text
-);
-
-
---
 -- Name: vocabularies; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2587,14 +2574,6 @@ ALTER TABLE ONLY public.user_sessions
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
-
-
---
--- Name: visualizations visualizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.visualizations
-    ADD CONSTRAINT visualizations_pkey PRIMARY KEY (id);
 
 
 --
@@ -4865,13 +4844,6 @@ CREATE TRIGGER users_workflows_audit_change AFTER INSERT OR DELETE OR UPDATE ON 
 
 
 --
--- Name: visualizations visualizations_audit_change; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER visualizations_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.visualizations FOR EACH ROW EXECUTE FUNCTION public.audit_change();
-
-
---
 -- Name: vocabularies vocabularies_audit_change; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -5698,14 +5670,6 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: visualizations visualizations_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.visualizations
-    ADD CONSTRAINT visualizations_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
-
-
---
 -- Name: vocabulary_api_client_permissions vocabulary-api-client-permissions_api-clients_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5757,7 +5721,7 @@ ALTER TABLE ONLY public.zencoder_jobs
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('0'),
@@ -5768,6 +5732,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('13'),
 ('14'),
 ('15'),
+('16'),
 ('2'),
 ('3'),
 ('4'),
