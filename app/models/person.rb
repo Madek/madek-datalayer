@@ -36,14 +36,19 @@ class Person < ApplicationRecord
 
   def merge_to(receiver, creator_fallback = nil)
     ActiveRecord::Base.transaction do
-      meta_data_people.each do |mdp|
-        mdp.update_columns(
-          person_id: receiver.id,
-          created_by_id: (receiver.user.try(:id) || creator_fallback&.id)
-        )
+      meta_data.each do |md|
+        old_mdk = md.meta_data_people.find_by(person_id: self.id)
+        if md.meta_data_people.find_by(person_id: receiver.id)
+          old_mdk.destroy!
+        else 
+          old_mdk.update_columns(
+            person_id: receiver.id,
+            created_by_id: (receiver.user.try(:id) || creator_fallback&.id)
+          )
+        end
       end
       user.update!(person: receiver) if user
-      receiver.remember_id(id)
+      remember_previous_ids!(receiver)
       destroy!
     end
   end

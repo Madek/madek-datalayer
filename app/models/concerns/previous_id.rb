@@ -45,8 +45,14 @@ module Concerns::PreviousId
     end
   end
 
-  def remember_id(prev_id)
+  def remember_id!(prev_id)
     previous.create!(previous_id: prev_id)
+  end
+
+  def remember_previous_ids!(receiver)
+    previous_ids = previous.map(&:previous_id)
+    previous.destroy_all
+    previous_ids.push(id).each { |p_id| receiver.remember_id!(p_id) }
   end
 
   def previous_ids

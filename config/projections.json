@@ -1,0 +1,4 @@
+{ "../app/controllers/*_controller.rb":
+  { "affinity": "controller",
+    "command": "controller"}
+}

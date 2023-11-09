@@ -53,9 +53,7 @@ class Keyword < ApplicationRecord
           )
         end
       end
-      previous_ids = previous.map(&:previous_id)
-      previous.destroy_all
-      previous_ids.push(id).each { |p_id| receiver.remember_id(p_id) }
+      remember_previous_ids!(receiver)
       destroy!
     end
   end

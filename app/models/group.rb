@@ -25,7 +25,7 @@ class Group < ApplicationRecord
   def merge_to(receiver)
     ActiveRecord::Base.transaction do
       merge_users_to(receiver)
-      receiver.remember_id(id)
+      remember_previous_ids!(receiver)
       destroy!
     end
   end
