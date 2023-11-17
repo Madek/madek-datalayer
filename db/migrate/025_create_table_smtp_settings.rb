@@ -14,8 +14,8 @@ class CreateTableSmtpSettings < ActiveRecord::Migration[6.1]
       t.text :username
     end
 
-    add_column(:smtp_settings, :created_at, :timestamptz, null: false)
-    add_column(:smtp_settings, :updated_at, :timestamptz, null: false)
+    add_column(:smtp_settings, :created_at, :timestamptz, null: true)
+    add_column(:smtp_settings, :updated_at, :timestamptz, null: true)
 
     reversible do |dir|
       dir.up do
