@@ -19,6 +19,15 @@ else
   exit 1
 fi
 
+SET_PWD="${SET_PWD:-NO}"
+if [ $SET_PWD == "YES" ] ||  [ $SET_PWD == "NO" ]; then
+  echo "SET_PWD=$SET_PWD"
+else
+  echo 'SET_PWD must be unset, or "YES", or "NO"'
+  exit 1
+fi
+
+
 
 
 START_DIR=$(pwd)
@@ -53,7 +62,7 @@ if [ $SPARSE == "YES" ]; then
   pg_restore --disable-triggers -j $J -x -O -d $PGDATABASE --data-only \
     -L <(pg_restore -l ${FILE} | grep -v -E -e 'audits') $FILE
 
-  echo "WARNING some tables have been skipped, set SPRASE=NO to avoid this"
+  echo "WARNING some tables have been skipped, set SPARSE=NO to avoid this"
 
 else
   pg_restore --disable-triggers -j $J -x -O -d $PGDATABASE --data-only $FILE
@@ -70,4 +79,10 @@ bundle exec rake db:migrate
 
 if [[ $DEV_MODE == 'YES' ]]; then
   set_dev_and_debug_values
+
+  if [[ $SET_PWD == 'YES' ]]; then
+    # cd $PROJECT_DIR
+    ./bin/db-set-passwords
+    # cd -
+  fi
 fi

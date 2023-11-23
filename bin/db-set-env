@@ -48,7 +48,7 @@ psql -d $PGDATABASE << 'SQL'
 
   UPDATE users 
     SET 
-      deactivated_at = (current_date + interval '100 year + 1 day - 1 second')::timestamptz,
+      active_until = (current_date + interval '100 year + 1 day - 1 second')::timestamptz,
       login = 'root_localhost'
     WHERE email = 'root@localhost';
 
