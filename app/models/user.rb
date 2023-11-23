@@ -122,7 +122,11 @@ class User < ApplicationRecord
     SQL
     res = ActiveRecord::Base.connection.execute(
       ApplicationRecord.sanitize_sql([sql, password: pw, user_id: self.id]))
-    res.first["pw_matches"] && self
+    if res.first.try(:[], "pw_matches")
+      self
+    else
+      raise 'Authentication conditions not met or password is wrong.'
+    end
   end
 
 

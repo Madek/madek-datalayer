@@ -13,7 +13,8 @@ describe [User] do
 
     it "fails authorization with a wrong and " \
       "returns false" do
-        expect(@user.authenticate "foo").to be== false
+        expect { @user.authenticate "foo" }
+          .to raise_error 'Authentication conditions not met or password is wrong.'
       end
 
 
@@ -43,7 +44,8 @@ describe [User] do
 
     it "fails authorization with a wrong and " \
       "returns false" do
-        expect(@user.authenticate "foo").to be== false
+        expect { @user.authenticate "foo" }
+          .to raise_error 'Authentication conditions not met or password is wrong.'
       end
 
   end
