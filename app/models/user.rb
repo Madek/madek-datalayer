@@ -29,6 +29,10 @@ class User < ApplicationRecord
            class_name: 'MediaEntry',
            foreign_key: :creator_id
 
+  has_many :created_collections,
+           class_name: 'Collection',
+           foreign_key: :creator_id
+
   #############################################################
 
   has_many :created_custom_urls, class_name: 'CustomUrl', foreign_key: :creator_id

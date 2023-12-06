@@ -1,4 +1,9 @@
-{ "../app/controllers/*_controller.rb":
+{
+  "../app/controllers/*_controller.rb":
   { "affinity": "controller",
-    "command": "controller"}
+    "command": "controller"},
+
+  "../app/views/*.haml":
+  { "affinity": "view",
+    "command": "view"}
 }
