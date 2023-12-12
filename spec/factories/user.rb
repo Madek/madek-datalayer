@@ -10,6 +10,9 @@ FactoryBot.define do
     accepted_usage_terms { UsageTerms.most_recent or create(:usage_terms) }
     password { Faker::Internet.password }
 
+    last_name { person.last_name }
+    first_name { person.first_name }
+
     trait :deactivated do
       active_until { Date.yesterday }
     end

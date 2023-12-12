@@ -307,7 +307,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -368,7 +368,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -1075,8 +1075,8 @@ CREATE FUNCTION public.users_update_searchable_column() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-   NEW.searchable = COALESCE(NEW.login::text, '') || ' ' || COALESCE(NEW.email::text, '') ;
-   RETURN NEW;
+  NEW.searchable = COALESCE(NEW.last_name::text, '') || ' ' || COALESCE(NEW.first_name::text, '') || ' ' || COALESCE(NEW.login::text, '') || ' ' || COALESCE(NEW.email::text, '') ;
+  RETURN NEW;
 END;
 $$;
 
@@ -2021,6 +2021,8 @@ CREATE TABLE public.users (
     settings jsonb DEFAULT '{}'::jsonb NOT NULL,
     institution text DEFAULT 'local'::text NOT NULL,
     active_until timestamp with time zone DEFAULT (CURRENT_DATE + '100000 days -00:00:01'::interval) NOT NULL,
+    last_name text,
+    first_name text,
     CONSTRAINT email_format CHECK ((((email)::text ~ '\S+@\S+'::text) OR (email IS NULL))),
     CONSTRAINT login_not_uuid CHECK ((login !~* '^[[:xdigit:]]{8}-([[:xdigit:]]{4}-){3}[[:xdigit:]]{12}$'::text)),
     CONSTRAINT users_login_simple CHECK ((login ~* '^[a-z0-9\.\-\_]+$'::text))
@@ -5735,6 +5737,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('15'),
 ('16'),
 ('17'),
+('18'),
 ('2'),
 ('3'),
 ('4'),
