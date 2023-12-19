@@ -53,6 +53,10 @@ class User < ApplicationRecord
 
   #############################################################
 
+  def to_s
+    "#{first_name} #{last_name}".strip
+  end
+
   def login=(value)
     write_attribute :login, (value ? value.downcase : nil)
   end

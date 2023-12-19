@@ -11,8 +11,7 @@ module Concerns
         scope :order_by, lambda { |attribute|
           case attribute.to_sym
           when :first_name_last_name
-            joins(:person)
-              .reorder('people.searchable ASC')
+            reorder("first_name ASC NULLS FIRST, last_name ASC NULLS FIRST, email")
           else
             reorder(attribute)
           end

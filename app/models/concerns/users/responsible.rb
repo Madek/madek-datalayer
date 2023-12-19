@@ -11,8 +11,13 @@ module Concerns
                              :in_responsibility_of)
 
         def responsible_entity_name
-          responsible_user.try(&:person).try(&:to_s) \
-            or responsible_delegation.try(&:name).try(:concat, ' (Delegation)')
+          if responsible_user
+            responsible_user.to_s
+          elsif responsible_delegation
+            responsible_delegation.try(&:name).try(:concat, ' (Delegation)')
+          else
+            raise('No responsible entity!')
+          end
         end
       end
     end
