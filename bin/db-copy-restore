@@ -11,6 +11,8 @@ source bin/db-set-env
 
 PGDATABASE_COPY="${PGDATABASE_COPY:-${PGDATABASE}_copy}"
 
+terminate_connections
+
 psql -d template1 <<HERE
   DROP DATABASE IF EXISTS "${PGDATABASE}";
   CREATE DATABASE "${PGDATABASE}" WITH TEMPLATE "${PGDATABASE_COPY}";

@@ -19,10 +19,17 @@ class UserPersonDecoupling1 < ActiveRecord::Migration[6.1]
 
     execute <<-SQL.strip_heredoc
 
+      -- DROP TRIGGER
+
+      DROP TRIGGER update_updated_at_column_of_users ON users;
+
       UPDATE users
       SET last_name = people.last_name, first_name = people.first_name
       FROM people
       WHERE people.id = users.person_id;
+
+      CREATE TRIGGER update_updated_at_column_of_users BEFORE UPDATE ON public.users FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
 
     SQL
 

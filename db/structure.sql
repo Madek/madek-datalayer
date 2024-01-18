@@ -307,7 +307,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -368,7 +368,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -1845,6 +1845,7 @@ CREATE TABLE public.people (
     subtype text NOT NULL,
     description text,
     external_uris character varying[] DEFAULT '{}'::character varying[] NOT NULL,
+    institution text DEFAULT 'local'::text NOT NULL,
     CONSTRAINT check_presence_of_first_name_or_last_name_or_pseudonym CHECK (((first_name IS NOT NULL) OR (last_name IS NOT NULL) OR (pseudonym IS NOT NULL))),
     CONSTRAINT check_valid_people_subtype CHECK ((subtype = ANY (ARRAY['Person'::text, 'PeopleGroup'::text, 'PeopleInstitutionalGroup'::text]))),
     CONSTRAINT first_name_is_not_blank CHECK (((first_name)::text !~ '^\s*$'::text)),
@@ -3337,17 +3338,17 @@ CREATE UNIQUE INDEX index_favorite_media_entries_on_user_id_and_media_entry_id O
 
 
 --
+-- Name: index_groups_on_institution_and_institutional_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_groups_on_institution_and_institutional_name ON public.groups USING btree (institution, institutional_name);
+
+
+--
 -- Name: index_groups_on_institutional_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_groups_on_institutional_id ON public.groups USING btree (institutional_id);
-
-
---
--- Name: index_groups_on_institutional_name; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_groups_on_institutional_name ON public.groups USING btree (institutional_name);
 
 
 --
@@ -3750,10 +3751,10 @@ CREATE INDEX index_people_on_first_name ON public.people USING btree (first_name
 
 
 --
--- Name: index_people_on_institutional_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_people_on_institution_and_institutional_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_people_on_institutional_id ON public.people USING btree (institutional_id);
+CREATE UNIQUE INDEX index_people_on_institution_and_institutional_id ON public.people USING btree (institution, institutional_id);
 
 
 --
@@ -5758,6 +5759,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('19'),
 ('2'),
 ('20'),
+('21'),
 ('3'),
 ('4'),
 ('5'),
