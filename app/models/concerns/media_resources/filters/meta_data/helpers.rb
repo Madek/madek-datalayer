@@ -18,11 +18,12 @@ module Concerns
                       "= #{meta_datum[:md_alias] or 'meta_data'}.id")
 
               unless meta_datum[:value].blank?
-                joined_meta_data
-                  .joins("AND #{rmd_alias}.#{actor_type}_id = " \
-                         "'#{meta_datum[:value]}'")
+                sanitized_cond = sanitize_sql_for_conditions(
+                  ["AND #{rmd_alias}.#{actor_type}_id = ?", meta_datum[:value]]
+                )
+                joined_meta_data.joins(sanitized_cond)
               else
-                sanitized = sanitize_sql_for_conditions(
+                sanitized_cond = sanitize_sql_for_conditions(
                   [
                     "AND to_tsvector('english', " \
                     "#{actor_type_plural}.searchable) @@ " \
@@ -35,7 +36,7 @@ module Concerns
                     "INNER JOIN #{actor_type_plural} " \
                     "ON #{rmd_alias}.#{actor_type}_id " \
                     "= #{actor_type_plural}.id " \
-                    + sanitized
+                    + sanitized_cond
                   )
               end
             end

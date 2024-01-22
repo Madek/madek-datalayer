@@ -5,10 +5,14 @@ module Concerns
         extend ActiveSupport::Concern
         included do
           scope :filter_by_meta_key, lambda { |meta_key_id, md_alias = nil|
+            sanitized_cond = sanitize_sql_for_conditions(
+              ["AND #{md_alias or 'meta_data'}.meta_key_id = ?", meta_key_id]
+            )
+
             joins("INNER JOIN meta_data #{md_alias} " \
                   "ON #{md_alias or 'meta_data'}.#{model_name.singular}_id " \
-                  "= #{model_name.plural}.id " \
-                  "AND #{md_alias or 'meta_data'}.meta_key_id = '#{meta_key_id}'")
+                  "= #{model_name.plural}.id")
+              .joins(sanitized_cond)
           }
 
           scope :filter_by_not_meta_key, lambda { |meta_key_id, meta_keys_scope|

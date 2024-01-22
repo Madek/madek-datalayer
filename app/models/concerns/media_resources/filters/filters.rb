@@ -117,21 +117,30 @@ module Concerns
             key = opts[:key]
             value = opts[:value]
 
+            ensure_uuid = -> (x) { UUIDTools::UUID.parse(x) }
+            ensure_bool = -> (x) do
+              if ['true', 'false'].include?(x)
+                x 
+              else
+                raise('Unsupported boolean format')  
+              end
+            end
+
             case key
             when 'responsible_user'
-              with_responsible_user(value)
+              with_responsible_user(ensure_uuid[value])
             when 'responsible_delegation'
-              with_responsible_delegation(value)
+              with_responsible_delegation(ensure_uuid[value])
             when 'public'
-              filter_by_public_view(value)
+              filter_by_public_view(ensure_bool[value])
             when 'visibility'
               filter_by_permission_visibility(value)
             when 'entrusted_to_group'
-              entrusted_to_group Group.find(value)
+              entrusted_to_group Group.find(ensure_uuid[value])
             when 'entrusted_to_user'
-              entrusted_to_user User.find(value)
+              entrusted_to_user User.find(ensure_uuid[value])
             when 'entrusted_to_api_client'
-              entrusted_to_api_client ApiClient.find(value)
+              entrusted_to_api_client ApiClient.find(ensure_uuid[value])
             else
               raise 'Unrecognized permission key'
             end
@@ -148,7 +157,7 @@ module Concerns
             when 'private'
               filter_by_visibility_private
             else
-              throw 'Unexpected visibility value: ' + value.to_s
+              raise 'Unexpected visibility value: ' + value.to_s
             end
           end
         end
