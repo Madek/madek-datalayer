@@ -27,7 +27,7 @@ PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && p
 cd $PROJECT_DIR
 ./bin/env/ruby-setup --quiet
 
-RAILS_ENV=${RAILS_ENV:-test}
+RAILS_ENV=${RAILS_ENV:-development}
 source bin/db-set-env
 
 FILE=${FILE:-tmp/latest.pgbin}

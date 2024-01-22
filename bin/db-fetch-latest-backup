@@ -9,5 +9,6 @@ fi
 
 HOST=${HOST:-medienarchiv.zhdk.ch}
 SSH_PORT=${SSH_PORT:-22}
+DIR=${DIR:-/opt/madekdata/backups}
 
-rsync -LP -e "ssh -p $SSH_PORT" root@$HOST:/opt/madekdata/backups/latest.pgbin "$@"
+rsync -LP -e "ssh -p $SSH_PORT" root@$HOST:$DIR/latest.pgbin "$@"
