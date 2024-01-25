@@ -307,7 +307,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys
+            IF EXISTS (SELECT 1 FROM meta_keys 
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -368,7 +368,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys
+            IF EXISTS (SELECT 1 FROM meta_keys 
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -1846,6 +1846,7 @@ CREATE TABLE public.people (
     description text,
     external_uris character varying[] DEFAULT '{}'::character varying[] NOT NULL,
     institution text DEFAULT 'local'::text NOT NULL,
+    admin_comment text,
     CONSTRAINT check_presence_of_first_name_or_last_name_or_pseudonym CHECK (((first_name IS NOT NULL) OR (last_name IS NOT NULL) OR (pseudonym IS NOT NULL))),
     CONSTRAINT check_valid_people_subtype CHECK ((subtype = ANY (ARRAY['Person'::text, 'PeopleGroup'::text, 'PeopleInstitutionalGroup'::text]))),
     CONSTRAINT first_name_is_not_blank CHECK (((first_name)::text !~ '^\s*$'::text)),
@@ -5760,6 +5761,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('2'),
 ('20'),
 ('21'),
+('22'),
 ('3'),
 ('4'),
 ('5'),
