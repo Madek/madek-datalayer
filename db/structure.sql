@@ -307,7 +307,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -368,7 +368,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -1842,7 +1842,7 @@ CREATE TABLE public.people (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     searchable text DEFAULT ''::text NOT NULL,
     institutional_id text,
-    subtype text NOT NULL,
+    subtype text DEFAULT 'Person'::text NOT NULL,
     description text,
     external_uris character varying[] DEFAULT '{}'::character varying[] NOT NULL,
     institution text DEFAULT 'local'::text NOT NULL,
@@ -5762,6 +5762,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20'),
 ('21'),
 ('22'),
+('23'),
 ('3'),
 ('4'),
 ('5'),
