@@ -8,10 +8,17 @@ class MigrateInstitution < ActiveRecord::Migration[6.1]
     #
     execute <<-SQL.strip_heredoc
 
+      DROP TRIGGER update_updated_at_column_of_users ON users;
+
       UPDATE users SET institution = 'zhdk.ch'
       WHERE login IS NOT NULL
       AND institution = 'local'
       AND email ILIKE '%@zhdk.ch';
+
+      CREATE TRIGGER update_updated_at_column_of_users BEFORE UPDATE ON
+      public.users FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE
+      FUNCTION public.update_updated_at_column();
+
 
     SQL
 
