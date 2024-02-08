@@ -1,8 +1,8 @@
 class CreatedInfoForGroups < ActiveRecord::Migration[6.1]
 
   def change
-    add_column(:groups, :created_at, :timestamptz, null: false, default: -> { "now()" })
-    add_column(:groups, :updated_at, :timestamptz, null: false, default: -> { "now()" })
+    add_column(:groups, :created_at, :timestamptz)
+    add_column(:groups, :updated_at, :timestamptz)
 
     reversible do |dir|
       dir.up do
@@ -20,6 +20,9 @@ class CreatedInfoForGroups < ActiveRecord::Migration[6.1]
         SQL
       end
     end
+
+    change_column(:groups, :created_at, :timestamptz, default: -> { "now()" })
+    change_column(:groups, :updated_at, :timestamptz, default: -> { "now()" })
 
     add_column(:groups, :created_by_user_id, :uuid)
     add_foreign_key(:groups, :users, column: :created_by_user_id)
