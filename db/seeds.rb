@@ -60,5 +60,4 @@ ActiveRecord::Base.transaction do
       ck.update_column(:hints, { DEFAULT_LOCALE => nil })
     end
   end
-
 end

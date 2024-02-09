@@ -653,6 +653,20 @@ CREATE FUNCTION public.delete_meta_datum_text_string_null() RETURNS trigger
 
 
 --
+-- Name: delete_old_emails_f(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.delete_old_emails_f() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+          BEGIN
+            DELETE FROM emails WHERE created_at < CURRENT_DATE - INTERVAL '90 days';
+            RETURN NEW;
+          END;
+          $$;
+
+
+--
 -- Name: groups_update_searchable_column(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -1554,6 +1568,26 @@ CREATE TABLE public.edit_sessions (
 
 
 --
+-- Name: emails; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.emails (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    subject text NOT NULL,
+    body text NOT NULL,
+    from_address text NOT NULL,
+    to_address text NOT NULL,
+    trials integer DEFAULT 0 NOT NULL,
+    is_successful boolean,
+    error_message text,
+    created_at timestamp(6) without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp(6) without time zone DEFAULT now() NOT NULL,
+    CONSTRAINT check_trial_success_or_error CHECK ((((trials = 0) AND (is_successful IS NULL) AND (error_message IS NULL)) OR ((trials > 0) AND (((is_successful = true) AND (error_message IS NULL)) OR ((is_successful = false) AND (error_message IS NOT NULL))))))
+);
+
+
+--
 -- Name: favorite_collections; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1962,6 +1996,48 @@ CREATE TABLE public.sections (
 
 
 --
+-- Name: smtp_settings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.smtp_settings (
+    id bigint DEFAULT 0 NOT NULL,
+    is_enabled boolean DEFAULT false NOT NULL,
+    host_address text DEFAULT 'localhost'::text NOT NULL,
+    authentication_type text DEFAULT 'plain'::text,
+    default_from_address text DEFAULT 'noreply'::text NOT NULL,
+    domain text,
+    enable_starttls_auto boolean DEFAULT false NOT NULL,
+    openssl_verify_mode text DEFAULT 'none'::text NOT NULL,
+    password text,
+    port integer DEFAULT 25 NOT NULL,
+    sender_address text,
+    username text,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    CONSTRAINT oneandonly CHECK ((id = 0))
+);
+
+
+--
+-- Name: smtp_settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.smtp_settings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: smtp_settings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.smtp_settings_id_seq OWNED BY public.smtp_settings.id;
+
+
+--
 -- Name: static_pages; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2344,6 +2420,14 @@ ALTER TABLE ONLY public.edit_sessions
 
 
 --
+-- Name: emails emails_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.emails
+    ADD CONSTRAINT emails_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: full_texts full_texts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2541,6 +2625,14 @@ ALTER TABLE ONLY public.schema_migrations
 
 ALTER TABLE ONLY public.sections
     ADD CONSTRAINT sections_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: smtp_settings smtp_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.smtp_settings
+    ADD CONSTRAINT smtp_settings_pkey PRIMARY KEY (id);
 
 
 --
@@ -4158,6 +4250,13 @@ CREATE TRIGGER delegations_workflows_audit_change AFTER INSERT OR DELETE OR UPDA
 
 
 --
+-- Name: emails delete_old_emails_t; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER delete_old_emails_t AFTER INSERT OR UPDATE ON public.emails NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION public.delete_old_emails_f();
+
+
+--
 -- Name: edit_sessions edit_sessions_audit_change; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -5763,6 +5862,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('21'),
 ('22'),
 ('23'),
+('24'),
+('25'),
+('26'),
 ('3'),
 ('4'),
 ('5'),
