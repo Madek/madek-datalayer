@@ -77,3 +77,20 @@ jobs:
     depends_on: &ALL_PASSED
       'all tests passed': {type: job, job_key: 'all-tests', states: [passed]}
     run_when: *ALL_PASSED
+
+  merged-to-master:
+    name: "Merged to master"
+    depends_on:
+      master branch matches:
+        type: branch
+        include_match: ^master$
+    run_when:
+      master branch matches:
+        type: branch
+        include_match: ^master$
+    context:
+      tasks:
+        merged-to-master:
+          scripts:
+            test:
+              body: "exit 0"
