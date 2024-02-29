@@ -49,8 +49,8 @@ fi
 
 terminate_connections
 
-psql -c "DROP DATABASE IF EXISTS $PGDATABASE"
-psql -c "CREATE DATABASE $PGDATABASE"
+psql -d postgres -c "DROP DATABASE IF EXISTS $PGDATABASE"
+psql -d postgres -c "CREATE DATABASE $PGDATABASE"
 
 cd $START_DIR
 
