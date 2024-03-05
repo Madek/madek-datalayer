@@ -674,7 +674,7 @@ CREATE FUNCTION public.delete_old_notifications_f() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
       BEGIN
-        DELETE FROM emails WHERE created_at < CURRENT_DATE - INTERVAL '90 days';
+        DELETE FROM notifications WHERE created_at < CURRENT_DATE - INTERVAL '180 days';
         RETURN NEW;
       END;
       $$;
@@ -1878,37 +1878,52 @@ CREATE TABLE public.meta_data_roles (
 
 
 --
+-- Name: notification_templates; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.notification_templates (
+    label character varying NOT NULL,
+    description text,
+    ui_en text NOT NULL,
+    ui_de text NOT NULL,
+    email_single_en text NOT NULL,
+    email_single_de text NOT NULL,
+    email_summary_en text NOT NULL,
+    email_summary_de text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: notification_templates_users_settings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.notification_templates_users_settings (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    notification_template_label character varying NOT NULL,
+    email_frequency character varying DEFAULT 'daily'::character varying NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT check_email_regularity_value CHECK (((email_frequency)::text = ANY ((ARRAY['immediately'::character varying, 'daily'::character varying, 'weekly'::character varying, 'never'::character varying])::text[])))
+);
+
+
+--
 -- Name: notifications; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.notifications (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
-    is_acknowledged boolean DEFAULT false NOT NULL,
-    is_delivered_via_email boolean DEFAULT false NOT NULL,
-    is_delivered_via_ui boolean DEFAULT false NOT NULL,
     content text NOT NULL,
+    acknowledged boolean DEFAULT false NOT NULL,
+    email_frequency character varying DEFAULT 'daily'::character varying NOT NULL,
     email_id uuid,
-    created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now(),
-    CONSTRAINT check_delivery_types_with_is_acknowledged CHECK ((((NOT is_delivered_via_ui) AND (NOT is_delivered_via_email) AND (NOT is_acknowledged)) OR (is_delivered_via_ui AND (NOT is_delivered_via_email) AND (NOT is_acknowledged)) OR (is_delivered_via_ui AND is_delivered_via_email AND (NOT is_acknowledged)) OR ((NOT is_delivered_via_ui) AND is_delivered_via_email AND (NOT is_acknowledged)) OR (is_delivered_via_ui AND (NOT is_delivered_via_email) AND is_acknowledged) OR (is_delivered_via_ui AND is_delivered_via_email AND is_acknowledged))),
-    CONSTRAINT check_is_delivered_via_email_and_email_id CHECK (((is_delivered_via_email AND (email_id IS NOT NULL)) OR ((NOT is_delivered_via_email) AND (email_id IS NULL))))
-);
-
-
---
--- Name: notifications_settings; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.notifications_settings (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    user_id uuid NOT NULL,
-    deliver_via_email boolean DEFAULT false NOT NULL,
-    deliver_via_ui boolean DEFAULT false NOT NULL,
-    deliver_via_email_regularity character varying DEFAULT 'immediately'::character varying NOT NULL,
-    created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now(),
-    CONSTRAINT check_email_regularity_value CHECK (((deliver_via_email_regularity)::text = ANY ((ARRAY['immediately'::character varying, 'daily'::character varying, 'weekly'::character varying])::text[])))
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT check_notifications_email_frequency_and_email_id CHECK (((((email_frequency)::text = 'immediately'::text) AND (email_id IS NOT NULL)) OR (((email_frequency)::text = ANY ((ARRAY['daily'::character varying, 'weekly'::character varying])::text[])) AND ((email_id IS NULL) OR (email_id IS NOT NULL))) OR (((email_frequency)::text = 'never'::text) AND (email_id IS NULL))))
 );
 
 
@@ -2605,19 +2620,27 @@ ALTER TABLE ONLY public.meta_keys
 
 
 --
+-- Name: notification_templates notification_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notification_templates
+    ADD CONSTRAINT notification_templates_pkey PRIMARY KEY (label);
+
+
+--
+-- Name: notification_templates_users_settings notification_templates_users_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notification_templates_users_settings
+    ADD CONSTRAINT notification_templates_users_settings_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
-
-
---
--- Name: notifications_settings notifications_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.notifications_settings
-    ADD CONSTRAINT notifications_settings_pkey PRIMARY KEY (id);
 
 
 --
@@ -4322,10 +4345,10 @@ CREATE CONSTRAINT TRIGGER delete_old_emails_t AFTER INSERT OR UPDATE ON public.e
 
 
 --
--- Name: emails delete_old_notifications_t; Type: TRIGGER; Schema: public; Owner: -
+-- Name: notifications delete_old_notifications_t; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER delete_old_notifications_t AFTER INSERT OR UPDATE ON public.emails NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION public.delete_old_notifications_f();
+CREATE CONSTRAINT TRIGGER delete_old_notifications_t AFTER INSERT OR UPDATE ON public.notifications NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION public.delete_old_notifications_f();
 
 
 --
@@ -4952,17 +4975,24 @@ CREATE TRIGGER update_updated_at_column_of_meta_data_keywords BEFORE UPDATE ON p
 
 
 --
+-- Name: notification_templates update_updated_at_column_of_notification_templates; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_notification_templates BEFORE UPDATE ON public.notification_templates FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: notification_templates_users_settings update_updated_at_column_of_notification_templates_users_settin; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_notification_templates_users_settin BEFORE UPDATE ON public.notification_templates_users_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
 -- Name: notifications update_updated_at_column_of_notifications; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_notifications BEFORE UPDATE ON public.notifications FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
-
-
---
--- Name: notifications_settings update_updated_at_column_of_notifications_settings; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_notifications_settings BEFORE UPDATE ON public.notifications_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
@@ -5821,19 +5851,27 @@ ALTER TABLE ONLY public.meta_keys
 
 
 --
+-- Name: notification_templates_users_settings notification_templates_settings_tmpl_label_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notification_templates_users_settings
+    ADD CONSTRAINT notification_templates_settings_tmpl_label_fk FOREIGN KEY (notification_template_label) REFERENCES public.notification_templates(label) ON DELETE CASCADE;
+
+
+--
+-- Name: notification_templates_users_settings notification_templates_settings_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notification_templates_users_settings
+    ADD CONSTRAINT notification_templates_settings_user_id_fk FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
 -- Name: notifications notifications_email_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT notifications_email_id_fk FOREIGN KEY (email_id) REFERENCES public.emails(id);
-
-
---
--- Name: notifications_settings notifications_settings_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.notifications_settings
-    ADD CONSTRAINT notifications_settings_user_id_fk FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -5976,6 +6014,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('25'),
 ('26'),
 ('27'),
+('28'),
 ('3'),
 ('4'),
 ('5'),

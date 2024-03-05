@@ -2,6 +2,7 @@
 
 class User < ApplicationRecord
   include Concerns::FindResource
+  include Concerns::Users::BetaTesting
   include Concerns::Users::Delegations
   include Concerns::Users::Filters
   include Concerns::Users::Keywords

@@ -82,13 +82,13 @@ module Madek
       end
     end
 
-    def add_auto_timestamps(table_name, created_at: true, updated_at: true)
+    def add_auto_timestamps(table_name, created_at: true, updated_at: true, null: true)
       reversible do |dir|
         dir.up do
 
           if created_at
             unless column_exists? table_name, :created_at
-              add_column(table_name, :created_at, 'timestamp with time zone')
+              add_column(table_name, :created_at, 'timestamp with time zone', null: null)
             end
             # execute "UPDATE #{table_name} SET created_at = now() WHERE created_at IS NULL"
             execute "ALTER TABLE #{table_name} ALTER COLUMN created_at SET DEFAULT now()"
@@ -97,7 +97,7 @@ module Madek
 
           if updated_at
             unless column_exists? table_name, :updated_at
-              add_column(table_name, :updated_at, 'timestamp with time zone')
+              add_column(table_name, :updated_at, 'timestamp with time zone', null: null)
             end
             # execute "UPDATE #{table_name} SET updated_at = now() WHERE updated_at IS NULL"
             execute "ALTER TABLE #{table_name} ALTER COLUMN updated_at SET DEFAULT now()"
