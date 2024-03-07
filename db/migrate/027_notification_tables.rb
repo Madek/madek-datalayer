@@ -9,34 +9,44 @@ class NotificationTables < ActiveRecord::Migration[6.1]
   def up
     ##############################################################################################
 
+    create_table(:notification_templates, id: false) do |t|
+      t.string(:label, null: false)
+      t.text(:description)
+      t.hstore(:ui, null: false)
+      t.string(:ui_vars, array: true, null: false, default: [])
+      t.hstore(:email_single, null: false)
+      t.string(:email_single_vars, array: true, null: false, default: [])
+      t.hstore(:email_single_subject, null: false)
+      t.string(:email_single_subject_vars, array: true, null: false, default: [])
+      t.hstore(:email_summary, null: false)
+      t.string(:email_summary_vars, array: true, null: false, default: [])
+      t.hstore(:email_summary_subject, null: false)
+      t.string(:email_summary_subject_vars, array: true, null: false, default: [])
+    end
+    add_auto_timestamps :notification_templates, null: false
+    execute <<-SQL
+      ALTER TABLE ONLY notification_templates
+      ADD CONSTRAINT notification_templates_pkey PRIMARY KEY (label);
+    SQL
+
+    ##############################################################################################
+
     create_table(:notifications, id: :uuid) do |t|
       t.uuid(:user_id, null: false)
-      t.text(:content, null: false)
+      t.jsonb(:data, null: false, default: {})
       t.boolean(:acknowledged, null: false, default: false)
-      t.string(:email_frequency, null: false, default: 'daily')
+      t.string(:notification_template_label, null: false)
       t.uuid(:email_id, null: true)
     end
     add_auto_timestamps :notifications, null: false
-    add_foreign_key(:notifications, :users, name: "notifications_user_id_fk", on_delete: :cascade)
+    add_foreign_key(:notifications, :users, name:
+                    "notifications_user_id_fk",
+                    on_delete: :cascade)
+    add_foreign_key(:notifications, :notification_templates,
+                    name: "notifications_notification_template_label_fk",
+                    column: :notification_template_label, primary_key: :label,
+                    on_delete: :cascade)
     add_foreign_key(:notifications, :emails, name: "notifications_email_id_fk")
-
-    # |-------------+-----------------|
-    # | frequency   | email_id        |
-    # |-------------|-----------------|
-    # | immediately | NOT NULL        |
-    # | daily       | NULL / NOT NULL |
-    # | weekly      | NULL / NOT NULL |
-    # | never       | NULL            |
-    # |-------------+-----------------|
-    execute <<-SQL
-      ALTER TABLE notifications
-      ADD CONSTRAINT check_notifications_email_frequency_and_email_id
-      CHECK (
-        ( email_frequency = 'immediately' AND email_id IS NOT NULL ) OR
-        ( email_frequency IN ('daily', 'weekly') AND ( email_id IS NULL OR email_id IS NOT NULL ) ) OR
-        ( email_frequency = 'never' AND email_id IS NULL )
-      );
-    SQL
 
     execute <<-SQL
       CREATE OR REPLACE FUNCTION delete_old_notifications_f()
@@ -54,24 +64,6 @@ class NotificationTables < ActiveRecord::Migration[6.1]
       ON notifications
       FOR EACH ROW
       EXECUTE PROCEDURE delete_old_notifications_f()
-    SQL
-
-    ##############################################################################################
-
-    create_table(:notification_templates, id: false) do |t|
-      t.string(:label, null: false)
-      t.text(:description)
-      t.text(:ui_en, null: false)
-      t.text(:ui_de, null: false)
-      t.text(:email_single_en, null: false)
-      t.text(:email_single_de, null: false)
-      t.text(:email_summary_en, null: false)
-      t.text(:email_summary_de, null: false)
-    end
-    add_auto_timestamps :notification_templates, null: false
-    execute <<-SQL
-      ALTER TABLE ONLY notification_templates
-      ADD CONSTRAINT notification_templates_pkey PRIMARY KEY (label);
     SQL
 
     ##############################################################################################
@@ -102,8 +94,9 @@ class NotificationTables < ActiveRecord::Migration[6.1]
 
   def down
     execute 'DROP TRIGGER delete_old_notifications_t ON notifications CASCADE'
+    drop_table(:notifications)
     drop_table(:notification_templates_users_settings)
     drop_table(:notification_templates)
-    drop_table(:notifications)
+    MigrationGroup.find_by_name("Beta-Tester \"Notifications\"").destroy!
   end
 end

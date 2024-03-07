@@ -1884,12 +1884,16 @@ CREATE TABLE public.meta_data_roles (
 CREATE TABLE public.notification_templates (
     label character varying NOT NULL,
     description text,
-    ui_en text NOT NULL,
-    ui_de text NOT NULL,
-    email_single_en text NOT NULL,
-    email_single_de text NOT NULL,
-    email_summary_en text NOT NULL,
-    email_summary_de text NOT NULL,
+    ui public.hstore NOT NULL,
+    ui_vars character varying[] DEFAULT '{}'::character varying[] NOT NULL,
+    email_single public.hstore NOT NULL,
+    email_single_vars character varying[] DEFAULT '{}'::character varying[] NOT NULL,
+    email_single_subject public.hstore NOT NULL,
+    email_single_subject_vars character varying[] DEFAULT '{}'::character varying[] NOT NULL,
+    email_summary public.hstore NOT NULL,
+    email_summary_vars character varying[] DEFAULT '{}'::character varying[] NOT NULL,
+    email_summary_subject public.hstore NOT NULL,
+    email_summary_subject_vars character varying[] DEFAULT '{}'::character varying[] NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -1917,13 +1921,12 @@ CREATE TABLE public.notification_templates_users_settings (
 CREATE TABLE public.notifications (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
-    content text NOT NULL,
+    data jsonb DEFAULT '{}'::jsonb NOT NULL,
     acknowledged boolean DEFAULT false NOT NULL,
-    email_frequency character varying DEFAULT 'daily'::character varying NOT NULL,
+    notification_template_label character varying NOT NULL,
     email_id uuid,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT check_notifications_email_frequency_and_email_id CHECK (((((email_frequency)::text = 'immediately'::text) AND (email_id IS NOT NULL)) OR (((email_frequency)::text = ANY ((ARRAY['daily'::character varying, 'weekly'::character varying])::text[])) AND ((email_id IS NULL) OR (email_id IS NOT NULL))) OR (((email_frequency)::text = 'never'::text) AND (email_id IS NULL))))
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -5872,6 +5875,14 @@ ALTER TABLE ONLY public.notification_templates_users_settings
 
 ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT notifications_email_id_fk FOREIGN KEY (email_id) REFERENCES public.emails(id);
+
+
+--
+-- Name: notifications notifications_notification_template_label_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT notifications_notification_template_label_fk FOREIGN KEY (notification_template_label) REFERENCES public.notification_templates(label) ON DELETE CASCADE;
 
 
 --
