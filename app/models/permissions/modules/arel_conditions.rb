@@ -38,6 +38,7 @@ module Permissions
                                             perm,
                                             groups_users[:user_id],
                                             user.try(:id)))
+              .where(groups[:type].not_eq("AuthenticationGroup"))
               .exists
           end
         end
