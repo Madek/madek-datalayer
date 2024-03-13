@@ -1,6 +1,7 @@
 FactoryBot.define do
 
   factory :app_setting do
+    site_titles { { en: 'Madek', de: 'Medienarchiv' } }
     context_for_entry_summary { 'core' }
     contexts_for_entry_extra { ['core'] }
     contexts_for_collection_extra { ['core'] }
