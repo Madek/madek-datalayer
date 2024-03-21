@@ -18,8 +18,8 @@ module Concerns
         end
 
         if conditions
-          define_singleton_method "#{prefix}_user" do |user|
-            where yield(user)
+          define_singleton_method "#{prefix}_user" do |user, specific_conditions = nil|
+            where yield(user, specific_conditions)
           end
         end
       end

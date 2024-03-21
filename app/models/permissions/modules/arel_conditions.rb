@@ -8,11 +8,12 @@ module Permissions
                                    perm,
                                    arel_attribute,
                                    id,
-                                   or_condition: nil)
+                                   or_condition: nil,
+                                   specific_conditions: nil)
           permissions = arel_table
           resources = Arel::Table.new(resources_table)
 
-          permissions["#{resources_table.singularize}_id"].eq(resources[:id])
+          conds = permissions["#{resources_table.singularize}_id"].eq(resources[:id])
             .and(permissions[perm].eq(true))
             .and(
               apply_or_condition(
@@ -20,11 +21,16 @@ module Permissions
                 or_condition
               )
             )
+
+          if specific_conditions
+            conds = conds.and(specific_conditions)
+          end
+          conds
         end
 
         def define_group_permission_for_user_exists_condition(resources_table)
           define_singleton_method \
-            :group_permission_for_user_exists_condition do |perm, user|
+            :group_permission_for_user_exists_condition do |perm, user, specific_conditions = nil|
 
             permissions = arel_table
             groups = Group.arel_table
@@ -37,7 +43,8 @@ module Permissions
               .where(build_where_conditions(resources_table,
                                             perm,
                                             groups_users[:user_id],
-                                            user.try(:id)))
+                                            user.try(:id),
+                                            specific_conditions: specific_conditions))
               .exists
           end
         end
