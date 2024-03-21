@@ -6028,6 +6028,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('28'),
 ('29'),
 ('3'),
+('30'),
 ('4'),
 ('5'),
 ('6'),
