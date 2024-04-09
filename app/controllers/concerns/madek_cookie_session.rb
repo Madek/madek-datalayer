@@ -41,7 +41,8 @@ module Concerns
     end
 
     def destroy_madek_session
-      UserSession.find_by_token_hash(token_hash cookies[COOKIE_NAME]).try(:destroy!)
+      thash = token_hash(session_cookie)
+      UserSession.find_by_token_hash(thash).try(:destroy!)
       cookies.delete COOKIE_NAME
     end
 
@@ -55,32 +56,26 @@ module Concerns
     end
 
     def validate_services_session_cookie_and_get_user
-      begin
-        @session = get_valid_session(session_cookie!)
+      session_cookie && 
+        begin
+          @session = get_valid_session(session_cookie)
 
-        if not @session
-          raise(StandardError, 'No valid user_session found')
-        elsif not @session.user.activated?
-          raise(StandartError, 'User is deactivated')
-        else
-          @session.user
+          if not @session
+            raise(StandardError, 'No valid user_session found')
+          elsif not @session.user.activated?
+            raise(StandardError, 'User is deactivated')
+          else
+            @session.user
+          end
+        rescue Exception => e
+          Rails.logger.warn e
+          cookies.delete COOKIE_NAME
+          nil
         end
-
-      rescue Exception => e
-        Rails.logger.warn e
-        cookies.delete COOKIE_NAME
-        nil
-      end
     end
 
     def session_cookie
       cookies[COOKIE_NAME]
     end
-
-    def session_cookie!
-      session_cookie || raise(StandardError, 'Session cookie not found.')
-    end
-
   end
-
 end
