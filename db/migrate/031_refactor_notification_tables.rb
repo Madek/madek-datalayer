@@ -34,5 +34,6 @@ class RefactorNotificationTables < ActiveRecord::Migration[6.1]
       CHECK ( email_frequency IN ('immediately', 'daily', 'weekly', 'never') );
     SQL
 
+    rename_column(:notifications, :notification_template_label, :notification_case_label)
   end
 end

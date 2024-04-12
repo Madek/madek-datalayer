@@ -1,6 +1,6 @@
 module Concerns
   module Notifications
-    module Emails
+    module PeriodicEmails
       extend ActiveSupport::Concern
 
       included do
@@ -30,22 +30,27 @@ module Concerns
 
         def self.produce_periodical_emails(notifs)
           notifs.group_by(&:user).each_pair do |user, notifs_1|
-            notifs_1.group_by(&:notification_template).each_pair do |notif_tmpl, notifs_2|
-              ActiveRecord::Base.transaction do 
-                app_setting = AppSetting.first
-                lang = app_setting.default_locale
-                site_title = app_setting.site_title(lang)
-                subject = notif_tmpl.render_email_summary_subject(lang, { site_title: site_title })
-                body = notif_tmpl.render_email_summary(lang, prepare_summary_data(notifs_2))
-                from_address = SmtpSetting.first.default_from_address
+            notifs_1.group_by(&:notification_case).each_pair do |notif_case, notifs_2|
+              tmpl_mod = NotificationCase::EMAIL_TEMPLATES[notif_case.label]
 
-                email = Email.create!(user: user,
-                                      subject: subject,
-                                      body: body,
-                                      from_address: from_address,
-                                      to_address: user.email)
+              unless tmpl_mod
+                Rails.logger.warn("No email templates module found for notification case: #{notif_case.label}.")
+              else
+                ActiveRecord::Base.transaction do 
+                  app_setting = AppSetting.first
+                  lang = app_setting.default_locale.to_sym
+                  subject = tmpl_mod.render_summary_email_subject(lang, { site_titles: app_setting.site_titles })
+                  body = tmpl_mod.render_summary_email(lang, prepare_summary_data(notifs_2))
+                  from_address = SmtpSetting.first.default_from_address
 
-                notifs_2.each { |n| n.update!(email_id: email.id) }
+                  email = Email.create!(user: user,
+                                        subject: subject,
+                                        body: body,
+                                        from_address: from_address,
+                                        to_address: user.email)
+
+                  notifs_2.each { |n| n.update!(email_id: email.id) }
+                end
               end
             end
           end

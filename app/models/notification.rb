@@ -1,17 +1,17 @@
 class Notification < ApplicationRecord
-  include Concerns::Notifications::Emails
+  include Concerns::Notifications::PeriodicEmails
   include Concerns::Notifications::TransferResponsibility
 
   belongs_to(:user)
   belongs_to(:email, optional: true)
-  belongs_to(:notification_template, foreign_key: :notification_template_label)
+  belongs_to(:notification_case, foreign_key: :notification_case_label)
 
   scope :acknowledged, -> { where(acknowledged: true) }
   scope :with_user_settings, -> {
-    joins(:notification_template)
+    joins(:notification_case)
       .joins(<<~SQL)
-        LEFT JOIN notification_templates_users_settings ntus
-          ON notification_templates.label = ntus.notification_template_label
+        LEFT JOIN notification_cases_users_settings ntus
+          ON notification_cases.label = ntus.notification_case_label
           AND notifications.user_id = ntus.user_id
       SQL
   }
@@ -21,6 +21,6 @@ class Notification < ApplicationRecord
   end
 
   def user_settings
-    notification_template.users_settings.where(user_id: self.id)
+    notification_case.users_settings.where(user_id: self.id)
   end
 end

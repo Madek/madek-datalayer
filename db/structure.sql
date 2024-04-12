@@ -1913,7 +1913,7 @@ CREATE TABLE public.notifications (
     user_id uuid NOT NULL,
     data jsonb DEFAULT '{}'::jsonb NOT NULL,
     acknowledged boolean DEFAULT false NOT NULL,
-    notification_template_label character varying NOT NULL,
+    notification_case_label character varying NOT NULL,
     email_id uuid,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
@@ -5872,7 +5872,7 @@ ALTER TABLE ONLY public.notifications
 --
 
 ALTER TABLE ONLY public.notifications
-    ADD CONSTRAINT notifications_notification_template_label_fk FOREIGN KEY (notification_template_label) REFERENCES public.notification_cases(label) ON DELETE CASCADE;
+    ADD CONSTRAINT notifications_notification_template_label_fk FOREIGN KEY (notification_case_label) REFERENCES public.notification_cases(label) ON DELETE CASCADE;
 
 
 --
