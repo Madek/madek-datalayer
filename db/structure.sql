@@ -1878,35 +1878,25 @@ CREATE TABLE public.meta_data_roles (
 
 
 --
--- Name: notification_templates; Type: TABLE; Schema: public; Owner: -
+-- Name: notification_cases; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.notification_templates (
+CREATE TABLE public.notification_cases (
     label character varying NOT NULL,
     description text,
-    ui public.hstore NOT NULL,
-    ui_vars character varying[] DEFAULT '{}'::character varying[] NOT NULL,
-    email_single public.hstore NOT NULL,
-    email_single_vars character varying[] DEFAULT '{}'::character varying[] NOT NULL,
-    email_single_subject public.hstore NOT NULL,
-    email_single_subject_vars character varying[] DEFAULT '{}'::character varying[] NOT NULL,
-    email_summary public.hstore NOT NULL,
-    email_summary_vars character varying[] DEFAULT '{}'::character varying[] NOT NULL,
-    email_summary_subject public.hstore NOT NULL,
-    email_summary_subject_vars character varying[] DEFAULT '{}'::character varying[] NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
 --
--- Name: notification_templates_users_settings; Type: TABLE; Schema: public; Owner: -
+-- Name: notification_cases_users_settings; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.notification_templates_users_settings (
+CREATE TABLE public.notification_cases_users_settings (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
-    notification_template_label character varying NOT NULL,
+    notification_case_label character varying NOT NULL,
     email_frequency character varying DEFAULT 'daily'::character varying NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
@@ -2623,19 +2613,19 @@ ALTER TABLE ONLY public.meta_keys
 
 
 --
--- Name: notification_templates notification_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: notification_cases_users_settings notification_cases_users_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.notification_templates
+ALTER TABLE ONLY public.notification_cases_users_settings
+    ADD CONSTRAINT notification_cases_users_settings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: notification_cases notification_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notification_cases
     ADD CONSTRAINT notification_templates_pkey PRIMARY KEY (label);
-
-
---
--- Name: notification_templates_users_settings notification_templates_users_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.notification_templates_users_settings
-    ADD CONSTRAINT notification_templates_users_settings_pkey PRIMARY KEY (id);
 
 
 --
@@ -4978,17 +4968,17 @@ CREATE TRIGGER update_updated_at_column_of_meta_data_keywords BEFORE UPDATE ON p
 
 
 --
--- Name: notification_templates update_updated_at_column_of_notification_templates; Type: TRIGGER; Schema: public; Owner: -
+-- Name: notification_cases_users_settings update_updated_at_column_of_notification_cases_users_settings; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_notification_templates BEFORE UPDATE ON public.notification_templates FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_notification_cases_users_settings BEFORE UPDATE ON public.notification_cases_users_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
--- Name: notification_templates_users_settings update_updated_at_column_of_notification_templates_users_settin; Type: TRIGGER; Schema: public; Owner: -
+-- Name: notification_cases update_updated_at_column_of_notification_templates; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_notification_templates_users_settin BEFORE UPDATE ON public.notification_templates_users_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_notification_templates BEFORE UPDATE ON public.notification_cases FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
@@ -5854,19 +5844,19 @@ ALTER TABLE ONLY public.meta_keys
 
 
 --
--- Name: notification_templates_users_settings notification_templates_settings_tmpl_label_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: notification_cases_users_settings notification_cases_settings_tmpl_label_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.notification_templates_users_settings
-    ADD CONSTRAINT notification_templates_settings_tmpl_label_fk FOREIGN KEY (notification_template_label) REFERENCES public.notification_templates(label) ON DELETE CASCADE;
+ALTER TABLE ONLY public.notification_cases_users_settings
+    ADD CONSTRAINT notification_cases_settings_tmpl_label_fk FOREIGN KEY (notification_case_label) REFERENCES public.notification_cases(label) ON DELETE CASCADE;
 
 
 --
--- Name: notification_templates_users_settings notification_templates_settings_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: notification_cases_users_settings notification_cases_settings_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.notification_templates_users_settings
-    ADD CONSTRAINT notification_templates_settings_user_id_fk FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.notification_cases_users_settings
+    ADD CONSTRAINT notification_cases_settings_user_id_fk FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -5882,7 +5872,7 @@ ALTER TABLE ONLY public.notifications
 --
 
 ALTER TABLE ONLY public.notifications
-    ADD CONSTRAINT notifications_notification_template_label_fk FOREIGN KEY (notification_template_label) REFERENCES public.notification_templates(label) ON DELETE CASCADE;
+    ADD CONSTRAINT notifications_notification_template_label_fk FOREIGN KEY (notification_template_label) REFERENCES public.notification_cases(label) ON DELETE CASCADE;
 
 
 --
@@ -6029,6 +6019,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('29'),
 ('3'),
 ('30'),
+('31'),
 ('4'),
 ('5'),
 ('6'),
