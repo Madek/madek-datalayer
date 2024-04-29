@@ -19,9 +19,9 @@ module Concerns
             .user_permission_exists_condition(perm_type, group)
         end
 
-        def group_permission_for_user_exists_condition(perm_type, user)
+        def group_permission_for_user_exists_condition(perm_type, user, add_group_cond = nil)
           "Permissions::#{name}GroupPermission".constantize
-            .group_permission_for_user_exists_condition(perm_type, user)
+            .group_permission_for_user_exists_condition(perm_type, user, add_group_cond)
         end
       end
     end

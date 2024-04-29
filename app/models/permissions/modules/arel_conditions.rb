@@ -24,13 +24,13 @@ module Permissions
 
         def define_group_permission_for_user_exists_condition(resources_table)
           define_singleton_method \
-            :group_permission_for_user_exists_condition do |perm, user|
+            :group_permission_for_user_exists_condition do |perm, user, add_where_cond = nil|
 
             permissions = arel_table
             groups = Group.arel_table
             groups_users = Arel::Table.new(:groups_users)
 
-            permissions
+            query = permissions
               .join(groups).on(permissions[:group_id].eq(groups[:id]))
               .join(groups_users).on(groups_users[:group_id].eq(groups[:id]))
               .project(1)
@@ -38,7 +38,8 @@ module Permissions
                                             perm,
                                             groups_users[:user_id],
                                             user.try(:id)))
-              .exists
+            query = query.where(add_where_cond) if add_where_cond
+            query.exists
           end
         end
 
