@@ -4,10 +4,11 @@ module Concerns
     include Concerns::AccessHelpers
 
     included do
-      define_access_methods(:entrusted_to, self::VIEW_PERMISSION_NAME) do |user|
+      define_access_methods(:entrusted_to, self::VIEW_PERMISSION_NAME) do |user, add_group_cond: nil|
         user_permission_exists_condition(self::VIEW_PERMISSION_NAME, user).or(
           group_permission_for_user_exists_condition(self::VIEW_PERMISSION_NAME,
-                                                     user))
+                                                     user,
+                                                     add_group_cond))
       end
 
       define_singleton_method :entrusted_to_api_client do |api_client|
