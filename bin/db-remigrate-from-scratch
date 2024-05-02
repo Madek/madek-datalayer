@@ -5,6 +5,7 @@ PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && p
 cd $PROJECT_DIR
 ./bin/env/ruby-setup --quiet
 
+export RAILS_ENV=test
 source bin/db-set-env
 
 dropdb -e -f --if-exists $PGDATABASE
