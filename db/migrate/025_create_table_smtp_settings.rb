@@ -1,4 +1,6 @@
 class CreateTableSmtpSettings < ActiveRecord::Migration[6.1]
+  include Madek::MigrationHelper
+
   def change
     create_table :smtp_settings do |t|
       t.boolean :is_enabled, null: false, default: false
@@ -14,8 +16,7 @@ class CreateTableSmtpSettings < ActiveRecord::Migration[6.1]
       t.text :username
     end
 
-    add_column(:smtp_settings, :created_at, :timestamptz, null: true)
-    add_column(:smtp_settings, :updated_at, :timestamptz, null: true)
+    add_auto_timestamps(:smtp_settings)
 
     reversible do |dir|
       dir.up do

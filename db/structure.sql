@@ -2069,8 +2069,8 @@ CREATE TABLE public.smtp_settings (
     port integer DEFAULT 25 NOT NULL,
     sender_address text,
     username text,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -5000,6 +5000,13 @@ CREATE TRIGGER update_updated_at_column_of_people BEFORE UPDATE ON public.people
 --
 
 CREATE TRIGGER update_updated_at_column_of_previews BEFORE UPDATE ON public.previews FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: smtp_settings update_updated_at_column_of_smtp_settings; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_smtp_settings BEFORE UPDATE ON public.smtp_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
