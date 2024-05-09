@@ -1548,6 +1548,17 @@ CREATE TABLE public.delegations_groups (
 
 
 --
+-- Name: delegations_supervisors; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.delegations_supervisors (
+    delegation_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: delegations_users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1900,7 +1911,7 @@ CREATE TABLE public.notification_cases_users_settings (
     email_frequency character varying DEFAULT 'daily'::character varying NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT check_email_regularity_value CHECK (((email_frequency)::text = ANY ((ARRAY['immediately'::character varying, 'daily'::character varying, 'weekly'::character varying, 'never'::character varying])::text[])))
+    CONSTRAINT check_email_regularity_value CHECK (((email_frequency)::text = ANY (ARRAY[('immediately'::character varying)::text, ('daily'::character varying)::text, ('weekly'::character varying)::text, ('never'::character varying)::text])))
 );
 
 
@@ -3428,6 +3439,13 @@ CREATE UNIQUE INDEX index_delegations_on_name ON public.delegations USING btree 
 
 
 --
+-- Name: index_delegations_supervisors_on_delegation_id_and_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_delegations_supervisors_on_delegation_id_and_user_id ON public.delegations_supervisors USING btree (delegation_id, user_id);
+
+
+--
 -- Name: index_delegations_users_on_delegation_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4314,6 +4332,13 @@ CREATE TRIGGER delegations_audit_change AFTER INSERT OR DELETE OR UPDATE ON publ
 --
 
 CREATE TRIGGER delegations_groups_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.delegations_groups FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: delegations_supervisors delegations_supervisors_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER delegations_supervisors_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.delegations_supervisors FOR EACH ROW EXECUTE FUNCTION public.audit_change();
 
 
 --
@@ -5459,6 +5484,14 @@ ALTER TABLE ONLY public.delegations_groups
 
 
 --
+-- Name: delegations_supervisors fk_rails_aaaca89dac; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.delegations_supervisors
+    ADD CONSTRAINT fk_rails_aaaca89dac FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
 -- Name: workflows fk_rails_ad47ad12fc; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5504,6 +5537,14 @@ ALTER TABLE ONLY public.collection_group_permissions
 
 ALTER TABLE ONLY public.media_entries
     ADD CONSTRAINT fk_rails_b97d1d811d FOREIGN KEY (responsible_delegation_id) REFERENCES public.delegations(id);
+
+
+--
+-- Name: delegations_supervisors fk_rails_bd9bf3c360; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.delegations_supervisors
+    ADD CONSTRAINT fk_rails_bd9bf3c360 FOREIGN KEY (delegation_id) REFERENCES public.delegations(id) ON DELETE CASCADE;
 
 
 --
@@ -6027,6 +6068,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('3'),
 ('30'),
 ('31'),
+('32'),
 ('4'),
 ('5'),
 ('6'),

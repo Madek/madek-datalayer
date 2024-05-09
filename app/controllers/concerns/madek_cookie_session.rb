@@ -41,9 +41,11 @@ module Concerns
     end
 
     def destroy_madek_session
-      thash = token_hash(session_cookie)
-      UserSession.find_by_token_hash(thash).try(:destroy!)
-      cookies.delete COOKIE_NAME
+      if session_cookie
+        thash = token_hash(session_cookie)
+        UserSession.find_by_token_hash(thash).try(:destroy!)
+        cookies.delete COOKIE_NAME
+      end
     end
 
     def get_valid_session(session_cookie)
