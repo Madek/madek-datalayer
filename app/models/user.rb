@@ -46,7 +46,7 @@ class User < ApplicationRecord
   has_and_belongs_to_many :auth_systems
 
   has_many :notifications
-  has_many :notification_template_user_settings
+  has_many :notification_case_user_settings
 
   #############################################################
 
