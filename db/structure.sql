@@ -3929,6 +3929,13 @@ CREATE INDEX index_meta_data_roles_on_role_id ON public.meta_data_roles USING bt
 
 
 --
+-- Name: index_notif_case_label_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_notif_case_label_user_id ON public.notification_cases_users_settings USING btree (notification_case_label, user_id);
+
+
+--
 -- Name: index_people_on_external_uris; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6069,6 +6076,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('30'),
 ('31'),
 ('32'),
+('33'),
 ('4'),
 ('5'),
 ('6'),
