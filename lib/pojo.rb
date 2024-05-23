@@ -1,3 +1,4 @@
+require 'ostruct'
 # ruby's <tt>OpenStruct</tt> is 👍, but framework support is 💩.
 # Instead of monkey-patching and possible breakage elsewhere
 # we just make our own class ('Plain old javascript-ish object')
