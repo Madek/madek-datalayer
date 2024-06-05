@@ -151,4 +151,11 @@ class User < ApplicationRecord
         .where(user_id: id, edit_permissions: true).exists? or
       Permissions::UserPermission.permitted_for?(:edit_permissions, resource: resource, user: self)
   end
+
+  #############################################################
+
+  def emails_locale_with_default_fallback
+    self.emails_locale || AppSetting.first.default_locale
+  end
+
 end
