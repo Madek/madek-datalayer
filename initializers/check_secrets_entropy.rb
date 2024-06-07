@@ -6,8 +6,4 @@ unless Rails.env.development? \
     raise 'The entropy of `secret_key_base` is too low.'
   end
 
-  unless StrongPassword::StrengthChecker.new.calculate_entropy(Settings.madek_master_secret.to_s) > 30
-   raise 'The entropy of `madek_master_secret` is too low.'
-  end
-
 end

@@ -7,6 +7,12 @@ scripts:
     timeout: 20 Minutes
     body: |
       #!/usr/bin/env bash
+
+      # hack to give the build chache some head start;
+      # this and some depending tasks can make the workree apear dirty when it
+      # is actually not
+      sleep 5
+
       set -euo pipefail
       cd $DATALAYER_DIR
       ./bin/env/ruby-setup --quiet

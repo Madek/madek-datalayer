@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+
+PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
+TMPDIR="${TMPDIR:-/tmp/}" # fallback to /tmp if TMPDIR is not set, as in Ubuntu e.g.
+BUILDCACHE_TMPDIR="${BUILDCACHE_TMPDIR:-$TMPDIR}"
+BUILDCACHE_TMPDIR=${BUILDCACHE_TMPDIR%/} # remove trailing slash
+mkdir -p $BUILDCACHE_TMPDIR
+
+
+ARCHIVE_NAME=madek-$(basename $PROJECT_DIR)
+cd "${PROJECT_DIR}"
+
+
+# cleanup
+rm -f $ARCHIVE_NAME.tar.gz
+
+### build archive ##############################################################
+
+function build() {
+    echo "Building $ARCHIVE_NAME"
+    git -C "${PROJECT_DIR}" archive HEAD \
+      --format tar.gz -o "${PROJECT_DIR}/${ARCHIVE_NAME}.tar.gz"
+}
+
+if [[ -n $(git status -s) ]]; then
+    echo "WARNING uncommitted changes, (re)building from scratch, no linking"
+    build
+else
+    echo "OK no uncommitted changes, building or using cache"
+    DIGEST=$(git log -1 HEAD --pretty=format:%T)
+    CACHED_ARCHIVE="${BUILDCACHE_TMPDIR}/${ARCHIVE_NAME}_${DIGEST}.tar.gz"
+    if [[ -f $CACHED_ARCHIVE ]]; then
+        echo "Using cached tar.gz: $CACHED_ARCHIVE"
+        touch $CACHED_ARCHIVE
+    else
+        echo "No cached tar.gz found, building"
+        build
+        mv $ARCHIVE_NAME.tar.gz $CACHED_ARCHIVE
+    fi
+    echo "Linking $CACHED_ARCHIVE to $ARCHIVE_NAME.tar.gz"
+    ln -sf $CACHED_ARCHIVE $ARCHIVE_NAME.tar.gz
+    # Clean cached jars older than a week
+    find $BUILDCACHE_TMPDIR -maxdepth 1 -name "${ARCHIVE_NAME}_*.tar.gz" -type f -mtime +7 -delete
+fi
+
+
+
+# vim: set ft=sh

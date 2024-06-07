@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+RAILS_ENV=${RAILS_ENV:-development}
+echo "RAILS_ENV=$RAILS_ENV"
+
+PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
+
+# Load asdf expicitly to avoid issues with asdf not being loaded
+# via systemd service on the server shell
+source $PROJECT_DIR/bin/env/asdf-helper.bash
+
+cd $PROJECT_DIR
+./bin/env/ruby-setup --quiet
+
+bundle exec ruby "$@"
+# vi: ft=sh
