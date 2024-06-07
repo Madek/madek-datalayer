@@ -29,6 +29,7 @@ class MediaEntry < ApplicationRecord
   include Concerns::MediaResources::Highlight
   include Concerns::MediaResources::MetaDataArelConditions
   include Concerns::MediaResources::PartOfWorkflow
+  include Concerns::MediaResources::SoftDelete
   include Concerns::SharedOrderBy
   include Concerns::SharedScopes
   include Concerns::Delegations::Responsible
@@ -48,7 +49,7 @@ class MediaEntry < ApplicationRecord
   scope :published, -> { where(is_published: true) }
   scope :not_published, -> { where(is_published: false) }
   scope :with_unpublished, -> { rewhere(is_published: [true, false]) }
-  default_scope { published.ordered }
+  default_scope { not_deleted.published.ordered }
 
   # NOTE: could possibly be made as a DB trigger
   validate :validate_existence_of_meta_data_for_required_context_keys,

@@ -6,7 +6,8 @@ cd $PROJECT_DIR
 export RAILS_ENV=test
 source bin/db-set-env
 
-SQUASHED_MIGRATIONS_VERSION=032
+SQUASHED_MIGRATIONS_VERSION=000
+LATEST_PERSONAS_VERSION=035
 
 export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
 
@@ -24,10 +25,10 @@ createdb -e $PGDATABASE
 
 # bundle exec rails db:migrate VERSION=${SQUASHED_MIGRATIONS_VERSION}
 # bundle exec rails db:pg:data:restore FILE=db/personas.$SQUASHED_MIGRATIONS_VERSION.pgbin
-
-bundle exec rails db:pg:structure_and_data:restore FILE=db/personas.$SQUASHED_MIGRATIONS_VERSION.pgbin
 ###########################################################################################################################
 
+# bundle exec rails db:pg:structure_and_data:restore FILE=db/personas.$SQUASHED_MIGRATIONS_VERSION.pgbin
+bundle exec rails db:pg:structure_and_data:restore FILE=db/personas.$LATEST_PERSONAS_VERSION.pgbin
 bundle exec rails db:migrate
 bundle exec rails db:seed
 rm -f db/personas.pgbin

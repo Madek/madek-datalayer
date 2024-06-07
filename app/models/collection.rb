@@ -28,6 +28,7 @@ class Collection < ApplicationRecord
   include Concerns::MediaResources::Highlight
   include Concerns::MediaResources::MetaDataArelConditions
   include Concerns::MediaResources::PartOfWorkflow
+  include Concerns::MediaResources::SoftDelete
   include Concerns::SharedOrderBy
   include Concerns::SharedScopes
   include Concerns::Delegations::Responsible
@@ -71,7 +72,12 @@ class Collection < ApplicationRecord
     where.not(id: self.joins(:workflow).where(workflows: { is_active: false }))
   }
 
-  default_scope { where(clipboard_user_id: nil).reorder(:created_at, :id) }
+  scope :not_in_clipboard, lambda { where(clipboard_user_id: nil) }
+  scope :ordered, -> { reorder(:created_at, :id) }
+
+  default_scope do
+    not_deleted.not_in_clipboard.ordered
+  end
 
   # NOTE: could possibly be made as a DB trigger
   # NOTE: disabled because there is no workflow yet

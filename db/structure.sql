@@ -1447,6 +1447,7 @@ CREATE TABLE public.collections (
     responsible_delegation_id uuid,
     default_context_id character varying,
     default_resource_type public.collection_default_resource_type DEFAULT 'all'::public.collection_default_resource_type NOT NULL,
+    deleted_at timestamp with time zone,
     CONSTRAINT one_responsible_column_is_not_null_at_the_same_time CHECK ((((responsible_user_id IS NULL) AND (responsible_delegation_id IS NOT NULL)) OR ((responsible_user_id IS NOT NULL) AND (responsible_delegation_id IS NULL))))
 );
 
@@ -1736,6 +1737,7 @@ CREATE TABLE public.media_entries (
     edit_session_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     responsible_delegation_id uuid,
+    deleted_at timestamp with time zone,
     CONSTRAINT one_responsible_column_is_not_null_at_the_same_time CHECK ((((responsible_user_id IS NULL) AND (responsible_delegation_id IS NOT NULL)) OR ((responsible_user_id IS NOT NULL) AND (responsible_delegation_id IS NULL))))
 );
 
@@ -6079,6 +6081,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('32'),
 ('33'),
 ('34'),
+('35'),
 ('4'),
 ('5'),
 ('6'),
