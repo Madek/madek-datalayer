@@ -41,6 +41,10 @@ module Concerns
     end
 
     def destroy_madek_session
+      puts ">> cookies[COOKIE_NAME]: #{cookies[COOKIE_NAME]}"
+      puts ">> token_hash cookies[COOKIE_NAME]: #{token_hash cookies[COOKIE_NAME]}"
+      binding.pry
+
       UserSession.find_by_token_hash(token_hash cookies[COOKIE_NAME]).try(:destroy!)
       cookies.delete COOKIE_NAME
     end
