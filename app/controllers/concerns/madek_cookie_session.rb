@@ -1,4 +1,4 @@
-require 'digest'
+require 'digest' 
 
 module Concerns
   module MadekCookieSession
@@ -24,7 +24,7 @@ module Concerns
 
     def set_madek_session(user, auth_system, remember = false)
       @session = UserSession.create!(
-        user: user,
+        user: user, 
         auth_system: auth_system,
         meta_data: {http_user_agent: request.env["HTTP_USER_AGENT"],
                     remote_addr: request.env["REMOTE_ADDR"]}
@@ -58,7 +58,7 @@ module Concerns
     end
 
     def validate_services_session_cookie_and_get_user
-      session_cookie &&
+      session_cookie && 
         begin
           @session = get_valid_session(session_cookie)
 
@@ -71,7 +71,7 @@ module Concerns
           end
         rescue ActiveRecord::StatementInvalid, Exception => e
           Rails.logger.warn e
-          cookies.delete COOKIE_NAME if e.is_a?(Exception)
+          cookies.delete(COOKIE_NAME) unless e.is_a?(ActiveRecord::StatementInvalid)
           nil
         end
     end
