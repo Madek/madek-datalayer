@@ -41,21 +41,30 @@ module Concerns
     end
 
     def destroy_madek_session
+
+      puts ">> destroy_madek_session / session delete"
+
+
       puts ">> cookies[COOKIE_NAME]: #{cookies[COOKIE_NAME]}"
       puts ">> token_hash cookies[COOKIE_NAME]: #{token_hash cookies[COOKIE_NAME]}"
-      binding.pry
 
+      # binding.pry
       UserSession.find_by_token_hash(token_hash cookies[COOKIE_NAME]).try(:destroy!)
       cookies.delete COOKIE_NAME
     end
 
     def get_valid_session(session_cookie)
-      UserSession.joins(<<-SQL.strip_heredoc)
+      session = UserSession.joins(<<-SQL.strip_heredoc)
         INNER JOIN auth_systems ON user_sessions.auth_system_id = auth_systems.id
         AND (user_sessions.created_at 
           + auth_systems.session_max_lifetime_hours * interval '1 hour') > now()
       SQL
-      .find_by(["token_hash = ?", token_hash(session_cookie)])
+      .find_by(["token_hash = ?",
+                Base64.strict_encode64(Digest::SHA256.digest(session_cookie))])
+      # binding.pry
+      puts ">> session=#{session}"
+
+      session
     end
 
     def validate_services_session_cookie_and_get_user
