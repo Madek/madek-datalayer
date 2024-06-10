@@ -69,12 +69,9 @@ module Concerns
           else
             @session.user
           end
-        rescue ActiveRecord::StatementInvalid => e
+        rescue ActiveRecord::StatementInvalid, Exception => e
           Rails.logger.warn e
-          nil
-        rescue Exception => e
-          Rails.logger.warn e
-          cookies.delete COOKIE_NAME
+          cookies.delete COOKIE_NAME if e.is_a?(Exception)
           nil
         end
     end
