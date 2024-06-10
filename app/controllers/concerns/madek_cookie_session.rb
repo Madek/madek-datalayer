@@ -83,11 +83,24 @@ module Concerns
 
           raise(StandartError, 'User is deactivated')
         else
-          puts ">> 3get_valid_session / found #{@session.user}"
+          puts ">> 3get_valid_session / 1before"
+          puts ">> 3get_valid_session / 2found #{@session.user}"
+          puts ">> 3get_valid_session / 3found #{@session.user.to_json}"
+
+          # >> 3get_valid_session / 3found {"id":"c0bc861e-e8b2-4a27-9303-44e31a3246e6","email":"manuel.radl@zhdk.ch",
+          # "login":"mradl","notes":null,"created_at":"2023-10-13T08:47:28.900Z","updated_at":"2024-06-10T09:59:10.950Z",
+          # "person_id":"82c44f16-e28c-453d-b719-c9dbd500f20c","institutional_id":"271682","autocomplete":"",
+          # "searchable":"Radl Manuel mradl manuel.radl@zhdk.ch","accepted_usage_terms_id":"e3e9300a-b2f4-4293-a9d1-20476a820c8e",
+          # "last_signed_in_at":"2024-06-10T09:59:10.986Z","settings":{"layout":"grid","show_filter":true},
+          # "institution":"zhdk.ch","active_until":"2297-11-27T23:59:59.000Z","last_name":"Radl","first_name":"Manuel"}
+
+
+          puts ">> 3get_valid_session / 4after"
           @session.user
         end
 
       rescue ActiveRecord::StatementInvalid => e
+        # binding.pry
         puts ">> get_valid_session.rescue _> NO delete!!! / cause: #{e.message}"
         puts ">> exception #{e}"
         Rails.logger.warn e
