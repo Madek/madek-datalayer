@@ -1,4 +1,5 @@
-require 'digest' 
+require 'digest'
+require 'pp'
 
 module Concerns
   module MadekCookieSession
@@ -24,14 +25,14 @@ module Concerns
 
     def set_madek_session(user, auth_system, remember = false)
       @session = UserSession.create!(
-        user: user, 
+        user: user,
         auth_system: auth_system,
-        meta_data: {http_user_agent: request.env["HTTP_USER_AGENT"],
-                    remote_addr: request.env["REMOTE_ADDR"]}
+        meta_data: { http_user_agent: request.env["HTTP_USER_AGENT"],
+                     remote_addr: request.env["REMOTE_ADDR"] }
       )
       cookies[COOKIE_NAME] = {
         expires: remember ? auth_system.session_max_lifetime_hours.hours.from_now : nil,
-        value: @session.token}
+        value: @session.token }
       user.update! last_signed_in_at: Time.zone.now
       users_group = AuthenticationGroup.find_or_initialize_by \
         id: Madek::Constants::SIGNED_IN_USERS_GROUP_ID
@@ -43,7 +44,6 @@ module Concerns
     def destroy_madek_session
 
       puts ">> destroy_madek_session / session delete"
-
 
       puts ">> cookies[COOKIE_NAME]: #{cookies[COOKIE_NAME]}"
       puts ">> token_hash cookies[COOKIE_NAME]: #{token_hash cookies[COOKIE_NAME]}"
@@ -59,10 +59,12 @@ module Concerns
         AND (user_sessions.created_at 
           + auth_systems.session_max_lifetime_hours * interval '1 hour') > now()
       SQL
-      .find_by(["token_hash = ?",
-                Base64.strict_encode64(Digest::SHA256.digest(session_cookie))])
+                           .find_by(["token_hash = ?",
+                                     Base64.strict_encode64(Digest::SHA256.digest(session_cookie))])
       # binding.pry
-      puts ">> session=#{session}"
+      puts ">> get_valid_session  / session=#{session} / session_cookie=#{session_cookie}"
+
+      puts ">> #{session.to_json}"
 
       session
     end
@@ -72,14 +74,40 @@ module Concerns
         @session = get_valid_session(session_cookie!)
 
         if not @session
+          puts ">> 1get_valid_session.error / no valid user_session"
           raise(StandardError, 'No valid user_session found')
         elsif not @session.user.activated?
+          puts ">> 2get_valid_session.error / user not activated"
+
+          puts ">> 2get_valid_session.error, #{@session.user.to_json}"
+
           raise(StandartError, 'User is deactivated')
         else
+          puts ">> 3get_valid_session / found #{@session.user}"
           @session.user
         end
 
+      rescue ActiveRecord::StatementInvalid => e
+        puts ">> get_valid_session.rescue _> NO delete!!! / cause: #{e.message}"
+        puts ">> exception #{e}"
+        Rails.logger.warn e
+
+        puts ">> Exception occurred:"
+        puts ">> Message: #{e.message}"
+        puts ">> Backtrace:"
+        e.backtrace.each { |line| puts "  #{line}" }
+        nil
+
       rescue Exception => e
+        # puts ">> get_valid_session.rescue _> delete!!! / cause: #{e.message}"
+        # puts ">> exception #{e}"
+        # puts ">> exception.type #{e.class}"
+        #
+        # puts ">> Exception occurred:"
+        # puts ">> Message: #{e.message}"
+        # puts ">> Backtrace:"
+        # e.backtrace.each { |line| puts "  #{line}" }
+
         Rails.logger.warn e
         cookies.delete COOKIE_NAME
         nil
@@ -87,10 +115,12 @@ module Concerns
     end
 
     def session_cookie
+      puts ">> session_cookie "
       cookies[COOKIE_NAME]
     end
 
     def session_cookie!
+      puts ">> session_cookie! "
       session_cookie || raise(StandardError, 'Session cookie not found.')
     end
 
