@@ -53,25 +53,6 @@ class Person < ApplicationRecord
     end
   end
 
-  # used in explore catalog
-  def self.for_meta_key_and_used_in_visible_entries_with_previews(meta_key,
-                                                                  user,
-                                                                  limit)
-    distinct
-      .joins(meta_data: :meta_key)
-      .where(meta_keys: { id: meta_key.id })
-      .where(
-        meta_data: {
-          media_entry_id: MediaEntry
-                          .viewable_by_user_or_public(user)
-                          .joins(media_file: :previews)
-                          .where(previews: { media_type: 'image' })
-                          .reorder(nil)
-        }
-      )
-      .limit(limit)
-  end
-
   def self.with_usage_count
     select('people.*, count(people.id) AS usage_count')
       .joins(:meta_data)

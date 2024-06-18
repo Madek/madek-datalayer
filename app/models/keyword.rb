@@ -102,26 +102,4 @@ class Keyword < ApplicationRecord
       end
     end
   end
-
-  # used in explore catalog
-  def self.for_meta_key_and_used_in_visible_entries_with_previews(meta_key,
-                                                                  user,
-                                                                  limit)
-    with_usage_count
-      .where(meta_key: meta_key)
-      .joins('INNER JOIN meta_data ' \
-             'ON meta_data.id = meta_data_keywords.meta_datum_id')
-      .where(
-        meta_data: {
-          media_entry_id: MediaEntry
-                          .viewable_by_user_or_public(user)
-                          .joins(:media_file)
-                          .joins('INNER JOIN previews ' \
-                                 'ON previews.media_file_id = media_files.id')
-                          .where(previews: { media_type: 'image' })
-                          .reorder(nil)
-        }
-      )
-      .limit(limit)
-  end
 end
