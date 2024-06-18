@@ -15,7 +15,7 @@ module Concerns
         scope :with_responsible_delegation,
               ->(delegation) { where(responsible_delegation: delegation) }
         scope :with_responsible_user_or_member_of_delegation,
-              ->(user) { where(responsible_user: user).or(where(responsible_delegation: user.delegations)) }
+              ->(user) { where(responsible_user: user).or(where(responsible_delegation: user.all_delegations)) }
       end
 
       def delegation_with_user?(user)
