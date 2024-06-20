@@ -32,7 +32,10 @@ ActiveRecord::Base.transaction do
       end.to_h)
 
   CORE_VOCAB[:meta_keys].each do |id, attrs|
-    MetaKey.find_or_initialize_by(id: id).update!(attrs)
+    mk = MetaKey.find_or_initialize_by(id: id)
+    # Labels of core meta keys are editable so we want to preserve them.
+    attrs.delete(:labels) if attrs[:labels].present?
+    mk.update!(attrs)
   end
   # enable DB triggers!
   ActiveRecord::Base.connection.execute 'SET session_replication_role = DEFAULT;'
