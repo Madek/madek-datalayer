@@ -51,8 +51,8 @@ class MetaKey < ApplicationRecord
   end
 
   def self.object_types
-    MetaDatum
-      .descendants
+    [MetaDatum::JSON, MetaDatum::Keywords, MetaDatum::MediaEntry,
+      MetaDatum::People, MetaDatum::Roles, MetaDatum::Text, MetaDatum::TextDate]
       .map(&:name)
       .sort
   end
