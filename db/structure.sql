@@ -1534,7 +1534,9 @@ CREATE TABLE public.delegations (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     name character varying NOT NULL,
     description text,
-    admin_comment text
+    admin_comment text,
+    notifications_email character varying,
+    notify_all_members boolean DEFAULT true NOT NULL
 );
 
 
@@ -1599,7 +1601,7 @@ CREATE TABLE public.edit_sessions (
 
 CREATE TABLE public.emails (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    user_id uuid NOT NULL,
+    user_id uuid,
     subject text NOT NULL,
     body text NOT NULL,
     from_address text NOT NULL,
@@ -1609,7 +1611,9 @@ CREATE TABLE public.emails (
     error_message text,
     created_at timestamp(6) without time zone DEFAULT now() NOT NULL,
     updated_at timestamp(6) without time zone DEFAULT now() NOT NULL,
-    CONSTRAINT check_trial_success_or_error CHECK ((((trials = 0) AND (is_successful IS NULL) AND (error_message IS NULL)) OR ((trials > 0) AND (((is_successful = true) AND (error_message IS NULL)) OR ((is_successful = false) AND (error_message IS NOT NULL))))))
+    delegation_id uuid,
+    CONSTRAINT check_trial_success_or_error CHECK ((((trials = 0) AND (is_successful IS NULL) AND (error_message IS NULL)) OR ((trials > 0) AND (((is_successful = true) AND (error_message IS NULL)) OR ((is_successful = false) AND (error_message IS NOT NULL)))))),
+    CONSTRAINT emails_user_id_or_delegation_id CHECK (((user_id IS NOT NULL) OR (delegation_id IS NOT NULL)))
 );
 
 
@@ -1929,7 +1933,8 @@ CREATE TABLE public.notifications (
     notification_case_label character varying NOT NULL,
     email_id uuid,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    via_delegation_id uuid
 );
 
 
@@ -2082,8 +2087,8 @@ CREATE TABLE public.smtp_settings (
     port integer DEFAULT 25 NOT NULL,
     sender_address text,
     username text,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -5038,13 +5043,6 @@ CREATE TRIGGER update_updated_at_column_of_previews BEFORE UPDATE ON public.prev
 
 
 --
--- Name: smtp_settings update_updated_at_column_of_smtp_settings; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_smtp_settings BEFORE UPDATE ON public.smtp_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
-
-
---
 -- Name: usage_terms update_updated_at_column_of_usage_terms; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -5387,6 +5385,30 @@ ALTER TABLE ONLY public.user_sessions
 
 ALTER TABLE ONLY public.auth_systems_groups
     ADD CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES public.groups(id) ON DELETE CASCADE;
+
+
+--
+-- Name: emails fk_rails_1a1a724e92; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.emails
+    ADD CONSTRAINT fk_rails_1a1a724e92 FOREIGN KEY (delegation_id) REFERENCES public.delegations(id);
+
+
+--
+-- Name: notifications fk_rails_1d306a97df; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT fk_rails_1d306a97df FOREIGN KEY (via_delegation_id) REFERENCES public.delegations(id);
+
+
+--
+-- Name: emails fk_rails_214d0d0665; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.emails
+    ADD CONSTRAINT fk_rails_214d0d0665 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -6082,6 +6104,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('33'),
 ('34'),
 ('35'),
+('36'),
+('37'),
+('38'),
 ('4'),
 ('5'),
 ('6'),

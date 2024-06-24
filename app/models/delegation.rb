@@ -1,5 +1,6 @@
 class Delegation < ApplicationRecord
   include Concerns::BetaTesting
+  include Concerns::Delegations::Notifications
 
   has_and_belongs_to_many :groups
   has_and_belongs_to_many :users
@@ -11,6 +12,8 @@ class Delegation < ApplicationRecord
   has_many :collections, foreign_key: :responsible_delegation_id
 
   validates :name, presence: true, uniqueness: true
+  validates(:notifications_email, allow_nil: true,
+            format: { with: URI::MailTo::EMAIL_REGEXP })
 
   def self.apply_sorting(sorting)
     if allowed_sortings.key?(sorting&.to_sym)

@@ -26,7 +26,8 @@ FactoryBot.define do
           :meta_datum_title,
           1,
           media_entry: media_entry,
-          string: evaluator.title
+          string: evaluator.title,
+          created_by: evaluator.creator
         )
       end
     end
