@@ -1,5 +1,6 @@
 class Delegation < ApplicationRecord
   include Concerns::BetaTesting
+  include Concerns::Delegations::Notifications
 
   has_and_belongs_to_many :groups
   has_and_belongs_to_many :users

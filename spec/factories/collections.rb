@@ -2,12 +2,11 @@ FactoryBot.define do
 
   factory :collection do
     association :responsible_user, factory: :user
+    association :creator, factory: :user
 
     before(:create) do |collection|
       # we need app_setting for required context keys validation
       AppSetting.first.presence || create(:app_setting)
-
-      collection.creator_id ||= (User.find_random || FactoryBot.create(:user)).id
     end
 
     created_at { Time.now }
@@ -22,7 +21,8 @@ FactoryBot.define do
           :meta_datum_title,
           1,
           collection: collection,
-          string: evaluator.title
+          string: evaluator.title,
+          created_by: evaluator.creator
         )
       end
     end

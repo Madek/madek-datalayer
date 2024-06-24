@@ -3,6 +3,8 @@ class Notification < ApplicationRecord
   include Concerns::Notifications::TransferResponsibility
 
   belongs_to(:user)
+  belongs_to(:via_delegation, foreign_key: :via_delegation_id,
+             class_name: 'Delegation', optional: true)
   belongs_to(:email, optional: true)
   belongs_to(:notification_case, foreign_key: :notification_case_label)
 
