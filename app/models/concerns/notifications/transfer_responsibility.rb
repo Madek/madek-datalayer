@@ -5,39 +5,39 @@ module Concerns
 
       included do
         def self.transfer_responsibility(resource, old_entity, new_entity, extra_data = nil)
-          if new_entity.beta_tester_notifications?
-            notification_case = NotificationCase.find('transfer_responsibility')
-            data = {
-              resource: { link_def: { label: resource.title } },
-              user: { fullname: old_entity.to_s }
-            }
-            data = data.deep_merge(extra_data) if extra_data.present?
+          notification_case = NotificationCase.find('transfer_responsibility')
+          data = {
+            resource: { link_def: { label: resource.title } },
+            user: { fullname: old_entity.to_s }
+          }
+          data = data.deep_merge(extra_data) if extra_data.present?
 
-            if new_entity.is_a?(Delegation)
-              new_entity.users_to_be_notified.each do |user|
-                notify!(user, notification_case, data, new_entity)
-              end
-              if new_entity.notifications_email.present?
-                create_email!(new_entity, notification_case, data)
-              end
-            else
-              notify!(new_entity, notification_case, data)
+          if new_entity.is_a?(Delegation)
+            new_entity.users_to_be_notified.each do |user|
+              notify!(user, notification_case, data, new_entity)
             end
+            if new_entity.notifications_email.present?
+              create_email!(new_entity, notification_case, data)
+            end
+          else
+            notify!(new_entity, notification_case, data)
           end
         end
 
-        def self.notify!(new_entity, notification_case, data, delegation = nil)
-          ActiveRecord::Base.transaction do
-            notif = create!(user: new_entity,
-                            notification_case_label: notification_case.label,
-                            data: data,
-                            via_delegation: delegation)
-            if email = create_email_immediately_if_user_setting_commands!(
-                new_entity,
-                notification_case,
-                data
-            )
-              notif.update!(email_id: email.id)
+        def self.notify!(user, notification_case, data, delegation = nil)
+          if user.beta_tester_notifications?
+            ActiveRecord::Base.transaction do
+              notif = create!(user: user,
+                              notification_case_label: notification_case.label,
+                              data: data,
+                              via_delegation: delegation)
+              if email = create_email_immediately_if_user_setting_commands!(
+                  user,
+                  notification_case,
+                  data
+              )
+                notif.update!(email_id: email.id)
+              end
             end
           end
         end
