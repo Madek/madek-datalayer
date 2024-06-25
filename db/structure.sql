@@ -159,6 +159,30 @@ $$;
 
 
 --
+-- Name: check_allowed_people_subtypes_immutability_f(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.check_allowed_people_subtypes_immutability_f() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  IF (
+    OLD.allowed_people_subtypes <> NEW.allowed_people_subtypes
+    AND OLD.meta_datum_object_type = 'MetaDatum::People'
+    AND EXISTS (
+      SELECT 1
+      FROM meta_data
+      WHERE meta_data.meta_key_id = OLD.id
+    )
+  ) THEN
+    RAISE EXCEPTION 'Cannot change allowed_people_subtypes when meta_data is present';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: check_collection_cover_uniqueness(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -985,6 +1009,7 @@ CREATE TABLE public.meta_keys (
     hints public.hstore DEFAULT ''::public.hstore NOT NULL,
     documentation_urls public.hstore DEFAULT ''::public.hstore NOT NULL,
     CONSTRAINT check_allowed_people_subtypes_not_empty_for_meta_datum_people CHECK ((((allowed_people_subtypes IS NOT NULL) AND (COALESCE(array_length(allowed_people_subtypes, 1), 0) > 0)) OR (meta_datum_object_type <> 'MetaDatum::People'::text))),
+    CONSTRAINT check_allowed_people_subtypes_values CHECK (((allowed_people_subtypes IS NULL) OR (allowed_people_subtypes <@ ARRAY['Person'::text, 'PeopleGroup'::text, 'PeopleInstitutionalGroup'::text]))),
     CONSTRAINT check_is_extensible_list_is_boolean_for_respective_meta_datum_t CHECK (((((is_extensible_list = true) OR (is_extensible_list = false)) AND (meta_datum_object_type = ANY (ARRAY['MetaDatum::Keywords'::text, 'MetaDatum::Roles'::text]))) OR (meta_datum_object_type <> ALL (ARRAY['MetaDatum::Keywords'::text, 'MetaDatum::Roles'::text])))),
     CONSTRAINT check_keywords_alphabetical_order_is_boolean_for_meta_datum_key CHECK (((((keywords_alphabetical_order = true) OR (keywords_alphabetical_order = false)) AND (meta_datum_object_type = 'MetaDatum::Keywords'::text)) OR (meta_datum_object_type <> 'MetaDatum::Keywords'::text))),
     CONSTRAINT check_valid_meta_datum_object_type CHECK ((meta_datum_object_type = ANY (ARRAY['MetaDatum::Groups'::text, 'MetaDatum::Keywords'::text, 'MetaDatum::Licenses'::text, 'MetaDatum::People'::text, 'MetaDatum::Roles'::text, 'MetaDatum::Text'::text, 'MetaDatum::TextDate'::text, 'MetaDatum::Users'::text, 'MetaDatum::Vocables'::text, 'MetaDatum::JSON'::text, 'MetaDatum::MediaEntry'::text]))),
@@ -2087,8 +2112,8 @@ CREATE TABLE public.smtp_settings (
     port integer DEFAULT 25 NOT NULL,
     sender_address text,
     username text,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -4259,6 +4284,13 @@ CREATE TRIGGER auth_systems_users_audit_change AFTER INSERT OR DELETE OR UPDATE 
 
 
 --
+-- Name: meta_keys check_allowed_people_subtypes_immutability_t; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER check_allowed_people_subtypes_immutability_t BEFORE UPDATE ON public.meta_keys FOR EACH ROW EXECUTE FUNCTION public.check_allowed_people_subtypes_immutability_f();
+
+
+--
 -- Name: static_pages check_contents_of_static_pages; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -5040,6 +5072,13 @@ CREATE TRIGGER update_updated_at_column_of_people BEFORE UPDATE ON public.people
 --
 
 CREATE TRIGGER update_updated_at_column_of_previews BEFORE UPDATE ON public.previews FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: smtp_settings update_updated_at_column_of_smtp_settings; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_smtp_settings BEFORE UPDATE ON public.smtp_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
@@ -6107,6 +6146,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('36'),
 ('37'),
 ('38'),
+('39'),
 ('4'),
 ('5'),
 ('6'),
