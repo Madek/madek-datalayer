@@ -331,7 +331,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -392,7 +392,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -3367,6 +3367,13 @@ CREATE INDEX index_collections_on_default_context_id ON public.collections USING
 
 
 --
+-- Name: index_collections_on_deleted_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_collections_on_deleted_at ON public.collections USING btree (deleted_at);
+
+
+--
 -- Name: index_collections_on_edit_session_updated_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3658,6 +3665,13 @@ CREATE INDEX index_media_entries_on_created_at ON public.media_entries USING btr
 --
 
 CREATE INDEX index_media_entries_on_creator_id ON public.media_entries USING btree (creator_id);
+
+
+--
+-- Name: index_media_entries_on_deleted_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_media_entries_on_deleted_at ON public.media_entries USING btree (deleted_at);
 
 
 --
@@ -6148,6 +6162,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('38'),
 ('39'),
 ('4'),
+('40'),
 ('5'),
 ('6'),
 ('7'),
