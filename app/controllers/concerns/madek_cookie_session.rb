@@ -6,10 +6,6 @@ module Concerns
 
     COOKIE_NAME = Madek::Constants::MADEK_SESSION_COOKIE_NAME
 
-    def token_hash(session_cookie)
-      Base64.strict_encode64(Digest::SHA256.digest(session_cookie))
-    end
-
     def notify_if_session_expiring_soon
       if session_cookie and s = get_valid_session(session_cookie)
         expiry_time = s.created_at + s.auth_system.session_max_lifetime_hours.hours
@@ -31,7 +27,8 @@ module Concerns
       )
       cookies[COOKIE_NAME] = {
         expires: remember ? auth_system.session_max_lifetime_hours.hours.from_now : nil,
-        value: @session.token}
+        value: @session.token
+      }
       user.update! last_signed_in_at: Time.zone.now
       users_group = AuthenticationGroup.find_or_initialize_by \
         id: Madek::Constants::SIGNED_IN_USERS_GROUP_ID
@@ -42,8 +39,7 @@ module Concerns
 
     def destroy_madek_session
       if session_cookie
-        thash = token_hash(session_cookie)
-        UserSession.find_by_token_hash(thash).try(:destroy!)
+        UserSession.find_by_token(session_cookie).try(:destroy!)
         cookies.delete COOKIE_NAME
       end
     end
@@ -54,7 +50,7 @@ module Concerns
         AND (user_sessions.created_at 
           + auth_systems.session_max_lifetime_hours * interval '1 hour') > now()
       SQL
-      .find_by(["token_hash = ?", token_hash(session_cookie)])
+        .find_by(["token_hash = ?", UserSession.encode_as_token_hash(session_cookie)])
     end
 
     def validate_services_session_cookie_and_get_user
