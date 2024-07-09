@@ -331,7 +331,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys
+            IF EXISTS (SELECT 1 FROM meta_keys 
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -392,7 +392,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys
+            IF EXISTS (SELECT 1 FROM meta_keys 
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -1077,6 +1077,20 @@ CREATE FUNCTION public.txid() RETURNS uuid
     AS $$
 BEGIN
   RETURN public.uuid_generate_v5(public.uuid_nil(), current_date::TEXT || ' ' || txid_current()::TEXT);
+END;
+$$;
+
+
+--
+-- Name: upcase_method_in_audited_requests_f(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.upcase_method_in_audited_requests_f() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW.method = UPPER(NEW.method);
+  RETURN NEW;
 END;
 $$;
 
@@ -4837,6 +4851,13 @@ CREATE CONSTRAINT TRIGGER trigger_meta_key_meta_data_type_consistency AFTER INSE
 
 
 --
+-- Name: audited_requests upcase_method_in_audited_requests_t; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER upcase_method_in_audited_requests_t BEFORE INSERT OR UPDATE ON public.audited_requests FOR EACH ROW EXECUTE FUNCTION public.upcase_method_in_audited_requests_f();
+
+
+--
 -- Name: groups update_searchable_column_of_groups; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -6163,6 +6184,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('39'),
 ('4'),
 ('40'),
+('41'),
 ('5'),
 ('6'),
 ('7'),
