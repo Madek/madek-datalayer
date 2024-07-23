@@ -33,7 +33,7 @@ module Madek
       private
 
       def unsafe_method?(m)
-        HTTP_UNSAFE_METHODS.include?(m)
+        HTTP_UNSAFE_METHODS.any? { |unsafe_m| unsafe_m.match(/^#{m}$/i) }
       end
 
       def db_conn
