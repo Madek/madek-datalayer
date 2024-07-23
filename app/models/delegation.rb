@@ -69,4 +69,8 @@ class Delegation < ApplicationRecord
 
     result
   end
+
+  def to_s
+    name
+  end
 end
