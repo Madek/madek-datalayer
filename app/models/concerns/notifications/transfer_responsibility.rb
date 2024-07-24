@@ -60,7 +60,7 @@ module Concerns
           tmpl_mod = NotificationCase::EMAIL_TEMPLATES[notification_case.label]
 
           app_setting = AppSetting.first
-          lang = app_setting.default_locale.to_sym
+          lang = ( entity.try(:emails_locale) || app_setting.default_locale ).to_sym
           subject = tmpl_mod.render_single_email_subject(lang, { site_titles: app_setting.site_titles })
           body = tmpl_mod.render_single_email(lang, data)
           from_address = SmtpSetting.first.default_from_address

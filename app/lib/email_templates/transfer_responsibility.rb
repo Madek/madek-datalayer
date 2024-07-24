@@ -36,12 +36,12 @@ module EmailTemplates
         }
 
         en_text = <<-TXT
-              Summary:
-                #{summary[:en]}
+          Summary:
+            #{summary[:en]}
         TXT
         de_text = <<-TXT
-              Zusammenfassung:
-                #{summary[:de]}
+          Zusammenfassung:
+            #{summary[:de]}
         TXT
 
         txt = { en: en_text, de: de_text }
