@@ -38,7 +38,7 @@ module Concerns
               else
                 ActiveRecord::Base.transaction do 
                   app_setting = AppSetting.first
-                  lang = app_setting.default_locale.to_sym
+                  lang = ( user.try(:emails_locale) || app_setting.default_locale ).to_sym
                   subject = tmpl_mod.render_summary_email_subject(lang, { site_titles: app_setting.site_titles })
                   body = tmpl_mod.render_summary_email(lang, prepare_summary_data(notifs_2))
                   from_address = SmtpSetting.first.default_from_address
