@@ -21,14 +21,14 @@ module Concerns
         }
 
         def self.produce_daily_emails
-          produce_periodical_emails(for_daily_emails_delivery) 
+          produce_periodical_emails(for_daily_emails_delivery, :daily) 
         end
 
         def self.produce_weekly_emails
-          produce_periodical_emails(for_weekly_emails_delivery) 
+          produce_periodical_emails(for_weekly_emails_delivery, :weekly) 
         end
 
-        def self.produce_periodical_emails(notifs)
+        def self.produce_periodical_emails(notifs, frequency)
           notifs.group_by(&:user).each_pair do |user, notifs_1|
             notifs_1.group_by(&:notification_case).each_pair do |notif_case, notifs_2|
               tmpl_mod = NotificationCase::EMAIL_TEMPLATES[notif_case.label]
@@ -40,7 +40,13 @@ module Concerns
                   app_setting = AppSetting.first
                   lang = ( user.try(:emails_locale) || app_setting.default_locale ).to_sym
                   subject = tmpl_mod.render_summary_email_subject(lang, { site_titles: app_setting.site_titles })
-                  body = tmpl_mod.render_summary_email(lang, prepare_summary_data(notifs_2))
+                  body = tmpl_mod.render_summary_email(lang, { notifications: notifs,
+                                                               site_titles: app_setting.site_titles,
+                                                               external_base_url: Settings.madek_external_base_url,
+                                                               my_settings_url: "#{Settings.madek_external_base_url}/my/settings",
+                                                               support_email: Settings.madek_support_email,
+                                                               provenance_notice: app_setting.provenance_notice,
+                                                               email_frequency: frequency })
                   from_address = SmtpSetting.first.default_from_address
 
                   email = Email.create!(user: user,
@@ -54,10 +60,6 @@ module Concerns
               end
             end
           end
-        end
-
-        def self.prepare_summary_data(notifs)
-          { collection: notifs.map(&:data) }
         end
 
         def self.email_frequency_with_fallback(freq)
