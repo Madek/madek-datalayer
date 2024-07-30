@@ -331,7 +331,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -392,7 +392,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -1956,7 +1956,7 @@ CREATE TABLE public.notification_cases_users_settings (
     email_frequency character varying DEFAULT 'daily'::character varying NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT check_email_regularity_value CHECK (((email_frequency)::text = ANY (ARRAY[('immediately'::character varying)::text, ('daily'::character varying)::text, ('weekly'::character varying)::text, ('never'::character varying)::text])))
+    CONSTRAINT check_email_regularity_value CHECK (((email_frequency)::text = ANY ((ARRAY['immediately'::character varying, 'daily'::character varying, 'weekly'::character varying, 'never'::character varying])::text[])))
 );
 
 
@@ -2298,6 +2298,7 @@ CREATE VIEW public.vw_media_resources AS
  SELECT media_entries.id,
     media_entries.get_metadata_and_previews,
     media_entries.responsible_user_id,
+    media_entries.responsible_delegation_id,
     media_entries.creator_id,
     media_entries.created_at,
     media_entries.updated_at,
@@ -2307,6 +2308,7 @@ UNION
  SELECT collections.id,
     collections.get_metadata_and_previews,
     collections.responsible_user_id,
+    collections.responsible_delegation_id,
     collections.creator_id,
     collections.created_at,
     collections.updated_at,
@@ -6185,6 +6187,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('4'),
 ('40'),
 ('41'),
+('42'),
 ('5'),
 ('6'),
 ('7'),
