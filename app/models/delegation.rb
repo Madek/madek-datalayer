@@ -2,6 +2,22 @@ class Delegation < ApplicationRecord
   include Concerns::BetaTesting
   include Concerns::Delegations::Notifications
 
+  #############################################################################
+
+  before_destroy do
+    if all_associated_media_entries.deleted.exists? \
+        or all_associated_collections.deleted.exists?
+
+      errors.add(
+        :base,
+        "Cannot delete a delegation with associated soft-deleted media resources."
+      )
+      throw(:abort)
+    end
+  end
+
+  #############################################################################
+
   has_and_belongs_to_many :groups
   has_and_belongs_to_many :users
   has_and_belongs_to_many(:supervisors,
@@ -14,6 +30,18 @@ class Delegation < ApplicationRecord
   validates :name, presence: true, uniqueness: true
   validates(:notifications_email, allow_nil: true,
             format: { with: URI::MailTo::EMAIL_REGEXP })
+
+  #############################################################################
+
+  def all_associated_media_entries
+    MediaEntry.unscoped.where(responsible_delegation_id: self.id)
+  end
+
+  def all_associated_collections
+    Collection.unscoped.where(responsible_delegation_id: self.id)
+  end
+
+  #############################################################################
 
   def self.apply_sorting(sorting)
     if allowed_sortings.key?(sorting&.to_sym)

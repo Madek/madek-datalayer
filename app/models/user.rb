@@ -12,6 +12,19 @@ class User < ApplicationRecord
 
   #############################################################################
 
+  before_destroy do
+    if all_associated_media_entries.deleted.exists? \
+        or all_associated_collections.deleted.exists?
+
+      errors.add(
+        :base,
+        "Cannot delete a user with associated soft-deleted media resources."
+      )
+      throw(:abort)
+    end
+  end
+
+  #############################################################################
 
   attr_accessor 'act_as_uberadmin'
 
@@ -47,6 +60,16 @@ class User < ApplicationRecord
 
   has_many :notifications
   has_many :notification_case_user_settings
+  
+  def all_associated_media_entries
+    MediaEntry.unscoped.where(creator_id: self.id)
+      .or(MediaEntry.unscoped.where(responsible_user_id: self.id))
+  end
+
+  def all_associated_collections
+    Collection.unscoped.where(creator_id: self.id)
+      .or(Collection.unscoped.where(responsible_user_id: self.id))
+  end
 
   #############################################################
 
