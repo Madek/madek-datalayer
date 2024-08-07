@@ -17,7 +17,7 @@ module Concerns
               notify!(user, notification_case, data, new_entity)
             end
             if new_entity.notifications_email.present?
-              create_email!(new_entity, notification_case, data)
+              notify!(nil, notification_case, data, new_entity)
             end
           else
             notify!(new_entity, notification_case, data)
@@ -31,7 +31,7 @@ module Concerns
                               notification_case_label: notification_case.label,
                               data: data,
                               via_delegation: delegation)
-              if email = create_email_immediately_if_user_setting_commands!(
+              if user and email = create_email_immediately_if_user_setting_commands!(
                   user,
                   notification_case,
                   data
