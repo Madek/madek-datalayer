@@ -3,15 +3,15 @@ module MediaResources
     extend ActiveSupport::Concern
 
     included do
-      scope :not_deleted, -> { where(deleted_at: nil) }
-      scope :deleted, -> { where.not(deleted_at: nil) }
+      scope :not_deleted, -> { where("#{table_name}.deleted_at IS NULL").or(where("#{table_name}.deleted_at > ?", Time.current)) }
+      scope :deleted, -> { where.not("#{table_name}.deleted_at IS NULL").where("#{table_name}.deleted_at <= ?", Time.current) }
 
       def soft_delete
         update!(deleted_at: Time.current)
       end
 
       def self.delete_soft_deleted
-        unscoped.where('deleted_at < ?', 6.month.ago).each do |resource|
+        unscoped.where("#{table_name}.deleted_at < ?", 6.months.ago).find_each do |resource|
           begin
             resource.meta_data.each(&:destroy!)
             resource.destroy!
