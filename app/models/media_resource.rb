@@ -4,7 +4,7 @@ class MediaResource < ApplicationRecord
   # prevents Rails to treat the table/view as STI table
   self.inheritance_column = :_not_existing_column
 
-  include Concerns::MediaResources::CustomOrderBy
+  include MediaResources::CustomOrderBy
 
   def self.viewable_by_user_or_public(user, join_from_active_workflow: false)
     scopes = [MediaEntry, Collection].map do |mr_klass|

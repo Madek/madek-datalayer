@@ -1,9 +1,9 @@
 class Keyword < ApplicationRecord
 
-  include Concerns::FindResource
-  include Concerns::Keywords::Filters
-  include Concerns::Orderable
-  include Concerns::PreviousId
+  include FindResource
+  include Keywords::Filters
+  include Orderable
+  include PreviousId
 
   enable_ordering skip_default_scope: true,
                   parent_scope: :meta_key

@@ -1,4 +1,4 @@
-module Concerns::PreviousId
+module PreviousId
   extend ActiveSupport::Concern
 
   included do

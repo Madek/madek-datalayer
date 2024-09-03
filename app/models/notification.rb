@@ -1,6 +1,6 @@
 class Notification < ApplicationRecord
-  include Concerns::Notifications::PeriodicEmails
-  include Concerns::Notifications::TransferResponsibility
+  include Notifications::PeriodicEmails
+  include Notifications::TransferResponsibility
 
   belongs_to(:user)
   belongs_to(:via_delegation, foreign_key: :via_delegation_id,

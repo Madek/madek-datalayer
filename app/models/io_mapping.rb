@@ -1,5 +1,5 @@
 class IoMapping < ApplicationRecord
-  include Concerns::IoMappings::Filters
+  include IoMappings::Filters
 
   belongs_to :io_interface
   belongs_to :meta_key

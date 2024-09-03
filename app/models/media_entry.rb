@@ -20,19 +20,19 @@ class MediaEntry < ApplicationRecord
   EDIT_PERMISSION_NAME = :edit_metadata
   MANAGE_PERMISSION_NAME = :edit_permissions
 
-  include Concerns::Collections::Siblings
-  include Concerns::MediaEntries::Filters
-  include Concerns::MediaEntries::Siblings
-  include Concerns::MediaResources
-  include Concerns::MediaResources::CustomOrderBy
-  include Concerns::MediaResources::Editability
-  include Concerns::MediaResources::Highlight
-  include Concerns::MediaResources::MetaDataArelConditions
-  include Concerns::MediaResources::PartOfWorkflow
-  include Concerns::MediaResources::SoftDelete
-  include Concerns::SharedOrderBy
-  include Concerns::SharedScopes
-  include Concerns::Delegations::Responsible
+  include Collections::Siblings
+  include MediaEntries::Filters
+  include MediaEntries::Siblings
+  include MediaResources
+  include MediaResources::CustomOrderBy
+  include MediaResources::Editability
+  include MediaResources::Highlight
+  include MediaResources::MetaDataArelConditions
+  include MediaResources::PartOfWorkflow
+  include MediaResources::SoftDelete
+  include SharedOrderBy
+  include SharedScopes
+  include Delegations::Responsible
 
   has_one :media_file, dependent: :destroy
 

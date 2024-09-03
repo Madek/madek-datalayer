@@ -1,5 +1,5 @@
 class Preview < ApplicationRecord
-  include Concerns::MediaType
+  include MediaType
 
   attr_accessor :accessed_by_confidential_link
 

@@ -17,7 +17,7 @@ module MadekDatalayer
     config.autoload_paths << Rails.root.join('lib')
 
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.2
+    config.load_defaults 7.0
     config.active_record.belongs_to_required_by_default = false
 
     if ENV['RAILS_LOG_LEVEL'].present?
@@ -26,15 +26,8 @@ module MadekDatalayer
       config.log_level = :info
     end
 
-    # always log to stdout
-    # logger           = ActiveSupport::Logger.new(STDOUT)
-    # logger.formatter = config.log_formatter
-    # config.logger    = ActiveSupport::TaggedLogging.new(logger)
+    config.active_record.legacy_connection_handling = false
 
-    # Settings in config/environments/* take precedence over those specified here.
-    # Application configuration can go into files in config/initializers
-    # -- all .rb files in that directory are automatically loaded after loading
-    # the framework and any gems in your application.
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

@@ -20,18 +20,18 @@ class Collection < ApplicationRecord
   EDIT_PERMISSION_NAME = :edit_metadata_and_relations
   MANAGE_PERMISSION_NAME = :edit_permissions
 
-  include Concerns::Collections::Arcs
-  include Concerns::Collections::Siblings
-  include Concerns::MediaResources
-  include Concerns::MediaResources::CustomOrderBy
-  include Concerns::MediaResources::Editability
-  include Concerns::MediaResources::Highlight
-  include Concerns::MediaResources::MetaDataArelConditions
-  include Concerns::MediaResources::PartOfWorkflow
-  include Concerns::MediaResources::SoftDelete
-  include Concerns::SharedOrderBy
-  include Concerns::SharedScopes
-  include Concerns::Delegations::Responsible
+  include Collections::Arcs
+  include Collections::Siblings
+  include MediaResources
+  include MediaResources::CustomOrderBy
+  include MediaResources::Editability
+  include MediaResources::Highlight
+  include MediaResources::MetaDataArelConditions
+  include MediaResources::PartOfWorkflow
+  include MediaResources::SoftDelete
+  include SharedOrderBy
+  include SharedScopes
+  include Delegations::Responsible
 
   #################################################################################
 

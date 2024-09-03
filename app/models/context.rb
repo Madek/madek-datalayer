@@ -1,5 +1,5 @@
 class Context < ApplicationRecord
-  include Concerns::LocalizedFields
+  include LocalizedFields
 
   has_many(:context_keys,
            -> { order('context_keys.position ASC') },

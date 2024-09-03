@@ -1,7 +1,7 @@
 class Person < ApplicationRecord
-  include Concerns::FindResource
-  include Concerns::People::Filters
-  include Concerns::PreviousId
+  include FindResource
+  include People::Filters
+  include PreviousId
 
   self.inheritance_column = false
 

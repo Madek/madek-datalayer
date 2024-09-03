@@ -2,12 +2,12 @@ class Vocabulary < ApplicationRecord
 
   VIEW_PERMISSION_NAME = :view
 
-  include Concerns::Entrust
-  include Concerns::PermissionsAssociations
-  include Concerns::Vocabularies::AccessScopesAndHelpers
-  include Concerns::Vocabularies::Filters
-  include Concerns::Orderable
-  include Concerns::LocalizedFields
+  include Entrust
+  include PermissionsAssociations
+  include Vocabularies::AccessScopesAndHelpers
+  include Vocabularies::Filters
+  include Orderable
+  include LocalizedFields
 
   enable_ordering
   localize_fields :labels, :descriptions

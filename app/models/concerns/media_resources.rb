@@ -1,16 +1,14 @@
-module Concerns
-  module MediaResources
-    extend ActiveSupport::Concern
+module MediaResources
+  extend ActiveSupport::Concern
 
-    include Concerns::Entrust
-    include Concerns::MediaResources::CustomUrls
-    include Concerns::MediaResources::EditSessions
-    include Concerns::MediaResources::Favoritable
-    include Concerns::MediaResources::Filters::Filters
-    include Concerns::MediaResources::MetaData
-    include Concerns::MediaResources::PermissionsAssociations
-    include Concerns::MediaResources::Visibility
-    include Concerns::Users::Creator
-    include Concerns::Users::Responsible
-  end
+  include Entrust
+  include MediaResources::CustomUrls
+  include MediaResources::EditSessions
+  include MediaResources::Favoritable
+  include MediaResources::Filters::Filters
+  include MediaResources::MetaData
+  include MediaResources::PermissionsAssociations
+  include MediaResources::Visibility
+  include Users::Creator
+  include Users::Responsible
 end

@@ -1,8 +1,8 @@
 class MetaDatum < ApplicationRecord
 
-  include Concerns::ContextsHelpers
-  include Concerns::MetaData::Filters
-  include Concerns::MetaData::SanitizeValue
+  include ContextsHelpers
+  include MetaData::Filters
+  include MetaData::SanitizeValue
 
   class << self
     def new_with_cast(*args, &block)

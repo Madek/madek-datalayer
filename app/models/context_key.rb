@@ -1,7 +1,7 @@
 class ContextKey < ApplicationRecord
-  include Concerns::Orderable
-  include Concerns::LocalizedFields
-  include Concerns::HasDocumentationUrl
+  include Orderable
+  include LocalizedFields
+  include HasDocumentationUrl
 
   belongs_to :context, foreign_key: :context_id
   belongs_to :meta_key

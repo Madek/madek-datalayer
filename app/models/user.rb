@@ -1,13 +1,13 @@
 # user is the system oriented representation of a User
 
 class User < ApplicationRecord
-  include Concerns::BetaTesting
-  include Concerns::FindResource
-  include Concerns::Users::Delegations
-  include Concerns::Users::Filters
-  include Concerns::Users::Keywords
-  include Concerns::Users::ResourcesAssociations
-  include Concerns::Users::Workflows
+  include BetaTesting
+  include FindResource
+  include Users::Delegations
+  include Users::Filters
+  include Users::Keywords
+  include Users::ResourcesAssociations
+  include Users::Workflows
 
 
   #############################################################################

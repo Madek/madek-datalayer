@@ -1,8 +1,8 @@
 class Group < ApplicationRecord
-  include Concerns::FindResource
-  include Concerns::Groups::Filters
-  include Concerns::Groups::Searches
-  include Concerns::PreviousId
+  include FindResource
+  include Groups::Filters
+  include Groups::Searches
+  include PreviousId
 
   has_and_belongs_to_many :users
   belongs_to :person

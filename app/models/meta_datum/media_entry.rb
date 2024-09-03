@@ -1,5 +1,5 @@
 class MetaDatum::MediaEntry < MetaDatum::Text
-  include Concerns::MetaData::CreatedBy
+  include MetaData::CreatedBy
 
   belongs_to :other_media_entry, \
              -> { with_unpublished }, class_name: '::MediaEntry'

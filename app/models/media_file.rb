@@ -2,9 +2,9 @@
 
 # rubocop:disable Metrics/ClassLength
 class MediaFile < ApplicationRecord
-  include Concerns::MediaType
-  include Concerns::MediaFiles::Filters
-  include Concerns::MediaFiles::Sorters
+  include MediaType
+  include MediaFiles::Filters
+  include MediaFiles::Sorters
 
   # include MediaFileModules::FileStorageManagement
   # include MediaFileModules::Previews

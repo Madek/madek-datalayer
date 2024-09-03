@@ -3,7 +3,7 @@ require 'base64'
 require 'digest'
 
 class ApiToken < ApplicationRecord
-  include Concerns::Tokenable
+  include Tokenable
 
   def self.find_by_token(token_param)
     find_by(

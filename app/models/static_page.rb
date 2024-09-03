@@ -1,5 +1,5 @@
 class StaticPage < ApplicationRecord
-  include Concerns::LocalizedFields
+  include LocalizedFields
 
   localize_fields :contents
   before_validation :parameterize_name

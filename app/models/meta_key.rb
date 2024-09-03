@@ -1,9 +1,9 @@
 class MetaKey < ApplicationRecord
 
-  include Concerns::MetaKeys::Filters
-  include Concerns::Orderable
-  include Concerns::LocalizedFields
-  include Concerns::HasDocumentationUrl
+  include MetaKeys::Filters
+  include Orderable
+  include LocalizedFields
+  include HasDocumentationUrl
 
   has_many :meta_data
   belongs_to :vocabulary

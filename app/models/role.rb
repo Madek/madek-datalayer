@@ -1,8 +1,8 @@
 class Role < ApplicationRecord
 
-  include Concerns::Roles::Filters
-  include Concerns::FindResource
-  include Concerns::LocalizedFields
+  include Roles::Filters
+  include FindResource
+  include LocalizedFields
 
   localize_fields :labels
 

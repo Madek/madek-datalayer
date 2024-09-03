@@ -1,6 +1,6 @@
 class Delegation < ApplicationRecord
-  include Concerns::BetaTesting
-  include Concerns::Delegations::Notifications
+  include BetaTesting
+  include Delegations::Notifications
 
   #############################################################################
 

@@ -1,7 +1,7 @@
 require 'digest'
 
 class UserSession < ApplicationRecord
-  include Concerns::Tokenable
+  include Tokenable
   belongs_to :auth_system
 
   def self.find_by_token(token)

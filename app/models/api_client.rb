@@ -1,5 +1,5 @@
 class ApiClient < ApplicationRecord
-  include Concerns::ApiClients::Filters
+  include ApiClients::Filters
 
   belongs_to :user
 

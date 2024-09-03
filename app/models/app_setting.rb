@@ -1,5 +1,5 @@
 class AppSetting < ApplicationRecord
-  include Concerns::LocalizedFields
+  include LocalizedFields
 
   localize_fields *%w(site_titles brand_texts provenance_notices
                       welcome_titles welcome_texts
