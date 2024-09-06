@@ -16,7 +16,7 @@ module Notifications
             notify!(user, notification_case, data, new_entity)
           end
           if new_entity.notifications_email.present?
-            create_email!(new_entity, notification_case, data)
+            notify!(nil, notification_case, data, new_entity)
           end
         else
           notify!(new_entity, notification_case, data)
@@ -24,13 +24,21 @@ module Notifications
       end
 
       def self.notify!(user, notification_case, data, delegation = nil)
-        if user.beta_tester_notifications?
+        beta_testing = if user and delegation
+                         user.beta_tester_notifications? and delegation.beta_tester_notifications?
+                       elsif user
+                         user.beta_tester_notifications?
+                       elsif delegation
+                         delegation.beta_tester_notifications?
+                       end
+
+        if beta_testing
           ActiveRecord::Base.transaction do
             notif = create!(user: user,
                             notification_case_label: notification_case.label,
                             data: data,
                             via_delegation: delegation)
-            if email = create_email_immediately_if_user_setting_commands!(
+            if user and email = create_email_immediately_if_user_setting_commands!(
                 user,
                 notification_case,
                 data
@@ -64,10 +72,10 @@ module Notifications
         body = tmpl_mod.render_single_email(lang, data)
         from_address = SmtpSetting.first.default_from_address
         to_address = if entity.is_a?(Delegation)
-                        entity.notifications_email
-                      else
-                        entity.email
-                      end
+                       entity.notifications_email
+                     else
+                       entity.email
+                     end
 
         Email.create!(user_id: entity.is_a?(User) ? entity.id : nil,
                       delegation_id: entity.is_a?(Delegation) ? entity.id : nil,

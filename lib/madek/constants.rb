@@ -39,6 +39,9 @@ module Madek
       end
     end
 
+    DEFAULT_NOTIFICATION_EMAILS_FREQUENCY = :daily
+    DEFAULT_DELEGATION_NOTIFICATIONS_EMAILS_FREQUENCY = :daily
+
     DEFAULT_MIME_TYPE = 'application/octet-stream'
 
     DEFAULT_STORAGE_DIR = env_path_or_nil('MADEK_STORAGE_DIR') \

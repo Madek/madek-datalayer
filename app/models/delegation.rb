@@ -1,5 +1,4 @@
 class Delegation < ApplicationRecord
-  include BetaTesting
   include Delegations::Notifications
 
   #############################################################################
@@ -26,6 +25,7 @@ class Delegation < ApplicationRecord
   has_and_belongs_to_many :workflows
   has_many :media_entries, foreign_key: :responsible_delegation_id
   has_many :collections, foreign_key: :responsible_delegation_id
+  has_many :emails
 
   validates :name, presence: true, uniqueness: true
   validates(:notifications_email, allow_nil: true,
@@ -101,4 +101,5 @@ class Delegation < ApplicationRecord
   def to_s
     name
   end
+
 end

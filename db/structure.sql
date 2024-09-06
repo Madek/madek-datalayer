@@ -227,6 +227,27 @@ CREATE FUNCTION public.check_collection_primary_uniqueness() RETURNS trigger
 
 
 --
+-- Name: check_email_frequency_for_notification_case_f(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.check_email_frequency_for_notification_case_f() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1
+          FROM notification_cases
+          WHERE label = NEW.notification_case_label
+          AND NEW.email_frequency = ANY(allowed_email_frequencies)
+        ) THEN
+          RAISE EXCEPTION 'Invalid email frequency: %', NEW.email_frequency;
+        END IF;
+        RETURN NEW;
+      END;
+      $$;
+
+
+--
 -- Name: check_madek_core_meta_key_immutability(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -331,7 +352,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys
+            IF EXISTS (SELECT 1 FROM meta_keys 
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -392,7 +413,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys
+            IF EXISTS (SELECT 1 FROM meta_keys 
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -1575,7 +1596,8 @@ CREATE TABLE public.delegations (
     description text,
     admin_comment text,
     notifications_email character varying,
-    notify_all_members boolean DEFAULT true NOT NULL
+    notify_all_members boolean DEFAULT true NOT NULL,
+    beta_tester_notifications boolean DEFAULT false NOT NULL
 );
 
 
@@ -1941,7 +1963,8 @@ CREATE TABLE public.notification_cases (
     label character varying NOT NULL,
     description text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    allowed_email_frequencies text[] DEFAULT '{}'::text[] NOT NULL
 );
 
 
@@ -1955,8 +1978,7 @@ CREATE TABLE public.notification_cases_users_settings (
     notification_case_label character varying NOT NULL,
     email_frequency character varying DEFAULT 'daily'::character varying NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT check_email_regularity_value CHECK (((email_frequency)::text = ANY ((ARRAY['immediately'::character varying, 'daily'::character varying, 'weekly'::character varying, 'never'::character varying])::text[])))
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -1966,7 +1988,7 @@ CREATE TABLE public.notification_cases_users_settings (
 
 CREATE TABLE public.notifications (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    user_id uuid NOT NULL,
+    user_id uuid,
     data jsonb DEFAULT '{}'::jsonb NOT NULL,
     acknowledged boolean DEFAULT false NOT NULL,
     notification_case_label character varying NOT NULL,
@@ -4328,6 +4350,13 @@ CREATE TRIGGER check_contents_of_static_pages BEFORE INSERT OR UPDATE ON public.
 
 
 --
+-- Name: notification_cases_users_settings check_email_frequency_for_notification_case_t; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER check_email_frequency_for_notification_case_t BEFORE INSERT OR UPDATE ON public.notification_cases_users_settings FOR EACH ROW EXECUTE FUNCTION public.check_email_frequency_for_notification_case_f();
+
+
+--
 -- Name: collection_api_client_permissions collection_api_client_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -6188,6 +6217,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('40'),
 ('41'),
 ('42'),
+('43'),
+('44'),
+('45'),
 ('5'),
 ('6'),
 ('7'),

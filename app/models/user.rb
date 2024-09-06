@@ -1,14 +1,12 @@
 # user is the system oriented representation of a User
 
 class User < ApplicationRecord
-  include BetaTesting
   include FindResource
   include Users::Delegations
   include Users::Filters
   include Users::Keywords
   include Users::ResourcesAssociations
   include Users::Workflows
-
 
   #############################################################################
 
@@ -60,6 +58,8 @@ class User < ApplicationRecord
 
   has_many :notifications
   has_many :notification_case_user_settings
+
+  has_many :emails
   
   def all_associated_media_entries
     MediaEntry.unscoped.where(creator_id: self.id)
@@ -179,6 +179,14 @@ class User < ApplicationRecord
 
   def emails_locale_with_default_fallback
     self.emails_locale || AppSetting.first.default_locale
+  end
+
+  #################### BETA TESTING ###########################
+
+  def beta_tester_notifications?
+    groups
+      .map(&:id)
+      .include?(Madek::Constants::BETA_TESTERS_NOTIFICATIONS_GROUP_ID.to_s)
   end
 
 end
