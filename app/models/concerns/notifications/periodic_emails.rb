@@ -9,6 +9,7 @@ module Notifications
         without_emails
           .with_user_settings
           .where(ntus: { email_frequency: email_frequency_with_fallback(:daily) })
+          .where("notifications.created_at > current_date::timestamptz - interval '1 day'")
           .order('notifications.created_at DESC')
       }
 
@@ -16,29 +17,19 @@ module Notifications
         without_emails
           .with_user_settings
           .where(ntus: { email_frequency: email_frequency_with_fallback(:weekly) })
+          .where("notifications.created_at > current_date::timestamptz - interval '7 days'")
           .order('notifications.created_at DESC')
       }
 
-      # TODO: timespan: whole previous day until now
       def self.produce_daily_emails
         produce_periodical_emails(for_daily_emails_delivery, :daily) 
       end
 
-      # TODO: timespan: whole previous week until now
       def self.produce_weekly_emails
         produce_periodical_emails(for_weekly_emails_delivery, :weekly) 
       end
 
       def self.produce_periodical_emails(notifs, frequency)
-        # TODO: move to the sql query itself
-        since_date = case frequency
-                     when :daily
-                       Date.yesterday.to_datetime
-                     when :weekly
-                       (Date.today - 7.days).to_datetime
-                     end
-        notifs = notifs.select { |n| n.created_at > since_date }
-
         notifs.group_by(&:notification_case).each_pair do |notif_case, notifs_1|
           tmpl_mod = NotificationCase::EMAIL_TEMPLATES[notif_case.label]
           unless tmpl_mod
