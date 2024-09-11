@@ -64,7 +64,8 @@ describe 'Email Templates' do
                   my_settings_url: "|My Settings URL OK|",
                   support_email: "|Support Email OK|",
                   provenance_notice: { de: '|Provenance Notice DE OK|', en: '|Provenance Notice EN OK|' },
-                  email_frequency: :daily }
+                  email_frequency: :daily,
+                  batch_index: 0 }
       end
 
       it 'DE works' do

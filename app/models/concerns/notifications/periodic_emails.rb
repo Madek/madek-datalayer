@@ -3,6 +3,7 @@ module Notifications
     extend ActiveSupport::Concern
 
     included do
+      PERIODIC_EMAILS_BATCH_SIZE = 600
 
       scope :without_emails, -> { where(email_id: nil) }
       scope :for_daily_emails_delivery, -> {
@@ -38,11 +39,15 @@ module Notifications
 
           notifs_1.group_by(&:user).each_pair do |user, notifs_2|
             if user and notifs_2.size > 0
-              produce_summary_email(nil, user, notifs_2, tmpl_mod, frequency)
+              batched(notifs_2) do |notifs_batch, batch_index|
+                produce_summary_email(user, notifs_batch, tmpl_mod, frequency, batch_index)
+              end
             elsif Madek::Constants::DEFAULT_DELEGATION_NOTIFICATIONS_EMAILS_FREQUENCY == frequency
               notifs_2.group_by(&:via_delegation).each_pair do |delegation, notifs_3|
                 if notifs_3.size > 0
-                  produce_summary_email(delegation, nil, notifs_3, tmpl_mod, frequency)
+                  batched(notifs_3) do |notifs_batch, batch_index|
+                    produce_summary_email(delegation, notifs_batch, tmpl_mod, frequency, batch_index) 
+                  end
                 end
               end
             end
@@ -50,16 +55,31 @@ module Notifications
         end
       end
 
-      def self.produce_summary_email(delegation, user, notifs, tmpl_mod, frequency)
-        if delegation and user
-          raise "Either delegation or user must be nil."
+      def self.batched(notifs)
+        notifs
+          .sort_by { |n| n.via_delegation&.name || "" }
+          .each_slice(PERIODIC_EMAILS_BATCH_SIZE).with_index do |batch, index|
+          yield(batch, index)
         end
+      end
 
+      def self.produce_summary_email(recipient, notifs, tmpl_mod, frequency, batch_index)
         begin
           ActiveRecord::Base.transaction do 
             app_setting = AppSetting.first
-            lang = ( user&.emails_locale || app_setting.default_locale ).to_sym
-            subject = tmpl_mod.render_summary_email_subject(lang, { site_titles: app_setting.site_titles })
+            lang = (
+              ( recipient.is_a?(User) and recipient.emails_locale ) or app_setting.default_locale 
+            ).to_sym
+            from_address = SmtpSetting.first.default_from_address
+            to_address = if recipient.is_a?(User)
+                           recipient.email 
+                         else
+                           recipient.notifications_email 
+                         end
+
+            subject = tmpl_mod.render_summary_email_subject(lang, { site_titles: app_setting.site_titles,
+                                                                    email_frequency: frequency,
+                                                                    batch_index: batch_index})
             body = tmpl_mod.render_summary_email(lang, { notifications: notifs,
                                                          site_titles: app_setting.site_titles,
                                                          external_base_url: Settings.madek_external_base_url,
@@ -67,15 +87,13 @@ module Notifications
                                                          support_email: Settings.madek_support_email,
                                                          provenance_notice: app_setting.provenance_notice,
                                                          email_frequency: frequency })
-            from_address = SmtpSetting.first.default_from_address
-            to_address = user&.email || delegation&.notifications_email
 
-            email = Email.create!(user: user,
-                                  delegation: delegation,
-                                  subject: subject,
-                                  body: body,
+            email = Email.create!(user: recipient.is_a?(User) ? recipient : nil,
+                                  delegation: recipient.is_a?(Delegation) ? recipient : nil,
+                                  to_address: to_address,
                                   from_address: from_address,
-                                  to_address: to_address)
+                                  subject: subject,
+                                  body: body)
 
             notifs.each { |n| n.update!(email_id: email.id) }
           end

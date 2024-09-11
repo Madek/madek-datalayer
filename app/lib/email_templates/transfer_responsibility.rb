@@ -17,10 +17,16 @@ module EmailTemplates
                        when :weekly
                          "weekly"
                        end
+        batch_en = if data[:batch_index] > 0
+                     " (part #{data[:batch_index] + 1})"
+                   end
+        batch_de = if data[:batch_index] > 0
+                     " (Teil #{data[:batch_index] + 1})"
+                   end
 
         txt = {
-          en: "#{site_titles[:en]}: #{frequency_en} summary of responsibility transfers",
-          de: "#{site_titles[:de]}: #{frequency_de} Zusammenfassung der Verantwortlichkeits-Übertragungen"
+          en: "#{site_titles[:en]}: #{frequency_en} summary of responsibility transfers#{batch_en}",
+          de: "#{site_titles[:de]}: #{frequency_de} Zusammenfassung der Verantwortlichkeits-Übertragungen#{batch_de}"
         }
 
         txt[lang.to_sym]
@@ -62,8 +68,7 @@ module EmailTemplates
       end
 
       def delegations_sections(lang, xs)
-        xs.sort_by { |x| x.via_delegation&.name || "" }
-          .group_by(&:via_delegation)
+        xs.group_by(&:via_delegation)
           .map { |d, xs| section_per_delegation(d, xs)[lang] }
           .join("\n")
       end
