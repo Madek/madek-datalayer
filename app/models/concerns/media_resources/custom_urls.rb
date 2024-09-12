@@ -10,26 +10,12 @@ module MediaResources
         custom_urls.find_by(is_primary: true).try(:to_param) or super
       end
 
-      # this provides customized `find` and `find_by_id` methods
-      # on the model class itself:
-      # eg. Collection.find('custom_id or uuid')
-      # it also prevents the use of `find_by` and `find_by!`
-      extend MediaResources::CustomUrls::Finders
-      class << self
-        alias_method :find_without_custom_id, :find
-        alias_method :find, :find_with_custom_id
-      end
-
-      # this provides customized `find` and `find_by_id` methods
-      # on the model relation, so that they work also when chained
-      # after other AR methods:
-      # eg. Collection
-      #       .joins(:custom_urls)
-      #       .where(custom_urls: { is_primary: true })
-      #       .find('custom_id')
-      # it also prevents the use of `find_by` and `find_by!`
-      const_get(:ActiveRecord_Relation).class_eval do
-        include MediaResources::CustomUrls::Finders
+      def self.find_by_id_or_custom_url_id(arg)
+        if arg.is_a?(String) and not arg.match UUIDTools::UUID_REGEXP
+          joins(:custom_urls).where(custom_urls: { id: arg }).first
+        else
+          where(id: arg).first
+        end
       end
     end
   end

@@ -79,7 +79,7 @@ module MediaResources
         meta_data_roles = Arel::Table.new(:meta_data_roles)
 
         condition = \
-          "array_to_string(avals(#{roles.table_name}.labels), '||') ILIKE '%s'"
+          "array_to_string(avals(#{roles.name}.labels), '||') ILIKE '%s'"
 
         roles \
           .join(meta_data_roles)

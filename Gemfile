@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 7.0.0'
+gem 'rails', '~> 7.1.0'
 gem "sprockets", "<4" # DO NOT UPGRADE SPROCKETS!
 
 gem 'pg'
@@ -18,7 +18,7 @@ gem 'chronic_duration'
 gem 'listen'
 gem 'liquid'
 gem 'psych', '< 4'
-gem 'rspec-rails', '~> 6', group: [:test, :development]
+gem 'rspec-rails', '~> 7', group: [:test, :development]
 gem 'strong_password'
 gem 'uuidtools'
 gem 'zencoder', '~> 2.4'

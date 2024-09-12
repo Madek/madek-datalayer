@@ -1,4 +1,3 @@
-require 'settings'
 require 'chronic_duration'
 require 'uuidtools'
 ChronicDuration.raise_exceptions = true

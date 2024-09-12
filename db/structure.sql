@@ -352,7 +352,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -413,7 +413,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -6179,50 +6179,49 @@ ALTER TABLE ONLY public.zencoder_jobs
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
-('0'),
-('1'),
-('10'),
-('11'),
-('12'),
-('13'),
-('14'),
-('15'),
-('16'),
-('17'),
-('18'),
-('19'),
-('2'),
-('20'),
-('21'),
-('22'),
-('23'),
-('24'),
-('25'),
-('26'),
-('27'),
-('28'),
-('29'),
-('3'),
-('30'),
-('31'),
-('32'),
-('33'),
-('34'),
-('35'),
-('36'),
-('37'),
-('38'),
-('39'),
-('4'),
-('40'),
-('41'),
-('42'),
-('43'),
-('44'),
-('45'),
-('5'),
-('6'),
+('8'),
 ('7'),
-('8');
-
+('6'),
+('5'),
+('45'),
+('44'),
+('43'),
+('42'),
+('41'),
+('40'),
+('4'),
+('39'),
+('38'),
+('37'),
+('36'),
+('35'),
+('34'),
+('33'),
+('32'),
+('31'),
+('30'),
+('3'),
+('29'),
+('28'),
+('27'),
+('26'),
+('25'),
+('24'),
+('23'),
+('22'),
+('21'),
+('20'),
+('2'),
+('19'),
+('18'),
+('17'),
+('16'),
+('15'),
+('14'),
+('13'),
+('12'),
+('11'),
+('10'),
+('1'),
+('0');
 

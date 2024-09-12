@@ -31,7 +31,7 @@ class MediaFile < ApplicationRecord
     mf.audio? || mf.video?
   }
 
-  serialize :meta_data, Hash
+  serialize :meta_data, type: Hash, coder: YAML
 
   has_many :previews, -> { order(:created_at, :id) }, dependent: :destroy
 

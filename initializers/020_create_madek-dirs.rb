@@ -1,5 +1,3 @@
-require 'madek/constants'
-
 Rails.application.reloader.to_prepare do
   [Madek::Constants::FILE_STORAGE_DIR,
    Madek::Constants::THUMBNAIL_STORAGE_DIR].each do |dir|
