@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 7.1.0'
+gem 'rails', '~> 7.2.0'
 gem "sprockets", "<4" # DO NOT UPGRADE SPROCKETS!
 
 gem 'pg'

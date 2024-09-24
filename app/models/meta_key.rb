@@ -10,7 +10,7 @@ class MetaKey < ApplicationRecord
   has_many :context_keys
   has_many :roles
 
-  enum text_type: { line: 'line', block: 'block' }
+  enum :text_type, { line: 'line', block: 'block' }
 
   #################################################################################
   # NOTE: order of statements is important here! ##################################
