@@ -352,7 +352,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys
+            IF EXISTS (SELECT 1 FROM meta_keys 
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -413,7 +413,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys
+            IF EXISTS (SELECT 1 FROM meta_keys 
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -1114,6 +1114,22 @@ BEGIN
   RETURN NEW;
 END;
 $$;
+
+
+--
+-- Name: update_access_token_valid_until_f(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.update_access_token_valid_until_f() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+          BEGIN
+            IF NEW.state = 'finished' OR NEW.state = 'failed' THEN
+              NEW.access_token_valid_until = NOW();
+            END IF;
+            RETURN NEW;
+          END;
+          $$;
 
 
 --
@@ -1869,7 +1885,6 @@ CREATE TABLE public.media_files (
     height integer,
     size bigint,
     width integer,
-    access_hash text,
     meta_data text,
     content_type character varying NOT NULL,
     filename character varying,
@@ -2370,7 +2385,9 @@ CREATE TABLE public.zencoder_jobs (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     progress double precision DEFAULT 0.0,
-    conversion_profiles character varying[] DEFAULT '{}'::character varying[]
+    conversion_profiles character varying[] DEFAULT '{}'::character varying[],
+    access_token character varying DEFAULT public.uuid_generate_v4() NOT NULL,
+    access_token_valid_until timestamp with time zone DEFAULT (now() + '48:00:00'::interval) NOT NULL
 );
 
 
@@ -4889,6 +4906,13 @@ CREATE TRIGGER upcase_method_in_audited_requests_t BEFORE INSERT OR UPDATE ON pu
 
 
 --
+-- Name: zencoder_jobs update_access_token_valid_until_t; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_access_token_valid_until_t BEFORE INSERT OR UPDATE ON public.zencoder_jobs FOR EACH ROW EXECUTE FUNCTION public.update_access_token_valid_until_f();
+
+
+--
 -- Name: groups update_searchable_column_of_groups; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -6183,6 +6207,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('7'),
 ('6'),
 ('5'),
+('46'),
 ('45'),
 ('44'),
 ('43'),

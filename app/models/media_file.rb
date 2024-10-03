@@ -20,7 +20,6 @@ class MediaFile < ApplicationRecord
 
   before_create do
     self.guid ||= UUIDTools::UUID.random_create.hexdigest
-    self.access_hash ||= SecureRandom.uuid
   end
 
   before_create :set_media_type

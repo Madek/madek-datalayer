@@ -108,7 +108,6 @@ FactoryBot.define do
       size { '1190633' }
       width { nil }
       height { nil }
-      access_hash { '71aa02e6-cd0e-4ef1-abb5-886a7a965307' }
       conversion_profiles { %w(mp4 mp4_HD webm webm_HD) }
       filename { 'madek-test-video-5s.mp4' }
       guid { 'cb8c0a46f2744c3891ff5bd893581d21' }
@@ -141,7 +140,6 @@ FactoryBot.define do
       size { '1190633' }
       width { nil }
       height { nil }
-      access_hash { 'b72edb2c-2e21-4c7e-ac7a-c625beff4b22' }
       conversion_profiles { %w(mp3 vorbis) }
       filename { 'test-audio.aac' }
       guid { '137698174e13418cb5d8e960caaf3407' }
@@ -175,7 +173,6 @@ FactoryBot.define do
       size { '318996' }
       width { nil }
       height { nil }
-      access_hash { '36e3898a-8a27-4354-a758-e9f24fd287bb' }
       conversion_profiles { %w() }
       filename { 'test-image-wide.tif' }
       guid { 'f7df90537cd547f2a82127229a52b452' }
@@ -195,7 +192,6 @@ FactoryBot.define do
       size { '327516' }
       width { nil }
       height { nil }
-      access_hash { '7674c885-3f6f-4c1c-ace1-33d4e21858d1' }
       conversion_profiles { %w() }
       filename { 'test-image-high.tif' }
       guid { '16bb9f7f388e4b4eb4908f9d457718dc' }
@@ -233,7 +229,6 @@ FactoryBot.define do
       size { '318996' }
       width { 1535 }
       height { 1063 }
-      access_hash { '36e3898a-8a27-4354-a758-e9f24fd287bb' }
       conversion_profiles { %w() }
       filename { 'test-image-wide.tif' }
       guid { 'f7df90537cd547f2a82127229a52b452' }
@@ -253,7 +248,6 @@ FactoryBot.define do
       size { '327516' }
       width { 1063 }
       height { 1535 }
-      access_hash { '7674c885-3f6f-4c1c-ace1-33d4e21858d1' }
       conversion_profiles { %w() }
       filename { 'test-image-high.tif' }
       guid { '16bb9f7f388e4b4eb4908f9d457718dc' }
@@ -282,7 +276,6 @@ FactoryBot.define do
       size { '13805' }
       width { nil }
       height { nil }
-      access_hash { '9beebc62-0674-49d1-8b76-c937c9169d27' }
       conversion_profiles { %w() }
       filename { 'pdf-beispiel.pdf' }
       guid { '6e86d8474b3143c698f7d53121d280ac' }

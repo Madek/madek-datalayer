@@ -85,7 +85,7 @@ describe ZencoderRequester do
         it 'creates encoding job' do
           expect(Zencoder::Job).to receive(:create).with(
             input: 'http://test.madek.com/files/' \
-              "#{media_file.id}?access_hash=#{media_file.access_hash}",
+              "#{media_file.id}?access_token=#{media_file.zencoder_jobs.first.access_token}",
             notifications: ['http://test.madek.com/zencoder_jobs/' \
                               "#{zencoder_job.id}/notification"],
             test: true,

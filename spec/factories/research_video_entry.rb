@@ -83,7 +83,6 @@ FactoryBot.define do
     size { '11061375' }
     width { nil }
     height { nil }
-    access_hash { '8d59e5b1-750a-4865-94fb-29c2c59453c9' }
     conversion_profiles { %w(mp4 webm) }
     # id  'e563a508-094a-4fc3-83b3-b55ccbdfebb2'
     filename { 'video.m4v' }

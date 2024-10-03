@@ -92,7 +92,7 @@ class ZencoderRequester
   end
 
   def media_file_path
-    "/files/#{@media_file.id}?access_hash=#{@media_file.access_hash}"
+    "/files/#{@media_file.id}?access_token=#{@zencoder_job.access_token}"
   end
 
   def zencoder_job_notification_path

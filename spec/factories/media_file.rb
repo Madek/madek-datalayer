@@ -31,7 +31,6 @@ FactoryBot.define do
     content_type { 'image/jpeg' }
     filename { 'grumpy_cat.jpg' }
     guid { 'b8bf2eb322e04a29a52fbb06d4866af8' }
-    access_hash { 'edbf86ef-8bb5-40c2-8737-368bbf7f75dd' }
     meta_data do
       YAML.load '
       File:BitsPerSample: 8
@@ -107,7 +106,6 @@ FactoryBot.define do
     content_type { 'video/quicktime' }
     filename { 'zencoder_test.mov' }
     guid { '66b1ef50186645438c047179f54ec6e6' }
-    access_hash { '4eb0ffec-58a1-4e9b-9056-b4f6fd4729ae' }
     meta_data do
       YAML.load '
       File:FileType: MP4
@@ -165,7 +163,6 @@ FactoryBot.define do
     content_type { 'audio/mpeg' }
     filename { 'audio.mp3' }
     guid { UUIDTools::UUID.random_create.hexdigest }
-    access_hash { UUIDTools::UUID.random_create.to_s }
     association :media_entry
     association :uploader, factory: :user
 
@@ -203,7 +200,6 @@ FactoryBot.define do
     content_type { 'application/pdf' }
     filename { 'document.pdf' }
     guid { UUIDTools::UUID.random_create.hexdigest }
-    access_hash { UUIDTools::UUID.random_create.to_s }
     association :media_entry
     association :uploader, factory: :user
   end
@@ -215,7 +211,6 @@ FactoryBot.define do
     content_type { 'model/vnd.mts' }
     filename { 'other.mts' }
     guid { UUIDTools::UUID.random_create.hexdigest }
-    access_hash { UUIDTools::UUID.random_create.to_s }
     association :media_entry
     association :uploader, factory: :user
   end
