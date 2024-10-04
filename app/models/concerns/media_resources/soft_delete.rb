@@ -10,6 +10,10 @@ module MediaResources
         update!(deleted_at: Time.current)
       end
 
+      def deleted?
+        deleted_at.present? and ( Time.current > deleted_at )
+      end
+
       def self.delete_soft_deleted
         unscoped.where("#{table_name}.deleted_at < ?", 6.months.ago).find_each do |resource|
           begin
