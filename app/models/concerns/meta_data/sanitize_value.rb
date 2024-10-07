@@ -16,7 +16,6 @@ module MetaData
           reject_blanks_and_modelify_if_necessary(vals)
       raise 'Use safe value via block!' unless block_given?
       yield(sanitized_value)
-      # TODO: return safe_new_value
     end
 
     private

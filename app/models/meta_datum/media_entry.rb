@@ -34,7 +34,6 @@ class MetaDatum::MediaEntry < MetaDatum::Text
 
   def value=(new_value)
     uuid, description = extract_values(new_value)
-    # FIXME: use a DB constraint instead
     UUIDTools::UUID.parse(uuid) if uuid.present?
     assign_value(uuid, :other_media_entry_id)
     assign_value(description, :string)

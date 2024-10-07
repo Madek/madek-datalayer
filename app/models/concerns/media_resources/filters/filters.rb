@@ -71,15 +71,6 @@ module MediaResources
           end
         end
 
-        # TODO: to we need this method?
-        def validate_meta_datum!(meta_datum)
-          [:value, :match].each do |key_name|
-            if meta_datum[key_name] and not meta_datum[key_name].is_a?(String)
-              raise "#{key_name.capitalize} must be a string!"
-            end
-          end
-        end
-
         def filter_by_media_files(media_files)
           if media_files.blank?
             all

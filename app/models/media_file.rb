@@ -135,7 +135,6 @@ class MediaFile < ApplicationRecord
     path_for_env(path)
   end
 
-  # FIXME: remove this
   def preview(size)
     previews.find_by(thumbnail: size)
   end

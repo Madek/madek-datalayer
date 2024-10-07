@@ -26,9 +26,6 @@ class MetaDatum < ApplicationRecord
   belongs_to :media_entry, -> { with_unpublished }, class_name: '::MediaEntry'
   belongs_to :collection
 
-  # TODO: create DB constraint for this
-  # validates_presence_of :created_by, on: :create
-
   # NOTE: could possibly be made as a DB trigger
   validate if: :validate_required_context_key_condition? do
     context_ids = context_ids_for_required_context_keys_validation
