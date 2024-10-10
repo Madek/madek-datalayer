@@ -495,6 +495,33 @@ UNION
 
 
 --
+-- Name: check_single_keyword_selection_f(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.check_single_keyword_selection_f() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  IF (
+    SELECT meta_keys.multiple_selection
+    FROM meta_data
+    INNER JOIN meta_keys ON meta_keys.id = meta_data.meta_key_id
+    WHERE meta_data.id = NEW.meta_datum_id  
+  ) = FALSE
+  AND (
+    SELECT COUNT(*)
+    FROM meta_data_keywords
+    WHERE meta_datum_id = NEW.meta_datum_id
+  ) > 1 
+  THEN
+    RAISE EXCEPTION 'Cannot assign multiple keywords when multiple selection is disallowed for meta key';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: check_users_apiclients_login_uniqueness(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -4411,6 +4438,13 @@ CREATE TRIGGER check_meta_key_multiple_selection_immutability_t BEFORE UPDATE ON
 
 
 --
+-- Name: meta_data_keywords check_single_keyword_selection_t; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER check_single_keyword_selection_t AFTER INSERT ON public.meta_data_keywords DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.check_single_keyword_selection_f();
+
+
+--
 -- Name: collection_api_client_permissions collection_api_client_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -6244,6 +6278,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('7'),
 ('6'),
 ('5'),
+('48'),
 ('47'),
 ('46'),
 ('45'),
