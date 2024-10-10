@@ -85,7 +85,7 @@ module Notifications
                                                          external_base_url: Settings.madek_external_base_url,
                                                          my_settings_url: "#{Settings.madek_external_base_url}/my/settings",
                                                          support_email: Settings.madek_support_email,
-                                                         provenance_notice: app_setting.provenance_notice,
+                                                         provenance_notices: app_setting.provenance_notices,
                                                          email_frequency: frequency })
 
             email = Email.create!(user: recipient.is_a?(User) ? recipient : nil,

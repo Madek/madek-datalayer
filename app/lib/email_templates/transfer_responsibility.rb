@@ -182,18 +182,18 @@ module EmailTemplates
 
       def general_footer(data)
         data ||= {}
-        provenance_notice = data[:provenance_notice] || {}
+        provenance_notices = data[:provenance_notices] || {}
         support_email = data[:support_email]
         external_base_url = data[:external_base_url]
 
         en_text = <<~TXT
           Do You have any questions to the support? Contact mailto:#{support_email}.
-          #{provenance_notice[:en]} #{external_base_url}
+          #{provenance_notices[:en]} #{external_base_url}
         TXT
 
         de_text = <<~TXT
           Haben Sie Fragen an den Support? Kontaktieren Sie mailto:#{support_email}.
-          #{provenance_notice[:de]} #{external_base_url}
+          #{provenance_notices[:de]} #{external_base_url}
         TXT
 
         { de: de_text, en: en_text }

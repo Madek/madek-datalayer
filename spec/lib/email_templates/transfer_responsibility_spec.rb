@@ -63,7 +63,7 @@ describe 'Email Templates' do
                   external_base_url: "|External Base URL OK|",
                   my_settings_url: "|My Settings URL OK|",
                   support_email: "|Support Email OK|",
-                  provenance_notice: { de: '|Provenance Notice DE OK|', en: '|Provenance Notice EN OK|' },
+                  provenance_notices: { de: '|Provenance Notice DE OK|', en: '|Provenance Notice EN OK|' },
                   email_frequency: :daily,
                   batch_index: 0 }
       end
