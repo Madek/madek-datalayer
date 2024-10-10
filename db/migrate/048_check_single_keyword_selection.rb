@@ -25,7 +25,7 @@ class CheckSingleKeywordSelection < ActiveRecord::Migration[6.1]
 
     execute <<~SQL
       CREATE CONSTRAINT TRIGGER check_single_keyword_selection_t
-      AFTER INSERT ON meta_data_keywords -- OR UPDATE?
+      AFTER INSERT ON meta_data_keywords
       DEFERRABLE INITIALLY DEFERRED
       FOR EACH ROW EXECUTE FUNCTION check_single_keyword_selection_f();
     SQL
