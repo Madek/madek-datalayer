@@ -2089,6 +2089,7 @@ CREATE TABLE public.people (
     external_uris character varying[] DEFAULT '{}'::character varying[] NOT NULL,
     institution text DEFAULT 'local'::text NOT NULL,
     admin_comment text,
+    identification_info text,
     CONSTRAINT check_presence_of_first_name_or_last_name_or_pseudonym CHECK (((first_name IS NOT NULL) OR (last_name IS NOT NULL) OR (pseudonym IS NOT NULL))),
     CONSTRAINT check_valid_people_subtype CHECK ((subtype = ANY (ARRAY['Person'::text, 'PeopleGroup'::text, 'PeopleInstitutionalGroup'::text]))),
     CONSTRAINT first_name_is_not_blank CHECK (((first_name)::text !~ '^\s*$'::text)),
@@ -4441,7 +4442,7 @@ CREATE TRIGGER check_meta_key_multiple_selection_immutability_t BEFORE UPDATE ON
 -- Name: meta_data_keywords check_single_keyword_selection_t; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE CONSTRAINT TRIGGER check_single_keyword_selection_t AFTER INSERT ON public.meta_data_keywords DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.check_single_keyword_selection_f();
+CREATE CONSTRAINT TRIGGER check_single_keyword_selection_t AFTER INSERT OR UPDATE ON public.meta_data_keywords DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.check_single_keyword_selection_f();
 
 
 --
@@ -6278,6 +6279,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('7'),
 ('6'),
 ('5'),
+('49'),
 ('48'),
 ('47'),
 ('46'),
