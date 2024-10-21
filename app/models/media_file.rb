@@ -75,8 +75,6 @@ class MediaFile < ApplicationRecord
 
     Madek::Constants::THUMBNAILS.each do |thumb_size, dimensions|
       next if thumb_size == :large && video?
-      # TODO: more exception handling for the cases where
-      # some thumbnails and/or previews potentially already exist ?
 
       store_location_new_file =
         if video?
