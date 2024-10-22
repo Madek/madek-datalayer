@@ -4,10 +4,6 @@ describe 'Email Templates' do
 
   describe 'transfer_responsibility' do
 
-    let(:tmpl_mod) do
-      EmailTemplates::TransferResponsibility
-    end
-
     context 'summary for user' do
       before(:each) do
         @user = create(:user)
@@ -66,30 +62,32 @@ describe 'Email Templates' do
                   provenance_notices: { de: '|Provenance Notice DE OK|', en: '|Provenance Notice EN OK|' },
                   email_frequency: :daily,
                   batch_index: 0 }
+
+        @tmpl_mod = EmailTemplates::TransferResponsibility.new(@data)
       end
 
       it 'DE works' do
-        email_subject = tmpl_mod.render_summary_email_subject(:de, @data) 
+        email_subject = @tmpl_mod.render_summary_email_subject(:de) 
         expect(email_subject)
           .to eq("|Site Title DE OK|: tägliche Zusammenfassung der Verantwortlichkeits-Übertragungen")
         puts "========================================================================================"
         puts email_subject
         puts "========================================================================================"
 
-        email_body = tmpl_mod.render_summary_email(:de, @data)
+        email_body = @tmpl_mod.render_summary_email(:de)
         puts email_body
         puts "========================================================================================"
       end
 
       it 'EN works' do
-        email_subject = tmpl_mod.render_summary_email_subject(:en, @data) 
+        email_subject = @tmpl_mod.render_summary_email_subject(:en) 
         expect(email_subject)
           .to eq("|Site Title EN OK|: daily summary of responsibility transfers")
         puts "========================================================================================"
         puts email_subject
         puts "========================================================================================"
 
-        email_body = tmpl_mod.render_summary_email(:en, @data)
+        email_body = @tmpl_mod.render_summary_email(:en)
         puts email_body
         puts "========================================================================================"
       end
