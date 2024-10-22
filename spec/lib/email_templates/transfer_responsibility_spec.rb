@@ -60,7 +60,7 @@ describe 'Email Templates' do
 
         @data = { notifications: @user.notifications,
                   site_titles: { de: '|Site Title DE OK|', en: '|Site Title EN OK|' },
-                  external_base_url: "|External Base URL OK|",
+                  external_base_url: "https://external.base",
                   my_settings_url: "|My Settings URL OK|",
                   support_email: "|Support Email OK|",
                   provenance_notices: { de: '|Provenance Notice DE OK|', en: '|Provenance Notice EN OK|' },

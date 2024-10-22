@@ -35,10 +35,10 @@ module EmailTemplates
       end
 
       def render_summary_email(lang, data)
-        binding.pry
         data ||= {}
         notifications = data[:notifications] || [] 
         site_titles = data[:site_titles] || {}
+        external_base_url = data[:external_base_url] 
 
         en_text = <<~TXT
           Hello 
@@ -46,7 +46,7 @@ module EmailTemplates
 
           Responsibility transfers that concern you:
 
-          #{ delegations_sections(:en, notifications) }
+          #{ delegations_sections(:en, notifications, external_base_url) }
 
           #{personal_footer(data)[:en]}
 
@@ -59,7 +59,7 @@ module EmailTemplates
 
           űbertragene Verantwortlichkeiten, die Sie betreffen:
 
-          #{ delegations_sections(:de, notifications) }
+          #{ delegations_sections(:de, notifications, external_base_url) }
 
           #{ personal_footer(data)[:de] }
 
@@ -70,23 +70,23 @@ module EmailTemplates
         txt[lang.to_sym]
       end
 
-      def delegations_sections(lang, xs)
+      def delegations_sections(lang, xs, external_base_url)
         xs.group_by(&:via_delegation)
-          .map { |d, xs| section_per_delegation(d, xs)[lang] }
+          .map { |d, xs| section_per_delegation(d, xs, external_base_url)[lang] }
           .join("\n")
       end
 
-      def section_per_delegation(delegation, xs)
+      def section_per_delegation(delegation, xs, external_base_url)
         data = { size: xs.size }
 
         en_text = <<~TXT
           #{ via_delegation_title(delegation, data)[:en] }
-          #{ dates_sections(:en, xs) }
+          #{ dates_sections(:en, xs, external_base_url) }
         TXT
 
         de_text = <<~TXT
           #{ via_delegation_title(delegation, data)[:de] }
-          #{ dates_sections(:de, xs) }
+          #{ dates_sections(:de, xs, external_base_url) }
         TXT
 
         { en: en_text, de: de_text }
@@ -108,40 +108,40 @@ module EmailTemplates
         { en: en_text, de: de_text }
       end
 
-      def dates_sections(lang, xs)
+      def dates_sections(lang, xs, external_base_url)
         xs.sort_by { |x| x.created_at.to_i }
           .group_by { |x| x.created_at.to_date }
-          .map { |d, xs| date_section(d, xs)[lang] }
+          .map { |d, xs| date_section(d, xs, external_base_url)[lang] }
           .join("")
       end
 
-      def date_section(date, xs)
+      def date_section(date, xs, external_base_url)
         en_date_format = '%Y-%m-%d'
         en_text = 
           if xs.size == 1
-            " * #{ date.strftime(en_date_format) } - #{ single_event(xs.first)[:en] }"
+            " * #{ date.strftime(en_date_format) } - #{ single_event(xs.first, external_base_url)[:en] }"
           else
             <<~TXT
               * #{ date.strftime(en_date_format) }
-              #{ xs.map { |x| single_event(x, with_time: true)[:en] }.join("\n") }
+              #{ xs.map { |x| single_event(x, external_base_url, with_time: true)[:en] }.join("\n") }
             TXT
           end
 
         de_date_format = '%d.%m.%Y'
         de_text =
           if xs.size == 1
-            " * #{ date.strftime(de_date_format) } - #{ single_event(xs.first)[:de] }"
+            " * #{ date.strftime(de_date_format) } - #{ single_event(xs.first, external_base_url)[:de] }"
           else
             <<~TXT
               * #{ date.strftime(de_date_format) }
-              #{ xs.map { |x| single_event(x, with_time: true)[:de] }.join("\n") }
+              #{ xs.map { |x| single_event(x, external_base_url, with_time: true)[:de] }.join("\n") }
             TXT
           end
 
         { en: en_text, de: de_text }
       end
 
-      def single_event(notif, with_time: false)
+      def single_event(notif, external_base_url, with_time: false)
         data = notif.data || {}
         href = data[:resource]&.[](:link_def)&.[](:href)
         label = data[:resource]&.[](:link_def)&.[](:label)
@@ -150,8 +150,8 @@ module EmailTemplates
         time = with_time ? "  * #{ notif.created_at.strftime('%H:%M') } - " : ""
 
         {
-          en: time + "Responsability for \"#{label}\" has been transfered from #{fullname} to #{delegation_name || 'You'} #{href}",
-          de: time + "Verantwortlichkeit für \"#{label}\" wurde von #{fullname} an #{delegation_name || 'Sie'} übertragen #{href}"
+          en: time + "Responsability for \"#{label}\" has been transfered from #{fullname} to #{delegation_name || 'You'} #{external_base_url}#{href}",
+          de: time + "Verantwortlichkeit für \"#{label}\" wurde von #{fullname} an #{delegation_name || 'Sie'} übertragen #{external_base_url}#{href}"
         }
       end
 
