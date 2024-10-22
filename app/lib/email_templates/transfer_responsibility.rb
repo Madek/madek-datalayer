@@ -23,16 +23,19 @@ module EmailTemplates
         batch_de = if data[:batch_index] > 0
                      " (Teil #{data[:batch_index] + 1})"
                    end
+        site_title_de = site_titles[:de]
+        site_title_en = site_titles[:en].presence or site_title_de
 
         txt = {
-          en: "#{site_titles[:en]}: #{frequency_en} summary of responsibility transfers#{batch_en}",
-          de: "#{site_titles[:de]}: #{frequency_de} Zusammenfassung der Verantwortlichkeits-Übertragungen#{batch_de}"
+          en: "#{site_title_en}: #{frequency_en} summary of responsibility transfers#{batch_en}",
+          de: "#{site_title_de}: #{frequency_de} Zusammenfassung der Verantwortlichkeits-Übertragungen#{batch_de}"
         }
 
         txt[lang.to_sym]
       end
 
       def render_summary_email(lang, data)
+        binding.pry
         data ||= {}
         notifications = data[:notifications] || [] 
         site_titles = data[:site_titles] || {}
@@ -185,15 +188,17 @@ module EmailTemplates
         provenance_notices = data[:provenance_notices] || {}
         support_email = data[:support_email]
         external_base_url = data[:external_base_url]
+        provenance_notice_de = provenance_notices[:de]
+        provenance_notice_en = provenance_notices[:en].presence or provenance_notice_de
 
         en_text = <<~TXT
           Do You have any questions to the support? Contact mailto:#{support_email}.
-          #{provenance_notices[:en]} #{external_base_url}
+          #{provenance_notice_en} #{external_base_url}
         TXT
 
         de_text = <<~TXT
           Haben Sie Fragen an den Support? Kontaktieren Sie mailto:#{support_email}.
-          #{provenance_notices[:de]} #{external_base_url}
+          #{provenance_notice_de} #{external_base_url}
         TXT
 
         { de: de_text, en: en_text }
