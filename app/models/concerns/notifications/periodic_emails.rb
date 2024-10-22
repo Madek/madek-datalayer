@@ -32,21 +32,21 @@ module Notifications
 
       def self.produce_periodical_emails(notifs, frequency)
         notifs.group_by(&:notification_case).each_pair do |notif_case, notifs_1|
-          tmpl_mod = NotificationCase::EMAIL_TEMPLATES[notif_case.label]
-          unless tmpl_mod
+          tmpl_klass = NotificationCase::EMAIL_TEMPLATES[notif_case.label]
+          unless tmpl_klass
             Rails.logger.warn("No email templates module found for notification case: #{notif_case.label}.")
           end
 
           notifs_1.group_by(&:user).each_pair do |user, notifs_2|
             if user and notifs_2.size > 0
               batched(notifs_2) do |notifs_batch, batch_index|
-                produce_summary_email(user, notifs_batch, tmpl_mod, frequency, batch_index)
+                produce_summary_email(user, notifs_batch, tmpl_klass, frequency, batch_index)
               end
             elsif Madek::Constants::DEFAULT_DELEGATION_NOTIFICATIONS_EMAILS_FREQUENCY == frequency
               notifs_2.group_by(&:via_delegation).each_pair do |delegation, notifs_3|
                 if notifs_3.size > 0
                   batched(notifs_3) do |notifs_batch, batch_index|
-                    produce_summary_email(delegation, notifs_batch, tmpl_mod, frequency, batch_index) 
+                    produce_summary_email(delegation, notifs_batch, tmpl_klass, frequency, batch_index) 
                   end
                 end
               end
@@ -63,7 +63,7 @@ module Notifications
         end
       end
 
-      def self.produce_summary_email(recipient, notifs, tmpl_mod, frequency, batch_index)
+      def self.produce_summary_email(recipient, notifs, tmpl_klass, frequency, batch_index)
         begin
           ActiveRecord::Base.transaction do 
             app_setting = AppSetting.first
@@ -77,16 +77,19 @@ module Notifications
                            recipient.notifications_email 
                          end
 
-            subject = tmpl_mod.render_summary_email_subject(lang, { site_titles: app_setting.site_titles,
-                                                                    email_frequency: frequency,
-                                                                    batch_index: batch_index})
-            body = tmpl_mod.render_summary_email(lang, { notifications: notifs,
-                                                         site_titles: app_setting.site_titles,
-                                                         external_base_url: Settings.madek_external_base_url,
-                                                         my_settings_url: "#{Settings.madek_external_base_url}/my/settings",
-                                                         support_email: Settings.madek_support_email,
-                                                         provenance_notices: app_setting.provenance_notices,
-                                                         email_frequency: frequency })
+            data = { notifications: notifs,
+                     site_titles: app_setting.site_titles,
+                     external_base_url: Settings.madek_external_base_url,
+                     my_settings_url: "#{Settings.madek_external_base_url}/my/settings",
+                     support_email: Settings.madek_support_email,
+                     provenance_notices: app_setting.provenance_notices,
+                     email_frequency: frequency,
+                     batch_index: batch_index }
+
+            tmpl_inst = tmpl_klass.new(data)
+
+            subject = tmpl_inst.render_summary_email_subject(lang)
+            body = tmpl_inst.render_summary_email(lang)
 
             email = Email.create!(user: recipient.is_a?(User) ? recipient : nil,
                                   delegation: recipient.is_a?(Delegation) ? recipient : nil,

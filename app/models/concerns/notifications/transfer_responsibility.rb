@@ -64,12 +64,16 @@ module Notifications
       end
 
       def self.create_email!(entity, notification_case, data)
-        tmpl_mod = NotificationCase::EMAIL_TEMPLATES[notification_case.label]
+        tmpl_klass = NotificationCase::EMAIL_TEMPLATES[notification_case.label]
 
         app_setting = AppSetting.first
         lang = ( entity.try(:emails_locale) || app_setting.default_locale ).to_sym
-        subject = tmpl_mod.render_single_email_subject(lang, { site_titles: app_setting.site_titles })
-        body = tmpl_mod.render_single_email(lang, data)
+        data = data.merge({ site_titles: app_setting.site_titles })
+
+        tmpl_inst = tmpl_klass.new(data)
+        subject = tmpl_inst.render_single_email_subject(lang)
+        body = tmpl_inst.render_single_email(lang)
+
         from_address = SmtpSetting.first.default_from_address
         to_address = if entity.is_a?(Delegation)
                        entity.notifications_email

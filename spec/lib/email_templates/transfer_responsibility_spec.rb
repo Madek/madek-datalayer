@@ -63,31 +63,31 @@ describe 'Email Templates' do
                   email_frequency: :daily,
                   batch_index: 0 }
 
-        @tmpl_mod = EmailTemplates::TransferResponsibility.new(@data)
+        @tmpl_inst = EmailTemplates::TransferResponsibility.new(@data)
       end
 
       it 'DE works' do
-        email_subject = @tmpl_mod.render_summary_email_subject(:de) 
+        email_subject = @tmpl_inst.render_summary_email_subject(:de) 
         expect(email_subject)
           .to eq("|Site Title DE OK|: tägliche Zusammenfassung der Verantwortlichkeits-Übertragungen")
         puts "========================================================================================"
         puts email_subject
         puts "========================================================================================"
 
-        email_body = @tmpl_mod.render_summary_email(:de)
+        email_body = @tmpl_inst.render_summary_email(:de)
         puts email_body
         puts "========================================================================================"
       end
 
       it 'EN works' do
-        email_subject = @tmpl_mod.render_summary_email_subject(:en) 
+        email_subject = @tmpl_inst.render_summary_email_subject(:en) 
         expect(email_subject)
           .to eq("|Site Title EN OK|: daily summary of responsibility transfers")
         puts "========================================================================================"
         puts email_subject
         puts "========================================================================================"
 
-        email_body = @tmpl_mod.render_summary_email(:en)
+        email_body = @tmpl_inst.render_summary_email(:en)
         puts email_body
         puts "========================================================================================"
       end
