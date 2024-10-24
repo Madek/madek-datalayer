@@ -495,6 +495,35 @@ UNION
 
 
 --
+-- Name: check_person_to_user_institutional_id_consistency(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.check_person_to_user_institutional_id_consistency() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  -- When a matching institutional user references for this person, the institutional id of the person must not be modified
+  IF OLD.institution <> 'local' AND (
+    NEW.institution IS DISTINCT FROM OLD.institution OR NEW.institutional_id IS DISTINCT FROM OLD.institutional_id
+  ) THEN
+    PERFORM 1
+    FROM users
+    WHERE users.person_id = NEW.id
+      AND users.institution = OLD.institution
+      AND users.institutional_id = OLD.institutional_id;
+
+    IF FOUND THEN
+      RAISE EXCEPTION 'Institutional ID mismatch: institutional_id ''%'' / ''%'' of person must not be modified in order to remain consistent with related user',
+        OLD.institution, OLD.institutional_id;
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: check_single_keyword_selection_f(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -516,6 +545,37 @@ BEGIN
   THEN
     RAISE EXCEPTION 'Cannot assign multiple keywords when multiple selection is disallowed for meta key';
   END IF;
+  RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: check_user_to_person_institutional_id_consistency(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.check_user_to_person_institutional_id_consistency() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  -- An institutional user must reference a matching institutional person
+  IF NEW.institution <> 'local' THEN
+    IF NEW.institutional_id IS NULL THEN
+      RAISE EXCEPTION 'user of non-local institution ''%'' must have a NON NULL institutional_id', NEW.institution;
+    END IF;
+
+    PERFORM 1
+    FROM people
+    WHERE people.id = NEW.person_id
+    AND people.institution = NEW.institution
+    AND people.institutional_id = NEW.institutional_id;
+
+    IF NOT FOUND THEN
+      RAISE EXCEPTION 'Institutional ID mismatch: institutional_id ''%'' / ''%'' of user  is not consistent with related person (person_id = %)',
+        NEW.institution, NEW.institutional_id, NEW.person_id;
+    END IF;
+  END IF;
+
   RETURN NEW;
 END;
 $$;
@@ -4866,6 +4926,20 @@ CREATE CONSTRAINT TRIGGER trigger_check_no_drafts_in_collections AFTER INSERT OR
 
 
 --
+-- Name: people trigger_check_person_to_user_institutional_id_consistency; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trigger_check_person_to_user_institutional_id_consistency BEFORE UPDATE ON public.people FOR EACH ROW EXECUTE FUNCTION public.check_person_to_user_institutional_id_consistency();
+
+
+--
+-- Name: users trigger_check_user_to_person_institutional_id_consistency; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trigger_check_user_to_person_institutional_id_consistency BEFORE INSERT OR UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION public.check_user_to_person_institutional_id_consistency();
+
+
+--
 -- Name: api_clients trigger_check_users_apiclients_login_uniqueness_on_apiclients; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -6278,6 +6352,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
 ('6'),
+('50'),
 ('5'),
 ('49'),
 ('48'),
