@@ -1,7 +1,7 @@
 FactoryBot.define do
 
   factory :user do |n|
-    person { FactoryBot.create :person }
+    person { FactoryBot.create :person, institution: institution, institutional_id: institutional_id }
     email do
       Faker::Internet.email.gsub('@',
                                  '_' + SecureRandom.uuid.first(8) + '@')

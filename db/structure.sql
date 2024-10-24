@@ -390,7 +390,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys
+            IF EXISTS (SELECT 1 FROM meta_keys 
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -451,7 +451,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys
+            IF EXISTS (SELECT 1 FROM meta_keys 
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -533,6 +533,43 @@ UNION
 
 
 --
+-- Name: check_person_to_user_consistency(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.check_person_to_user_consistency() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  -- Make sure an existing institutional reference from a user is not modified
+  IF (NEW.institution IS DISTINCT FROM OLD.institution OR NEW.institutional_id IS DISTINCT FROM OLD.institutional_id)
+    AND EXISTS (
+      SELECT 1
+      FROM users
+      WHERE users.person_id = NEW.id
+      AND users.institution = OLD.institution
+      AND users.institutional_id = OLD.institutional_id
+    ) THEN
+      RAISE EXCEPTION 'Institutional ID mismatch: institutional_id ''%'' / ''%'' of person must not be modified in order to remain consistent with related user',
+        OLD.institution, OLD.institutional_id;
+  END IF;
+
+  -- Make sure a person with a referencing user remains of subtype 'Person'
+  IF NEW.subtype IS DISTINCT FROM OLD.subtype AND NEW.subtype <> 'Person'
+    AND EXISTS (
+      SELECT 1
+      FROM users
+      WHERE users.person_id = NEW.id
+    ) THEN
+      RAISE EXCEPTION 'Person subtype mismatch: person is related to a user and must keep subtype ''Person'' (attempted subtype: ''%'')',
+        NEW.subtype;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: check_single_keyword_selection_f(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -554,6 +591,42 @@ BEGIN
   THEN
     RAISE EXCEPTION 'Cannot assign multiple keywords when multiple selection is disallowed for meta key';
   END IF;
+  RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: check_user_to_person_consistency(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.check_user_to_person_consistency() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  -- Related person must have subtype 'Person'
+  IF EXISTS (
+    SELECT 1
+    FROM people
+    WHERE people.id = NEW.person_id AND people.subtype <> 'Person'
+  ) THEN
+      RAISE EXCEPTION 'The related person must have subtype ''Person''';
+  END IF;
+
+  -- When user has an instutional id, it must reference the matching person
+  IF NEW.institutional_id IS NOT NULL 
+    AND EXISTS (SELECT 1 FROM people WHERE people.id = NEW.person_id) -- (bypass FK and 'NOT NULL' constraint because they checked on model level already)
+    AND NOT EXISTS (
+      SELECT 1
+      FROM people
+      WHERE people.id = NEW.person_id
+      AND people.institution = NEW.institution
+      AND people.institutional_id = NEW.institutional_id
+    ) THEN
+      RAISE EXCEPTION 'Institutional ID mismatch: institutional_id ''%'' / ''%'' of user  is not consistent with related person (person_id = %)',
+        NEW.institution, NEW.institutional_id, NEW.person_id;
+  END IF;
+
   RETURN NEW;
 END;
 $$;
@@ -1374,6 +1447,7 @@ CREATE TABLE public.app_settings (
     section_meta_key_id character varying,
     edit_meta_data_power_users_group_id uuid,
     users_active_until_ui_default integer DEFAULT 99999,
+    person_info_fields text[] DEFAULT '{identification_info}'::text[] NOT NULL,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -4920,6 +4994,20 @@ CREATE CONSTRAINT TRIGGER trigger_check_no_drafts_in_collections AFTER INSERT OR
 
 
 --
+-- Name: people trigger_check_person_to_user_consistency; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trigger_check_person_to_user_consistency BEFORE UPDATE ON public.people FOR EACH ROW EXECUTE FUNCTION public.check_person_to_user_consistency();
+
+
+--
+-- Name: users trigger_check_user_to_person_consistency; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trigger_check_user_to_person_consistency BEFORE INSERT OR UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION public.check_user_to_person_consistency();
+
+
+--
 -- Name: api_clients trigger_check_users_apiclients_login_uniqueness_on_apiclients; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -6332,6 +6420,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
 ('6'),
+('54'),
+('53'),
+('52'),
 ('51'),
 ('50'),
 ('5'),

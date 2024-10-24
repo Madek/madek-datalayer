@@ -20,7 +20,7 @@ module People
     end
 
     included do
-      scope :with_user, -> { joins(:user) }
+      scope :with_user, -> { where.associated(:users) }
       scope :search_by_term, lambda { |term|
         if valid_uuid?(term)
           where(id: term)
