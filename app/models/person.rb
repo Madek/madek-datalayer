@@ -5,7 +5,7 @@ class Person < ApplicationRecord
 
   self.inheritance_column = false
 
-  default_scope { reorder(:last_name) }
+  default_scope { reorder(:last_name, :first_name, :id) }
   scope :subtypes, -> { unscoped.select(:subtype).distinct }
 
   has_one :user

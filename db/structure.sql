@@ -390,7 +390,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -451,7 +451,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -2025,7 +2025,8 @@ CREATE TABLE public.meta_data_keywords (
     keyword_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL
+    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    "position" integer DEFAULT 0 NOT NULL
 );
 
 
@@ -2048,7 +2049,8 @@ CREATE TABLE public.meta_data_people (
     person_id uuid NOT NULL,
     created_by_id uuid,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    id uuid DEFAULT gen_random_uuid() NOT NULL
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    "position" integer DEFAULT 0 NOT NULL
 );
 
 
@@ -6330,6 +6332,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
 ('6'),
+('51'),
 ('50'),
 ('5'),
 ('49'),
