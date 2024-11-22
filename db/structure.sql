@@ -227,6 +227,44 @@ CREATE FUNCTION public.check_collection_primary_uniqueness() RETURNS trigger
 
 
 --
+-- Name: check_delegation_supervisors_on_delegations_f(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.check_delegation_supervisors_on_delegations_f() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM delegations_supervisors WHERE delegation_id = NEW.id
+        ) THEN
+          RAISE EXCEPTION 'A delegation must have at least one supervisor';
+        END IF;
+        RETURN NEW;
+      END;
+      $$;
+
+
+--
+-- Name: check_delegations_supervisors_f(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.check_delegations_supervisors_f() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      BEGIN
+        IF EXISTS (
+            SELECT 1 FROM delegations WHERE id = OLD.delegation_id
+        ) AND NOT EXISTS (
+            SELECT 1 FROM delegations_supervisors WHERE delegation_id = OLD.delegation_id
+        ) THEN
+          RAISE EXCEPTION 'A delegation must have at least one supervisor';
+        END IF;
+        RETURN NEW;
+      END;
+      $$;
+
+
+--
 -- Name: check_email_frequency_for_notification_case_f(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -352,7 +390,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys
+            IF EXISTS (SELECT 1 FROM meta_keys 
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -413,7 +451,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys
+            IF EXISTS (SELECT 1 FROM meta_keys 
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -4425,6 +4463,20 @@ CREATE TRIGGER check_contents_of_static_pages BEFORE INSERT OR UPDATE ON public.
 
 
 --
+-- Name: delegations check_delegation_supervisors_on_delegations_t; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER check_delegation_supervisors_on_delegations_t AFTER INSERT OR UPDATE ON public.delegations DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.check_delegation_supervisors_on_delegations_f();
+
+
+--
+-- Name: delegations_supervisors check_delegations_supervisors_t; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER check_delegations_supervisors_t AFTER DELETE ON public.delegations_supervisors DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.check_delegations_supervisors_f();
+
+
+--
 -- Name: notification_cases_users_settings check_email_frequency_for_notification_case_t; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -6278,6 +6330,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
 ('6'),
+('50'),
 ('5'),
 ('49'),
 ('48'),

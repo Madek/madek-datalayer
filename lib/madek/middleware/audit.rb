@@ -13,16 +13,21 @@ module Madek
         if unsafe_method?(env["REQUEST_METHOD"])
           txid = nil
           response = nil
-
           user_id = get_user_id(env["HTTP_COOKIE"])
 
-          ActiveRecord::Base.transaction do
-            txid = get_txid
-            response = @app.call(env)
+          begin 
+            ActiveRecord::Base.transaction do
+              txid = get_txid
+              response = @app.call(env)
+            end
+          rescue => e
+            persist_request(txid, env, user_id)
+            persist_response(txid, 500)
+            raise(e)
           end
 
           persist_request(txid, env, user_id)
-          persist_response(txid, response)
+          persist_response(txid, response.first)
 
           response
         else
@@ -67,7 +72,7 @@ module Madek
         SQL
       end
 
-      def persist_response(txid, (status))
+      def persist_response(txid, status)
         db_conn.execute <<-SQL
           INSERT INTO audited_responses (txid, status)
           VALUES ('#{txid}', '#{status}')
