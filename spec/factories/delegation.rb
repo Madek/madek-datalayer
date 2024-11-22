@@ -4,6 +4,7 @@ FactoryBot.define do
     name { Faker::Lorem.words(number: 7).join(' ') }
     description { Faker::Lorem.paragraph }
     admin_comment { Faker::Lorem.sentence }
+    supervisors { [create(:user)] }
 
     trait :with_media_entries do
       transient do
