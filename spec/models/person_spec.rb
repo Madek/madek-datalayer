@@ -126,16 +126,4 @@ describe Person do
 
   include_examples 'previous ids'
 
-  def find_person(first_name)
-    Person
-      .admin_with_usage_count
-      .where(first_name: first_name)
-      .first
-      .as_json
-      .symbolize_keys
-      .slice(:meta_data_usage_count,
-             :media_entries_usage_count,
-             :collections_usage_count)
-  end
-
 end
