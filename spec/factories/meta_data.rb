@@ -107,11 +107,21 @@ FactoryBot.define do
      end
      transient do
        create_sample_data { true }
+       people_with_roles { [] }
      end
      after(:create) do |md, evaluator|
        if evaluator.create_sample_data
-         create_list :meta_datum_role, 3, meta_datum: md
-         create :meta_datum_role, meta_datum: md, role: nil
+         if evaluator.people_with_roles.blank?
+           create_list :meta_datum_role, 3, meta_datum: md
+           create :meta_datum_role, meta_datum: md, role: nil
+         else
+           evaluator.people_with_roles.each do |pwr|
+             create(:meta_datum_role,
+                    meta_datum: md,
+                    person: pwr[:person],
+                    role: pwr[:role])
+           end
+         end
        end
      end
    end

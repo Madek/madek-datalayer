@@ -10,6 +10,9 @@ class MetaDatum::Roles < MetaDatum
            foreign_key: :meta_datum_id,
            dependent: :delete_all
 
+  has_many :people, through: :meta_data_roles
+  has_many :roles, through: :meta_data_roles
+
   def to_s
     value.map(&:to_s).join('; ')
   end
