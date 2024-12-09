@@ -241,6 +241,44 @@ CREATE FUNCTION public.check_collection_primary_uniqueness() RETURNS trigger
 
 
 --
+-- Name: check_delegation_supervisors_on_delegations_f(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.check_delegation_supervisors_on_delegations_f() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM delegations_supervisors WHERE delegation_id = NEW.id
+        ) THEN
+          RAISE EXCEPTION 'A delegation must have at least one supervisor';
+        END IF;
+        RETURN NEW;
+      END;
+      $$;
+
+
+--
+-- Name: check_delegations_supervisors_f(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.check_delegations_supervisors_f() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      BEGIN
+        IF EXISTS (
+            SELECT 1 FROM delegations WHERE id = OLD.delegation_id
+        ) AND NOT EXISTS (
+            SELECT 1 FROM delegations_supervisors WHERE delegation_id = OLD.delegation_id
+        ) THEN
+          RAISE EXCEPTION 'A delegation must have at least one supervisor';
+        END IF;
+        RETURN NEW;
+      END;
+      $$;
+
+
+--
 -- Name: check_email_frequency_for_notification_case_f(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -2035,7 +2073,8 @@ CREATE TABLE public.meta_data_keywords (
     keyword_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL
+    meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    "position" integer DEFAULT 0 NOT NULL
 );
 
 
@@ -2058,7 +2097,8 @@ CREATE TABLE public.meta_data_people (
     person_id uuid NOT NULL,
     created_by_id uuid,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    id uuid DEFAULT gen_random_uuid() NOT NULL
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    "position" integer DEFAULT 0 NOT NULL
 );
 
 
@@ -2269,8 +2309,8 @@ CREATE TABLE public.smtp_settings (
     port integer DEFAULT 25 NOT NULL,
     sender_address text,
     username text,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -4510,6 +4550,20 @@ CREATE TRIGGER check_contents_of_static_pages BEFORE INSERT OR UPDATE ON public.
 
 
 --
+-- Name: delegations check_delegation_supervisors_on_delegations_t; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER check_delegation_supervisors_on_delegations_t AFTER INSERT OR UPDATE ON public.delegations DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.check_delegation_supervisors_on_delegations_f();
+
+
+--
+-- Name: delegations_supervisors check_delegations_supervisors_t; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER check_delegations_supervisors_t AFTER DELETE ON public.delegations_supervisors DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.check_delegations_supervisors_f();
+
+
+--
 -- Name: notification_cases_users_settings check_email_frequency_for_notification_case_t; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -5333,6 +5387,13 @@ CREATE TRIGGER update_updated_at_column_of_people BEFORE UPDATE ON public.people
 --
 
 CREATE TRIGGER update_updated_at_column_of_previews BEFORE UPDATE ON public.previews FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: smtp_settings update_updated_at_column_of_smtp_settings; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_smtp_settings BEFORE UPDATE ON public.smtp_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
@@ -6378,6 +6439,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
 ('6'),
+('52'),
+('51'),
 ('50'),
 ('5'),
 ('49'),

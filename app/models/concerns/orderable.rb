@@ -3,8 +3,9 @@ module Orderable
   include OrderMethods
 
   module ClassMethods
-    def enable_ordering(skip_default_scope: false, parent_scope: nil)
+    def enable_ordering(skip_default_scope: false, parent_scope: nil, parent_child_relation: nil)
       @_parent_scope = parent_scope
+      @_parent_child_relation = parent_child_relation
 
       define_up_and_down
       define_to_top
@@ -17,6 +18,10 @@ module Orderable
 
     def parent_scope
       @_parent_scope
+    end
+
+    def parent_child_relation
+      @_parent_child_relation
     end
   end
 
@@ -51,6 +56,6 @@ module Orderable
   private
 
   def compute_parent_scope(parent_scope)
-    send(parent_scope).send(self.class.to_s.underscore.pluralize)
+    send(parent_scope).send(self.class.parent_child_relation || self.class.to_s.underscore.pluralize)
   end
 end

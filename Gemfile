@@ -27,7 +27,7 @@ gem 'factory_bot', group: [:test, :development]
 gem 'faker', group: [:test, :development] # There is a bug in 3.1.0 (as per 30.12.2022)
 gem 'pry', group: [:test, :development]
 gem 'pry-nav', group: [:test, :development]
-gem 'pry-rails', group: [:development]
+gem 'pry-rails', group: [:test, :development]
 gem 'webmock', group: [:test]
 
 # fix: the version that rails requires vanished, force newer version. see <https://github.com/rails/rails/issues/41750>

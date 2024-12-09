@@ -7,7 +7,17 @@ class MetaDatum::Keywords < MetaDatum
            foreign_key: :meta_datum_id
 
   has_many :keywords,
-           through: :meta_data_keywords
+    ->(parent) do
+      mk = parent.meta_key || OpenStruct.new(selection_field_type: 'list', keywords: [], keywords_alphabetical_order: false)
+      order(
+        [
+          *('meta_data_keywords.position ASC' if mk.selection_field_type == "list" || (mk.selection_field_type == "auto" && mk.keywords.count > 16)),
+          mk.keywords_alphabetical_order ? :term : :position,
+          :id
+        ].compact
+      )
+    end,
+    through: :meta_data_keywords
 
   def to_s
     value.map(&:to_s).join('; ')

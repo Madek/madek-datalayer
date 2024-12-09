@@ -10,6 +10,9 @@ class MetaDatum::People < MetaDatum
            foreign_key: :meta_datum_id
 
   has_many :people,
+           ->() { unscope(:order).order(
+              'meta_data_people.position ASC', :last_name, :first_name, :id
+           )},
            through: :meta_data_people
 
   def to_s
