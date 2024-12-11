@@ -111,9 +111,10 @@ CREATE TYPE public.collection_sorting AS ENUM (
     'created_at DESC',
     'title ASC',
     'title DESC',
-    'last_change',
     'manual ASC',
-    'manual DESC'
+    'manual DESC',
+    'last_change DESC',
+    'last_change ASC'
 );
 
 
@@ -6420,6 +6421,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
 ('6'),
+('55'),
 ('54'),
 ('53'),
 ('52'),

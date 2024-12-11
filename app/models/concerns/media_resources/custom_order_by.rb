@@ -15,8 +15,10 @@ module MediaResources
         when 'title DESC'
           joins_meta_data_title_with_projection
             .reorder("meta_data.string DESC, #{table_name}.id DESC")
-        when 'last_change'
+        when 'last_change DESC'
           order_by_last_edit_session.reorder('last_change DESC')
+        when 'last_change ASC'
+          order_by_last_edit_session.reorder('last_change ASC')
         when 'manual ASC'
           order_by_manual_sorting.reorder('arc_position ASC')
         when 'manual DESC'
