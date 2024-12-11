@@ -8,7 +8,7 @@ class Person < ApplicationRecord
   default_scope { reorder(:last_name, :first_name, :id) }
   scope :subtypes, -> { unscoped.select(:subtype).distinct }
 
-  has_one :user
+  has_many :users
 
   def meta_data
     MetaDatum
@@ -67,8 +67,7 @@ class Person < ApplicationRecord
           mdp.destroy!
         else 
           mdp.update_columns(
-            person_id: receiver.id,
-            created_by_id: (receiver.user.try(:id) || creator_fallback&.id)
+            person_id: receiver.id
           )
         end
       end
@@ -82,7 +81,7 @@ class Person < ApplicationRecord
         end
       end
 
-      user.update!(person: receiver) if user
+      users.update_all(person_id: receiver.id)
       remember_previous_ids!(receiver)
       destroy!
     end

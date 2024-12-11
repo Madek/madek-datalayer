@@ -121,7 +121,7 @@ class AppSetting < ApplicationRecord
     return super unless v.is_a?(String)
 
     case k
-    when 'copyright_notice_templates'
+    when 'copyright_notice_templates', 'person_info_fields'
       public_send("#{k}=", v.split("\r\n").delete_if(&:blank?))
     when 'sitemap'
       public_send("#{k}=", YAML.safe_load(v))
