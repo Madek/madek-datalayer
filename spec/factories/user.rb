@@ -9,6 +9,7 @@ FactoryBot.define do
     login { Faker::Internet.user_name + (SecureRandom.uuid.first 8) }
     accepted_usage_terms { UsageTerms.most_recent or create(:usage_terms) }
     password { Faker::Internet.password }
+    password_sign_in_enabled { true }
 
     last_name { person.last_name }
     first_name { person.first_name }
