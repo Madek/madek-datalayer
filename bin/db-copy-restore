@@ -6,6 +6,7 @@ PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && p
 cd $PROJECT_DIR
 ./bin/env/ruby-setup --quiet
 
+export RAILS_ENV=development
 source bin/db-set-env
 
 PGDATABASE_COPY="${PGDATABASE_COPY:-${PGDATABASE}_copy}"
