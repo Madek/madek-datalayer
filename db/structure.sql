@@ -161,6 +161,20 @@ $$;
 
 
 --
+-- Name: base32_crockford_str(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.base32_crockford_str(n integer DEFAULT 10) RETURNS text
+    LANGUAGE sql
+    AS $$
+    SELECT
+      string_agg(substr(characters, (random() * length(characters) + 1)::integer, 1), '')
+    FROM (values('0123456789ABCDEFGHJKMNPQRSTVWXYZ')) as symbols(characters)
+      JOIN generate_series(1, n) on 1 = 1;
+    $$;
+
+
+--
 -- Name: check_allowed_people_subtypes_immutability_f(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -865,6 +879,40 @@ CREATE FUNCTION public.delete_meta_datum_text_string_null() RETURNS trigger
 
 
 --
+-- Name: delete_obsolete_user_password_resets_1(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.delete_obsolete_user_password_resets_1() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  DELETE FROM user_password_resets
+  WHERE user_id = NEW.user_id;
+
+  RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: delete_obsolete_user_password_resets_2(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.delete_obsolete_user_password_resets_2() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  IF NEW.auth_system_id = 'password' THEN
+    DELETE FROM user_password_resets
+    WHERE user_id = NEW.user_id;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: delete_old_emails_f(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -1202,7 +1250,7 @@ CREATE TABLE public.meta_keys (
     CONSTRAINT check_allowed_people_subtypes_values CHECK (((allowed_people_subtypes IS NULL) OR (allowed_people_subtypes <@ ARRAY['Person'::text, 'PeopleGroup'::text, 'PeopleInstitutionalGroup'::text]))),
     CONSTRAINT check_is_extensible_list_is_boolean_for_respective_meta_datum_t CHECK (((((is_extensible_list = true) OR (is_extensible_list = false)) AND (meta_datum_object_type = ANY (ARRAY['MetaDatum::Keywords'::text, 'MetaDatum::Roles'::text]))) OR (meta_datum_object_type <> ALL (ARRAY['MetaDatum::Keywords'::text, 'MetaDatum::Roles'::text])))),
     CONSTRAINT check_keywords_alphabetical_order_is_boolean_for_meta_datum_key CHECK (((((keywords_alphabetical_order = true) OR (keywords_alphabetical_order = false)) AND (meta_datum_object_type = 'MetaDatum::Keywords'::text)) OR (meta_datum_object_type <> 'MetaDatum::Keywords'::text))),
-    CONSTRAINT check_selection_field_type_value CHECK (((selection_field_type)::text = ANY ((ARRAY['auto'::character varying, 'mark'::character varying, 'list'::character varying])::text[]))),
+    CONSTRAINT check_selection_field_type_value CHECK (((selection_field_type)::text = ANY (ARRAY[('auto'::character varying)::text, ('mark'::character varying)::text, ('list'::character varying)::text]))),
     CONSTRAINT check_valid_meta_datum_object_type CHECK ((meta_datum_object_type = ANY (ARRAY['MetaDatum::Groups'::text, 'MetaDatum::Keywords'::text, 'MetaDatum::Licenses'::text, 'MetaDatum::People'::text, 'MetaDatum::Roles'::text, 'MetaDatum::Text'::text, 'MetaDatum::TextDate'::text, 'MetaDatum::Users'::text, 'MetaDatum::Vocables'::text, 'MetaDatum::JSON'::text, 'MetaDatum::MediaEntry'::text]))),
     CONSTRAINT check_valid_text_type CHECK ((text_type = ANY (ARRAY['line'::text, 'block'::text]))),
     CONSTRAINT descriptions_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(descriptions)))),
@@ -2398,6 +2446,21 @@ CREATE TABLE public.usage_terms (
 
 
 --
+-- Name: user_password_resets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_password_resets (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    user_id uuid NOT NULL,
+    used_user_param text NOT NULL,
+    token text DEFAULT public.base32_crockford_str(20) NOT NULL,
+    valid_until timestamp without time zone NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    CONSTRAINT check_token_base32_crockford CHECK ((token ~ '^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]+$'::text))
+);
+
+
+--
 -- Name: user_sessions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2435,6 +2498,7 @@ CREATE TABLE public.users (
     last_name text,
     first_name text,
     emails_locale character varying,
+    password_sign_in_enabled boolean DEFAULT false NOT NULL,
     CONSTRAINT email_format CHECK ((((email)::text ~ '\S+@\S+'::text) OR (email IS NULL))),
     CONSTRAINT login_not_uuid CHECK ((login !~* '^[[:xdigit:]]{8}-([[:xdigit:]]{4}-){3}[[:xdigit:]]{12}$'::text)),
     CONSTRAINT users_login_simple CHECK ((login ~* '^[a-z0-9\.\-\_]+$'::text))
@@ -3009,6 +3073,14 @@ ALTER TABLE ONLY public.static_pages
 
 ALTER TABLE ONLY public.usage_terms
     ADD CONSTRAINT usage_terms_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_password_resets user_password_resets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_password_resets
+    ADD CONSTRAINT user_password_resets_pkey PRIMARY KEY (id);
 
 
 --
@@ -4344,6 +4416,13 @@ CREATE UNIQUE INDEX index_static_pages_on_name ON public.static_pages USING btre
 
 
 --
+-- Name: index_user_password_resets_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_user_password_resets_on_user_id ON public.user_password_resets USING btree (user_id);
+
+
+--
 -- Name: index_users_on_autocomplete; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4509,6 +4588,13 @@ CREATE TRIGGER api_tokens_audit_change AFTER INSERT OR DELETE OR UPDATE ON publi
 --
 
 CREATE TRIGGER app_settings_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.app_settings FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: user_password_resets audited_change_on_user_password_resets; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER audited_change_on_user_password_resets AFTER INSERT OR DELETE OR UPDATE ON public.user_password_resets FOR EACH ROW EXECUTE FUNCTION public.audit_change();
 
 
 --
@@ -5090,6 +5176,20 @@ CREATE CONSTRAINT TRIGGER trigger_delete_empty_meta_data_people_after_insert AFT
 --
 
 CREATE CONSTRAINT TRIGGER trigger_delete_meta_datum_text_string_null AFTER INSERT OR UPDATE ON public.meta_data DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.delete_meta_datum_text_string_null();
+
+
+--
+-- Name: auth_systems_users trigger_delete_obsolete_user_password_resets; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trigger_delete_obsolete_user_password_resets AFTER INSERT OR UPDATE ON public.auth_systems_users FOR EACH ROW EXECUTE FUNCTION public.delete_obsolete_user_password_resets_2();
+
+
+--
+-- Name: user_password_resets trigger_delete_obsolete_user_password_resets; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trigger_delete_obsolete_user_password_resets BEFORE INSERT ON public.user_password_resets FOR EACH ROW EXECUTE FUNCTION public.delete_obsolete_user_password_resets_1();
 
 
 --
@@ -6363,6 +6463,14 @@ ALTER TABLE ONLY public.roles
 
 
 --
+-- Name: user_password_resets user_password_resets_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_password_resets
+    ADD CONSTRAINT user_password_resets_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
 -- Name: users users_people_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6428,6 +6536,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
 ('6'),
+('57'),
 ('56'),
 ('55'),
 ('54'),
