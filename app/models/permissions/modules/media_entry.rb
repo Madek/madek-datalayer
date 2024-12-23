@@ -5,6 +5,7 @@ module Permissions
       include ::Permissions::Modules::DefineDestroyIneffective
 
       included do
+        belongs_to :creator, class_name: 'User'
         belongs_to :updator, class_name: 'User'
         belongs_to :media_entry
       end

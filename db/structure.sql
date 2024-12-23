@@ -111,6 +111,7 @@ CREATE TYPE public.collection_sorting AS ENUM (
     'created_at DESC',
     'title ASC',
     'title DESC',
+    'last_change',
     'manual ASC',
     'manual DESC',
     'last_change DESC',
@@ -1600,7 +1601,8 @@ CREATE TABLE public.collection_api_client_permissions (
     api_client_id uuid NOT NULL,
     updator_id uuid,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    creator_id uuid
 );
 
 
@@ -1632,7 +1634,8 @@ CREATE TABLE public.collection_group_permissions (
     group_id uuid NOT NULL,
     updator_id uuid,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    creator_id uuid
 );
 
 
@@ -1668,6 +1671,7 @@ CREATE TABLE public.collection_user_permissions (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     delegation_id uuid,
+    creator_id uuid,
     CONSTRAINT user_id_or_delegation_id_not_null_at_the_same_time CHECK ((((user_id IS NOT NULL) AND (delegation_id IS NULL)) OR ((user_id IS NULL) AND (delegation_id IS NOT NULL))))
 );
 
@@ -2005,7 +2009,8 @@ CREATE TABLE public.media_entry_api_client_permissions (
     api_client_id uuid NOT NULL,
     updator_id uuid,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    creator_id uuid
 );
 
 
@@ -2022,7 +2027,8 @@ CREATE TABLE public.media_entry_group_permissions (
     group_id uuid NOT NULL,
     updator_id uuid,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    creator_id uuid
 );
 
 
@@ -2042,6 +2048,7 @@ CREATE TABLE public.media_entry_user_permissions (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     delegation_id uuid,
+    creator_id uuid,
     CONSTRAINT user_id_or_delegation_id_not_null_at_the_same_time CHECK ((((user_id IS NOT NULL) AND (delegation_id IS NULL)) OR ((user_id IS NULL) AND (delegation_id IS NOT NULL))))
 );
 
@@ -6421,6 +6428,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
 ('6'),
+('56'),
 ('55'),
 ('54'),
 ('53'),
