@@ -34,13 +34,13 @@ scripts:
       database has been configured:
         script_key: datalayer-configure-rails-db
 
-  delete-database:
-    body: |
-      #!/usr/bin/env bash
-      set -euo pipefail
-      source $DATALAYER_DIR/cider-ci/bin/pg_env_set 
-      dropdb --if-exists -f "$DATABASE"
-    start_when:
-      test is in termial state:
-        script_key: test
-        states: [aborted, passed, failed, skipped]
+  #delete-database:
+  #  body: |
+  #    #!/usr/bin/env bash
+  #    set -euo pipefail
+  #    source $DATALAYER_DIR/cider-ci/bin/pg_env_set 
+  #    dropdb --if-exists -f "$DATABASE"
+  #  start_when:
+  #    test is in termial state:
+  #      script_key: test
+  #      states: [aborted, passed, failed, skipped]
