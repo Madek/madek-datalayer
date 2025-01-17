@@ -5775,6 +5775,22 @@ ALTER TABLE ONLY public.edit_sessions
 
 
 --
+-- Name: emails emails_delegation_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.emails
+    ADD CONSTRAINT emails_delegation_id_fk FOREIGN KEY (delegation_id) REFERENCES public.delegations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: emails emails_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.emails
+    ADD CONSTRAINT emails_user_id_fk FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
 -- Name: favorite_collections favorite-collections_collections_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5839,27 +5855,11 @@ ALTER TABLE ONLY public.auth_systems_groups
 
 
 --
--- Name: emails fk_rails_1a1a724e92; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.emails
-    ADD CONSTRAINT fk_rails_1a1a724e92 FOREIGN KEY (delegation_id) REFERENCES public.delegations(id);
-
-
---
 -- Name: notifications fk_rails_1d306a97df; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT fk_rails_1d306a97df FOREIGN KEY (via_delegation_id) REFERENCES public.delegations(id);
-
-
---
--- Name: emails fk_rails_214d0d0665; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.emails
-    ADD CONSTRAINT fk_rails_214d0d0665 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -6536,6 +6536,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
 ('6'),
+('58'),
 ('57'),
 ('56'),
 ('55'),
