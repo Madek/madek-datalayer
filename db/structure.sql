@@ -919,11 +919,18 @@ $$;
 CREATE FUNCTION public.delete_old_emails_f() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
-          BEGIN
-            DELETE FROM emails WHERE created_at < CURRENT_DATE - INTERVAL '90 days';
-            RETURN NEW;
-          END;
-          $$;
+      BEGIN
+        DELETE FROM emails
+        WHERE created_at < CURRENT_DATE - INTERVAL '90 days'
+          AND NOT EXISTS (
+            SELECT 1
+            FROM notifications
+            WHERE email_id = emails.id
+        );
+
+        RETURN NEW;
+      END;
+      $$;
 
 
 --
@@ -934,7 +941,16 @@ CREATE FUNCTION public.delete_old_notifications_f() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
       BEGIN
-        DELETE FROM notifications WHERE created_at < CURRENT_DATE - INTERVAL '180 days';
+        DELETE FROM notifications
+        WHERE created_at < CURRENT_DATE - INTERVAL '180 days';
+
+        DELETE FROM emails
+        WHERE id IN (
+          SELECT email_id
+          FROM notifications
+          WHERE created_at < CURRENT_DATE - INTERVAL '180 days'
+        );
+
         RETURN NEW;
       END;
       $$;
@@ -6536,6 +6552,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
 ('6'),
+('59'),
 ('58'),
 ('57'),
 ('56'),
