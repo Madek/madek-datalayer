@@ -40,6 +40,22 @@ class Keyword < ApplicationRecord
     self[:usage_count].presence || meta_data_keywords.count
   end
 
+  def entries_usage_count
+    self[:entries_usage_count].presence ||
+      meta_data_keywords
+      .joins(:meta_datum)
+      .where('meta_data.media_entry_id IS NOT NULL')
+      .count
+  end
+
+  def collections_usage_count
+    self[:collections_usage_count].presence ||
+      meta_data_keywords
+      .joins(:meta_datum)
+      .where('meta_data.collection_id IS NOT NULL')
+      .count
+  end
+
   def merge_to(receiver)
     ActiveRecord::Base.transaction do
       meta_data.each do |md|
@@ -79,7 +95,7 @@ class Keyword < ApplicationRecord
       .group('keywords.id')
   end
 
-  def self.usage_count_for(record_or_relation)
+  def self.entries_usage_count_for(record_or_relation)
     ids = if record_or_relation.is_a?(ActiveRecord::Relation)
             record_or_relation.pluck(:id)
           else
@@ -95,6 +111,30 @@ class Keyword < ApplicationRecord
                      'ON media_entries.id = meta_data.media_entry_id')
               .group('keywords.id')
               .where(keywords: { id: ids })
+
+    {}.tap do |hash|
+      scope.each do |keyword|
+        hash[keyword.id] = keyword[:usage_count]
+      end
+    end
+  end
+
+  def self.collections_usage_count_for(record_or_relation)
+    ids = if record_or_relation.is_a?(ActiveRecord::Relation)
+            record_or_relation.pluck(:id)
+          else
+            record_or_relation.try!(:id)
+          end
+
+    scope = select('keywords.*, count(keywords.id) AS usage_count')
+      .joins('INNER JOIN meta_data_keywords ' \
+             'ON meta_data_keywords.keyword_id = keywords.id')
+      .joins('INNER JOIN meta_data '\
+             'ON meta_data.id = meta_data_keywords.meta_datum_id')
+      .joins('INNER JOIN collections ' \
+             'ON collections.id = meta_data.collection_id')
+      .group('keywords.id')
+      .where(keywords: { id: ids })
 
     {}.tap do |hash|
       scope.each do |keyword|
