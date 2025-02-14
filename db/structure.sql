@@ -991,6 +991,7 @@ BEGIN
       THEN v_old := jold -> k;
       ELSE v_old := 'null'::JSONB; END IF;
     IF k = 'updated_at' THEN CONTINUE; END IF;
+    IF k = 'updator_id' THEN CONTINUE; END IF;
     IF v_new = v_old THEN CONTINUE; END IF;
     result := result || jsonb_build_object(k, jsonb_build_array(v_old, v_new));
   END LOOP;
@@ -2557,7 +2558,11 @@ CREATE TABLE public.vocabulary_api_client_permissions (
     api_client_id uuid NOT NULL,
     vocabulary_id character varying NOT NULL,
     use boolean DEFAULT false NOT NULL,
-    view boolean DEFAULT true NOT NULL
+    view boolean DEFAULT true NOT NULL,
+    creator_id uuid,
+    updator_id uuid,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
 );
 
 
@@ -2570,7 +2575,11 @@ CREATE TABLE public.vocabulary_group_permissions (
     group_id uuid NOT NULL,
     vocabulary_id character varying NOT NULL,
     use boolean DEFAULT false NOT NULL,
-    view boolean DEFAULT true NOT NULL
+    view boolean DEFAULT true NOT NULL,
+    creator_id uuid,
+    updator_id uuid,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
 );
 
 
@@ -2583,7 +2592,11 @@ CREATE TABLE public.vocabulary_user_permissions (
     user_id uuid NOT NULL,
     vocabulary_id character varying NOT NULL,
     use boolean DEFAULT false NOT NULL,
-    view boolean DEFAULT true NOT NULL
+    view boolean DEFAULT true NOT NULL,
+    creator_id uuid,
+    updator_id uuid,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
 );
 
 
@@ -5524,6 +5537,27 @@ CREATE TRIGGER update_updated_at_column_of_users BEFORE UPDATE ON public.users F
 
 
 --
+-- Name: vocabulary_api_client_permissions update_updated_at_column_of_vocabulary_api_client_permissions; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_vocabulary_api_client_permissions BEFORE UPDATE ON public.vocabulary_api_client_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: vocabulary_group_permissions update_updated_at_column_of_vocabulary_group_permissions; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_vocabulary_group_permissions BEFORE UPDATE ON public.vocabulary_group_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: vocabulary_user_permissions update_updated_at_column_of_vocabulary_user_permissions; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_vocabulary_user_permissions BEFORE UPDATE ON public.vocabulary_user_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
 -- Name: workflows update_updated_at_column_of_workflows; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -5871,6 +5905,14 @@ ALTER TABLE ONLY public.auth_systems_groups
 
 
 --
+-- Name: vocabulary_group_permissions fk_rails_16aff0c4eb; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.vocabulary_group_permissions
+    ADD CONSTRAINT fk_rails_16aff0c4eb FOREIGN KEY (creator_id) REFERENCES public.users(id);
+
+
+--
 -- Name: notifications fk_rails_1d306a97df; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5887,11 +5929,35 @@ ALTER TABLE ONLY public.context_keys
 
 
 --
+-- Name: vocabulary_group_permissions fk_rails_2ea21eab6d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.vocabulary_group_permissions
+    ADD CONSTRAINT fk_rails_2ea21eab6d FOREIGN KEY (updator_id) REFERENCES public.users(id);
+
+
+--
 -- Name: collections fk_rails_312d185db8; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.collections
     ADD CONSTRAINT fk_rails_312d185db8 FOREIGN KEY (responsible_delegation_id) REFERENCES public.delegations(id);
+
+
+--
+-- Name: vocabulary_api_client_permissions fk_rails_3777163e7c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.vocabulary_api_client_permissions
+    ADD CONSTRAINT fk_rails_3777163e7c FOREIGN KEY (creator_id) REFERENCES public.users(id);
+
+
+--
+-- Name: vocabulary_api_client_permissions fk_rails_3f195fb436; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.vocabulary_api_client_permissions
+    ADD CONSTRAINT fk_rails_3f195fb436 FOREIGN KEY (updator_id) REFERENCES public.users(id);
 
 
 --
@@ -5916,6 +5982,14 @@ ALTER TABLE ONLY public.groups_users
 
 ALTER TABLE ONLY public.groups
     ADD CONSTRAINT fk_rails_67ff8c8afc FOREIGN KEY (created_by_user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: vocabulary_user_permissions fk_rails_77c0affc35; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.vocabulary_user_permissions
+    ADD CONSTRAINT fk_rails_77c0affc35 FOREIGN KEY (creator_id) REFERENCES public.users(id);
 
 
 --
@@ -5996,6 +6070,14 @@ ALTER TABLE ONLY public.delegations_supervisors
 
 ALTER TABLE ONLY public.workflows
     ADD CONSTRAINT fk_rails_ad47ad12fc FOREIGN KEY (creator_id) REFERENCES public.users(id);
+
+
+--
+-- Name: vocabulary_user_permissions fk_rails_b12171cf0b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.vocabulary_user_permissions
+    ADD CONSTRAINT fk_rails_b12171cf0b FOREIGN KEY (updator_id) REFERENCES public.users(id);
 
 
 --
@@ -6551,6 +6633,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
+('60'),
 ('6'),
 ('59'),
 ('58'),
