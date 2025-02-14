@@ -2557,7 +2557,8 @@ CREATE TABLE public.vocabulary_api_client_permissions (
     api_client_id uuid NOT NULL,
     vocabulary_id character varying NOT NULL,
     use boolean DEFAULT false NOT NULL,
-    view boolean DEFAULT true NOT NULL
+    view boolean DEFAULT true NOT NULL,
+    creator_id uuid
 );
 
 
@@ -2570,7 +2571,8 @@ CREATE TABLE public.vocabulary_group_permissions (
     group_id uuid NOT NULL,
     vocabulary_id character varying NOT NULL,
     use boolean DEFAULT false NOT NULL,
-    view boolean DEFAULT true NOT NULL
+    view boolean DEFAULT true NOT NULL,
+    creator_id uuid
 );
 
 
@@ -2583,7 +2585,8 @@ CREATE TABLE public.vocabulary_user_permissions (
     user_id uuid NOT NULL,
     vocabulary_id character varying NOT NULL,
     use boolean DEFAULT false NOT NULL,
-    view boolean DEFAULT true NOT NULL
+    view boolean DEFAULT true NOT NULL,
+    creator_id uuid
 );
 
 
@@ -5871,6 +5874,14 @@ ALTER TABLE ONLY public.auth_systems_groups
 
 
 --
+-- Name: vocabulary_group_permissions fk_rails_16aff0c4eb; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.vocabulary_group_permissions
+    ADD CONSTRAINT fk_rails_16aff0c4eb FOREIGN KEY (creator_id) REFERENCES public.users(id);
+
+
+--
 -- Name: notifications fk_rails_1d306a97df; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5895,6 +5906,14 @@ ALTER TABLE ONLY public.collections
 
 
 --
+-- Name: vocabulary_api_client_permissions fk_rails_3777163e7c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.vocabulary_api_client_permissions
+    ADD CONSTRAINT fk_rails_3777163e7c FOREIGN KEY (creator_id) REFERENCES public.users(id);
+
+
+--
 -- Name: api_clients fk_rails_45043d2037; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5916,6 +5935,14 @@ ALTER TABLE ONLY public.groups_users
 
 ALTER TABLE ONLY public.groups
     ADD CONSTRAINT fk_rails_67ff8c8afc FOREIGN KEY (created_by_user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: vocabulary_user_permissions fk_rails_77c0affc35; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.vocabulary_user_permissions
+    ADD CONSTRAINT fk_rails_77c0affc35 FOREIGN KEY (creator_id) REFERENCES public.users(id);
 
 
 --
@@ -6551,6 +6578,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
+('60'),
 ('6'),
 ('59'),
 ('58'),
