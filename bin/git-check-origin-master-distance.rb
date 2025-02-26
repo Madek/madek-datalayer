@@ -1,14 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'bundler/inline'
-
-gemfile do
-  source 'https://rubygems.org'
-  # fixed versions avoid frequent checks and reinstalls
-  gem 'pry', '= 0.15.2'
-  gem 'activesupport', '= 7.2.2.1'
-end
-
 require 'active_support/all'
 
 
