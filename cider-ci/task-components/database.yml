@@ -11,20 +11,20 @@ scripts:
     # NOTE: also sets up 'production', needed for asset precompilation
     start_when:
       ruby has been bundled:
-        script_key: datalayer-bundle-ruby 
+        script_key: datalayer-bundle-ruby
     body: |
       #!/usr/bin/env bash
       set -euo pipefail
       cd $DATALAYER_DIR
-      source $DATALAYER_DIR/cider-ci/bin/pg_env_set 
+      source $DATALAYER_DIR/cider-ci/bin/pg_env_set
       ./cider-ci/bin/configure-rails-db
 
   create-database:
     body: |
       #!/usr/bin/env bash
       set -euo pipefail
-      source $DATALAYER_DIR/cider-ci/bin/pg_env_set 
-      createdb "$DATABASE" 
+      source $DATALAYER_DIR/cider-ci/bin/pg_env_set
+      createdb "$DATABASE"
       psql -d "$DATABASE" -f ${DATALAYER_DIR}/db/structure.sql
 
   test:
@@ -38,7 +38,7 @@ scripts:
     body: |
       #!/usr/bin/env bash
       set -euo pipefail
-      source $DATALAYER_DIR/cider-ci/bin/pg_env_set 
+      source $DATALAYER_DIR/cider-ci/bin/pg_env_set
       dropdb --if-exists -f "$DATABASE"
     start_when:
       test is in termial state:

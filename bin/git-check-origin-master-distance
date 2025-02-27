@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-set -euo pipefail 
+set -euo pipefail
 
 PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
 
-./bin/env/ruby-setup --quiet
-ruby "${PROJECT_DIR}/bin/git-check-origin-master-distance.rb" "$@"
-#vi: ft=sh
+${PROJECT_DIR}/bin/env/ruby-setup --quiet
 
+ruby "${PROJECT_DIR}/bin/git-check-origin-master-distance.rb" "$@"
+
+#vi: ft=sh
