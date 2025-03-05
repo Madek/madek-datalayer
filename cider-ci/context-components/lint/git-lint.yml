@@ -26,7 +26,6 @@
 
     git-check-ahead-of-origin-master:
       name: "git: check if this commit is ahead of origin/master for this repo and all submodules"
-      aggregate_state: satisfy-last # relies on external state!
       git_options: { submodules: { include_match: ^.*$ } }
       scripts:
         test:
