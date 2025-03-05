@@ -2277,6 +2277,8 @@ CREATE TABLE public.people (
     institution text DEFAULT 'local'::text NOT NULL,
     admin_comment text,
     identification_info text,
+    creator_id uuid,
+    updator_id uuid,
     CONSTRAINT check_presence_of_first_name_or_last_name_or_pseudonym CHECK (((first_name IS NOT NULL) OR (last_name IS NOT NULL) OR (pseudonym IS NOT NULL))),
     CONSTRAINT check_valid_people_subtype CHECK ((subtype = ANY (ARRAY['Person'::text, 'PeopleGroup'::text, 'PeopleInstitutionalGroup'::text]))),
     CONSTRAINT first_name_is_not_blank CHECK (((first_name)::text !~ '^\s*$'::text)),
@@ -2516,6 +2518,8 @@ CREATE TABLE public.users (
     first_name text,
     emails_locale character varying,
     password_sign_in_enabled boolean DEFAULT false NOT NULL,
+    creator_id uuid,
+    updator_id uuid,
     CONSTRAINT email_format CHECK ((((email)::text ~ '\S+@\S+'::text) OR (email IS NULL))),
     CONSTRAINT login_not_uuid CHECK ((login !~* '^[[:xdigit:]]{8}-([[:xdigit:]]{4}-){3}[[:xdigit:]]{12}$'::text)),
     CONSTRAINT users_login_simple CHECK ((login ~* '^[a-z0-9\.\-\_]+$'::text))
@@ -5905,6 +5909,14 @@ ALTER TABLE ONLY public.auth_systems_groups
 
 
 --
+-- Name: people fk_rails_160fbf08e3; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.people
+    ADD CONSTRAINT fk_rails_160fbf08e3 FOREIGN KEY (creator_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
 -- Name: vocabulary_group_permissions fk_rails_16aff0c4eb; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5961,6 +5973,14 @@ ALTER TABLE ONLY public.vocabulary_api_client_permissions
 
 
 --
+-- Name: users fk_rails_41115c5ba1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT fk_rails_41115c5ba1 FOREIGN KEY (updator_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
 -- Name: api_clients fk_rails_45043d2037; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5974,6 +5994,14 @@ ALTER TABLE ONLY public.api_clients
 
 ALTER TABLE ONLY public.groups_users
     ADD CONSTRAINT fk_rails_4e63edbd27 FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: people fk_rails_5683f9401f; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.people
+    ADD CONSTRAINT fk_rails_5683f9401f FOREIGN KEY (updator_id) REFERENCES public.users(id) ON DELETE SET NULL;
 
 
 --
@@ -6070,6 +6098,14 @@ ALTER TABLE ONLY public.delegations_supervisors
 
 ALTER TABLE ONLY public.workflows
     ADD CONSTRAINT fk_rails_ad47ad12fc FOREIGN KEY (creator_id) REFERENCES public.users(id);
+
+
+--
+-- Name: users fk_rails_ad52186b75; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT fk_rails_ad52186b75 FOREIGN KEY (creator_id) REFERENCES public.users(id) ON DELETE SET NULL;
 
 
 --
@@ -6633,6 +6669,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
+('61'),
 ('60'),
 ('6'),
 ('59'),
