@@ -1,10 +1,20 @@
 class AppSetting < ApplicationRecord
   include LocalizedFields
 
-  localize_fields *%w(site_titles brand_texts provenance_notices
-                      welcome_titles welcome_texts
-                      featured_set_titles featured_set_subtitles catalog_titles
-                      catalog_subtitles about_pages support_urls)
+  localize_fields *%w(
+    about_pages
+    banner_messages
+    brand_texts
+    catalog_subtitles
+    catalog_titles
+    featured_set_subtitles
+    featured_set_titles
+    provenance_notices
+    site_titles
+    support_urls
+    welcome_texts
+    welcome_titles
+  )
 
   def self.validate_set_existence(name)
     validate :"#{name}_existence", if: proc { |record|
