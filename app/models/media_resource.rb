@@ -95,14 +95,14 @@ class MediaResource < ApplicationRecord
   end
   # rubocop:enable Metrics/MethodLength
 
-  def self.with_collection_id_condition(table_alias:)
+  def self.with_collection_id_condition(table_alias:, fk_field_name:)
     condition = if @_collection_id
-                  Arel.sql(" AND #{table_alias}.collection_id = '#{@_collection_id}'")
+                  Arel.sql(" AND #{table_alias}.#{fk_field_name} = '#{@_collection_id}'")
                 else
                   ''
                 end
     query = yield condition
-    @_collection_id = nil
+    #@_collection_id = nil
     query
   end
 
@@ -117,7 +117,7 @@ class MediaResource < ApplicationRecord
       SQL
     )
     .joins(
-      with_collection_id_condition(table_alias: 'cmea') do |condition|
+      with_collection_id_condition(table_alias: 'cmea', fk_field_name: 'collection_id') do |condition|
         <<-SQL
           LEFT JOIN collection_media_entry_arcs cmea
           ON (
@@ -129,10 +129,16 @@ class MediaResource < ApplicationRecord
       end
     )
     .joins(
-      <<-SQL
-        LEFT JOIN collection_collection_arcs cca
-        ON (cca.child_id = vw_media_resources.id AND vw_media_resources.type = 'Collection')
-      SQL
+      with_collection_id_condition(table_alias: 'cca', fk_field_name: 'parent_id') do |condition|
+          <<-SQL
+          LEFT JOIN collection_collection_arcs cca
+          ON (
+            cca.child_id = vw_media_resources.id AND 
+            vw_media_resources.type = 'Collection'
+            #{condition}
+          )
+        SQL
+      end
     )
   end
   # rubocop:enable Metrics/MethodLength
