@@ -48,7 +48,9 @@ class Collection < ApplicationRecord
     joins(:meta_data)
       .where(meta_data: { meta_key_id: 'madek_core:title' })
       .where('string ILIKE :title', title: "%#{title}%")
+      .or(where('collections.id::text = :collection_id', collection_id: title))
       .order(:created_at, :id)
+      .distinct
   }
 
   scope :not_part_of_finished_workflow, lambda{
