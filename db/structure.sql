@@ -2281,6 +2281,7 @@ CREATE TABLE public.people (
     creator_id uuid,
     updator_id uuid,
     institutional_directory_infos character varying[] DEFAULT '{}'::character varying[] NOT NULL,
+    institutional_directory_inactive_since timestamp with time zone,
     CONSTRAINT check_presence_of_first_name_or_last_name_or_pseudonym CHECK (((first_name IS NOT NULL) OR (last_name IS NOT NULL) OR (pseudonym IS NOT NULL))),
     CONSTRAINT check_valid_people_subtype CHECK ((subtype = ANY (ARRAY['Person'::text, 'PeopleGroup'::text, 'PeopleInstitutionalGroup'::text]))),
     CONSTRAINT first_name_is_not_blank CHECK (((first_name)::text !~ '^\s*$'::text)),
@@ -6671,6 +6672,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
+('64'),
 ('63'),
 ('62'),
 ('61'),
