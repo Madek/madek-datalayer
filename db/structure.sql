@@ -4466,10 +4466,24 @@ CREATE INDEX index_users_on_autocomplete ON public.users USING btree (autocomple
 
 
 --
+-- Name: index_users_on_first_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_on_first_name ON public.users USING btree (first_name);
+
+
+--
 -- Name: index_users_on_institutional_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_users_on_institutional_id ON public.users USING btree (institutional_id);
+
+
+--
+-- Name: index_users_on_last_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_on_last_name ON public.users USING btree (last_name);
 
 
 --
@@ -6672,6 +6686,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
+('65'),
 ('64'),
 ('63'),
 ('62'),
