@@ -2413,8 +2413,8 @@ CREATE TABLE public.smtp_settings (
     port integer DEFAULT 25 NOT NULL,
     sender_address text,
     username text,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -4466,10 +4466,24 @@ CREATE INDEX index_users_on_autocomplete ON public.users USING btree (autocomple
 
 
 --
+-- Name: index_users_on_first_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_on_first_name ON public.users USING btree (first_name);
+
+
+--
 -- Name: index_users_on_institutional_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_users_on_institutional_id ON public.users USING btree (institutional_id);
+
+
+--
+-- Name: index_users_on_last_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_on_last_name ON public.users USING btree (last_name);
 
 
 --
@@ -5520,13 +5534,6 @@ CREATE TRIGGER update_updated_at_column_of_people BEFORE UPDATE ON public.people
 --
 
 CREATE TRIGGER update_updated_at_column_of_previews BEFORE UPDATE ON public.previews FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
-
-
---
--- Name: smtp_settings update_updated_at_column_of_smtp_settings; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_smtp_settings BEFORE UPDATE ON public.smtp_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
