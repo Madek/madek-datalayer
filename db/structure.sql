@@ -406,7 +406,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys
+            IF EXISTS (SELECT 1 FROM meta_keys 
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -467,7 +467,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys
+            IF EXISTS (SELECT 1 FROM meta_keys 
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -1267,7 +1267,7 @@ CREATE TABLE public.meta_keys (
     CONSTRAINT check_allowed_people_subtypes_values CHECK (((allowed_people_subtypes IS NULL) OR (allowed_people_subtypes <@ ARRAY['Person'::text, 'PeopleGroup'::text, 'PeopleInstitutionalGroup'::text]))),
     CONSTRAINT check_is_extensible_list_is_boolean_for_respective_meta_datum_t CHECK (((((is_extensible_list = true) OR (is_extensible_list = false)) AND (meta_datum_object_type = ANY (ARRAY['MetaDatum::Keywords'::text, 'MetaDatum::Roles'::text]))) OR (meta_datum_object_type <> ALL (ARRAY['MetaDatum::Keywords'::text, 'MetaDatum::Roles'::text])))),
     CONSTRAINT check_keywords_alphabetical_order_is_boolean_for_meta_datum_key CHECK (((((keywords_alphabetical_order = true) OR (keywords_alphabetical_order = false)) AND (meta_datum_object_type = 'MetaDatum::Keywords'::text)) OR (meta_datum_object_type <> 'MetaDatum::Keywords'::text))),
-    CONSTRAINT check_selection_field_type_value CHECK (((selection_field_type)::text = ANY ((ARRAY['auto'::character varying, 'mark'::character varying, 'list'::character varying])::text[]))),
+    CONSTRAINT check_selection_field_type_value CHECK (((selection_field_type)::text = ANY (ARRAY[('auto'::character varying)::text, ('mark'::character varying)::text, ('list'::character varying)::text]))),
     CONSTRAINT check_valid_meta_datum_object_type CHECK ((meta_datum_object_type = ANY (ARRAY['MetaDatum::Groups'::text, 'MetaDatum::Keywords'::text, 'MetaDatum::Licenses'::text, 'MetaDatum::People'::text, 'MetaDatum::Roles'::text, 'MetaDatum::Text'::text, 'MetaDatum::TextDate'::text, 'MetaDatum::Users'::text, 'MetaDatum::Vocables'::text, 'MetaDatum::JSON'::text, 'MetaDatum::MediaEntry'::text]))),
     CONSTRAINT check_valid_text_type CHECK ((text_type = ANY (ARRAY['line'::text, 'block'::text]))),
     CONSTRAINT descriptions_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(descriptions)))),
