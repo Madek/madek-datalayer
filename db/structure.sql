@@ -1413,11 +1413,11 @@ COMMENT ON FUNCTION public.user_sessions_clean_expired() IS 'Delete expired sess
 CREATE FUNCTION public.users_update_searchable_column() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
-BEGIN
-  NEW.searchable = COALESCE(NEW.last_name::text, '') || ' ' || COALESCE(NEW.first_name::text, '') || ' ' || COALESCE(NEW.login::text, '') || ' ' || COALESCE(NEW.email::text, '') ;
-  RETURN NEW;
-END;
-$$;
+        BEGIN
+           NEW.searchable = concat_ws(' ', NEW.id::text, NEW.first_name, NEW.last_name, NEW.login, NEW.email);
+           RETURN NEW;
+        END;
+      $$;
 
 
 --
@@ -6686,6 +6686,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
+('66'),
 ('65'),
 ('64'),
 ('63'),
