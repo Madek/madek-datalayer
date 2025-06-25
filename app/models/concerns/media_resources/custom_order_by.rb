@@ -11,10 +11,10 @@ module MediaResources
           reorder("#{table_name}.created_at DESC")
         when 'title ASC'
           joins_meta_data_title_with_projection
-            .reorder("meta_data.string ASC, #{table_name}.id ASC")
+            .reorder("title_meta_data.string ASC, #{table_name}.id ASC")
         when 'title DESC'
           joins_meta_data_title_with_projection
-            .reorder("meta_data.string DESC, #{table_name}.id DESC")
+            .reorder("title_meta_data.string DESC, #{table_name}.id DESC")
         when 'last_change DESC'
           order_by_last_edit_session.reorder('last_change DESC')
         when 'last_change ASC'
@@ -31,16 +31,9 @@ module MediaResources
       private
 
       def joins_meta_data_title_with_projection
-        all.unscoped
-          .select(all.arel.project('meta_data.string').projections)
+        all
+          .select(all.arel.project('title_meta_data.string').projections)
           .joins_meta_data_title
-          .where(
-            <<-SQL
-              #{table_name}.id in (
-                #{all.select('id').reorder(nil).to_sql}
-              )
-            SQL
-          )
       end
     end
   end

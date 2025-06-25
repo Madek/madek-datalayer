@@ -61,11 +61,11 @@ class MediaResource < ApplicationRecord
 
   def self.joins_meta_data_title
     joins(<<-SQL.strip_heredoc)
-      INNER JOIN meta_data
-      ON meta_data.meta_key_id = 'madek_core:title'
+      INNER JOIN meta_data AS title_meta_data
+      ON title_meta_data.meta_key_id = 'madek_core:title'
       AND (
-        meta_data.media_entry_id = vw_media_resources.id
-        OR meta_data.collection_id = vw_media_resources.id)
+        title_meta_data.media_entry_id = vw_media_resources.id
+        OR title_meta_data.collection_id = vw_media_resources.id)
     SQL
   end
 
