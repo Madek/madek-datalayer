@@ -3,8 +3,8 @@ module MediaResources
     extend ActiveSupport::Concern
 
     included do
-      scope :not_deleted, -> { where("#{table_name}.deleted_at IS NULL").or(where("#{table_name}.deleted_at > ?", Time.current)) }
-      scope :deleted, -> { where.not("#{table_name}.deleted_at IS NULL").where("#{table_name}.deleted_at <= ?", Time.current) }
+      scope :not_deleted, -> { where("#{table_name}.deleted_at IS NULL").or(where("#{table_name}.deleted_at > now()")) }
+      scope :deleted, -> { where.not("#{table_name}.deleted_at IS NULL").where("#{table_name}.deleted_at <= now()") }
 
       def soft_delete
         update!(deleted_at: Time.current)

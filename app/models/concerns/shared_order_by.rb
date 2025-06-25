@@ -5,9 +5,9 @@ module SharedOrderBy
     def joins_meta_data_title_by_classname
       single = self.name.underscore
       multiple = self.name.pluralize.underscore
-      joins('INNER JOIN meta_data ' \
-            'ON meta_data.' + single + '_id = ' + multiple + '.id ' \
-            "AND meta_data.meta_key_id = 'madek_core:title'")
+      joins('INNER JOIN meta_data AS title_meta_data ' \
+            'ON title_meta_data.' + single + '_id = ' + multiple + '.id ' \
+            "AND title_meta_data.meta_key_id = 'madek_core:title'")
     end
 
     def order_by_last_edit_session_by_classname
