@@ -2198,20 +2198,8 @@ CREATE TABLE public.meta_data_people (
     created_by_id uuid,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    "position" integer DEFAULT 0 NOT NULL
-);
-
-
---
--- Name: meta_data_roles; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.meta_data_roles (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    meta_datum_id uuid NOT NULL,
-    person_id uuid NOT NULL,
-    role_id uuid,
-    "position" integer DEFAULT 0 NOT NULL
+    "position" integer DEFAULT 0 NOT NULL,
+    role_id uuid
 );
 
 
@@ -2368,7 +2356,20 @@ CREATE TABLE public.roles (
     creator_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    roles_list_id uuid,
     CONSTRAINT labels_non_blank CHECK ((array_to_string(public.avals(labels), ''::text) !~ '^ *$'::text))
+);
+
+
+--
+-- Name: roles_lists; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.roles_lists (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    labels public.hstore DEFAULT ''::public.hstore NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -2968,14 +2969,6 @@ ALTER TABLE ONLY public.meta_data
 
 
 --
--- Name: meta_data_roles meta_data_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.meta_data_roles
-    ADD CONSTRAINT meta_data_roles_pkey PRIMARY KEY (id);
-
-
---
 -- Name: context_keys meta_key_definitions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3061,6 +3054,14 @@ ALTER TABLE ONLY public.previous_person_ids
 
 ALTER TABLE ONLY public.rdf_classes
     ADD CONSTRAINT rdf_classes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: roles_lists roles_lists_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.roles_lists
+    ADD CONSTRAINT roles_lists_pkey PRIMARY KEY (id);
 
 
 --
@@ -3983,10 +3984,10 @@ CREATE INDEX index_keywords_on_position ON public.keywords USING btree ("positio
 
 
 --
--- Name: index_md_people_on_md_id_and_person_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_md_people_on_md_id_person_id_and_role_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_md_people_on_md_id_and_person_id ON public.meta_data_people USING btree (meta_datum_id, person_id);
+CREATE UNIQUE INDEX index_md_people_on_md_id_person_id_and_role_id ON public.meta_data_people USING btree (meta_datum_id, person_id, role_id);
 
 
 --
@@ -4288,34 +4289,6 @@ CREATE INDEX index_meta_data_on_other_media_entry_id ON public.meta_data USING b
 --
 
 CREATE INDEX index_meta_data_on_type ON public.meta_data USING btree (type);
-
-
---
--- Name: index_meta_data_roles_on_meta_datum_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_meta_data_roles_on_meta_datum_id ON public.meta_data_roles USING btree (meta_datum_id);
-
-
---
--- Name: index_meta_data_roles_on_person_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_meta_data_roles_on_person_id ON public.meta_data_roles USING btree (person_id);
-
-
---
--- Name: index_meta_data_roles_on_position; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_meta_data_roles_on_position ON public.meta_data_roles USING btree ("position");
-
-
---
--- Name: index_meta_data_roles_on_role_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_meta_data_roles_on_role_id ON public.meta_data_roles USING btree (role_id);
 
 
 --
@@ -4963,13 +4936,6 @@ CREATE TRIGGER meta_data_people_audit_change AFTER INSERT OR DELETE OR UPDATE ON
 
 
 --
--- Name: meta_data_roles meta_data_roles_audit_change; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER meta_data_roles_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.meta_data_roles FOR EACH ROW EXECUTE FUNCTION public.audit_change();
-
-
---
 -- Name: meta_keys meta_keys_audit_change; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -5534,6 +5500,13 @@ CREATE TRIGGER update_updated_at_column_of_people BEFORE UPDATE ON public.people
 --
 
 CREATE TRIGGER update_updated_at_column_of_previews BEFORE UPDATE ON public.previews FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: roles_lists update_updated_at_column_of_roles_lists; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_roles_lists BEFORE UPDATE ON public.roles_lists FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
@@ -6206,6 +6179,14 @@ ALTER TABLE ONLY public.sections
 
 
 --
+-- Name: meta_data_people fk_rails_ce20125013; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.meta_data_people
+    ADD CONSTRAINT fk_rails_ce20125013 FOREIGN KEY (role_id) REFERENCES public.roles(id);
+
+
+--
 -- Name: io_mappings fk_rails_dbf6e7c067; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6219,6 +6200,14 @@ ALTER TABLE ONLY public.io_mappings
 
 ALTER TABLE ONLY public.delegations_users
     ADD CONSTRAINT fk_rails_df1fb72b34 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: roles fk_rails_eb0adf487e; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.roles
+    ADD CONSTRAINT fk_rails_eb0adf487e FOREIGN KEY (roles_list_id) REFERENCES public.roles_lists(id);
 
 
 --
@@ -6494,30 +6483,6 @@ ALTER TABLE ONLY public.meta_data_keywords
 
 
 --
--- Name: meta_data_roles meta_data_roles_meta_datum_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.meta_data_roles
-    ADD CONSTRAINT meta_data_roles_meta_datum_fkey FOREIGN KEY (meta_datum_id) REFERENCES public.meta_data(id) ON DELETE CASCADE;
-
-
---
--- Name: meta_data_roles meta_data_roles_person_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.meta_data_roles
-    ADD CONSTRAINT meta_data_roles_person_fkey FOREIGN KEY (person_id) REFERENCES public.people(id) ON DELETE CASCADE;
-
-
---
--- Name: meta_data_roles meta_data_roles_role_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.meta_data_roles
-    ADD CONSTRAINT meta_data_roles_role_fkey FOREIGN KEY (role_id) REFERENCES public.roles(id) ON DELETE CASCADE;
-
-
---
 -- Name: meta_keys meta_keys_allowed_rdf_class_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6685,6 +6650,7 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
+('70'),
 ('7'),
 ('66'),
 ('65'),
