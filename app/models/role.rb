@@ -8,6 +8,7 @@ class Role < ApplicationRecord
 
   belongs_to :creator, class_name: 'User'
   belongs_to :meta_key
+  belongs_to :roles_list
   has_many :meta_data_roles, class_name: 'MetaDatum::Role', dependent: :nullify
   has_many :meta_data, through: :meta_data_roles
 
