@@ -72,15 +72,6 @@ class Person < ApplicationRecord
         end
       end
 
-      self.meta_data_roles.each do |mdr|
-        if mdr.meta_datum.meta_data_roles.find_by(person_id: receiver.id,
-                                                  role_id: mdr.role_id)
-          mdr.destroy!
-        else 
-          mdr.update_columns(person_id: receiver.id)
-        end
-      end
-
       users.update_all(person_id: receiver.id)
       remember_previous_ids!(receiver)
       destroy!

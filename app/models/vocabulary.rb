@@ -51,6 +51,6 @@ class Vocabulary < ApplicationRecord
   end
 
   def can_have_roles?
-    !meta_keys.where(meta_datum_object_type: 'MetaDatum::Roles').empty?
+    meta_keys.any? { |mk| mk.roles_list.present? }
   end
 end

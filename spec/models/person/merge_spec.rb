@@ -13,12 +13,6 @@ describe Person do
 
       md1 = FactoryBot.create(:meta_datum_people, people: [p1, p2])
       md2 = FactoryBot.create(:meta_datum_people, people: [p3, p4])
-      md3 = FactoryBot.create(:meta_datum_roles,
-                              people_with_roles: [{ person: p1, role: r1 },
-                                                  { person: p2, role: r2 }])
-      md4 = FactoryBot.create(:meta_datum_roles,
-                              people_with_roles: [{ person: p3, role: r1 },
-                                                  { person: p4, role: r2 }])
 
       p2.merge_to(p3)
 
@@ -42,9 +36,6 @@ describe Person do
       r1 = FactoryBot.create(:role)
 
       md1 = FactoryBot.create(:meta_datum_people, people: [p1, p2])
-      md2 = FactoryBot.create(:meta_datum_roles,
-                              people_with_roles: [{ person: p1, role: r1 },
-                                                  { person: p2, role: r1 }])
 
       p1.merge_to(p2)
 
