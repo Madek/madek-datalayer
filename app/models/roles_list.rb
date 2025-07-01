@@ -6,8 +6,8 @@ class RolesList < ApplicationRecord
   localize_fields :labels
 
   belongs_to :creator, class_name: 'User'
-  # belongs_to :meta_key
-  has_many :roles, dependent: :destroy
+  has_many :meta_keys
+  has_and_belongs_to_many :roles, join_table: 'roles_lists_roles'
 
   validate do
     errors.add(:base, "Label can't be blank") if label.blank?
