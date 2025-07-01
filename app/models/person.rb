@@ -16,7 +16,6 @@ class Person < ApplicationRecord
         LEFT JOIN meta_data_people
         ON meta_data_people.meta_datum_id = meta_data.id
       SQL
-      SQL
       .where("meta_data_people.person_id = :id", id: id)
   end
 

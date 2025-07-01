@@ -108,6 +108,7 @@ class RefactorRoles < ActiveRecord::Migration[7.2]
     # Clean up: remove the old tables and columns
     drop_table :meta_data_roles
     remove_column :roles, :meta_key_id
+    add_index :roles, :labels, unique: true
 
     # Example query to verify the migration results:
     # This query shows the relationships between meta_keys, roles_lists, and roles

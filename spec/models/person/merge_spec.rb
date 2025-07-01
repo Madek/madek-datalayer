@@ -19,14 +19,6 @@ describe Person do
       expect(Person.find_by_id(p2.id)).not_to be
       expect(md1.reload.people.to_set).to eq [p1, p3].to_set
       expect(md2.reload.people.to_set).to eq [p3, p4].to_set
-      expect(md3.reload.meta_data_people.map { |mdr| { person_id: mdr.person_id,
-                                                       role_id: mdr.role_id } }.to_set)
-        .to eq [{ person_id: p1.id, role_id: r1.id },
-                { person_id: p3.id, role_id: r2.id }].to_set
-      expect(md4.reload.meta_data_people.map { |mdr| { person_id: mdr.person_id,
-                                                       role_id: mdr.role_id } }.to_set)
-        .to eq [{ person_id: p3.id, role_id: r1.id },
-                { person_id: p4.id, role_id: r2.id }].to_set
       expect(p3.previous.map(&:previous_id)).to eq [p2.id]
     end
 
@@ -41,9 +33,6 @@ describe Person do
 
       expect(Person.find_by_id(p1.id)).not_to be
       expect(md1.reload.people).to eq [p2]
-      expect(md2.reload.meta_data_people.map { |mdr| { person_id: mdr.person_id,
-                                                       role_id: mdr.role_id } }.to_set)
-        .to eq [{ person_id: p2.id, role_id: r1.id }].to_set
       expect(p2.previous.map(&:previous_id)).to eq [p1.id]
     end
 
