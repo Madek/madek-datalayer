@@ -16,12 +16,8 @@ class Person < ApplicationRecord
         LEFT JOIN meta_data_people
         ON meta_data_people.meta_datum_id = meta_data.id
       SQL
-      .joins(<<-SQL)
-        LEFT JOIN meta_data_roles
-        ON meta_data_roles.meta_datum_id = meta_data.id
       SQL
-      .where("meta_data_people.person_id = :id OR meta_data_roles.person_id = :id",
-             id: id)
+      .where("meta_data_people.person_id = :id", id: id)
   end
 
   def published_meta_data
@@ -37,8 +33,7 @@ class Person < ApplicationRecord
   end
 
   has_many :meta_data_people, class_name: '::MetaDatum::Person'
-  has_many :meta_data_roles, class_name: '::MetaDatum::Role'
-  has_and_belongs_to_many :roles, join_table: :meta_data_roles
+  has_and_belongs_to_many :roles, join_table: :meta_data_people
 
   validate do
     if [first_name, last_name, pseudonym].all?(&:blank?)
