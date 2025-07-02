@@ -108,13 +108,6 @@ FactoryBot.define do
                           id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 20)}",
                           vocabulary: vocabulary))
       end
-      rand(1..3).times do
-        me.meta_data <<
-          create(:meta_datum_roles,
-                 meta_key: create(:meta_key_roles,
-                                  id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 20)}",
-                                  vocabulary: vocabulary))
-      end
 
       rand(1..3).times do
         me.user_permissions << create(:media_entry_user_permission,
