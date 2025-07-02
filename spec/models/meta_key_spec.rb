@@ -11,7 +11,6 @@ describe MetaKey do
            MetaDatum::Keywords
            MetaDatum::MediaEntry
            MetaDatum::People
-           MetaDatum::Roles
            MetaDatum::Text
            MetaDatum::TextDate)
       )
