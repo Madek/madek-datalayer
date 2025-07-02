@@ -65,9 +65,21 @@ FactoryBot.define do
       allowed_people_subtypes { ['PeopleInstitutionalGroup'] }
     end
 
-    factory :meta_key_roles, class: MetaKey do
-      id { 'test:roles' }
-      meta_datum_object_type { 'MetaDatum::Roles' }
+    factory :meta_key_people_with_roles, class: MetaKey do
+      id { 'test:people_with_roles' }
+      meta_datum_object_type { 'MetaDatum::People' }
+      roles_list
+
+      transient do
+        roles { [create(:role, name: 'Author'),
+                 create(:role, name: 'Co-Author')] }
+      end
+
+      after(:create) do |meta_key|
+        roles.each do |role|
+          meta_key.roles_list.roles << role
+        end
+      end
     end
   end
 

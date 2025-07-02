@@ -1,0 +1,129 @@
+class RefactorRoles < ActiveRecord::Migration[7.2]
+  include Madek::MigrationHelper
+
+  def up
+    # Create the new roles_lists table to group related roles
+    # Each roles_list has multilingual labels (hstore with language codes as keys)
+    create_table :roles_lists, id: :uuid do |t|
+      t.hstore :labels, null: false, default: {}
+    end
+
+    add_auto_timestamps :roles_lists, null: false
+
+    # Add roles_list_id to meta_keys to link them with roles_lists
+    add_column :meta_keys, :roles_list_id, :uuid, null: true
+    add_foreign_key :meta_keys, :roles_lists, column: :roles_list_id
+
+    # Add role_id to meta_data_people to link people with their roles
+    # Create join table for many-to-many relationship between roles_lists and roles
+    # This allows roles to belong to multiple lists and lists to contain multiple roles
+    create_table :roles_lists_roles, id: :uuid do |t|
+      t.uuid :roles_list_id, null: false
+      t.uuid :role_id, null: false
+    end
+    add_foreign_key :roles_lists_roles, :roles_lists, column: :roles_list_id
+    add_foreign_key :roles_lists_roles, :roles, column: :role_id
+    add_index :roles_lists_roles, [:roles_list_id, :role_id], unique: true
+
+    # Create roles_lists for each meta_key that currently has MetaDatum::Roles type
+    # Generate multilingual labels based on the meta_key id
+    execute <<-SQL
+      INSERT INTO roles_lists (labels)
+      SELECT hstore(ARRAY['en', 'de'], ARRAY[mk.id || ' Roles', mk.id || ' Rollen']) as labels
+      FROM meta_keys mk
+      WHERE mk.meta_datum_object_type = 'MetaDatum::Roles'
+      AND EXISTS (
+        SELECT 1 FROM roles r WHERE r.meta_key_id = mk.id
+      );
+    SQL
+
+    # Link meta_keys to their corresponding roles_lists
+    # Match by the generated label pattern
+    execute <<-SQL
+      UPDATE meta_keys
+      SET roles_list_id = rl.id
+      FROM roles_lists rl
+      WHERE meta_keys.meta_datum_object_type = 'MetaDatum::Roles'
+      AND rl.labels->'en' = meta_keys.id || ' Roles';
+    SQL
+
+    # Populate the join table with existing role-to-meta_key relationships
+    # This preserves the current role groupings under their new roles_lists
+    execute <<-SQL
+      INSERT INTO roles_lists_roles (roles_list_id, role_id)
+      SELECT mk.roles_list_id, r.id
+      FROM roles r
+      JOIN meta_keys mk ON mk.id = r.meta_key_id
+      WHERE mk.roles_list_id IS NOT NULL;
+    SQL
+
+    # Convert MetaDatum::Roles meta_keys to MetaDatum::People
+    # This changes the data model from role-based to people-based with role associations
+    execute <<-SQL
+      UPDATE meta_keys 
+      SET meta_datum_object_type = 'MetaDatum::People'
+      WHERE meta_datum_object_type = 'MetaDatum::Roles'
+    SQL
+
+    # Convert existing MetaDatum::Roles instances to MetaDatum::People
+    execute <<-SQL
+      UPDATE meta_data 
+      SET type = 'MetaDatum::People'
+      WHERE type = 'MetaDatum::Roles'
+    SQL
+
+    # Update the index on meta_data_people to include role_id
+    # This ensures uniqueness across the combination of metadata, person, and role
+    remove_index :meta_data_people, name: "index_md_people_on_md_id_and_person_id"
+    add_column :meta_data_people, :role_id, :uuid, null: true
+    add_foreign_key :meta_data_people, :roles, column: :role_id
+    add_index(:meta_data_people,
+              [:meta_datum_id, :person_id, :role_id],
+              name: "index_md_people_on_md_id_person_id_and_role_id",
+              unique: true)
+
+    # Migrate data from meta_data_roles to meta_data_people
+    # This preserves all existing role assignments while converting to the new structure
+    execute <<-SQL
+      INSERT INTO meta_data_people (
+        meta_datum_id,
+        person_id,
+        role_id,
+        created_by_id,
+        meta_data_updated_at,
+        position
+      )
+      SELECT 
+        mdr.meta_datum_id,
+        mdr.person_id,
+        mdr.role_id,
+        md.created_by_id,
+        NOW(),
+        mdr.position
+      FROM meta_data_roles mdr
+      JOIN meta_data md ON md.id = mdr.meta_datum_id
+      ON CONFLICT (meta_datum_id, person_id, role_id) DO NOTHING;
+    SQL
+
+    # Clean up: remove the old tables and columns
+    drop_table :meta_data_roles
+    remove_column :roles, :meta_key_id
+    add_index :roles, :labels, unique: true
+
+    # Example query to verify the migration results:
+    # This query shows the relationships between meta_keys, roles_lists, and roles
+    # after the migration is complete. It demonstrates how to traverse the new
+    # many-to-many relationship structure.
+    #
+    # SELECT meta_keys.id,
+    #        roles_lists.labels->'en' AS roles_list_label_en,
+    #        roles.labels->'en' AS role_label_en,
+    #        roles.labels->'de' AS role_label_de
+    # FROM meta_keys
+    # JOIN roles_lists ON meta_keys.roles_list_id = roles_lists.id
+    # JOIN roles_lists_roles ON roles_lists.id = roles_lists_roles.roles_list_id
+    # JOIN roles ON roles_lists_roles.role_id = roles.id
+    # WHERE meta_keys.roles_list_id IS NOT NULL
+    # ORDER BY roles.labels->'en';
+  end
+end

@@ -4,7 +4,8 @@ module MetaKeys
       extend ActiveSupport::Concern
 
       included do
-        has_many :roles
+        belongs_to :roles_list
+        has_many :roles, through: :roles_list
         before_validation :sanitize_allowed_people_subtypes
 
         def can_have_people_subtypes?
@@ -12,7 +13,7 @@ module MetaKeys
         end
 
         def can_have_roles?
-          meta_datum_object_type == 'MetaDatum::Roles'
+          roles_list.present?
         end
 
         def allowed_people_subtypes
