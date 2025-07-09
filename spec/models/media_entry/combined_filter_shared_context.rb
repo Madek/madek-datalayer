@@ -94,7 +94,7 @@ RSpec.shared_context 'meta data shared context' do
 
   let(:meta_data_2) do
     [{ key: meta_datum_people.meta_key_id,
-       value: meta_datum_people.value.sample.id },
+       value: meta_datum_people.people.sample.id },
      { key: 'any',
        type: meta_datum_keywords_2.type,
        value: meta_datum_keywords_2.value.sample.id }]
