@@ -14,12 +14,13 @@ class MetaDatum::People < MetaDatum
               'meta_data_people.position ASC', :last_name, :first_name, :id
            )},
            through: :meta_data_people
+  has_many :roles, through: :meta_data_people
 
   def to_s
-    value.map(&:to_s).join('; ')
+    people.map(&:to_s).join('; ')
   end
 
-  alias_method :value, :people
+  alias_method :value, :meta_data_people
 
   def potential_value_for_new_record
     meta_data_people.map(&:person)
