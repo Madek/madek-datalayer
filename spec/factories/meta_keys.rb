@@ -71,12 +71,12 @@ FactoryBot.define do
       roles_list
 
       transient do
-        roles { [create(:role, name: 'Author'),
-                 create(:role, name: 'Co-Author')] }
+        roles { [create(:role, labels: {en: 'Author', de: 'Autor'}),
+                 create(:role, labels: {en: 'Co-Author', de: 'Mitautor'})] }
       end
 
-      after(:create) do |meta_key|
-        roles.each do |role|
+      after(:create) do |meta_key, evaluator|
+        evaluator.roles.each do |role|
           meta_key.roles_list.roles << role
         end
       end

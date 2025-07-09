@@ -1,28 +1,26 @@
 module MetaData
   module SanitizeValue
 
-    def reset_with_sanitized_value!(resources, type, acting_user = nil)
-      with_sanitized(resources, acting_user) do |resources|
-        reset_resources!(resources, type, acting_user)
+    def reset_with_sanitized_value!(resources, type, created_by_user)
+      with_sanitized(resources) do |resources|
+        reset_resources!(resources, type, created_by_user)
       end
     end
 
-    # `val` can be one of:
-    # - string (text / uuid) or hash (for new entity)
-    # - an array of strings (uuids) or hashes (for new entities).
-    # In the case of uuids or hashes, the corresponding models have to be initialized.
-    def with_sanitized(val, acting_user = nil)
+    # val can be a string (text or uuid) or an array of strings (uuids).
+    # In the case of uuids, the corresponding models have to be initialized.
+    def with_sanitized(val)
       vals = (val.is_a?(Array) ? val : [val])
       sanitized_value = \
         extract_from_array_if_necessary \
-          reject_blanks_and_modelify_if_necessary(vals, acting_user)
+          reject_blanks_and_modelify_if_necessary(vals)
       raise 'Use safe value via block!' unless block_given?
       yield(sanitized_value)
     end
 
     private
 
-    def reset_resources!(resources, type, acting_user)
+    def reset_resources!(resources, type, created_by_user)
       type_plural = type.pluralize
       assoc = self.send("meta_data_#{type_plural}")
       resources_to_remove = self.send(type_plural) - resources
@@ -33,27 +31,23 @@ module MetaData
       ActiveRecord::Base.transaction do
         assoc.where(Hash[type, resources_to_remove]).delete_all
         resources_to_add.each do |resource|
-          assoc << assoc.name.constantize.new(
-            Hash[type, resource, :created_by, acting_user]
-          )
+
+          assoc << assoc.name.constantize.new(Hash[type, resource,
+                                                    :created_by, created_by_user])
         end
       end
       save!
     end
 
-    def reject_blanks_and_modelify_if_necessary(vals, acting_user)
+    def reject_blanks_and_modelify_if_necessary(vals)
       vals
         .reject(&:blank?)
-        .map { |v| modelify_if_necessary(v, acting_user) }
+        .map { |v| modelify_if_necessary(v) }
     end
 
-    def modelify_if_necessary(val, acting_user)
+    def modelify_if_necessary(val)
       if self.value.class < ActiveRecord::Associations::CollectionProxy
-        model = self.value.klass.find_or_build_resource!(val, self)
-        if model.respond_to?(:creator_id)
-          model.creator_id = acting_user.id
-        end
-        model
+        self.value.klass.find_or_build_resource!(val, self)
       else
         val
       end
