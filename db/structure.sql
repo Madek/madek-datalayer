@@ -1516,6 +1516,7 @@ CREATE TABLE public.app_settings (
     users_active_until_ui_default integer DEFAULT 99999,
     person_info_fields text[] DEFAULT '{identification_info}'::text[] NOT NULL,
     banner_messages public.hstore DEFAULT ''::public.hstore NOT NULL,
+    catalog_caching boolean DEFAULT false NOT NULL,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -6686,6 +6687,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
 ('7'),
+('67'),
 ('66'),
 ('65'),
 ('64'),

@@ -7,3 +7,6 @@ madek_available_locales:
 - en
 
 default_storage_dir: 'tmp'
+
+# https://en.wikipedia.org/wiki/ISO_8601#Durations
+catalog_cache_duration: PT3H
