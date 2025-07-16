@@ -110,6 +110,55 @@ class RefactorRoles < ActiveRecord::Migration[7.2]
     remove_column :roles, :meta_key_id
     add_index :roles, :labels, unique: true
 
+    # Add constraint trigger to prevent removal of a role from a roles_list if it has been used in meta_data_people
+    # Add constraint trigger to prevent removal of a role from a roles_list if it has been used in meta_data_people
+    execute <<-SQL
+      CREATE OR REPLACE FUNCTION prevent_role_removal_from_roles_list_f()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        IF EXISTS (
+          SELECT 1 FROM meta_data_people mdp 
+          JOIN meta_data md ON md.id = mdp.meta_datum_id
+          JOIN meta_keys mk ON mk.id = md.meta_key_id
+          WHERE mdp.role_id = OLD.role_id
+          AND mk.roles_list_id = OLD.roles_list_id
+        ) THEN
+          RAISE EXCEPTION 'Cannot remove role from roles_list: role is currently used in MetaDatum::People records for this roles_list';
+        END IF;
+        RETURN OLD;
+      END;
+      $$ LANGUAGE plpgsql;
+
+      CREATE CONSTRAINT TRIGGER check_role_not_used_in_meta_data_t
+      AFTER DELETE ON roles_lists_roles
+      DEFERRABLE INITIALLY DEFERRED
+      FOR EACH ROW EXECUTE FUNCTION prevent_role_removal_from_roles_list_f();
+    SQL
+
+    # Add constraint trigger to prevent removal of roles_list from meta_keys if it has been used
+    execute <<-SQL
+      CREATE OR REPLACE FUNCTION prevent_roles_list_removal_from_meta_key_f()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        IF OLD.roles_list_id IS NOT NULL AND OLD.roles_list_id != NEW.roles_list_id THEN
+          IF EXISTS (
+            SELECT 1 FROM meta_data md 
+            WHERE md.meta_key_id = OLD.id 
+            AND md.type = 'MetaDatum::People'
+          ) THEN
+            RAISE EXCEPTION 'Cannot change roles_list for meta_key: meta_key is currently used in MetaDatum::People records';
+          END IF;
+        END IF;
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+
+      CREATE CONSTRAINT TRIGGER check_roles_list_not_used_when_removed_t
+      AFTER UPDATE ON meta_keys
+      DEFERRABLE INITIALLY DEFERRED
+      FOR EACH ROW EXECUTE FUNCTION prevent_roles_list_removal_from_meta_key_f();
+    SQL
+
     # Example query to verify the migration results:
     # This query shows the relationships between meta_keys, roles_lists, and roles
     # after the migration is complete. It demonstrates how to traverse the new
