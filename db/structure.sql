@@ -1048,6 +1048,50 @@ CREATE FUNCTION public.person_display_name(first_name character varying, last_na
 
 
 --
+-- Name: prevent_role_removal_from_roles_list_f(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.prevent_role_removal_from_roles_list_f() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      BEGIN
+        IF EXISTS (
+          SELECT 1 FROM meta_data_people 
+          JOIN meta_data ON meta_data.id = meta_data_people.meta_datum_id
+          JOIN meta_keys ON meta_keys.id = meta_data.meta_key_id
+          WHERE meta_data_people.role_id = OLD.role_id
+          AND meta_keys.roles_list_id = OLD.roles_list_id
+        ) THEN
+          RAISE EXCEPTION 'Cannot remove role from roles_list: role is currently used in MetaDatum::People records for this roles_list';
+        END IF;
+        RETURN OLD;
+      END;
+      $$;
+
+
+--
+-- Name: prevent_roles_list_removal_from_meta_key_f(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.prevent_roles_list_removal_from_meta_key_f() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      BEGIN
+        IF OLD.roles_list_id IS NOT NULL AND OLD.roles_list_id != NEW.roles_list_id THEN
+          IF EXISTS (
+            SELECT 1 FROM meta_data 
+            WHERE meta_data.meta_key_id = OLD.id 
+            AND meta_data.type = 'MetaDatum::People'
+          ) THEN
+            RAISE EXCEPTION 'Cannot change roles_list for meta_key: meta_key is currently used in MetaDatum::People records';
+          END IF;
+        END IF;
+        RETURN NEW;
+      END;
+      $$;
+
+
+--
 -- Name: propagate_edit_session_insert_to_collections(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -1419,6 +1463,30 @@ CREATE FUNCTION public.users_update_searchable_column() RETURNS trigger
            NEW.searchable = concat_ws(' ', NEW.id::text, NEW.first_name, NEW.last_name, NEW.login, NEW.email);
            RETURN NEW;
         END;
+      $$;
+
+
+--
+-- Name: validate_role_belongs_to_meta_key_roles_list_f(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.validate_role_belongs_to_meta_key_roles_list_f() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      BEGIN
+        IF NEW.role_id IS NOT NULL THEN
+          IF NOT EXISTS (
+            SELECT 1 FROM meta_data
+            JOIN meta_keys ON meta_keys.id = meta_data.meta_key_id
+            JOIN roles_lists_roles ON roles_lists_roles.roles_list_id = meta_keys.roles_list_id
+            WHERE meta_data.id = NEW.meta_datum_id
+            AND roles_lists_roles.role_id = NEW.role_id
+          ) THEN
+            RAISE EXCEPTION 'Role does not belong to the roles_list associated with this meta_key';
+          END IF;
+        END IF;
+        RETURN NEW;
+      END;
       $$;
 
 
@@ -4700,6 +4768,27 @@ CREATE TRIGGER check_email_frequency_for_notification_case_t BEFORE INSERT OR UP
 --
 
 CREATE TRIGGER check_meta_key_multiple_selection_immutability_t BEFORE UPDATE ON public.meta_keys FOR EACH ROW EXECUTE FUNCTION public.check_meta_key_multiple_selection_immutability_f();
+
+
+--
+-- Name: meta_data_people check_role_belongs_to_meta_key_roles_list_t; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER check_role_belongs_to_meta_key_roles_list_t AFTER INSERT OR UPDATE ON public.meta_data_people DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.validate_role_belongs_to_meta_key_roles_list_f();
+
+
+--
+-- Name: roles_lists_roles check_role_not_used_in_meta_data_t; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER check_role_not_used_in_meta_data_t AFTER DELETE ON public.roles_lists_roles DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.prevent_role_removal_from_roles_list_f();
+
+
+--
+-- Name: meta_keys check_roles_list_not_used_when_removed_t; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE CONSTRAINT TRIGGER check_roles_list_not_used_when_removed_t AFTER UPDATE ON public.meta_keys DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.prevent_roles_list_removal_from_meta_key_f();
 
 
 --
