@@ -93,5 +93,32 @@ FactoryBot.define do
      end
    end
 
+   factory :meta_datum_people_with_roles, class: MetaDatum::People do
+     meta_key do
+       MetaKey.find_by(id: attributes_for(:meta_key_people)[:id]) \
+         || FactoryBot.create(:meta_key_people)
+     end
+
+     transient do
+       people_with_roles do
+        [{ person: FactoryBot.create(:person),
+           role: FactoryBot.create(:role) },
+         { person: FactoryBot.create(:person),
+           role: FactoryBot.create(:role) }]
+       end
+     end
+
+     after(:build) do |md, evaluator|
+       evaluator.people_with_roles.each do |pwr|
+          md.meta_data_people << FactoryBot.build(:meta_datum_person,
+                                                  person: pwr[:person],
+                                                  role: pwr[:role],
+                                                  created_by: create(:user))
+       end
+     end
+   end
+
+   factory :meta_datum_person, class: MetaDatum::Person do
+   end
  end
 end
