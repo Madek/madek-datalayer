@@ -5,6 +5,8 @@ FactoryBot.define do
     association :meta_datum, factory: :meta_datum_keywords
  end
 
+ factory :meta_datum_person do; end
+
  factory :meta_datum do
    created_by { create(:user) }
 
@@ -86,6 +88,27 @@ FactoryBot.define do
          || FactoryBot.create(:meta_key_people)
      end
      people { (1..3).map { FactoryBot.create :person } }
+     after(:build) do |md|
+       md.meta_data_people.map do |mdp|
+         mdp.created_by = create(:user)
+       end
+     end
+   end
+
+   factory :meta_datum_people_with_roles, class: MetaDatum::People do
+     meta_key do
+       MetaKey.find_by(id: attributes_for(:meta_key_people_with_roles)[:id]) \
+         || FactoryBot.create(:meta_key_people_with_roles)
+     end
+
+     transient do
+       people_with_roles do 
+         [ { person: create(:person), role: nil },
+           { person: create(:person), role: meta_key.roles_list.roles.sample },
+           { person: create(:person), role: meta_key.roles_list.roles.sample } ]
+       end
+     end
+
      after(:build) do |md|
        md.meta_data_people.map do |mdp|
          mdp.created_by = create(:user)
