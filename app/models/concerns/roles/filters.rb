@@ -7,7 +7,11 @@ module Roles
         roles = all
 
         if meta_key_id
-          roles = Role.where('roles.meta_key_id = ?', meta_key_id)
+          roles = \
+            joins('JOIN roles_lists_roles ON roles_lists_roles.role_id = roles.id')
+            .joins('JOIN roles_lists ON roles_lists.id = roles_lists_roles.roles_list_id')
+            .joins('JOIN meta_keys ON meta_keys.roles_list_id = roles_lists.id')
+            .where('meta_keys.id = ?', meta_key_id)
         end
 
         return roles if term.nil?
@@ -15,9 +19,9 @@ module Roles
         if valid_uuid?(term)
           roles = roles.where(id: term)
         else
-          roles = roles
-                    .where("array_to_string(avals(roles.labels), '||') ILIKE ?",
-                            "%#{term}%")
+          roles = \
+            roles
+            .where("array_to_string(avals(roles.labels), '||') ILIKE ?", "%#{term}%")
         end
 
         roles
