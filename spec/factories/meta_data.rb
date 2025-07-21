@@ -5,7 +5,7 @@ FactoryBot.define do
     association :meta_datum, factory: :meta_datum_keywords
  end
 
- factory :meta_datum_person do; end
+ factory :meta_datum_person, class: MetaDatum::Person do; end
 
  factory :meta_datum do
    created_by { create(:user) }
@@ -109,10 +109,14 @@ FactoryBot.define do
        end
      end
 
-     after(:build) do |md|
-       md.meta_data_people.map do |mdp|
-         mdp.created_by = create(:user)
-       end
+     after(:build) do |md, evaluator|
+      evaluator.people_with_roles.map do |mdp|
+        create(:meta_datum_person,
+          meta_datum: md,
+          person: mdp[:person],
+          role: mdp[:role],
+          created_by: create(:user))
+      end
      end
    end
 
