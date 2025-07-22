@@ -3,6 +3,9 @@ source 'https://rubygems.org'
 gem 'rails', '~> 7.2.0'
 gem "sprockets", "<4" # DO NOT UPGRADE SPROCKETS!
 
+# force latest version as of 22.07.2025 due to a critical security patch
+gem 'nokogiri', '>= 1.18.9' 
+
 gem 'pg'
 
 # gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks'
