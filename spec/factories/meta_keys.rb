@@ -71,8 +71,16 @@ FactoryBot.define do
       roles_list
 
       transient do
-        roles { [create(:role, labels: {en: 'Author', de: 'Autor'}),
-                 create(:role, labels: {en: 'Co-Author', de: 'Mitautor'})] }
+        roles { [
+          begin
+            label = Faker::Job.title
+            create(:role, labels: {en: "#{label} EN", de: "#{label} DE"})
+          end,
+          begin
+            label = Faker::Job.title
+            create(:role, labels: {en: "#{label} EN", de: "#{label} DE"})
+          end
+        ] }
       end
 
       after(:create) do |meta_key, evaluator|
