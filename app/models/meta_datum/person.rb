@@ -7,6 +7,7 @@ class MetaDatum::Person < ApplicationRecord
 
   belongs_to :meta_datum
   belongs_to :person, class_name: '::Person'
+  belongs_to :role, class_name: '::Role'
 
   enable_ordering skip_default_scope: true, parent_scope: :meta_datum, parent_child_relation: :meta_data_people
 end

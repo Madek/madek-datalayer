@@ -5,12 +5,7 @@ FactoryBot.define do
     association :meta_datum, factory: :meta_datum_keywords
  end
 
- factory :meta_datum_role, class: MetaDatum::Role do
-   meta_datum
-   role
-   person
-   sequence :position
- end
+ factory :meta_datum_person, class: MetaDatum::Person do; end
 
  factory :meta_datum do
    created_by { create(:user) }
@@ -100,29 +95,28 @@ FactoryBot.define do
      end
    end
 
-   factory :meta_datum_roles, class: MetaDatum::Roles do
+   factory :meta_datum_people_with_roles, class: MetaDatum::People do
      meta_key do
-       MetaKey.find_by(id: attributes_for(:meta_key_roles)[:id]) \
-         || FactoryBot.create(:meta_key_roles)
+       MetaKey.find_by(id: attributes_for(:meta_key_people_with_roles)[:id]) \
+         || FactoryBot.create(:meta_key_people_with_roles)
      end
+
      transient do
-       create_sample_data { true }
-       people_with_roles { [] }
-     end
-     after(:create) do |md, evaluator|
-       if evaluator.create_sample_data
-         if evaluator.people_with_roles.blank?
-           create_list :meta_datum_role, 3, meta_datum: md
-           create :meta_datum_role, meta_datum: md, role: nil
-         else
-           evaluator.people_with_roles.each do |pwr|
-             create(:meta_datum_role,
-                    meta_datum: md,
-                    person: pwr[:person],
-                    role: pwr[:role])
-           end
-         end
+       people_with_roles do 
+         [ { person: create(:person), role: nil },
+           { person: create(:person), role: meta_key.roles_list.roles.sample },
+           { person: create(:person), role: meta_key.roles_list.roles.sample } ]
        end
+     end
+
+     after(:build) do |md, evaluator|
+      evaluator.people_with_roles.map do |mdp|
+        md.meta_data_people << create(:meta_datum_person,
+                                      meta_datum: md,
+                                      person: mdp[:person],
+                                      role: mdp[:role],
+                                      created_by: create(:user))
+      end
      end
    end
  end

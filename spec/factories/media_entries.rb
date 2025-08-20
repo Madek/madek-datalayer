@@ -110,8 +110,8 @@ FactoryBot.define do
       end
       rand(1..3).times do
         me.meta_data <<
-          create(:meta_datum_roles,
-                 meta_key: create(:meta_key_roles,
+          create(:meta_datum_people_with_roles,
+                 meta_key: create(:meta_key_people_with_roles,
                                   id: "#{vocabulary.id}:#{Faker::Lorem.characters(number: 20)}",
                                   vocabulary: vocabulary))
       end

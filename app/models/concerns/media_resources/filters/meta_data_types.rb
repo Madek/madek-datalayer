@@ -5,7 +5,7 @@ module MediaResources
 
       include MediaResources::Filters::MetaData::Actors
       include MediaResources::Filters::MetaData::Primitive
-      include MediaResources::Filters::MetaData::Roles
+      include MediaResources::Filters::MetaData::People
 
       included do
         scope :filter_by_meta_datum_type, lambda { |meta_datum|

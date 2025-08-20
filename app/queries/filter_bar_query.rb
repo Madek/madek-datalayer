@@ -108,24 +108,12 @@ class FilterBarQuery < ActiveRecord::Base
                      roles.labels->'#{I18n.locale}' AS label,
                      'role' AS type
         FROM with_joined_data
-        INNER JOIN meta_data_roles ON meta_data_roles.meta_datum_id = with_joined_data.meta_data_id
-        INNER JOIN roles ON meta_data_roles.role_id = roles.id
+        INNER JOIN meta_data_people ON meta_data_people.meta_datum_id = with_joined_data.meta_data_id
+        INNER JOIN roles ON meta_data_people.role_id = roles.id
         GROUP BY roles.id,
                  with_joined_data.context_key_id,
                  with_joined_data.context_id
-
-        UNION SELECT with_joined_data.context_id,
-                     with_joined_data.context_key_id,
-                     COUNT(with_joined_data.#{singular}_id) AS count,
-                     people.id AS uuid,
-                     people.searchable AS label,
-                     'person' AS type
-        FROM with_joined_data
-        INNER JOIN meta_data_roles ON meta_data_roles.meta_datum_id = with_joined_data.meta_data_id
-        INNER JOIN people ON meta_data_roles.person_id = people.id
-        GROUP BY people.id,
-                 with_joined_data.context_key_id,
-                 with_joined_data.context_id ) AS t1
+        ) AS t1
 
       #{search_term_part}
       ORDER BY count DESC, label ASC

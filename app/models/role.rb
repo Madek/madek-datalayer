@@ -7,18 +7,18 @@ class Role < ApplicationRecord
   localize_fields :labels
 
   belongs_to :creator, class_name: 'User'
-  belongs_to :meta_key
-  has_many :meta_data_roles, class_name: 'MetaDatum::Role', dependent: :nullify
-  has_many :meta_data, through: :meta_data_roles
+  has_and_belongs_to_many :roles_lists, join_table: 'roles_lists_roles'
+  has_many :meta_data_people, class_name: 'MetaDatum::Person', dependent: :nullify
+  has_many :meta_data, through: :meta_data_people
 
   scope :sorted, lambda { |locale = AppSetting.default_locale|
     throw unless AppSetting.available_locales.include?(locale.to_s)
     order(Arel.sql("roles.labels->'#{locale}'"))
   }
   scope :with_usage_count, lambda {
-    select('roles.*, count(meta_data_roles.id) as usage_count')
-      .joins('LEFT OUTER JOIN meta_data_roles' \
-             'ON meta_data_roles.role_id = roles.id')
+    select('roles.*, count(meta_data_people.id) as usage_count')
+      .joins('LEFT OUTER JOIN meta_data_people' \
+             ' ON meta_data_people.role_id = roles.id')
       .group('roles.id')
   }
 
@@ -31,6 +31,6 @@ class Role < ApplicationRecord
   end
 
   def usage_count
-    meta_data.count
+    meta_data_people.count
   end
 end
