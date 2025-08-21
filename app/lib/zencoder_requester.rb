@@ -49,6 +49,12 @@ class ZencoderRequester
     }
 
     params[:test] = Settings.zencoder_test_mode
+    if Settings.zencoder_region
+      params[:region] = Settings.zencoder_region
+    end
+    if Settings.zencoder_private_mode
+      params[:private] = Settings.zencoder_private_mode
+    end
     params.merge!(output_settings)
   end
 
