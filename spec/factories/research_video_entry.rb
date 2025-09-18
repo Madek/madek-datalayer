@@ -75,7 +75,6 @@ FactoryBot.define do
 
     association :media_entry, factory: :research_video_entry
     media_type { 'video' }
-    media_entry_id { 'f5b78e56-a229-4295-a4cc-0311e6534207' }
     content_type { 'video/mp4' }
     size { '11061375' }
     width { nil }
