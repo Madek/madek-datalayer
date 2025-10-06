@@ -19,7 +19,7 @@ module LocalizedFields
         getter_name = field.to_s.singularize
 
         if getter_name == field
-          binding.pry
+          #binding.pry
           raise "`getter_name` is same as `field` after singularization. " \
             "This will cause infinite loop. Ensure that `field` is defined in plural form."
         end

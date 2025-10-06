@@ -83,6 +83,10 @@ class User < ApplicationRecord
     "#{first_name} #{last_name}".strip
   end
 
+  def user_handle
+    "#{login || "#{id.to_s[0..7]} (username missing)"}#{institution.present? ? " (#{institution})" : ""}"
+  end
+
   def login=(value)
     write_attribute :login, (value ? value.downcase : nil)
   end

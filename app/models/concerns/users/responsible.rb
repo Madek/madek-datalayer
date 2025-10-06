@@ -11,7 +11,7 @@ module Users
 
       def responsible_entity_name
         if responsible_user
-          responsible_user.to_s
+          responsible_user.user_handle
         elsif responsible_delegation
           responsible_delegation.try(&:name).try(:concat, ' (Delegation)')
         else
