@@ -41,12 +41,10 @@ module MediaResources
         end
 
         def search_in_all_meta_data(match, meta_key_ids)
-          where \
-            matching_meta_data_exists_condition(match, meta_key_ids)
-              .or(matching_meta_data_keywords_exists_conditition(match,
-                                                                  meta_key_ids))
-              .or(matching_meta_data_people_exists_conditition(match,
-                                                                meta_key_ids))
+          subquery1 = matching_meta_data_text_subquery(match, meta_key_ids).to_sql
+          subquery2 = matching_meta_data_keywords_subquery(match, meta_key_ids).to_sql
+          subquery3 = matching_meta_data_people_subquery(match, meta_key_ids).to_sql
+          where "#{arel_table.name}.id IN (#{subquery1} UNION #{subquery2} UNION #{subquery3})"
         end
       end
     end

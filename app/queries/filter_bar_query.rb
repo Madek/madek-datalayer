@@ -55,7 +55,7 @@ class FilterBarQuery < ActiveRecord::Base
     <<-SQL
       WITH with_#{plural} AS
         (#{init_scope.reorder(nil).to_sql}),
-           with_joined_data AS
+           with_metadata AS
         (SELECT contexts.id AS context_id,
                 context_keys.id AS context_key_id,
                 meta_keys.meta_datum_object_type AS meta_datum_type,
@@ -71,8 +71,15 @@ class FilterBarQuery < ActiveRecord::Base
            vocabularies.enabled_for_public_view IS TRUE
            #{permissions_part}
          )
-         WHERE meta_data.#{singular}_id IN (SELECT id FROM with_#{plural})
-           AND contexts.id IN (#{contexts.map { |c| "'#{c.id}'" }.join(', ')}))
+         WHERE contexts.id IN (#{contexts.map { |c| "'#{c.id}'" }.join(', ')})),
+
+      with_joined_data AS
+      (
+          SELECT with_metadata.*
+          FROM with_metadata
+          INNER JOIN with_#{plural}
+            ON with_#{plural}.id = with_metadata.#{singular}_id
+      )
       SELECT *
       FROM
         (SELECT with_joined_data.context_id,
