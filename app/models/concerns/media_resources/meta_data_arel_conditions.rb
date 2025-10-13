@@ -4,10 +4,10 @@ module MediaResources
 
     included do
       # rubocop:disable Metrics/MethodLength
-      def self.define_matching_meta_data_exists_conditition(match_table,
-                                                            match_column)
+      def self.define_matching_meta_data_subquery(match_table,
+                                                  match_column)
         define_singleton_method \
-          "matching_meta_data_#{match_table}_exists_conditition" \
+          "matching_meta_data_#{match_table}_subquery" \
           do |match, meta_key_ids|
           match_arel_table = Arel::Table.new(match_table)
           related_meta_data_arel_table = \
@@ -21,7 +21,7 @@ module MediaResources
             .join(meta_data_arel_table)
             .on(related_meta_data_arel_table[:meta_datum_id]
               .eq(meta_data_arel_table[:id]))
-            .project(1)
+            .project("#{model_name.singular}_id")
             .where(
               Arel::Nodes::SqlLiteral.new(
                 sanitize_sql_for_conditions(
@@ -35,22 +35,18 @@ module MediaResources
                 )
               )
             )
-            .where(meta_data_arel_table["#{model_name.singular}_id"]
-              .eq arel_table[:id])
             .where(meta_data_arel_table[:meta_key_id].in(meta_key_ids))
-            .exists
         end
       end
       # rubocop:enable Metrics/MethodLength
 
-      define_matching_meta_data_exists_conditition('keywords', 'term')
-      define_matching_meta_data_exists_conditition('people', 'searchable')
+      define_matching_meta_data_subquery('keywords', 'term')
+      define_matching_meta_data_subquery('people', 'searchable')
 
-      def self.matching_meta_data_exists_condition(match, meta_key_ids)
+      def self.matching_meta_data_text_subquery(match, meta_key_ids)
         meta_data = MetaDatum.arel_table
         meta_data
-          .project(1)
-          .where(meta_data["#{model_name.singular}_id"].eq arel_table[:id])
+          .project("#{model_name.singular}_id")
           .where(
             Arel::Nodes::SqlLiteral.new(
               sanitize_sql_for_conditions(
@@ -59,7 +55,6 @@ module MediaResources
             )
           )
           .where(meta_data[:meta_key_id].in(meta_key_ids))
-          .exists
       end
 
       def self.multiple_ilike_helper(match)
