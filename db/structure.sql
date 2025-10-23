@@ -2054,6 +2054,7 @@ CREATE TABLE public.groups (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     created_by_user_id uuid,
+    is_assignable boolean DEFAULT true NOT NULL,
     CONSTRAINT check_valid_type CHECK (((type)::text = ANY (ARRAY[('AuthenticationGroup'::character varying)::text, ('InstitutionalGroup'::character varying)::text, ('Group'::character varying)::text])))
 );
 
@@ -6776,6 +6777,7 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
+('71'),
 ('70'),
 ('7'),
 ('69'),
