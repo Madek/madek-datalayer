@@ -14,6 +14,8 @@ class Group < ApplicationRecord
   scope :departments, -> { where(type: 'InstitutionalGroup') }
   scope :by_type, -> (type) { where(type: type) }
 
+  default_scope { order(:name, :institutional_name, :id) }
+
   def self.types
     unscoped \
       .select(:type)
