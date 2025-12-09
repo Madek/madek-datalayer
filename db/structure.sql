@@ -1,3 +1,8 @@
+\restrict SF5peCQPcNQM55vXS5zIhv1FMc17dXYpgyjf7sEBrGy2yao67ZEKQxeAfP2YJ8l
+
+-- Dumped from database version 15.15 (Homebrew)
+-- Dumped by pg_dump version 15.15 (Homebrew)
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -5946,18 +5951,18 @@ ALTER TABLE ONLY public.favorite_media_entries
 
 
 --
--- Name: auth_systems_users fk_auth_sys; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.auth_systems_users
-    ADD CONSTRAINT fk_auth_sys FOREIGN KEY (auth_system_id) REFERENCES public.auth_systems(id) ON DELETE CASCADE;
-
-
---
 -- Name: auth_systems_groups fk_auth_sys; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.auth_systems_groups
+    ADD CONSTRAINT fk_auth_sys FOREIGN KEY (auth_system_id) REFERENCES public.auth_systems(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auth_systems_users fk_auth_sys; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.auth_systems_users
     ADD CONSTRAINT fk_auth_sys FOREIGN KEY (auth_system_id) REFERENCES public.auth_systems(id) ON DELETE CASCADE;
 
 
@@ -6596,6 +6601,8 @@ ALTER TABLE ONLY public.zencoder_jobs
 --
 -- PostgreSQL database dump complete
 --
+
+\unrestrict SF5peCQPcNQM55vXS5zIhv1FMc17dXYpgyjf7sEBrGy2yao67ZEKQxeAfP2YJ8l
 
 SET search_path TO "$user", public;
 
