@@ -9,6 +9,7 @@ class AppSetting < ApplicationRecord
     catalog_titles
     featured_set_subtitles
     featured_set_titles
+    permission_public_descriptions
     provenance_notices
     site_titles
     support_urls

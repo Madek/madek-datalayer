@@ -1,4 +1,4 @@
-\restrict SF5peCQPcNQM55vXS5zIhv1FMc17dXYpgyjf7sEBrGy2yao67ZEKQxeAfP2YJ8l
+\restrict HKqXFdHqFAsU0FVqgdZTYMTqcybpe2WwyWvL6bFsMyb9JBgEv6DIYZcdlJejJF1
 
 -- Dumped from database version 15.15 (Homebrew)
 -- Dumped by pg_dump version 15.15 (Homebrew)
@@ -1519,6 +1519,7 @@ CREATE TABLE public.api_clients (
     password_digest character varying,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    permission_descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
     CONSTRAINT name_format CHECK (((login)::text ~ '^[a-z][a-z0-9\-\_]+$'::text))
 );
 
@@ -1592,6 +1593,7 @@ CREATE TABLE public.app_settings (
     person_info_fields text[] DEFAULT '{identification_info}'::text[] NOT NULL,
     banner_messages public.hstore DEFAULT ''::public.hstore NOT NULL,
     catalog_caching boolean DEFAULT false NOT NULL,
+    permission_public_descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -6602,12 +6604,13 @@ ALTER TABLE ONLY public.zencoder_jobs
 -- PostgreSQL database dump complete
 --
 
-\unrestrict SF5peCQPcNQM55vXS5zIhv1FMc17dXYpgyjf7sEBrGy2yao67ZEKQxeAfP2YJ8l
+\unrestrict HKqXFdHqFAsU0FVqgdZTYMTqcybpe2WwyWvL6bFsMyb9JBgEv6DIYZcdlJejJF1
 
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
+('73'),
 ('72'),
 ('71'),
 ('70'),

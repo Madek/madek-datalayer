@@ -1,5 +1,6 @@
 class ApiClient < ApplicationRecord
   include ApiClients::Filters
+  include LocalizedFields
 
   belongs_to :user
 
@@ -21,5 +22,7 @@ class ApiClient < ApplicationRecord
             }
 
   validates :login, length: { in: 3..20 }
+
+  localize_fields :permission_descriptions
 
 end
