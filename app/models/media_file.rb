@@ -1,4 +1,4 @@
-# require 'digest'
+require 'digest'
 
 # rubocop:disable Metrics/ClassLength
 class MediaFile < ApplicationRecord
@@ -135,6 +135,26 @@ class MediaFile < ApplicationRecord
 
   def preview(size)
     previews.find_by(thumbnail: size)
+  end
+
+  def generate_checksum!
+    path = original_store_location
+    raise "File doesn't exist: #{path}" unless File.exist?(path)
+
+    hash = Digest::SHA256.hexdigest(File.read(path))
+    update!(checksum: hash, checksum_generated_at: Time.current, checksum_verified_at: nil)
+  end
+
+  def verify_checksum!
+    raise 'No checksum to verify' unless checksum.present?
+
+    path = original_store_location
+    raise "File doesn't exist: #{path}" unless File.exist?(path)
+
+    current_hash = Digest::SHA256.hexdigest(File.read(path))
+    match = (current_hash == checksum)
+    update!(checksum_verified_at: Time.current)
+    match
   end
 
   def missing_profiles
