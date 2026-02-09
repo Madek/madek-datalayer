@@ -411,7 +411,7 @@ CREATE FUNCTION public.check_meta_data_meta_key_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_data.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -472,7 +472,7 @@ CREATE FUNCTION public.check_meta_key_meta_data_type_consistency() RETURNS trigg
     AS $$
           BEGIN
 
-            IF EXISTS (SELECT 1 FROM meta_keys 
+            IF EXISTS (SELECT 1 FROM meta_keys
               JOIN meta_data ON meta_data.meta_key_id = meta_keys.id
               WHERE meta_keys.id = NEW.id
               AND meta_keys.meta_datum_object_type <> meta_data.type) THEN
@@ -2179,7 +2179,9 @@ CREATE TABLE public.media_files (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     uploader_id uuid NOT NULL,
-    conversion_profiles character varying[] DEFAULT '{}'::character varying[]
+    conversion_profiles character varying[] DEFAULT '{}'::character varying[],
+    checksum character varying,
+    checksum_verified_at timestamp with time zone
 );
 
 
@@ -6460,6 +6462,7 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
+('75'),
 ('74'),
 ('73'),
 ('72'),
