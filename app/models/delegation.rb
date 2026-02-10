@@ -22,7 +22,6 @@ class Delegation < ApplicationRecord
   has_and_belongs_to_many(:supervisors,
                           class_name: 'User',
                           join_table: :delegations_supervisors)
-  has_and_belongs_to_many :workflows
   has_many :media_entries, foreign_key: :responsible_delegation_id
   has_many :collections, foreign_key: :responsible_delegation_id
   has_many :emails

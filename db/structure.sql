@@ -1,4 +1,4 @@
-\restrict HKqXFdHqFAsU0FVqgdZTYMTqcybpe2WwyWvL6bFsMyb9JBgEv6DIYZcdlJejJF1
+\restrict UmiUsMqohJegbQpwFcLoOLaetgIJV9wgt5Q4PhB2omMgVjaockTILldlRvEWdg0
 
 -- Dumped from database version 15.15 (Homebrew)
 -- Dumped by pg_dump version 15.15 (Homebrew)
@@ -518,39 +518,13 @@ $$;
 CREATE FUNCTION public.check_no_drafts_in_collections() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
-      BEGIN
-        IF
-          (SELECT is_published FROM media_entries WHERE id = NEW.media_entry_id) = false
-          AND NOT EXISTS (
-            SELECT 1 FROM workflows WHERE workflows.is_active = TRUE AND workflows.id IN (
-              SELECT workflow_id FROM collections WHERE collections.id IN (
-                WITH RECURSIVE parent_ids as (
-  SELECT parent_id
-  FROM collection_collection_arcs
-  WHERE child_id IN (
-    SELECT collection_id
-    FROM collection_media_entry_arcs
-    WHERE media_entry_id = NEW.media_entry_id
-  )
-  UNION
-    SELECT cca.parent_id
-    FROM collection_collection_arcs cca
-    JOIN parent_ids p ON cca.child_id = p.parent_id
-)
-SELECT parent_id FROM parent_ids
-UNION
-  SELECT cmea.collection_id
-  FROM collection_media_entry_arcs cmea
-  WHERE media_entry_id = NEW.media_entry_id
-
-              )
-            )
-          )
-          THEN RAISE EXCEPTION 'Incomplete MediaEntries can not be put into Collections!';
-        END IF;
-        RETURN NEW;
-      END;
-      $$;
+BEGIN
+  IF (SELECT is_published FROM media_entries WHERE id = NEW.media_entry_id) = false
+    THEN RAISE EXCEPTION 'Incomplete MediaEntries can not be put into Collections!';
+  END IF;
+  RETURN NEW;
+END;
+$$;
 
 
 --
@@ -1835,8 +1809,6 @@ CREATE TABLE public.collections (
     edit_session_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     meta_data_updated_at timestamp with time zone DEFAULT now() NOT NULL,
     clipboard_user_id character varying,
-    workflow_id uuid,
-    is_master boolean DEFAULT false NOT NULL,
     sorting public.collection_sorting DEFAULT 'created_at DESC'::public.collection_sorting NOT NULL,
     responsible_delegation_id uuid,
     default_context_id character varying,
@@ -1963,16 +1935,6 @@ CREATE TABLE public.delegations_supervisors (
 CREATE TABLE public.delegations_users (
     delegation_id uuid NOT NULL,
     user_id uuid NOT NULL
-);
-
-
---
--- Name: delegations_workflows; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.delegations_workflows (
-    delegation_id uuid NOT NULL,
-    workflow_id uuid NOT NULL
 );
 
 
@@ -2621,16 +2583,6 @@ CREATE TABLE public.users (
 
 
 --
--- Name: users_workflows; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.users_workflows (
-    user_id uuid NOT NULL,
-    workflow_id uuid NOT NULL
-);
-
-
---
 -- Name: vocabularies; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2722,21 +2674,6 @@ UNION
     collections.updated_at,
     'Collection'::text AS type
    FROM public.collections;
-
-
---
--- Name: workflows; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.workflows (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    name character varying NOT NULL,
-    creator_id uuid NOT NULL,
-    is_active boolean DEFAULT true NOT NULL,
-    configuration jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now()
-);
 
 
 --
@@ -3272,14 +3209,6 @@ ALTER TABLE ONLY public.vocabulary_group_permissions
 
 ALTER TABLE ONLY public.vocabulary_user_permissions
     ADD CONSTRAINT vocabulary_user_permissions_pkey PRIMARY KEY (id);
-
-
---
--- Name: workflows workflows_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.workflows
-    ADD CONSTRAINT workflows_pkey PRIMARY KEY (id);
 
 
 --
@@ -3851,13 +3780,6 @@ CREATE INDEX index_collections_on_updated_at ON public.collections USING btree (
 
 
 --
--- Name: index_collections_on_workflow_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_collections_on_workflow_id ON public.collections USING btree (workflow_id);
-
-
---
 -- Name: index_confidential_links_on_resource_type_and_resource_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3946,20 +3868,6 @@ CREATE UNIQUE INDEX index_delegations_users_on_delegation_id_and_user_id ON publ
 --
 
 CREATE INDEX index_delegations_users_on_user_id ON public.delegations_users USING btree (user_id);
-
-
---
--- Name: index_delegations_workflows_on_delegation_id_and_workflow_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_delegations_workflows_on_delegation_id_and_workflow_id ON public.delegations_workflows USING btree (delegation_id, workflow_id);
-
-
---
--- Name: index_delegations_workflows_on_workflow_id_and_delegation_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_delegations_workflows_on_workflow_id_and_delegation_id ON public.delegations_workflows USING btree (workflow_id, delegation_id);
 
 
 --
@@ -4565,20 +4473,6 @@ CREATE INDEX index_users_on_last_name ON public.users USING btree (last_name);
 
 
 --
--- Name: index_users_workflows_on_user_id_and_workflow_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_users_workflows_on_user_id_and_workflow_id ON public.users_workflows USING btree (user_id, workflow_id);
-
-
---
--- Name: index_users_workflows_on_workflow_id_and_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_users_workflows_on_workflow_id_and_user_id ON public.users_workflows USING btree (workflow_id, user_id);
-
-
---
 -- Name: index_vocabularies_on_position; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4912,13 +4806,6 @@ CREATE TRIGGER delegations_supervisors_audit_change AFTER INSERT OR DELETE OR UP
 --
 
 CREATE TRIGGER delegations_users_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.delegations_users FOR EACH ROW EXECUTE FUNCTION public.audit_change();
-
-
---
--- Name: delegations_workflows delegations_workflows_audit_change; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER delegations_workflows_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.delegations_workflows FOR EACH ROW EXECUTE FUNCTION public.audit_change();
 
 
 --
@@ -5678,13 +5565,6 @@ CREATE TRIGGER update_updated_at_column_of_vocabulary_user_permissions BEFORE UP
 
 
 --
--- Name: workflows update_updated_at_column_of_workflows; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_workflows BEFORE UPDATE ON public.workflows FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
-
-
---
 -- Name: zencoder_jobs update_updated_at_column_of_zencoder_jobs; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -5720,13 +5600,6 @@ CREATE TRIGGER users_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.use
 
 
 --
--- Name: users_workflows users_workflows_audit_change; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER users_workflows_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.users_workflows FOR EACH ROW EXECUTE FUNCTION public.audit_change();
-
-
---
 -- Name: vocabularies vocabularies_audit_change; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -5752,13 +5625,6 @@ CREATE TRIGGER vocabulary_group_permissions_audit_change AFTER INSERT OR DELETE 
 --
 
 CREATE TRIGGER vocabulary_user_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.vocabulary_user_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
-
-
---
--- Name: workflows workflows_audit_change; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER workflows_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.workflows FOR EACH ROW EXECUTE FUNCTION public.audit_change();
 
 
 --
@@ -6097,14 +5963,6 @@ ALTER TABLE ONLY public.collection_user_permissions
 
 
 --
--- Name: collections fk_rails_9085ae39f1; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.collections
-    ADD CONSTRAINT fk_rails_9085ae39f1 FOREIGN KEY (workflow_id) REFERENCES public.workflows(id);
-
-
---
 -- Name: app_settings fk_rails_a3b6dc9d69; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6126,14 +5984,6 @@ ALTER TABLE ONLY public.delegations_groups
 
 ALTER TABLE ONLY public.delegations_supervisors
     ADD CONSTRAINT fk_rails_aaaca89dac FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE RESTRICT;
-
-
---
--- Name: workflows fk_rails_ad47ad12fc; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.workflows
-    ADD CONSTRAINT fk_rails_ad47ad12fc FOREIGN KEY (creator_id) REFERENCES public.users(id);
 
 
 --
@@ -6604,12 +6454,13 @@ ALTER TABLE ONLY public.zencoder_jobs
 -- PostgreSQL database dump complete
 --
 
-\unrestrict HKqXFdHqFAsU0FVqgdZTYMTqcybpe2WwyWvL6bFsMyb9JBgEv6DIYZcdlJejJF1
+\unrestrict UmiUsMqohJegbQpwFcLoOLaetgIJV9wgt5Q4PhB2omMgVjaockTILldlRvEWdg0
 
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
+('74'),
 ('73'),
 ('72'),
 ('71'),

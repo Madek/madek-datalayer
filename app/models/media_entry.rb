@@ -11,7 +11,6 @@ class MediaEntry < ApplicationRecord
   include MediaResources::Editability
   include MediaResources::Highlight
   include MediaResources::MetaDataArelConditions
-  include MediaResources::PartOfWorkflow
   include MediaResources::SoftDelete
   include SharedOrderBy
   include SharedScopes
@@ -48,12 +47,5 @@ class MediaEntry < ApplicationRecord
 
   def self.order_by_manual_sorting
     order_by_manual_sorting_by_classname
-  end
-
-  def self.not_part_of_workflow
-    joins('LEFT OUTER JOIN collections ON '\
-          "collections.id IN (#{parent_collections_query})")
-      .joins('LEFT OUTER JOIN workflows ON workflows.id = collections.workflow_id')
-      .where('workflows.id IS NULL')
   end
 end

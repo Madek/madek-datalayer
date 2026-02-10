@@ -10,7 +10,6 @@ class Collection < ApplicationRecord
   include MediaResources::Editability
   include MediaResources::Highlight
   include MediaResources::MetaDataArelConditions
-  include MediaResources::PartOfWorkflow
   include MediaResources::SoftDelete
   include SharedOrderBy
   include SharedScopes
@@ -40,10 +39,6 @@ class Collection < ApplicationRecord
 
   #################################################################################
 
-  belongs_to :workflow, optional: true
-
-  #################################################################################
-
   scope :search_with, lambda{ |title|
     joins(:meta_data)
       .where(meta_data: { meta_key_id: 'madek_core:title' })
@@ -53,10 +48,6 @@ class Collection < ApplicationRecord
       .distinct
   }
 
-  scope :not_part_of_finished_workflow, lambda{
-    where.not(id: self.joins(:workflow).where(workflows: { is_active: false }))
-  }
-
   scope :not_in_clipboard, lambda { where(clipboard_user_id: nil) }
   scope :ordered, -> { reorder(:created_at, :id) }
 
@@ -64,15 +55,9 @@ class Collection < ApplicationRecord
     not_deleted.not_in_clipboard.ordered
   end
 
-  # NOTE: could possibly be made as a DB trigger
-  # NOTE: disabled because there is no workflow yet
-  # validate :validate_existence_of_meta_data_for_required_context_keys
-
   def child_media_resources(media_entries_scope: :media_entries)
     scopes = [
-      public_send(media_entries_scope)
-      .try { |s| part_of_workflow? ? s.with_unpublished : s }
-      .reorder(nil),
+      public_send(media_entries_scope).reorder(nil),
       collections.reorder(nil)
     ]
 

@@ -10,8 +10,7 @@ require 'spec_helper'
   'in_responsibility_of_user.rb',
   'meta_data.rb',
   'permission_types_for_user.rb',
-  'validates.rb',
-  'part_of_workflow.rb'
+  'validates.rb'
 ].each do |file|
   require Rails.root.join 'spec', 'models', 'shared', file
 end
@@ -98,5 +97,4 @@ describe MediaEntry do
   end
 
   it_can 'be found via custom id'
-  it_can_be 'part of workflow'
 end

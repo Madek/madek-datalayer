@@ -6,10 +6,10 @@ class MediaResource < ApplicationRecord
 
   include MediaResources::CustomOrderBy
 
-  def self.viewable_by_user_or_public(user, join_from_active_workflow: false)
+  def self.viewable_by_user_or_public(user)
     scopes = [MediaEntry, Collection].map do |mr_klass|
       mr_klass
-        .viewable_by_user_or_public(user, join_from_active_workflow: join_from_active_workflow)
+        .viewable_by_user_or_public(user)
         .reorder(nil)
     end
 
@@ -17,16 +17,11 @@ class MediaResource < ApplicationRecord
   end
 
   def self.filter_by(user = nil, opts)
-    part_of_workflow = opts.delete(:part_of_workflow)
-
     if opts.blank?
       scope_to_use
     else
       scopes = [
-        MediaEntry
-        .try { |s| part_of_workflow ? s.with_unpublished : s }
-        .filter_by(user, **opts)
-        .reorder(nil),
+        MediaEntry.filter_by(user, **opts).reorder(nil),
         Collection.filter_by(user, **opts).reorder(nil)
       ]
 

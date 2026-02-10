@@ -6,7 +6,6 @@ class User < ApplicationRecord
   include Users::Filters
   include Users::Keywords
   include Users::ResourcesAssociations
-  include Users::Workflows
 
   #############################################################################
 
