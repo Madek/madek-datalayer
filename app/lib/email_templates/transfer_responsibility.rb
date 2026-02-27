@@ -153,16 +153,31 @@ module EmailTemplates
     end
 
     def single_event(notif, with_time: false)
-      data = notif.data || {}
-      href = data[:resource]&.[](:link_def)&.[](:href)
-      label = data[:resource]&.[](:link_def)&.[](:label)
-      fullname = data[:user]&.[](:fullname)
+      data = (notif.data || {}).with_indifferent_access
+      href = data.dig(:resource, :link_def, :href)
+      label = data.dig(:resource, :link_def, :label)
+      fullname = data.dig(:user, :fullname)
+      source_delegation_name = data.dig(:source_delegation, :name)
+      acting_user_name = data.dig(:acting_user, :fullname)
+      source_name = source_delegation_name || fullname
       delegation_name = notif.via_delegation&.name
       time = with_time ? "  * #{ notif.created_at.strftime('%H:%M') } - " : ""
+      to_part_en = delegation_name || 'You'
+      to_part_de = delegation_name || 'Sie'
+      from_part_en = if source_delegation_name.present? && acting_user_name.present?
+                       "#{source_name} by #{acting_user_name}"
+                     else
+                       source_name
+                     end
+      from_part_de = if source_delegation_name.present? && acting_user_name.present?
+                       "#{source_name} durch #{acting_user_name}"
+                     else
+                       source_name
+                     end
 
       {
-        en: time + "Responsability for \"#{label}\" has been transfered from #{fullname} to #{delegation_name || 'You'} #{@external_base_url}#{href}",
-        de: time + "Verantwortlichkeit für \"#{label}\" wurde von #{fullname} an #{delegation_name || 'Sie'} übertragen #{@external_base_url}#{href}"
+        en: time + "Responsability for \"#{label}\" has been transfered from #{from_part_en} to #{to_part_en} #{@external_base_url}#{href}",
+        de: time + "Verantwortlichkeit für \"#{label}\" wurde von #{from_part_de} an #{to_part_de} übertragen #{@external_base_url}#{href}"
       }
     end
 
