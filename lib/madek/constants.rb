@@ -38,7 +38,7 @@ module Madek
       end
     end
 
-    DEFAULT_NOTIFICATION_EMAILS_FREQUENCY = :daily
+    DEFAULT_NOTIFICATION_EMAILS_FREQUENCY = :immediately
     DEFAULT_DELEGATION_NOTIFICATIONS_EMAILS_FREQUENCY = :daily
 
     DEFAULT_MIME_TYPE = 'application/octet-stream'

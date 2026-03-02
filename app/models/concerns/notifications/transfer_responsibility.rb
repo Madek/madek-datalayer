@@ -59,8 +59,11 @@ module Notifications
         notif_tmpl_user_setting = \
           NotificationCaseUserSetting.find_by(notification_case_label: notification_case.label,
                                               user_id: user.id)
+        effective_frequency = (
+          notif_tmpl_user_setting&.email_frequency || Madek::Constants::DEFAULT_NOTIFICATION_EMAILS_FREQUENCY
+        ).to_s
 
-        if notif_tmpl_user_setting.try(:email_frequency) == 'immediately'
+        if effective_frequency == 'immediately'
           if user.email
             create_email!(user, notification_case, data)
           else
