@@ -49,7 +49,9 @@ describe 'Email Templates' do
                          link_def: { href: '/entries/532d1b03-6dff-44c7-885e-eb34e9cd4531',
                                      label: 'Medieneintrag MNO' }
                        },
-                       user: { fullname: 'Maria Muster' }
+                       user: { fullname: 'Verantwortungsgruppe 3' },
+                       source_delegation: { name: 'Verantwortungsgruppe 3' },
+                       acting_user: { fullname: 'Maria Muster' }
                      })
 
         app_setting = AppSetting.first
@@ -75,6 +77,9 @@ describe 'Email Templates' do
         puts "========================================================================================"
 
         email_body = @tmpl_inst.render_summary_email(:de)
+        expect(email_body).to include(
+          'Verantwortlichkeit für "Medieneintrag MNO" wurde von Verantwortungsgruppe 3 durch Maria Muster an Sie übertragen'
+        )
         puts email_body
         puts "========================================================================================"
       end
@@ -88,6 +93,9 @@ describe 'Email Templates' do
         puts "========================================================================================"
 
         email_body = @tmpl_inst.render_summary_email(:en)
+        expect(email_body).to include(
+          'Responsability for "Medieneintrag MNO" has been transfered from Verantwortungsgruppe 3 by Maria Muster to You'
+        )
         puts email_body
         puts "========================================================================================"
       end

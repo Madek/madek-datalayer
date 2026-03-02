@@ -3,13 +3,23 @@ module Notifications
     extend ActiveSupport::Concern
 
     included do
-      def self.transfer_responsibility(resource, old_entity, new_entity, extra_data = nil)
+      def self.transfer_responsibility(resource, old_entity, new_entity, extra_data = nil, acting_user: nil)
         notification_case = NotificationCase.find('transfer_responsibility')
+        merged_data = extra_data.present? ? extra_data.deep_dup : {}
+        acting_user_name = acting_user&.to_s ||
+                           merged_data.dig(:acting_user, :fullname)
+        merged_data.delete(:acting_user)
         data = {
           resource: { link_def: { label: resource.title } },
           user: { fullname: old_entity.to_s }
         }
-        data = data.deep_merge(extra_data) if extra_data.present?
+        if old_entity.is_a?(Delegation)
+          data[:source_delegation] = { name: old_entity.name }
+        else
+          data[:source_user] = { fullname: old_entity.to_s }
+        end
+        data = data.deep_merge(merged_data) if merged_data.present?
+        data[:acting_user] = { fullname: acting_user_name } if acting_user_name.present?
 
         if new_entity.is_a?(Delegation)
           new_entity.users_to_be_notified.each do |user|
