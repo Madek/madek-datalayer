@@ -53,18 +53,6 @@ FactoryBot.define do
     after :create do |mf|
       previews_data = YAML.load '
       -
-        height: 75
-        width: 100
-        content_type: image/jpeg
-        filename: b8bf2eb322e04a29a52fbb06d4866af8_small.jpg
-        thumbnail: small
-      -
-        height: 94
-        width: 125
-        content_type: image/jpeg
-        filename: b8bf2eb322e04a29a52fbb06d4866af8_small_125.jpg
-        thumbnail: small_125
-      -
         height: 225
         width: 300
         content_type: image/jpeg
@@ -82,6 +70,12 @@ FactoryBot.define do
         content_type: image/jpeg
         filename: b8bf2eb322e04a29a52fbb06d4866af8_x_large.jpg
         thumbnail: x_large
+      -
+        height: 360
+        width: 480
+        content_type: image/jpeg
+        filename: b8bf2eb322e04a29a52fbb06d4866af8_grand.jpg
+        thumbnail: grand
       -
         height: 360
         width: 480
