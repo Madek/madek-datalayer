@@ -58,12 +58,18 @@ module Madek
       || pathname_or_nil(Settings.thumbnail_storage_dir) \
       || DEFAULT_STORAGE_DIR.join('thumbnails')
 
-    THUMBNAILS = { maximum: nil,
-                   x_large: { width: 1024, height: 768 },
-                   large: { width: 620, height: 500 },
-                   medium: { width: 300, height: 300 },
-                   small_125: { width: 125, height: 125 },
-                   small: { width: 100, height: 100 } }
+    THUMBNAILS = { 
+      maximum: nil,
+      grand: { width: 1280, height: 1280 },
+      x_large: { width: 1024, height: 768 },
+      large: { width: 620, height: 500 },
+      medium: { width: 300, height: 300 },
+    }
+
+    INACTIVATE_THUMBNAILS = { 
+      small_125: { width: 125, height: 125 },
+      small: { width: 100, height: 100 }
+    }
 
     SPECIAL_WHITESPACE_CHARS = ["\u180E",
                                 "\uFEFF",
