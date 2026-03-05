@@ -115,12 +115,11 @@ FactoryBot.define do
 
       after :create do |mf|
         previews_json = <<-JSON.strip_heredoc
-          [ {"height":348,"width":620,"content_type":"image/jpeg","filename":"cb8c0a46f2744c3891ff5bd893581d21_0000.jpg","thumbnail":"large","media_type":"image","conversion_profile":null},
-            {"height":null,"width":null,"content_type":"image/jpeg","filename":"cb8c0a46f2744c3891ff5bd893581d21_0000_maximum.jpg","thumbnail":"maximum","media_type":"image","conversion_profile":null},
+          [ {"height":null,"width":null,"content_type":"image/jpeg","filename":"cb8c0a46f2744c3891ff5bd893581d21_0000_maximum.jpg","thumbnail":"maximum","media_type":"image","conversion_profile":null},
+            {"height":719,"width":1280,"content_type":"image/jpeg","filename":"cb8c0a46f2744c3891ff5bd893581d21_0000_grand.jpg","thumbnail":"grand","media_type":"image","conversion_profile":null},
             {"height":768,"width":1024,"content_type":"image/jpeg","filename":"cb8c0a46f2744c3891ff5bd893581d21_0000_x_large.jpg","thumbnail":"x_large","media_type":"image","conversion_profile":null},
+            {"height":348,"width":620,"content_type":"image/jpeg","filename":"cb8c0a46f2744c3891ff5bd893581d21_0000.jpg","thumbnail":"large","media_type":"image","conversion_profile":null},
             {"height":300,"width":300,"content_type":"image/jpeg","filename":"cb8c0a46f2744c3891ff5bd893581d21_0000_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null},
-            {"height":125,"width":125,"content_type":"image/jpeg","filename":"cb8c0a46f2744c3891ff5bd893581d21_0000_small_125.jpg","thumbnail":"small_125","media_type":"image","conversion_profile":null},
-            {"height":100,"width":100,"content_type":"image/jpeg","filename":"cb8c0a46f2744c3891ff5bd893581d21_0000_small.jpg","thumbnail":"small","media_type":"image","conversion_profile":null},
             {"height":348,"width":620,"content_type":"video/mp4","filename":"cb8c0a46f2744c3891ff5bd893581d21_620.mp4","thumbnail":"large","media_type":"video","conversion_profile":"mp4"},
             {"height":1080,"width":1920,"content_type":"video/webm","filename":"cb8c0a46f2744c3891ff5bd893581d21_1920.webm","thumbnail":"large","media_type":"video","conversion_profile":"webm_HD"},
             {"height":1080,"width":1920,"content_type":"video/mp4","filename":"cb8c0a46f2744c3891ff5bd893581d21_1920.mp4","thumbnail":"large","media_type":"video","conversion_profile":"mp4_HD"},
@@ -161,11 +160,10 @@ FactoryBot.define do
     factory :embed_test_image_landscape_file_with_unknown_size do
       previews_json = <<-JSON.strip_heredoc
         [ {"height":null,"width":null,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_maximum.jpg","thumbnail":"maximum","media_type":"image","conversion_profile":null},
+          {"height":886,"width":1280,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_grand.jpg","thumbnail":"grand","media_type":"image","conversion_profile":null},
           {"height":768,"width":1024,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_x_large.jpg","thumbnail":"x_large","media_type":"image","conversion_profile":null},
           {"height":500,"width":620,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_large.jpg","thumbnail":"large","media_type":"image","conversion_profile":null},
-          {"height":300,"width":300,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null},
-          {"height":125,"width":125,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_small_125.jpg","thumbnail":"small_125","media_type":"image","conversion_profile":null},
-          {"height":100,"width":100,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_small.jpg","thumbnail":"small","media_type":"image","conversion_profile":null} ]
+          {"height":300,"width":300,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null} ]
       JSON
 
       media_type { 'image' }
@@ -200,11 +198,10 @@ FactoryBot.define do
       after :create do |mf|
         previews_json = <<-JSON.strip_heredoc
         [ {"height":null,"width":null,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_maximum.jpg","thumbnail":"maximum","media_type":"image","conversion_profile":null},
+          {"height":1280,"width":886,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_x_grand.jpg","thumbnail":"grand","media_type":"image","conversion_profile":null},
           {"height":768,"width":1024,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_x_large.jpg","thumbnail":"x_large","media_type":"image","conversion_profile":null},
           {"height":500,"width":620,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_large.jpg","thumbnail":"large","media_type":"image","conversion_profile":null},
-          {"height":300,"width":300,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null},
-          {"height":125,"width":125,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_small_125.jpg","thumbnail":"small_125","media_type":"image","conversion_profile":null},
-          {"height":100,"width":100,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_small.jpg","thumbnail":"small","media_type":"image","conversion_profile":null} ]
+          {"height":300,"width":300,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null} ]
         JSON
 
         previews_data = JSON.parse previews_json
@@ -217,11 +214,10 @@ FactoryBot.define do
     factory :embed_test_image_landscape_file do
       previews_json = <<-JSON.strip_heredoc
         [ {"height":1063,"width":1535,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_maximum.jpg","thumbnail":"maximum","media_type":"image","conversion_profile":null},
+          {"height":886,"width":1280,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_grand.jpg","thumbnail":"grand","media_type":"image","conversion_profile":null},
           {"height":709,"width":1024,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_x_large.jpg","thumbnail":"x_large","media_type":"image","conversion_profile":null},
           {"height":429,"width":620,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_large.jpg","thumbnail":"large","media_type":"image","conversion_profile":null},
-          {"height":208,"width":300,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null},
-          {"height":87,"width":125,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_small_125.jpg","thumbnail":"small_125","media_type":"image","conversion_profile":null},
-          {"height":69,"width":100,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_small.jpg","thumbnail":"small","media_type":"image","conversion_profile":null} ]
+          {"height":208,"width":300,"content_type":"image/jpeg","filename":"f7df90537cd547f2a82127229a52b452_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null} ]
       JSON
 
       media_type { 'image' }
@@ -256,11 +252,10 @@ FactoryBot.define do
       after :create do |mf|
         previews_json = <<-JSON.strip_heredoc
         [ {"height":1535,"width":1063,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_maximum.jpg","thumbnail":"maximum","media_type":"image","conversion_profile":null},
+          {"height":1280,"width":886,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_grand.jpg","thumbnail":"grand","media_type":"image","conversion_profile":null},
           {"height":768,"width":532,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_x_large.jpg","thumbnail":"x_large","media_type":"image","conversion_profile":null},
           {"height":500,"width":346,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_large.jpg","thumbnail":"large","media_type":"image","conversion_profile":null},
-          {"height":300,"width":208,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null},
-          {"height":125,"width":87,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_small_125.jpg","thumbnail":"small_125","media_type":"image","conversion_profile":null},
-          {"height":100,"width":69,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_small.jpg","thumbnail":"small","media_type":"image","conversion_profile":null} ]
+          {"height":300,"width":208,"content_type":"image/jpeg","filename":"16bb9f7f388e4b4eb4908f9d457718dc_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null} ]
         JSON
 
         previews_data = JSON.parse previews_json
@@ -284,11 +279,10 @@ FactoryBot.define do
       after :create do |mf|
         previews_json = <<-JSON.strip_heredoc
         [ {"height":842,"width":595,"content_type":"image/jpeg","filename":"6e86d8474b3143c698f7d53121d280ac_maximum.jpg","thumbnail":"maximum","media_type":"image","conversion_profile":null},
+          {"height":1280,"width":905,"content_type":"image/jpeg","filename":"6e86d8474b3143c698f7d53121d280ac_grand.jpg","thumbnail":"grand","media_type":"image","conversion_profile":null},
           {"height":768,"width":543,"content_type":"image/jpeg","filename":"6e86d8474b3143c698f7d53121d280ac_x_large.jpg","thumbnail":"x_large","media_type":"image","conversion_profile":null},
           {"height":500,"width":353,"content_type":"image/jpeg","filename":"6e86d8474b3143c698f7d53121d280ac_large.jpg","thumbnail":"large","media_type":"image","conversion_profile":null},
-          {"height":300,"width":212,"content_type":"image/jpeg","filename":"6e86d8474b3143c698f7d53121d280ac_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null},
-          {"height":125,"width":88,"content_type":"image/jpeg","filename":"6e86d8474b3143c698f7d53121d280ac_small_125.jpg","thumbnail":"small_125","media_type":"image","conversion_profile":null},
-          {"height":100,"width":71,"content_type":"image/jpeg","filename":"6e86d8474b3143c698f7d53121d280ac_small.jpg","thumbnail":"small","media_type":"image","conversion_profile":null} ]
+          {"height":300,"width":212,"content_type":"image/jpeg","filename":"6e86d8474b3143c698f7d53121d280ac_medium.jpg","thumbnail":"medium","media_type":"image","conversion_profile":null} ]
         JSON
 
         previews_data = JSON.parse previews_json
