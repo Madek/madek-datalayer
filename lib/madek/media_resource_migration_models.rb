@@ -27,8 +27,8 @@ module Madek
     end
 
     class ::MigrationCollection < ActiveRecord::Base
-      enum layout: COLLECTION_LAYOUT_VALUES.map{|k| [k,k]}.to_h
-      enum sorting:  COLLECTION_SORTING_VALUES.map{|k| [k,k]}.to_h
+      enum :layout, COLLECTION_LAYOUT_VALUES.map { |k| [k, k] }.to_h
+      enum :sorting, COLLECTION_SORTING_VALUES.map { |k| [k, k] }.to_h
 
       self.table_name = 'collections'
     end

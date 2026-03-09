@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 7.2.2.2'
+gem 'rails', '~> 8.0.0'
 gem "sprockets", "<4" # DO NOT UPGRADE SPROCKETS!
 
 # force latest version as of 22.07.2025 due to a critical security patch
@@ -10,7 +10,7 @@ gem 'pg'
 
 # gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks'
 # gem 'pg_tasks', path: '/Users/uvanbinsloc/dev/leihs-misc/rails_pg-tasks'
-gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks', branch: 'rails7'
+gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks', branch: 'rails8'
 
 gem 'textacular', '~> 5.0'
 
