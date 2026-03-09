@@ -1,5 +1,3 @@
-\restrict UmiUsMqohJegbQpwFcLoOLaetgIJV9wgt5Q4PhB2omMgVjaockTILldlRvEWdg0
-
 -- Dumped from database version 15.15 (Homebrew)
 -- Dumped by pg_dump version 15.15 (Homebrew)
 
@@ -6456,8 +6454,6 @@ ALTER TABLE ONLY public.zencoder_jobs
 --
 -- PostgreSQL database dump complete
 --
-
-\unrestrict UmiUsMqohJegbQpwFcLoOLaetgIJV9wgt5Q4PhB2omMgVjaockTILldlRvEWdg0
 
 SET search_path TO "$user", public;
 

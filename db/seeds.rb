@@ -15,6 +15,13 @@ ActiveRecord::Base.transaction do
     .first_or_create(id: 'password', type: 'password', enabled: true,
                      name: 'Madek Password Authentication')
 
+  SmtpSetting.first_or_create!
+
+  NotificationCase.find_or_create_by!(label: 'transfer_responsibility') do |notification_case|
+    notification_case.description = 'Notification for transferred responsibility'
+    notification_case.allowed_email_frequencies = %w[never daily weekly]
+  end
+
 
   # Core Vocab #####################################################################
 
