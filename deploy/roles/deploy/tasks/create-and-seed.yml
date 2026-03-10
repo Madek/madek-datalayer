@@ -1,0 +1,23 @@
+- name: check for existing database
+  changed_when: false
+  register: check_existing_database
+  shell: |
+    psql --port {{database.port}} -AXtq -c \
+      "SELECT 'already exists' FROM pg_database WHERE datname = '{{database.name}}';"
+
+- name: create and seed database if it does not exist
+  when: '"already exists" not in check_existing_database.stdout'
+  shell: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    /usr/lib/postgresql/15/bin/createdb \
+     --port {{database.port}} {{database.name}}
+
+    /usr/lib/postgresql/15/bin/pg_restore \
+      --port {{database.port}} --disable-triggers \
+      -x -O -d {{database.name}} \
+      {{madek_datalayer_dir}}/db/seeds.pgbin
+
+  args:
+    executable: /bin/bash

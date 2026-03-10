@@ -1,0 +1,7 @@
+- name: Drop DB
+  postgresql_db:
+    name: '{{database.name}}'
+    state: absent
+    login_port: '{{database.port}}'
+    login_user: root
+    force: true

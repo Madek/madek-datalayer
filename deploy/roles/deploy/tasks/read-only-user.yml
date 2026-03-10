@@ -1,0 +1,30 @@
+- name: create {{database.user}}-readonly DB user
+  postgresql_user:
+    name: '{{database.user}}-readonly'
+    role_attr_flags: LOGIN
+    login_user: root
+    login_port: 5415
+
+- name: grant read for {{database.user}}-readonly on madek
+  postgresql_privs:
+    login_db: madek
+    objs: TABLES
+    privs: SELECT
+    roles: '{{database.user}}-readonly'
+    schema: public
+    state: present
+    type: default_privs
+    login_user: root
+    login_port: 5415
+
+- name: grand exec for {{database.user}}-readonly on madek
+  postgresql_privs:
+    login_db: madek
+    objs: ALL_IN_SCHEMA
+    privs: EXECUTE
+    roles: '{{database.user}}-readonly'
+    schema: public
+    state: present
+    type: function
+    login_user: root
+    login_port: 5415

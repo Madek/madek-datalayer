@@ -1,0 +1,26 @@
+- name: create archive
+  shell: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+    {{role_path}}/../../../bin/build
+  delegate_to: localhost
+  args:
+    executable: /bin/bash
+
+- name: remove existing service dir {{madek_datalayer_dir}}
+  file:
+    path: "{{madek_datalayer_dir}}"
+    state: absent
+
+- name: create empty service dir  {{madek_datalayer_dir}}
+  file:
+    path: "{{madek_datalayer_dir}}"
+    state: directory
+    owner: "{{madek_datalayer_user}}"
+    recurse: yes
+
+- name: extract archive
+  unarchive:
+    src: "{{role_path}}/../../../madek-datalayer.tar.gz"
+    dest: "{{madek_datalayer_dir}}"
+    owner: "{{madek_datalayer_user}}"

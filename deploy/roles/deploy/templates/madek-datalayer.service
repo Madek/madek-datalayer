@@ -1,0 +1,33 @@
+[Unit]
+Description=Madek Datalayer Migration Service
+After=syslog.target
+
+BindsTo=postgresql@{{postgres_version}}-main.service
+After=postgresql@{{postgres_version}}-main.service
+PartOf=postgresql@{{postgres_version}}-main.service
+
+StartLimitIntervalSec=180
+StartLimitBurst=6
+
+
+[Service]
+SyslogIdentifier=madek-datalayer
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory={{madek_datalayer_dir}}
+User={{madek_datalayer_user}}
+Group={{madek_datalayer_user}}
+
+Environment=PATH={{madek_datalayer_ruby_dir}}/bin:/usr/local/bin:/usr/bin:/bin
+Environment=RAILS_LOG_LEVEL=WARN
+Environment=RAILS_ENV=production
+Environment=SECRET_KEY_BASE={{secret_key_base}}
+
+ExecStart={{madek_datalayer_ruby_dir}}/bin/ruby -S \
+    bundle exec rake db:migrate
+
+[Install]
+WantedBy=multi-user.target
+WantedBy=postgresql@{{postgres_version}}-main.service
+
+# vi: ft=sh

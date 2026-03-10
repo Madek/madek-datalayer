@@ -1,0 +1,4 @@
+madek_datalayer_user: "{{madek_user}}"
+madek_datalayer_dir: "{{madek_root_dir}}/server/datalayer"
+drop_database: false
+restore_structure_and_data: false

@@ -1,0 +1,15 @@
+- name: copy service template
+  template:
+    src: madek-datalayer.service
+    dest: /etc/systemd/system/madek-datalayer.service
+    mode: 0644
+
+- name: reload systemctl
+  systemd:
+    daemon_reload: yes
+
+- name: start service
+  service:
+    name: madek-datalayer
+    state: restarted
+    enabled: yes

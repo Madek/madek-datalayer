@@ -1,0 +1,15 @@
+- name: create the {{madek_datalayer_user}} user
+  user:
+    name: '{{madek_datalayer_user}}'
+    system: yes
+
+- include_tasks: project.yml
+- include_tasks: install-ruby.yml
+- include_tasks: config.yml
+- include_tasks: drop-database.yml
+  when: drop_database
+- include_tasks: create-and-seed.yml
+- include_tasks: restore.yml
+  when: restore_structure_and_data | bool
+- include_tasks: read-only-user.yml
+- include_tasks: service.yml
