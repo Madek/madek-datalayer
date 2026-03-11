@@ -63,6 +63,14 @@
 # Mise Ruby (fallback when system ruby does not match)
 ###############################################################################
 
+- name: ensure gnupg and curl are installed
+  apt:
+    name:
+      - gnupg
+      - curl
+    state: present
+  when: not use_system_ruby
+
 - name: install mise apt signing key
   shell: |
     install -dm 755 /etc/apt/keyrings
