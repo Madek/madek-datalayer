@@ -1,7 +1,7 @@
-\restrict UmiUsMqohJegbQpwFcLoOLaetgIJV9wgt5Q4PhB2omMgVjaockTILldlRvEWdg0
+\restrict bEy6Lw0bBHMUqti45Hqj2CUOQAfMwveuFHt8YoOPMzDT0Ue0ZLhcNYHDPKRuJmy
 
--- Dumped from database version 15.15 (Homebrew)
--- Dumped by pg_dump version 15.15 (Homebrew)
+-- Dumped from database version 15.15 (Postgres.app)
+-- Dumped by pg_dump version 15.15 (Postgres.app)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1292,7 +1292,7 @@ CREATE TABLE public.meta_keys (
     CONSTRAINT check_is_extensible_list_is_boolean_for_respective_meta_datum_t CHECK (((((is_extensible_list = true) OR (is_extensible_list = false)) AND (meta_datum_object_type = ANY (ARRAY['MetaDatum::Keywords'::text, 'MetaDatum::Roles'::text]))) OR (meta_datum_object_type <> ALL (ARRAY['MetaDatum::Keywords'::text, 'MetaDatum::Roles'::text])))),
     CONSTRAINT check_keywords_alphabetical_order_is_boolean_for_meta_datum_key CHECK (((((keywords_alphabetical_order = true) OR (keywords_alphabetical_order = false)) AND (meta_datum_object_type = 'MetaDatum::Keywords'::text)) OR (meta_datum_object_type <> 'MetaDatum::Keywords'::text))),
     CONSTRAINT check_roles_list_id_only_for_people CHECK (((meta_datum_object_type = 'MetaDatum::People'::text) OR ((meta_datum_object_type <> 'MetaDatum::People'::text) AND (roles_list_id IS NULL)))),
-    CONSTRAINT check_selection_field_type_value CHECK (((selection_field_type)::text = ANY ((ARRAY['auto'::character varying, 'mark'::character varying, 'list'::character varying])::text[]))),
+    CONSTRAINT check_selection_field_type_value CHECK (((selection_field_type)::text = ANY (ARRAY[('auto'::character varying)::text, ('mark'::character varying)::text, ('list'::character varying)::text]))),
     CONSTRAINT check_valid_meta_datum_object_type CHECK ((meta_datum_object_type = ANY (ARRAY['MetaDatum::Groups'::text, 'MetaDatum::Keywords'::text, 'MetaDatum::Licenses'::text, 'MetaDatum::People'::text, 'MetaDatum::Roles'::text, 'MetaDatum::Text'::text, 'MetaDatum::TextDate'::text, 'MetaDatum::Users'::text, 'MetaDatum::Vocables'::text, 'MetaDatum::JSON'::text, 'MetaDatum::MediaEntry'::text]))),
     CONSTRAINT check_valid_text_type CHECK ((text_type = ANY (ARRAY['line'::text, 'block'::text]))),
     CONSTRAINT descriptions_non_blank CHECK (('^ *$'::text !~ ALL (public.avals(descriptions)))),
@@ -2022,8 +2022,9 @@ CREATE TABLE public.groups (
     institution text DEFAULT 'local'::text NOT NULL,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
-    created_by_user_id uuid,
+    creator_id uuid,
     is_assignable boolean DEFAULT true NOT NULL,
+    updator_id uuid,
     CONSTRAINT check_valid_type CHECK (((type)::text = ANY (ARRAY[('AuthenticationGroup'::character varying)::text, ('InstitutionalGroup'::character varying)::text, ('Group'::character varying)::text])))
 );
 
@@ -5854,6 +5855,22 @@ ALTER TABLE ONLY public.auth_systems_groups
 
 
 --
+-- Name: groups fk_groups_creator_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.groups
+    ADD CONSTRAINT fk_groups_creator_id FOREIGN KEY (creator_id) REFERENCES public.users(id);
+
+
+--
+-- Name: groups fk_groups_updator_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.groups
+    ADD CONSTRAINT fk_groups_updator_id FOREIGN KEY (updator_id) REFERENCES public.users(id);
+
+
+--
 -- Name: roles_lists_roles fk_rails_049e360951; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5907,14 +5924,6 @@ ALTER TABLE ONLY public.api_clients
 
 ALTER TABLE ONLY public.groups_users
     ADD CONSTRAINT fk_rails_4e63edbd27 FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: groups fk_rails_67ff8c8afc; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.groups
-    ADD CONSTRAINT fk_rails_67ff8c8afc FOREIGN KEY (created_by_user_id) REFERENCES public.users(id);
 
 
 --
@@ -6457,12 +6466,13 @@ ALTER TABLE ONLY public.zencoder_jobs
 -- PostgreSQL database dump complete
 --
 
-\unrestrict UmiUsMqohJegbQpwFcLoOLaetgIJV9wgt5Q4PhB2omMgVjaockTILldlRvEWdg0
+\unrestrict bEy6Lw0bBHMUqti45Hqj2CUOQAfMwveuFHt8YoOPMzDT0Ue0ZLhcNYHDPKRuJmy
 
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
+('76'),
 ('75'),
 ('74'),
 ('73'),
