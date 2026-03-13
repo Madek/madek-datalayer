@@ -2023,6 +2023,7 @@ CREATE TABLE public.groups (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     created_by_user_id uuid,
+    updated_by_user_id uuid,
     is_assignable boolean DEFAULT true NOT NULL,
     CONSTRAINT check_valid_type CHECK (((type)::text = ANY (ARRAY[('AuthenticationGroup'::character varying)::text, ('InstitutionalGroup'::character varying)::text, ('Group'::character varying)::text])))
 );
@@ -5918,6 +5919,14 @@ ALTER TABLE ONLY public.groups
 
 
 --
+-- Name: groups fk_groups_updated_by_user_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.groups
+    ADD CONSTRAINT fk_groups_updated_by_user_id FOREIGN KEY (updated_by_user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: vocabulary_user_permissions fk_rails_6ad9b754cf; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6463,6 +6472,7 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
+('76'),
 ('75'),
 ('74'),
 ('73'),
