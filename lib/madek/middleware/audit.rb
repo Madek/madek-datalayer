@@ -20,6 +20,11 @@ module Madek
               txid = get_txid
               response = @app.call(env)
             end
+          # NOTE: When one COMMITs an aborted transaction, PG silently issues a ROLLBACK.
+          # It responds with ROLLBACK but with PGRES_COMMAND_OK (not an error).
+          # The pg gem doesn't raise. Rails doesn't raise.
+          # The middleware's rescue block is never entered.
+          # Response (200) is returned to the browser.
           rescue => e
             persist_request(txid, env, user_id)
             persist_response(txid, 500)
@@ -54,28 +59,18 @@ module Madek
         http_uid = env["HTTP_HTTP_UID"]
         method = env["REQUEST_METHOD"].downcase
 
-        db_conn.execute <<-SQL
-          INSERT INTO audited_requests (
-            txid,
-            http_uid,
-            path,
-            user_id,
-            method
-          )
-          VALUES (
-            '#{txid}',
-            #{http_uid.presence ? "'#{http_uid}'" : "NULL"},
-            #{path.presence ? "'#{path}'" : "NULL"},
-            #{user_id.presence ? "'#{user_id}'" : "NULL"},
-            #{method.presence ? "'#{method}'" : "NULL"}
-          )
+        c = db_conn
+        c.execute <<-SQL
+          INSERT INTO audited_requests (txid, http_uid, path, user_id, method)
+          VALUES (#{c.quote(txid)}, #{c.quote(http_uid)}, #{c.quote(path)}, #{c.quote(user_id)}, #{c.quote(method)})
         SQL
       end
 
       def persist_response(txid, status)
-        db_conn.execute <<-SQL
+        c = db_conn
+        c.execute <<-SQL
           INSERT INTO audited_responses (txid, status)
-          VALUES ('#{txid}', '#{status}')
+          VALUES (#{c.quote(txid)}, #{c.quote(status)})
         SQL
       end
 
