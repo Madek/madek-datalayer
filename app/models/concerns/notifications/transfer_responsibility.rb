@@ -4,7 +4,7 @@ module Notifications
 
     included do
       def self.transfer_responsibility(resource, old_entity, new_entity, extra_data = nil, acting_user: nil)
-        notification_case = NotificationCase.find('transfer_responsibility')
+        notification_case = NotificationCase.find_by!(label: 'transfer_responsibility')
         merged_data = extra_data.present? ? extra_data.deep_dup : {}
         acting_user_name = acting_user&.to_s ||
                            merged_data.dig(:acting_user, :fullname)

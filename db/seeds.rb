@@ -11,9 +11,36 @@ DEFAULT_LOCALE = AppSetting.default_locale
 ActiveRecord::Base.transaction do
 
   # SystemSettings.first_or_create!
-  AuthSystem.where(id: 'password') \
-    .first_or_create(id: 'password', type: 'password', enabled: true,
-                     name: 'Madek Password Authentication')
+  password_auth_system = AuthSystem.find_or_create_by!(id: 'password') do |auth_system|
+    auth_system.type = 'password'
+    auth_system.enabled = true
+    auth_system.name = 'Madek Password Authentication'
+  end
+  password_auth_system.update!(
+    type: 'password',
+    enabled: true,
+    name: 'Madek Password Authentication'
+  )
+
+  AuthenticationGroup.find_or_create_by!(
+    id: Madek::Constants::SIGNED_IN_USERS_GROUP_ID
+  ) do |group|
+    group.name = 'Signed-in Users'
+    group.type = 'AuthenticationGroup'
+  end
+
+  # Baseline rows required by notification/email flows and downstream CI seeds checks.
+  transfer_responsibility_case = NotificationCase.find_or_initialize_by(
+    label: 'transfer_responsibility'
+  )
+  transfer_responsibility_case.description ||= \
+    'Notification sent when responsibility is transferred to a user or delegation.'
+  transfer_responsibility_case.allowed_email_frequencies = (
+    Array(transfer_responsibility_case.allowed_email_frequencies) + %w[never daily weekly]
+  ).uniq
+  transfer_responsibility_case.save!
+
+  SmtpSetting.find_or_create_by!(id: 0)
 
 
   # Core Vocab #####################################################################
