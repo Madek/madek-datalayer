@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
 
-require 'active_support/all'
+require 'bundler/inline'
+gemfile do
+  source 'https://rubygems.org'
+  gem 'activesupport', require: 'active_support/all'
+end
 
 
 ############## options ########################################################

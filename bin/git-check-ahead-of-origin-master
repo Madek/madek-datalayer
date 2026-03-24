@@ -3,7 +3,7 @@ set -euo pipefail
 
 PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
 
-${PROJECT_DIR}/bin/env/ruby-setup --quiet
+${PROJECT_DIR}/bin/env/ruby-version-setup
 
 ruby "${PROJECT_DIR}/bin/git-check-origin-master-distance.rb" "$@"
 
