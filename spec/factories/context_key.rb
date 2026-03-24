@@ -3,7 +3,7 @@ FactoryBot.define do
   factory :context_key do
     context { create(:context) }
     meta_key { MetaKey.first || create(:meta_key_text) }
-    id { Faker::Internet.slug(words: nil, glue: '-') }
+    sequence(:id) { |n| "#{Faker::Internet.slug(words: nil, glue: '-')}-#{n}" }
     labels do
       { AppSetting.default_locale => Faker::Lorem.word }
     end

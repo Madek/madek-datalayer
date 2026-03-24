@@ -1,7 +1,7 @@
 FactoryBot.define do
 
   factory :context do
-    id { Faker::Internet.slug(words: nil, glue: '-') }
+    sequence(:id) { |n| "#{Faker::Internet.slug(words: nil, glue: '-')}-#{n}" }
     labels do
       { AppSetting.default_locale => Faker::Lorem.word }
     end
