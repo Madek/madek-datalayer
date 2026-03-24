@@ -29,6 +29,19 @@ ActiveRecord::Base.transaction do
     group.type = 'AuthenticationGroup'
   end
 
+  # Baseline rows required by notification/email flows and downstream CI seeds checks.
+  transfer_responsibility_case = NotificationCase.find_or_initialize_by(
+    label: 'transfer_responsibility'
+  )
+  transfer_responsibility_case.description ||= \
+    'Notification sent when responsibility is transferred to a user or delegation.'
+  transfer_responsibility_case.allowed_email_frequencies = (
+    Array(transfer_responsibility_case.allowed_email_frequencies) + %w[never daily weekly]
+  ).uniq
+  transfer_responsibility_case.save!
+
+  SmtpSetting.find_or_create_by!(id: 0)
+
 
   # Core Vocab #####################################################################
 

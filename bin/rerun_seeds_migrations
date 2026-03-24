@@ -13,5 +13,6 @@ bundle exec rails db:pg:terminate_connections db:drop db:create db:migrate
 bundle exec rails db:seed
 rm -f db/seeds.pgbin
 bundle exec rails db:pg:structure_and_data:dump FILE=db/seeds.pgbin
+./bin/check_seed_baseline db/seeds.pgbin
 
 

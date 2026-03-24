@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROJECT_DIR="$(cd -- "$(dirname "${BASH_SOURCE}")" ; cd .. > /dev/null 2>&1 && pwd -P)"
+cd "$PROJECT_DIR"
+
+FILE="${1:-db/seeds.pgbin}"
+
+if [ ! -f "$FILE" ]; then
+  echo "Missing seed dump: $FILE"
+  exit 1
+fi
+
+notification_cases_dump="$(pg_restore -a -t notification_cases -f - "$FILE")"
+smtp_settings_dump="$(pg_restore -a -t smtp_settings -f - "$FILE")"
+
+if ! printf '%s\n' "$notification_cases_dump" | rg -q "^transfer_responsibility\\s"; then
+  echo "Missing notification_cases baseline row: transfer_responsibility"
+  exit 1
+fi
+
+if ! printf '%s\n' "$notification_cases_dump" | rg -q "\\{never,daily,weekly\\}"; then
+  echo "Missing required allowed_email_frequencies baseline: {never,daily,weekly}"
+  exit 1
+fi
+
+if ! printf '%s\n' "$smtp_settings_dump" | rg -q "^0\\s"; then
+  echo "Missing smtp_settings baseline row with id=0"
+  exit 1
+fi
+
+echo "Seed baseline check passed for $FILE"
