@@ -85,15 +85,21 @@ class MediaFile < ApplicationRecord
       w = dimensions.try(:fetch, :width)
       h = dimensions.try(:fetch, :height)
 
-      FileConversion.convert(store_location, store_location_new_file, w, h)
+      # Create preview unless target size is larger than original
+      # - w.nil? means target size is `maximum` = original size -> always create
+      # - width.nil? means original size is unknown or dynamic, e.g. for PDF -> always create
+      if w.nil? || width.nil? || w <= width
 
-      new_dimensions = get_dimensions(store_location_new_file) || {}
+        FileConversion.convert(store_location, store_location_new_file, w, h)
 
-      previews.create!(content_type: 'image/jpeg',
-                       filename: store_location_new_file.split('/').last,
-                       height: new_dimensions[:height] || h,
-                       width: new_dimensions[:width] || w,
-                       thumbnail: thumb_size)
+        new_dimensions = get_dimensions(store_location_new_file) || {}
+        previews.create!(content_type: 'image/jpeg',
+                        filename: store_location_new_file.split('/').last,
+                        height: new_dimensions[:height] || h,
+                        width: new_dimensions[:width] || w,
+                        thumbnail: thumb_size)
+
+      end
     end
   end
 
