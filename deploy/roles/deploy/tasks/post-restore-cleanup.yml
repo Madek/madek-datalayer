@@ -1,0 +1,15 @@
+- name: Suppress emails restored from prod
+  become: true
+  become_user: '{{database.user}}'
+  shell: >
+    psql --port {{database.port}} {{database.name}} -c
+    "UPDATE emails SET trials=9999, is_successful=false, updated_at=now(),
+    error_message='suppressed: restored from prod backup'
+    WHERE is_successful IS NOT TRUE;"
+
+- name: Acknowledge notifications restored from prod
+  become: true
+  become_user: '{{database.user}}'
+  shell: >
+    psql --port {{database.port}} {{database.name}} -c
+    "UPDATE notifications SET acknowledged=true WHERE acknowledged=false;"
