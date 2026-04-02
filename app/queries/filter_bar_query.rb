@@ -7,7 +7,6 @@
 # - "Values" can be Keywords and People
 #
 # NOTES:
-# - USE WITH CARE - never use this with user input (SQL injection 👻)
 # - only returns *publicly visible* data
 #   (i.e. does not fully implement Vocabulary.Permissions)
 # - does NOT limit anything (worst case in production is currently fast enough)
@@ -28,7 +27,7 @@ class FilterBarQuery < ActiveRecord::Base
         OR EXISTS (
           SELECT * FROM vocabulary_user_permissions
           WHERE vocabulary_user_permissions.vocabulary_id = vocabularies.id
-          AND vocabulary_user_permissions.user_id = '#{user_id}'
+          AND vocabulary_user_permissions.user_id = #{sanitize_sql(["'%s'", user_id.to_s])}
           AND vocabulary_user_permissions.view = true
         )
         OR EXISTS(
@@ -36,7 +35,7 @@ class FilterBarQuery < ActiveRecord::Base
           WHERE vocabulary_group_permissions.vocabulary_id = vocabularies.id
           AND vocabulary_group_permissions.group_id = groups_users.group_id
           AND vocabulary_group_permissions.view = true
-          AND groups_users.user_id = '#{user_id}'
+          AND groups_users.user_id = #{sanitize_sql(["'%s'", user_id.to_s])}
         )
       SQL
     end
@@ -45,7 +44,7 @@ class FilterBarQuery < ActiveRecord::Base
                        UUIDTools::UUID.parse(ck_id)
                      end
     context_key_id_part = if context_key_id.presence
-                            "AND context_keys.id = '#{context_key_id}'" 
+                             "AND context_keys.id = #{sanitize_sql(["'%s'", context_key_id.to_s])}"
                           end
     search_term = opts[:search_term].presence
     search_term_part = if search_term
@@ -71,7 +70,7 @@ class FilterBarQuery < ActiveRecord::Base
            vocabularies.enabled_for_public_view IS TRUE
            #{permissions_part}
          )
-         WHERE contexts.id IN (#{contexts.map { |c| "'#{c.id}'" }.join(', ')})),
+         WHERE contexts.id IN (#{contexts.map { |c| sanitize_sql(["'%s'", c.id]) }.join(', ')})),
 
       with_joined_data AS
       (
@@ -112,7 +111,7 @@ class FilterBarQuery < ActiveRecord::Base
                      with_joined_data.context_key_id,
                      COUNT(with_joined_data.#{singular}_id) AS count,
                      roles.id AS uuid,
-                     roles.labels->'#{I18n.locale}' AS label,
+                     roles.labels->#{sanitize_sql(["'%s'", I18n.locale.to_s])} AS label,
                      'role' AS type
         FROM with_joined_data
         INNER JOIN meta_data_people ON meta_data_people.meta_datum_id = with_joined_data.meta_data_id

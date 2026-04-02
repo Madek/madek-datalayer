@@ -11,8 +11,12 @@ module Users
         case attribute.to_sym
         when :first_name_last_name
           reorder("first_name ASC NULLS FIRST, last_name ASC NULLS FIRST, email")
+        when :login
+          reorder("login ASC")
+        when :email
+          reorder("email ASC")
         else
-          reorder(attribute)
+          raise ArgumentError, "order_by: attribute '#{attribute}' is out of range"
         end
       }
     end
