@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 8.0.0'
+gem 'rails', '~> 8.1.0'
 gem "sprockets", "<4" # DO NOT UPGRADE SPROCKETS!
 
 # force latest version as of 22.07.2025 due to a critical security patch

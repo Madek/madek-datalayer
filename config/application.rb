@@ -9,8 +9,7 @@ Bundler.require(*Rails.groups)
 module MadekDatalayer
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 8.0
-    config.active_support.to_time_preserves_timezone = :zone
+    config.load_defaults 8.1
 
     config.active_record.schema_format = :sql
     config.active_record.timestamped_migrations = false
