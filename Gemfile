@@ -3,9 +3,6 @@ source 'https://rubygems.org'
 gem 'rails', '~> 8.1.0'
 gem "sprockets", "<4" # DO NOT UPGRADE SPROCKETS!
 
-# force latest version as of 22.07.2025 due to a critical security patch
-gem 'nokogiri', '>= 1.18.9' 
-
 gem 'pg'
 
 # gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks'
@@ -15,7 +12,7 @@ gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks', branch: 'rails8'
 gem 'textacular', '~> 5.0'
 
 gem 'base32-crockford'
-gem 'bcrypt', '~> 3.1.13'
+gem 'bcrypt', '~> 3.1.22'
 gem 'chronic_duration'
 # https://stackoverflow.com/questions/71191685/visit-psych-nodes-alias-unknown-alias-default-psychbadalias
 gem 'listen'
