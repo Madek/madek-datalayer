@@ -1,12 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'rails', '~> 8.1.0'
-gem "sprockets", "<4" # DO NOT UPGRADE SPROCKETS!
-
 gem 'pg'
-
-# gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks'
-# gem 'pg_tasks', path: '/Users/uvanbinsloc/dev/leihs-misc/rails_pg-tasks'
 gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks', branch: 'rails8'
 
 gem 'textacular', '~> 5.0'
@@ -14,9 +9,9 @@ gem 'textacular', '~> 5.0'
 gem 'base32-crockford'
 gem 'bcrypt', '~> 3.1.22'
 gem 'chronic_duration'
-# https://stackoverflow.com/questions/71191685/visit-psych-nodes-alias-unknown-alias-default-psychbadalias
 gem 'listen'
 gem 'liquid'
+# https://stackoverflow.com/questions/71191685/visit-psych-nodes-alias-unknown-alias-default-psychbadalias
 gem 'psych', '< 4'
 gem 'rspec-rails', '~> 7', group: [:test, :development]
 gem 'strong_password'
