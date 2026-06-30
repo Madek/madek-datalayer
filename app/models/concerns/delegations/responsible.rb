@@ -20,7 +20,7 @@ module Delegations
     def delegation_with_user?(user)
       return false if responsible_delegation.nil?
 
-      ids = self.class.connection.exec_query(user.delegation_ids.to_sql).rows.flatten
+      ids = user.delegation_ids
       ids.include?(responsible_delegation_id)
     end
   end

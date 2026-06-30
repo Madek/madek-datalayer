@@ -24,7 +24,17 @@ module Users
         end
       end
 
+      # NOTE: reload does not clear @delegation_ids — only safe because no app code calls user.reload
+      # pre-fetched once per instance; avoids repeated subqueries in permission filters
       def delegation_ids
+        @delegation_ids ||= self.class.connection
+          .exec_query(delegation_ids_arel.to_sql)
+          .rows.flatten
+      end
+
+      private
+
+      def delegation_ids_arel
         delegations_users = Arel::Table.new(:delegations_users)
         delegations_groups = Arel::Table.new(:delegations_groups)
         groups_users = Arel::Table.new(:groups_users)
