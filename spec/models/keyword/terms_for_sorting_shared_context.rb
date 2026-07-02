@@ -1,9 +1,16 @@
 require 'spec_helper'
 
-# the order may be different on your local machine or even on prod (:-o), but
-# this is how PG sorts on Cider's executors
+# Sort order with ICU de-CH collation (Cider CI + production DBs via create-db).
 shared_context :datalayer_terms_for_sorting do
   let(:terms) do
-    ['0foo', '9foo', 'äfoo', 'Äfoo', 'bar', 'Bar', '#foo', 'foo', 'Foo', '合気道']
+    [
+      '_foo', '-foo', '.foo', '#foo',
+      '0foo', '2foo', '9foo',
+      'aefoo', 'afoo', 'äfoo', 'Äfoo',
+      'bar', 'Bar', 'efoo', 'éfoo',
+      'foo', 'Foo', 'foo bar', 'foo-bar', 'foo.bar', 'foo2',
+      'ofoo', 'öfoo', 'Öfoo',
+      'ssfoo', 'ßfoo', 'zfoo', '合気道'
+    ]
   end
 end

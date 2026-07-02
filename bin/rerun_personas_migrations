@@ -14,7 +14,7 @@ export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
 env | sort
 
 dropdb -e --if-exists $PGDATABASE
-createdb -e $PGDATABASE
+./bin/create-db -e $PGDATABASE
 
 ###########################################################################################################################
 # This combo (structure, then data) does not work with changed personas dump:

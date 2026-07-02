@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ICU_LOCALE="${ICU_LOCALE:-de-CH}"
+
+"${CREATEDB:-createdb}" \
+  --locale-provider=icu \
+  --icu-locale="${ICU_LOCALE}" \
+  --encoding=UTF8 \
+  --template=template0 \
+  "$@"
