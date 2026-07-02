@@ -9,7 +9,7 @@ export RAILS_ENV=test
 source bin/db-set-env
 
 dropdb -e -f --if-exists $PGDATABASE
-createdb -e $PGDATABASE
+./bin/create-db -e $PGDATABASE
 
 bundle exec rake db:migrate "$@"
 

@@ -11,8 +11,11 @@
     #!/usr/bin/env bash
     set -euo pipefail
 
-    /usr/lib/postgresql/15/bin/createdb \
-     --port {{database.port}} {{database.name}}
+    ICU_LOCALE="{{ icu_locale | default('de-CH') }}" \
+    CREATEDB=/usr/lib/postgresql/15/bin/createdb \
+      {{madek_datalayer_dir}}/bin/create-db \
+      --port {{database.port}} \
+      {{database.name}}
 
     /usr/lib/postgresql/15/bin/pg_restore \
       --port {{database.port}} --disable-triggers \

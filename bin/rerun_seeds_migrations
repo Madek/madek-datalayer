@@ -9,7 +9,9 @@ source bin/db-set-env
 export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
 
 # seeds (only seeds, like the core vocab)
-bundle exec rails db:pg:terminate_connections db:drop db:create db:migrate
+dropdb -e -f --if-exists $PGDATABASE
+./bin/create-db -e $PGDATABASE
+bundle exec rails db:migrate
 bundle exec rails db:seed
 
 # migrate/seed produce audit trail noise (e.g. UPDATE/INSERT auth_systems);

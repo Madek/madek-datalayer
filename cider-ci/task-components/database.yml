@@ -24,7 +24,7 @@ scripts:
       #!/usr/bin/env bash
       set -euo pipefail
       source $DATALAYER_DIR/cider-ci/bin/pg_env_set
-      createdb "$DATABASE"
+      ${DATALAYER_DIR}/bin/create-db "$DATABASE"
       psql -d "$DATABASE" -f ${DATALAYER_DIR}/db/structure.sql
 
   test:
