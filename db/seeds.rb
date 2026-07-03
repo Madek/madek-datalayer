@@ -15,6 +15,8 @@ ActiveRecord::Base.transaction do
     .first_or_create(id: 'password', type: 'password', enabled: true,
                      name: 'Madek Password Authentication')
 
+  SmtpSetting.first_or_create!
+
 
   # Core Vocab #####################################################################
 
@@ -43,6 +45,12 @@ ActiveRecord::Base.transaction do
   # RDF Classes
   ['Keyword', 'License'].each do |name|
     RdfClass.find_or_create_by!(id: name)
+  end
+
+  # Notification Cases
+  NotificationCase.find_or_create_by!(label: 'transfer_responsibility') do |nc|
+    nc.description = 'Notification to be sent when responsibility for an entry or set is transfered to another user or a delegation.'
+    nc.allowed_email_frequencies = ['never', 'daily', 'weekly']
   end
 
   # NOTE: No default Context(s), as they are not needed as seeds
