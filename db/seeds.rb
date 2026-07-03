@@ -45,6 +45,12 @@ ActiveRecord::Base.transaction do
     RdfClass.find_or_create_by!(id: name)
   end
 
+  # Notification Cases
+  NotificationCase.find_or_create_by!(label: 'transfer_responsibility') do |nc|
+    nc.description = 'Notification to be sent when responsibility for an entry or set is transfered to another user or a delegation.'
+    nc.allowed_email_frequencies = ['never', 'daily', 'weekly']
+  end
+
   # NOTE: No default Context(s), as they are not needed as seeds
   # for testing, there is personas; for prod stock defaults are applied on install
 
