@@ -1,6 +1,3 @@
--- Dumped from database version 15.15 (Homebrew)
--- Dumped by pg_dump version 15.15 (Homebrew)
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -1835,6 +1832,40 @@ CREATE TABLE public.confidential_links (
 
 
 --
+-- Name: context_api_client_permissions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.context_api_client_permissions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    api_client_id uuid NOT NULL,
+    context_id character varying NOT NULL,
+    use boolean DEFAULT false NOT NULL,
+    view boolean DEFAULT true NOT NULL,
+    creator_id uuid,
+    updator_id uuid,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+
+--
+-- Name: context_group_permissions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.context_group_permissions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    group_id uuid NOT NULL,
+    context_id character varying NOT NULL,
+    use boolean DEFAULT false NOT NULL,
+    view boolean DEFAULT true NOT NULL,
+    creator_id uuid,
+    updator_id uuid,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+
+--
 -- Name: context_keys; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1860,6 +1891,23 @@ CREATE TABLE public.context_keys (
 
 
 --
+-- Name: context_user_permissions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.context_user_permissions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    context_id character varying NOT NULL,
+    use boolean DEFAULT false NOT NULL,
+    view boolean DEFAULT true NOT NULL,
+    creator_id uuid,
+    updator_id uuid,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+
+--
 -- Name: contexts; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1868,6 +1916,8 @@ CREATE TABLE public.contexts (
     admin_comment text,
     labels public.hstore DEFAULT ''::public.hstore NOT NULL,
     descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
+    enabled_for_public_view boolean DEFAULT true NOT NULL,
+    enabled_for_public_use boolean DEFAULT true NOT NULL,
     CONSTRAINT context_id_chars CHECK (((id)::text ~* '^[a-z0-9\-\_]+$'::text))
 );
 
@@ -2854,6 +2904,30 @@ ALTER TABLE ONLY public.confidential_links
 
 
 --
+-- Name: context_api_client_permissions context_api_client_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.context_api_client_permissions
+    ADD CONSTRAINT context_api_client_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: context_group_permissions context_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.context_group_permissions
+    ADD CONSTRAINT context_group_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: context_user_permissions context_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.context_user_permissions
+    ADD CONSTRAINT context_user_permissions_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: contexts contexts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3457,6 +3531,27 @@ CREATE INDEX idx_colluserperm_edit_permissions ON public.collection_user_permiss
 --
 
 CREATE INDEX idx_colluserperm_get_metadata_and_previews ON public.collection_user_permissions USING btree (get_metadata_and_previews);
+
+
+--
+-- Name: idx_context_api_client; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_context_api_client ON public.context_api_client_permissions USING btree (api_client_id, context_id);
+
+
+--
+-- Name: idx_context_group; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_context_group ON public.context_group_permissions USING btree (group_id, context_id);
+
+
+--
+-- Name: idx_context_user; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_context_user ON public.context_user_permissions USING btree (user_id, context_id);
 
 
 --
@@ -4762,10 +4857,31 @@ CREATE TRIGGER confidential_links_audit_change AFTER INSERT OR DELETE OR UPDATE 
 
 
 --
+-- Name: context_api_client_permissions context_api_client_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER context_api_client_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.context_api_client_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: context_group_permissions context_group_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER context_group_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.context_group_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
 -- Name: context_keys context_keys_audit_change; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER context_keys_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.context_keys FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: context_user_permissions context_user_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER context_user_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.context_user_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
 
 
 --
@@ -5385,10 +5501,31 @@ CREATE TRIGGER update_updated_at_column_of_confidential_links BEFORE UPDATE ON p
 
 
 --
+-- Name: context_api_client_permissions update_updated_at_column_of_context_api_client_permissions; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_context_api_client_permissions BEFORE UPDATE ON public.context_api_client_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: context_group_permissions update_updated_at_column_of_context_group_permissions; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_context_group_permissions BEFORE UPDATE ON public.context_group_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
 -- Name: context_keys update_updated_at_column_of_context_keys; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER update_updated_at_column_of_context_keys BEFORE UPDATE ON public.context_keys FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: context_user_permissions update_updated_at_column_of_context_user_permissions; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_context_user_permissions BEFORE UPDATE ON public.context_user_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
@@ -5877,6 +6014,14 @@ ALTER TABLE ONLY public.roles_lists_roles
 
 
 --
+-- Name: context_api_client_permissions fk_rails_0c6c85d382; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.context_api_client_permissions
+    ADD CONSTRAINT fk_rails_0c6c85d382 FOREIGN KEY (context_id) REFERENCES public.contexts(id) ON DELETE CASCADE;
+
+
+--
 -- Name: notifications fk_rails_1d306a97df; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5949,6 +6094,14 @@ ALTER TABLE ONLY public.vocabulary_group_permissions
 
 
 --
+-- Name: context_api_client_permissions fk_rails_8ad9d08392; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.context_api_client_permissions
+    ADD CONSTRAINT fk_rails_8ad9d08392 FOREIGN KEY (api_client_id) REFERENCES public.api_clients(id) ON DELETE CASCADE;
+
+
+--
 -- Name: confidential_links fk_rails_8c2cb96882; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5973,6 +6126,30 @@ ALTER TABLE ONLY public.collection_user_permissions
 
 
 --
+-- Name: context_group_permissions fk_rails_91346c1302; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.context_group_permissions
+    ADD CONSTRAINT fk_rails_91346c1302 FOREIGN KEY (group_id) REFERENCES public.groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: context_user_permissions fk_rails_929e977dcb; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.context_user_permissions
+    ADD CONSTRAINT fk_rails_929e977dcb FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: context_user_permissions fk_rails_97e71b201f; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.context_user_permissions
+    ADD CONSTRAINT fk_rails_97e71b201f FOREIGN KEY (context_id) REFERENCES public.contexts(id) ON DELETE CASCADE;
+
+
+--
 -- Name: app_settings fk_rails_a3b6dc9d69; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5994,6 +6171,14 @@ ALTER TABLE ONLY public.delegations_groups
 
 ALTER TABLE ONLY public.delegations_supervisors
     ADD CONSTRAINT fk_rails_aaaca89dac FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: context_group_permissions fk_rails_ad2fffca7f; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.context_group_permissions
+    ADD CONSTRAINT fk_rails_ad2fffca7f FOREIGN KEY (context_id) REFERENCES public.contexts(id) ON DELETE CASCADE;
 
 
 --
@@ -6468,6 +6653,7 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
+('77'),
 ('76'),
 ('75'),
 ('74'),
