@@ -133,4 +133,28 @@ FactoryBot.define do
     user { FactoryBot.create :user }
   end
 
+  factory :context_api_client_permission,
+          class: Permissions::ContextApiClientPermission do
+    use { FactoryHelper.rand_bool 1 / 4.0 }
+    view { FactoryHelper.rand_bool 1 / 2.0 }
+    context { Context.find_random || (FactoryBot.create :context) }
+    api_client { FactoryBot.create :api_client }
+  end
+
+  factory :context_group_permission,
+          class: Permissions::ContextGroupPermission do
+    use { FactoryHelper.rand_bool 1 / 4.0 }
+    view { FactoryHelper.rand_bool 1 / 2.0 }
+    context { Context.find_random || (FactoryBot.create :context) }
+    group { FactoryBot.create :group }
+  end
+
+  factory :context_user_permission,
+          class: Permissions::ContextUserPermission do
+    use { FactoryHelper.rand_bool 1 / 4.0 }
+    view { FactoryHelper.rand_bool 1 / 2.0 }
+    context { Context.find_random || (FactoryBot.create :context) }
+    user { FactoryBot.create :user }
+  end
+
 end
