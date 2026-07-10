@@ -69,11 +69,12 @@ class MediaFile < ApplicationRecord
     new_dimensions
   end
 
-  def create_previews!(alternative_store_location = nil)
+  def create_previews!(alternative_store_location = nil,
+                       thumbnail_profiles: Madek::Constants::THUMBNAILS)
     store_location = alternative_store_location || original_store_location
     raise "Input file doesn't exist!" unless File.exist?(store_location)
 
-    Madek::Constants::THUMBNAILS.each do |thumb_size, dimensions|
+    thumbnail_profiles.each do |thumb_size, dimensions|
       next if thumb_size == :large && video?
 
       store_location_new_file =

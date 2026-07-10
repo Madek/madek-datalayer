@@ -18,7 +18,9 @@ describe Arcs::CollectionCollectionArc do
       # append parent to parent => raise trigger
       expect do
         @parent.collections << @parent
-      end.to raise_error(/function collection_may_not_be_its_own_parent/i)
+      end.to raise_error(
+        ActiveRecord::StatementInvalid,
+        /collection_may_not_be_its_own_parent|Collection may not be its own parent/i)
 
       check_counts(1, 1)
 

@@ -82,7 +82,7 @@ describe 'relations between meta_data and meta_keys' do
               "INSERT INTO meta_data (type,meta_key_id,collection_id)
                VALUES ('MetaDatum::Text','#{meta_key.id}','#{@collection.id}')"
           end
-        end.to raise_error /duplicate key value violates unique constraint/
+        end.to raise_error ActiveRecord::RecordNotUnique
       end
     end
 
