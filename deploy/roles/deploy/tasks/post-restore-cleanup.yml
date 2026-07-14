@@ -7,9 +7,12 @@
     error_message='suppressed: restored from prod backup'
     WHERE is_successful IS NOT TRUE;"
 
-- name: Acknowledge notifications restored from prod
+# notifications.data.suppressed_restored_from_prod: audit marker only, no code reads it
+- name: Suppress notifications restored from prod
   become: true
   become_user: '{{database.user}}'
   shell: >
     psql --port {{database.port}} {{database.name}} -c
-    "UPDATE notifications SET acknowledged=true WHERE acknowledged=false;"
+    "UPDATE notifications SET acknowledged=true, created_at=now() - interval '30 days',
+    data = data || '{\"suppressed_restored_from_prod\": true}'::jsonb
+    WHERE email_id IS NULL;"
