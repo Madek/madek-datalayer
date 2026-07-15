@@ -184,6 +184,11 @@ class User < ApplicationRecord
     self.emails_locale || AppSetting.first.default_locale
   end
 
+  def show_all_data_tab_in_edit_mode?
+    settings.is_a?(Hash) &&
+      settings["show_all_data_tab_in_edit_mode"] == true
+  end
+
   #################### BETA TESTING ###########################
 
   def beta_tester_notifications?

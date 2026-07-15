@@ -38,6 +38,34 @@ describe User do
     end
   end
 
+  describe '#show_all_data_tab_in_edit_mode?' do
+    it 'defaults to false' do
+      expect(create(:user).show_all_data_tab_in_edit_mode?).to be false
+    end
+
+    it 'reads the preference from settings' do
+      user = create(
+        :user,
+        settings: { show_all_data_tab_in_edit_mode: true })
+
+      expect(user.show_all_data_tab_in_edit_mode?).to be true
+    end
+
+    it 'returns false for non-boolean values' do
+      user = create(
+        :user,
+        settings: { show_all_data_tab_in_edit_mode: "false" })
+
+      expect(user.show_all_data_tab_in_edit_mode?).to be false
+    end
+
+    it 'returns false when settings is not an object' do
+      user = create(:user, settings: [])
+
+      expect(user.show_all_data_tab_in_edit_mode?).to be false
+    end
+  end
+
   describe '#all_delegations' do
     let(:user) { create(:user) }
     let!(:another_user) { create(:user) }

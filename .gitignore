@@ -10,4 +10,5 @@
 /db/*.sqlite3-journal
 /log/*
 /tmp
+/vendor
 backups
