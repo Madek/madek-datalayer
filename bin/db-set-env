@@ -8,12 +8,22 @@ if [ ! -e $PROJECT_DIR/config/database.yml ]; then
   ln -s $PROJECT_DIR/config/database_dev.yml $PROJECT_DIR/config/database.yml
 fi
 
-DBCONFIG=$(RAILS_ENV=$RAILS_ENV bundle exec rails runner "print(ActiveRecord::Base.connection_db_config.configuration_hash.to_json) & STDOUT.flush")
-DBCONFIG=$(bundle exec rails runner "print(ActiveRecord::Base.connection_db_config.configuration_hash.to_json)")
-PGDATABASE=$(echo "$DBCONFIG" | jq -r .database)
-PGPORT=$(echo $DBCONFIG | jq -r .port)
-PGUSER=$(echo $DBCONFIG | jq -r .username)
-PGPASSWORD=$(echo $DBCONFIG | jq -r .password)
+: "${RAILS_ENV:=development}"
+
+DBCONFIG=$(
+  DBCONFIG_FILE=$(mktemp)
+  trap 'rm -f "$DBCONFIG_FILE"' EXIT
+  RAILS_ENV="$RAILS_ENV" DBCONFIG_FILE="$DBCONFIG_FILE" bundle exec rails runner \
+    'File.write(ENV.fetch("DBCONFIG_FILE"), ActiveRecord::Base.connection_db_config.configuration_hash.to_json)' >&2 \
+    || exit
+  cat "$DBCONFIG_FILE"
+)
+PGDATABASE=$(jq -er '.database' <<< "$DBCONFIG")
+PGPORT=$(jq -er '.port // ""' <<< "$DBCONFIG")
+PGUSER=$(jq -er '.username // ""' <<< "$DBCONFIG")
+PGPASSWORD=$(jq -er '.password // ""' <<< "$DBCONFIG")
+export PGDATABASE PGPORT PGUSER PGPASSWORD
+
 J=$(ruby -e "require 'etc'; print((Etc.nprocessors/2.0).ceil) & STDOUT.flush")
 echo "PGDATABASE=$PGDATABASE"
 echo "PGPORT=$PGPORT"
