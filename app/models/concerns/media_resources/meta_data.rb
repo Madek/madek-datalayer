@@ -7,38 +7,74 @@ module MediaResources
       has_many :meta_data
     end
 
+    # Madek#914: collection-level preload so authors_pretty does not N+1 Person loads.
+    # Ideal form is preload(meta_data: :people), but that fails here:
+    # - STI MetaDatum base has no :people
+    # - :people ORDER BY meta_data_people.* breaks Preloader's people IN (...) query
+    # Workaround: preload meta_data + join/person; MetaDatum::People#to_s uses that.
+    def self.preload_for_list!(records)
+      records = Array(records).compact
+      return records if records.empty?
+
+      ActiveRecord::Associations::Preloader.new(
+        records: records,
+        associations: :meta_data
+      ).call
+
+      people_meta_data = records.flat_map do |record|
+        record.meta_data.select { |md| md.is_a?(MetaDatum::People) }
+      end
+      if people_meta_data.any?
+        ActiveRecord::Associations::Preloader.new(
+          records: people_meta_data,
+          associations: { meta_data_people: :person }
+        ).call
+      end
+
+      records
+    end
+
     def title
       @_md_title ||= (
-        meta_data.find_by(meta_key_id: 'madek_core:title').try(:to_s).presence \
+        meta_datum_for_key('madek_core:title').try(:to_s).presence \
           || title_fallback)
     end
 
     def subtitle
       @_md_subtitle ||= \
-        meta_data.find_by(meta_key_id: 'madek_core:subtitle').try(:to_s)
+        meta_datum_for_key('madek_core:subtitle').try(:to_s)
     end
 
     def description
       @_md_description ||= \
-        meta_data.find_by(meta_key_id: 'madek_core:description').try(:to_s)
+        meta_datum_for_key('madek_core:description').try(:to_s)
     end
 
     def authors
       @_md_authors ||= \
-        meta_data.find_by(meta_key_id: 'madek_core:authors').try(:to_s)
+        meta_datum_for_key('madek_core:authors').try(:to_s)
     end
 
     def copyright_notice
       @_md_copyright_notice ||= \
-        meta_data.find_by(meta_key_id: 'madek_core:copyright_notice').try(:to_s)
+        meta_datum_for_key('madek_core:copyright_notice').try(:to_s)
     end
 
     def keywords
       @_md_keywords ||= \
-        meta_data.find_by(meta_key_id: 'madek_core:keywords').try(:keywords)
+        meta_datum_for_key('madek_core:keywords').try(:keywords)
     end
 
     private
+
+    # find_by always hits SQL; use the loaded target after preload_for_list!.
+    def meta_datum_for_key(meta_key_id)
+      if meta_data.loaded?
+        meta_data.find { |md| md.meta_key_id == meta_key_id }
+      else
+        meta_data.find_by(meta_key_id: meta_key_id)
+      end
+    end
 
     def title_fallback
       if self.is_a?(MediaEntry)

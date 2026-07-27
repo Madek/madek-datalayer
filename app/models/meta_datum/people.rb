@@ -15,7 +15,20 @@ class MetaDatum::People < MetaDatum
   has_many :roles, through: :meta_data_people
 
   def to_s
-    people.map(&:to_s).join('; ')
+    # Prefer join when preloaded ({ meta_data_people: :person }); else :people (one query).
+    # Match :people order: position, last_name, first_name, people.id (Madek#914).
+    if meta_data_people.loaded?
+      meta_data_people
+        .select(&:person)
+        .sort_by { |mdp|
+          p = mdp.person
+          [mdp.position, p.last_name.to_s, p.first_name.to_s, p.id.to_s]
+        }
+        .map { |mdp| mdp.person.to_s }
+        .join('; ')
+    else
+      people.map(&:to_s).join('; ')
+    end
   end
 
   alias_method :value, :meta_data_people
