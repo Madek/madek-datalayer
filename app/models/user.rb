@@ -121,6 +121,23 @@ class User < ApplicationRecord
     !admin.nil?
   end
 
+  # NOTE: these run on every page render (nav bar), including error pages. If
+  # a prior write in the same request aborted the audit middleware's shared
+  # transaction, this query fails too -- so we fail closed instead of
+  # crashing the error page. This is a targeted workaround, not a fix for the
+  # underlying transaction-poisoning issue: https://github.com/Madek/Madek/issues/946
+  def has_admin_permission?(key)
+    admin? && admin.admin_permissions.exists?(permission_key: key.to_s)
+  rescue ActiveRecord::StatementInvalid
+    false
+  end
+
+  def any_admin_permission?
+    admin? && admin.admin_permissions.exists?
+  rescue ActiveRecord::StatementInvalid
+    false
+  end
+
   #############################################################
 
   def reset_usage_terms

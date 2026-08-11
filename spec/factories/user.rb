@@ -23,7 +23,7 @@ FactoryBot.define do
     end
 
     factory :admin_user, class: User do |n|
-      admin { FactoryBot.create :admin }
+      admin { FactoryBot.create :admin } # :admin factory grants all AdminPermission::KEYS
     end
   end
 end

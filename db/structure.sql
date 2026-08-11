@@ -1465,6 +1465,21 @@ CREATE FUNCTION public.validate_role_belongs_to_meta_key_roles_list_f() RETURNS 
 
 
 --
+-- Name: admin_permissions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.admin_permissions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    admin_id uuid NOT NULL,
+    permission_key character varying NOT NULL,
+    creator_id uuid,
+    updator_id uuid,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+
+--
 -- Name: admins; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2751,6 +2766,14 @@ CREATE TABLE public.zencoder_jobs (
 
 
 --
+-- Name: admin_permissions admin_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.admin_permissions
+    ADD CONSTRAINT admin_permissions_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: admins admin_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3432,6 +3455,13 @@ CREATE INDEX groups_searchable_idx ON public.groups USING gin (searchable public
 --
 
 CREATE INDEX groups_to_tsvector_idx ON public.groups USING gin (to_tsvector('english'::regconfig, searchable));
+
+
+--
+-- Name: idx_admin_permission; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_admin_permission ON public.admin_permissions USING btree (admin_id, permission_key);
 
 
 --
@@ -4681,6 +4711,13 @@ CREATE INDEX users_to_tsvector_idx ON public.users USING gin (to_tsvector('engli
 
 
 --
+-- Name: admin_permissions admin_permissions_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER admin_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.admin_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
 -- Name: admins admins_audit_change; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -5402,6 +5439,13 @@ CREATE TRIGGER update_searchable_column_of_users BEFORE INSERT OR UPDATE ON publ
 
 
 --
+-- Name: admin_permissions update_updated_at_column_of_admin_permissions; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_admin_permissions BEFORE UPDATE ON public.admin_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
 -- Name: admins update_updated_at_column_of_admins; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -6002,6 +6046,14 @@ ALTER TABLE ONLY public.groups
 
 ALTER TABLE ONLY public.groups
     ADD CONSTRAINT fk_groups_updator_id FOREIGN KEY (updator_id) REFERENCES public.users(id);
+
+
+--
+-- Name: admin_permissions fk_rails_0263d99641; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.admin_permissions
+    ADD CONSTRAINT fk_rails_0263d99641 FOREIGN KEY (admin_id) REFERENCES public.admins(id) ON DELETE CASCADE;
 
 
 --
@@ -6644,6 +6696,7 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('8'),
+('79'),
 ('78'),
 ('77'),
 ('76'),
