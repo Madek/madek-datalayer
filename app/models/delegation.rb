@@ -59,26 +59,37 @@ class Delegation < ApplicationRecord
   end
 
   def self.with_members_count
-    select('delegations.*, '\
-      '(COUNT(DISTINCT delegations_users.user_id) + COUNT(DISTINCT groups_users.user_id)) '\
-      'AS members_count, COUNT(DISTINCT groups_users.user_id) as group_members_count')
-      .joins('LEFT OUTER JOIN delegations_users '\
-             'ON delegations_users.delegation_id = delegations.id')
-      .joins('LEFT OUTER JOIN delegations_groups '\
-             'ON delegations_groups.delegation_id = delegations.id')
-      .joins('LEFT OUTER JOIN groups_users '\
-             'ON delegations_groups.group_id = groups_users.group_id')
-      .group('delegations.id')
+    group_members_sql = <<~SQL.squish
+      SELECT COUNT(DISTINCT groups_users.user_id)
+      FROM delegations_groups
+      INNER JOIN groups_users ON groups_users.group_id = delegations_groups.group_id
+      WHERE delegations_groups.delegation_id = delegations.id
+    SQL
+
+    select(<<~SQL.squish)
+      delegations.*,
+      (
+        (SELECT COUNT(*)
+         FROM delegations_users
+         WHERE delegations_users.delegation_id = delegations.id)
+        +
+        (#{group_members_sql})
+      ) AS members_count,
+      (#{group_members_sql}) AS group_members_count
+    SQL
   end
 
   def self.with_resources_count
-    select('delegations.*, '\
-      '(COUNT(DISTINCT media_entries.id) + COUNT(DISTINCT collections.id)) AS resources_count')
-      .joins('LEFT OUTER JOIN media_entries '\
-             'ON media_entries.responsible_delegation_id = delegations.id')
-      .joins('LEFT OUTER JOIN collections ON '\
-             'collections.responsible_delegation_id = delegations.id')
-      .group('delegations.id')
+    select(<<~SQL.squish)
+      delegations.*,
+      (
+        (SELECT COUNT(*) FROM media_entries
+         WHERE media_entries.responsible_delegation_id = delegations.id)
+        +
+        (SELECT COUNT(*) FROM collections
+         WHERE collections.responsible_delegation_id = delegations.id)
+      ) AS resources_count
+    SQL
   end
 
   def self.filter_by(term, group_or_user_id = nil)
@@ -89,9 +100,18 @@ class Delegation < ApplicationRecord
     end
 
     if group_or_user_id.present? && valid_uuid?(group_or_user_id)
-      result = result
-        .joins(:users, :groups)
-        .where('users.id = :id OR groups.id = :id', id: group_or_user_id)
+      result = result.where(<<~SQL.squish, id: group_or_user_id)
+        EXISTS (
+          SELECT 1 FROM delegations_users
+          WHERE delegations_users.delegation_id = delegations.id
+            AND delegations_users.user_id = :id
+        )
+        OR EXISTS (
+          SELECT 1 FROM delegations_groups
+          WHERE delegations_groups.delegation_id = delegations.id
+            AND delegations_groups.group_id = :id
+        )
+      SQL
     end
 
     result
