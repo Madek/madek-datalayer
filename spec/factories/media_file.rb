@@ -80,6 +80,12 @@ FactoryBot.define do
         height: 360
         width: 480
         content_type: image/jpeg
+        filename: b8bf2eb322e04a29a52fbb06d4866af8_x_grand.jpg
+        thumbnail: x_grand
+      -
+        height: 360
+        width: 480
+        content_type: image/jpeg
         filename: b8bf2eb322e04a29a52fbb06d4866af8_maximum.jpg
         thumbnail: maximum
             '

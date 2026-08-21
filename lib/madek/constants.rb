@@ -60,6 +60,7 @@ module Madek
 
     THUMBNAILS = {
       maximum: nil,
+      x_grand: { width: 1920, height: 1920 },
       grand: { width: 1280, height: 1280 },
       x_large: { width: 1024, height: 1024 },
       large: { width: 620, height: 620 },
