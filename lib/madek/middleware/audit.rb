@@ -3,6 +3,15 @@ require 'active_record'
 module Madek
   module Middleware
     class Audit
+      # Raised instead of letting a poisoned transaction reach COMMIT. See
+      # the NOTE below `Audit#call` for why that COMMIT would otherwise
+      # silently succeed as a ROLLBACK.
+      class TransactionAbortedError < StandardError
+        def initialize(msg = 'DB transaction was aborted; refusing to silently commit-as-rollback')
+          super
+        end
+      end
+
       def initialize(app)
         @app = app
       end
@@ -15,16 +24,22 @@ module Madek
           response = nil
           user_id = get_user_id(env["HTTP_COOKIE"])
 
-          begin 
+          begin
             ActiveRecord::Base.transaction do
               txid = get_txid
               response = @app.call(env)
+              # NOTE: When one COMMITs an aborted transaction, PG silently issues a ROLLBACK.
+              # It responds with ROLLBACK but with PGRES_COMMAND_OK (not an error).
+              # The pg gem doesn't raise. Rails doesn't raise.
+              # So: if the connection is still aborted here (e.g. the app code
+              # caught a DB-level error itself and never re-raised, nor healed
+              # it), raise ourselves rather than letting this transaction
+              # block exit normally and attempt that ambiguous COMMIT. This
+              # turns a would-be silent, misleading 200/302 (whose underlying
+              # writes were actually rolled back) into a proper 500, handled
+              # by the rescue below like any other error.
+              raise TransactionAbortedError if transaction_aborted?
             end
-          # NOTE: When one COMMITs an aborted transaction, PG silently issues a ROLLBACK.
-          # It responds with ROLLBACK but with PGRES_COMMAND_OK (not an error).
-          # The pg gem doesn't raise. Rails doesn't raise.
-          # The middleware's rescue block is never entered.
-          # Response (200) is returned to the browser.
           rescue => e
             persist_request(txid, env, user_id)
             persist_response(txid, 500)
@@ -48,6 +63,12 @@ module Madek
 
       def db_conn
         ActiveRecord::Base.connection
+      end
+
+      def transaction_aborted?
+        connection = db_conn
+        connection.transaction_open? &&
+          connection.raw_connection.transaction_status == PG::PQTRANS_INERROR
       end
 
       def get_txid
