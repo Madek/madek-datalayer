@@ -2124,7 +2124,8 @@ CREATE TABLE public.io_mappings (
     key_map_type character varying,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
-    id uuid DEFAULT gen_random_uuid() NOT NULL
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    "position" integer NOT NULL
 );
 
 
@@ -4085,6 +4086,13 @@ CREATE INDEX index_groups_users_on_group_id_and_user_id ON public.groups_users U
 --
 
 CREATE UNIQUE INDEX index_groups_users_on_user_id_and_group_id ON public.groups_users USING btree (user_id, group_id);
+
+
+--
+-- Name: index_io_mappings_on_position; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_io_mappings_on_position ON public.io_mappings USING btree ("position");
 
 
 --
@@ -6695,6 +6703,7 @@ ALTER TABLE ONLY public.zencoder_jobs
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('80'),
 ('8'),
 ('79'),
 ('78'),
