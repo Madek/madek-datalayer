@@ -19,7 +19,7 @@ else
   exit 1
 fi
 
-SET_PWD="${SET_PWD:-NO}"
+SET_PWD="${SET_PWD:-YES}"
 if [ $SET_PWD == "YES" ] ||  [ $SET_PWD == "NO" ]; then
   echo "SET_PWD=$SET_PWD"
 else
@@ -60,9 +60,11 @@ pg_restore --disable-triggers -j $J -x -O -d $PGDATABASE --schema-only "$@"
 
 if [ $SPARSE == "YES" ]; then
   pg_restore --disable-triggers -j $J -x -O -d $PGDATABASE --data-only \
-    -L <(pg_restore -l ${FILE} | grep -v -E -e 'audits') $FILE
+    -L <(pg_restore -l ${FILE} | grep -v -E -e 'audited') $FILE
 
-  echo "WARNING some tables have been skipped, set SPARSE=NO to avoid this"
+  scrub_secrets
+
+  echo "WARNING some tables have been skipped and secrets scrubbed, set SPARSE=NO to avoid this"
 
 else
   pg_restore --disable-triggers -j $J -x -O -d $PGDATABASE --data-only $FILE

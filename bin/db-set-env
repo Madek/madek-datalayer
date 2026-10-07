@@ -77,3 +77,19 @@ SQL
 echo '# The database has been adjusted for debugging and development'
 echo "# you can sign in as 'root@localhost' with the password 'secret' "
 }
+
+function scrub_secrets {
+psql -v ON_ERROR_STOP=1 -d $PGDATABASE << 'SQL'
+  UPDATE auth_systems SET internal_private_key = NULL;
+  UPDATE auth_systems_users SET data = NULL;
+  UPDATE api_clients SET password_digest = NULL;
+  DELETE FROM api_tokens;
+  DELETE FROM user_sessions;
+  DELETE FROM user_password_resets;
+  DELETE FROM confidential_links;
+  DELETE FROM zencoder_jobs;
+  UPDATE smtp_settings SET password = NULL, username = NULL;
+  TRUNCATE audited_changes, audited_requests, audited_responses;
+SQL
+echo '# Credentials, tokens, sessions and audits have been scrubbed'
+}
