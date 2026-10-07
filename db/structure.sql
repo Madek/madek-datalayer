@@ -2124,7 +2124,8 @@ CREATE TABLE public.io_mappings (
     key_map_type character varying,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
-    id uuid DEFAULT gen_random_uuid() NOT NULL
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    "position" integer DEFAULT 0 NOT NULL
 );
 
 
@@ -6748,6 +6749,7 @@ ALTER TABLE ONLY public.zencoder_jobs
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('81'),
 ('80'),
 ('8'),
 ('79'),
