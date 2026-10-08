@@ -32,6 +32,9 @@ class MediaFile < ApplicationRecord
 
   serialize :meta_data, type: Hash, coder: YAML
 
+  # Video.js config (example 4/5): sources, headers, overlays.
+  # WebVTT bodies are stored on subtitles, not in this JSON.
+  has_many :subtitles, dependent: :destroy
   has_many :previews, -> { order(:created_at, :id) }, dependent: :destroy
 
   scope :incomplete_encoded_videos, lambda {

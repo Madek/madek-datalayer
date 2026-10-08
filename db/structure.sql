@@ -2245,7 +2245,8 @@ CREATE TABLE public.media_files (
     conversion_profiles character varying[] DEFAULT '{}'::character varying[],
     checksum character varying,
     checksum_generated_at timestamp with time zone,
-    checksum_verified_at timestamp with time zone
+    checksum_verified_at timestamp with time zone,
+    media_config jsonb DEFAULT '{}'::jsonb NOT NULL
 );
 
 
@@ -2532,8 +2533,8 @@ CREATE TABLE public.smtp_settings (
     port integer DEFAULT 25 NOT NULL,
     sender_address text,
     username text,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -2568,6 +2569,25 @@ CREATE TABLE public.static_pages (
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     CONSTRAINT name_non_blank CHECK (((name)::text !~ '^ *$'::text))
+);
+
+
+--
+-- Name: subtitles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subtitles (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    media_file_id uuid NOT NULL,
+    language character varying NOT NULL,
+    label character varying,
+    kind character varying DEFAULT 'subtitles'::character varying NOT NULL,
+    filename character varying NOT NULL,
+    content text NOT NULL,
+    is_default boolean DEFAULT false NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT subtitles_kind_check CHECK (((kind)::text = ANY ((ARRAY['subtitles'::character varying, 'chapters'::character varying])::text[])))
 );
 
 
@@ -3235,6 +3255,14 @@ ALTER TABLE ONLY public.smtp_settings
 
 ALTER TABLE ONLY public.static_pages
     ADD CONSTRAINT static_pages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: subtitles subtitles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subtitles
+    ADD CONSTRAINT subtitles_pkey PRIMARY KEY (id);
 
 
 --
@@ -4564,6 +4592,27 @@ CREATE UNIQUE INDEX index_static_pages_on_name ON public.static_pages USING btre
 
 
 --
+-- Name: index_subtitles_on_media_file_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_subtitles_on_media_file_id ON public.subtitles USING btree (media_file_id);
+
+
+--
+-- Name: index_subtitles_on_media_file_kind_language; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_subtitles_on_media_file_kind_language ON public.subtitles USING btree (media_file_id, kind, language);
+
+
+--
+-- Name: index_subtitles_one_default_per_kind; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_subtitles_one_default_per_kind ON public.subtitles USING btree (media_file_id, kind) WHERE is_default;
+
+
+--
 -- Name: index_user_password_resets_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5705,10 +5754,10 @@ CREATE TRIGGER update_updated_at_column_of_roles_lists BEFORE UPDATE ON public.r
 
 
 --
--- Name: smtp_settings update_updated_at_column_of_smtp_settings; Type: TRIGGER; Schema: public; Owner: -
+-- Name: subtitles update_updated_at_column_of_subtitles; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_updated_at_column_of_smtp_settings BEFORE UPDATE ON public.smtp_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+CREATE TRIGGER update_updated_at_column_of_subtitles BEFORE UPDATE ON public.subtitles FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
@@ -6001,18 +6050,18 @@ ALTER TABLE ONLY public.favorite_media_entries
 
 
 --
--- Name: auth_systems_groups fk_auth_sys; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.auth_systems_groups
-    ADD CONSTRAINT fk_auth_sys FOREIGN KEY (auth_system_id) REFERENCES public.auth_systems(id) ON DELETE CASCADE;
-
-
---
 -- Name: auth_systems_users fk_auth_sys; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.auth_systems_users
+    ADD CONSTRAINT fk_auth_sys FOREIGN KEY (auth_system_id) REFERENCES public.auth_systems(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auth_systems_groups fk_auth_sys; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.auth_systems_groups
     ADD CONSTRAINT fk_auth_sys FOREIGN KEY (auth_system_id) REFERENCES public.auth_systems(id) ON DELETE CASCADE;
 
 
@@ -6369,18 +6418,18 @@ ALTER TABLE ONLY public.media_entry_user_permissions
 
 
 --
--- Name: auth_systems_users fk_user; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.auth_systems_users
-    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
-
-
---
 -- Name: user_sessions fk_user; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.user_sessions
+    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: auth_systems_users fk_user; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.auth_systems_users
     ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
@@ -6633,6 +6682,14 @@ ALTER TABLE ONLY public.previous_person_ids
 
 
 --
+-- Name: subtitles subtitles_media_files_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subtitles
+    ADD CONSTRAINT subtitles_media_files_fkey FOREIGN KEY (media_file_id) REFERENCES public.media_files(id) ON DELETE CASCADE;
+
+
+--
 -- Name: user_password_resets user_password_resets_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6695,6 +6752,7 @@ ALTER TABLE ONLY public.zencoder_jobs
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('81'),
 ('8'),
 ('79'),
 ('78'),
