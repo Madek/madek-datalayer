@@ -2730,7 +2730,7 @@ CREATE VIEW public.vw_media_resources AS
     media_entries.updated_at,
     'MediaEntry'::text AS type
    FROM public.media_entries
-UNION
+UNION ALL
  SELECT collections.id,
     collections.get_metadata_and_previews,
     collections.responsible_user_id,
@@ -3927,10 +3927,24 @@ CREATE INDEX index_context_keys_on_meta_key_id ON public.context_keys USING btre
 
 
 --
+-- Name: index_custom_urls_on_collection_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_custom_urls_on_collection_id ON public.custom_urls USING btree (collection_id);
+
+
+--
 -- Name: index_custom_urls_on_creator_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_custom_urls_on_creator_id ON public.custom_urls USING btree (creator_id);
+
+
+--
+-- Name: index_custom_urls_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_custom_urls_on_media_entry_id ON public.custom_urls USING btree (media_entry_id);
 
 
 --
@@ -4428,6 +4442,20 @@ CREATE INDEX index_meta_data_on_other_media_entry_id ON public.meta_data USING b
 --
 
 CREATE INDEX index_meta_data_on_type ON public.meta_data USING btree (type);
+
+
+--
+-- Name: index_meta_data_people_on_meta_datum_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_meta_data_people_on_meta_datum_id ON public.meta_data_people USING btree (meta_datum_id);
+
+
+--
+-- Name: index_meta_data_people_on_person_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_meta_data_people_on_person_id ON public.meta_data_people USING btree (person_id);
 
 
 --
@@ -6695,6 +6723,8 @@ ALTER TABLE ONLY public.zencoder_jobs
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('83'),
+('82'),
 ('8'),
 ('79'),
 ('78'),
