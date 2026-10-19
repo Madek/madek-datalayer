@@ -2743,6 +2743,21 @@ UNION
 
 
 --
+-- Name: xmp_sidecars; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.xmp_sidecars (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    media_entry_id uuid NOT NULL,
+    user_id uuid,
+    filename character varying,
+    meta_data jsonb DEFAULT '{}'::jsonb NOT NULL,
+    xml text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: zencoder_jobs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3307,6 +3322,14 @@ ALTER TABLE ONLY public.vocabulary_group_permissions
 
 ALTER TABLE ONLY public.vocabulary_user_permissions
     ADD CONSTRAINT vocabulary_user_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: xmp_sidecars xmp_sidecars_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.xmp_sidecars
+    ADD CONSTRAINT xmp_sidecars_pkey PRIMARY KEY (id);
 
 
 --
@@ -4606,6 +4629,13 @@ CREATE INDEX index_vocabularies_on_position ON public.vocabularies USING btree (
 
 
 --
+-- Name: index_xmp_sidecars_on_media_entry_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_xmp_sidecars_on_media_entry_id ON public.xmp_sidecars USING btree (media_entry_id);
+
+
+--
 -- Name: index_zencoder_jobs_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5810,6 +5840,13 @@ CREATE TRIGGER vocabulary_user_permissions_audit_change AFTER INSERT OR DELETE O
 
 
 --
+-- Name: xmp_sidecars xmp_sidecars_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER xmp_sidecars_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.xmp_sidecars FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
 -- Name: zencoder_jobs zencoder_jobs_audit_change; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -6225,6 +6262,14 @@ ALTER TABLE ONLY public.context_group_permissions
 
 
 --
+-- Name: xmp_sidecars fk_rails_adf4b12d27; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.xmp_sidecars
+    ADD CONSTRAINT fk_rails_adf4b12d27 FOREIGN KEY (media_entry_id) REFERENCES public.media_entries(id) ON DELETE CASCADE;
+
+
+--
 -- Name: context_keys fk_rails_b297363c89; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6318,6 +6363,14 @@ ALTER TABLE ONLY public.io_mappings
 
 ALTER TABLE ONLY public.delegations_users
     ADD CONSTRAINT fk_rails_df1fb72b34 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: xmp_sidecars fk_rails_e6b99d355b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.xmp_sidecars
+    ADD CONSTRAINT fk_rails_e6b99d355b FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 
 
 --
@@ -6695,6 +6748,7 @@ ALTER TABLE ONLY public.zencoder_jobs
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('80'),
 ('8'),
 ('79'),
 ('78'),

@@ -17,6 +17,7 @@ class MediaEntry < ApplicationRecord
   include Delegations::Responsible
 
   has_one :media_file, dependent: :destroy
+  has_many :xmp_sidecars, -> { order(created_at: :desc) }, dependent: :destroy
 
   has_many :collection_media_entry_arcs,
            class_name: 'Arcs::CollectionMediaEntryArc'
