@@ -5,7 +5,10 @@ class AddPositionToIoMappings < ActiveRecord::Migration[7.2]
     execute <<-SQL.squish
       WITH ordered AS (
         SELECT id,
-               (ROW_NUMBER() OVER (ORDER BY created_at ASC NULLS LAST, id ASC) - 1) AS pos
+               (ROW_NUMBER() OVER (
+                 PARTITION BY io_interface_id
+                 ORDER BY created_at ASC NULLS LAST, id ASC
+               ) - 1) AS pos
         FROM io_mappings
       )
       UPDATE io_mappings
