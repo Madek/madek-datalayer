@@ -2,7 +2,7 @@ include:
   - cider-ci/task-components/bundle.yml
 
 traits:
-  asdf: true
+  mise: true
   PostgreSQL 15: true
 
 scripts:
