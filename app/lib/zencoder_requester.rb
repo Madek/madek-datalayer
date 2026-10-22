@@ -66,13 +66,36 @@ class ZencoderRequester
       width: width
     }
     outputs = output_profiles.map do |profile, output|
-      filename = "#{@media_file.id}.profile_#{profile}.#{output[:format]}"
-      output
-        .merge(label: profile.to_s)
-        .merge(filename: filename)
-        .merge(video_thumbnails_settings(output))
+      filename = output_filename(profile, output)
+      merged = output.merge(label: profile.to_s, filename: filename)
+      if hls_output?(output)
+        merged.delete('thumbnails')
+        merged.delete(:thumbnails)
+        merged
+      else
+        merged.merge(video_thumbnails_settings(output))
+      end
     end
     defaults.merge(outputs: outputs)
+  end
+
+  def output_filename(profile, output)
+    case output_type(output)
+    when 'segmented'
+      "#{@media_file.id}.profile_#{profile}.m3u8"
+    when 'playlist'
+      "#{@media_file.id}.profile_hls.m3u8"
+    else
+      "#{@media_file.id}.profile_#{profile}.#{output[:format]}"
+    end
+  end
+
+  def output_type(output)
+    (output[:type] || output['type']).to_s
+  end
+
+  def hls_output?(output)
+    %w[segmented playlist].include?(output_type(output))
   end
 
   def video_thumbnails_settings(output)
@@ -113,18 +136,34 @@ class ZencoderRequester
                end
     validate_configured_formats(settings)
     if @only_profiles
-      validate_given_profiles(settings)
-      return settings.select { |k, v| @only_profiles.include?(k.to_sym) }.as_json
+      requested = @only_profiles.map(&:to_sym)
+      validate_given_profiles(settings, requested)
+      wanted = expand_hls_profiles(requested)
+      unknown = wanted - settings.keys.map(&:to_sym)
+      unless unknown.empty?
+        raise 'Invalid profiles! possible values: ' + settings.keys.join(', ')
+      end
+      return settings.select { |k, _v| wanted.include?(k.to_sym) }.as_json
     end
     settings.as_json
   end
 
-  def validate_configured_formats(settings)
-    settings.each { |k, v| raise 'missing format!' unless v[:format].present? }
+  def expand_hls_profiles(profiles)
+    return profiles unless (profiles & HlsPackage::HLS_PROFILES).any?
+
+    (profiles + HlsPackage::HLS_PROFILES).uniq
   end
 
-  def validate_given_profiles(settings)
-    unless (@only_profiles - settings.keys.map(&:to_sym)).empty?
+  def validate_configured_formats(settings)
+    settings.each do |_name, output|
+      format = output[:format] || output['format']
+      type = output[:type] || output['type']
+      raise 'missing format!' unless format.present? || type.present?
+    end
+  end
+
+  def validate_given_profiles(settings, requested)
+    unless (requested - settings.keys.map(&:to_sym)).empty?
       raise 'Invalid profiles! possible values: ' + settings.keys.join(', ')
     end
   end

@@ -133,4 +133,40 @@ describe ZencoderRequester do
       end
     end
   end
+
+  describe 'HLS outputs' do
+    let(:formats) do
+      {
+        mp4: { format: 'mp4', video_codec: 'h264', thumbnails: true },
+        hls_360: { type: 'segmented', format: 'm4f', height: 360 },
+        hls_720: { type: 'segmented', format: 'm4f', height: 720 },
+        hls_1080: { type: 'segmented', format: 'm4f', height: 1080 },
+        hls: {
+          type: 'playlist',
+          streams: [{ source: 'hls_360', path: '360.m3u8' }]
+        }
+      }
+    end
+
+    before do
+      allow(Settings).to receive(:zencoder_video_output_formats).and_return(formats)
+    end
+
+    it 'names manifests as m3u8, omits thumbnails, and submits the whole ladder' do
+      requester = described_class.new(media_file, only_profiles: [:hls])
+      outputs = requester.send(:output_settings).fetch(:outputs)
+
+      expect(outputs.map { |output| output[:label] })
+        .to match_array(%w[hls hls_360 hls_720 hls_1080])
+      hls360 = outputs.find { |output| output[:label] == 'hls_360' }
+      master = outputs.find { |output| output[:label] == 'hls' }
+      expect(hls360[:filename]).to eq "#{media_file.id}.profile_hls_360.m3u8"
+      expect(master[:filename]).to eq "#{media_file.id}.profile_hls.m3u8"
+      expect(outputs).to all(satisfy { |output| !output.key?(:thumbnails) && !output.key?('thumbnails') })
+    end
+
+    it 'accepts a playlist that has no format' do
+      expect { described_class.new(media_file).send(:output_profiles) }.not_to raise_error
+    end
+  end
 end

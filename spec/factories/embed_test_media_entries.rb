@@ -108,7 +108,7 @@ FactoryBot.define do
       size { '1190633' }
       width { nil }
       height { nil }
-      conversion_profiles { %w(mp4 mp4_HD webm webm_HD) }
+      conversion_profiles { %w(mp4 mp4_HD webm webm_HD hls) }
       filename { 'madek-test-video-5s.mp4' }
       guid { 'cb8c0a46f2744c3891ff5bd893581d21' }
       extension { 'mp4' }
@@ -123,7 +123,8 @@ FactoryBot.define do
             {"height":348,"width":620,"content_type":"video/mp4","filename":"cb8c0a46f2744c3891ff5bd893581d21_620.mp4","thumbnail":"large","media_type":"video","conversion_profile":"mp4"},
             {"height":1080,"width":1920,"content_type":"video/webm","filename":"cb8c0a46f2744c3891ff5bd893581d21_1920.webm","thumbnail":"large","media_type":"video","conversion_profile":"webm_HD"},
             {"height":1080,"width":1920,"content_type":"video/mp4","filename":"cb8c0a46f2744c3891ff5bd893581d21_1920.mp4","thumbnail":"large","media_type":"video","conversion_profile":"mp4_HD"},
-            {"height":348,"width":620,"content_type":"video/webm","filename":"cb8c0a46f2744c3891ff5bd893581d21_620.webm","thumbnail":"large","media_type":"video","conversion_profile":"webm"} ]
+            {"height":348,"width":620,"content_type":"video/webm","filename":"cb8c0a46f2744c3891ff5bd893581d21_620.webm","thumbnail":"large","media_type":"video","conversion_profile":"webm"},
+            {"height":1080,"width":1920,"content_type":"application/vnd.apple.mpegurl","filename":"cb8c0a46f2744c3891ff5bd893581d21/hls/master.m3u8","thumbnail":"large","media_type":"video","conversion_profile":"hls"} ]
         JSON
 
         previews_data = JSON.parse previews_json

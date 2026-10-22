@@ -206,6 +206,11 @@ class User < ApplicationRecord
       settings["show_all_data_tab_in_edit_mode"] == true
   end
 
+  def video_playback_format
+    value = settings.is_a?(Hash) && settings['video_playback_format']
+    value == 'hls' ? 'hls' : 'mp4'
+  end
+
   #################### BETA TESTING ###########################
 
   def beta_tester_notifications?
