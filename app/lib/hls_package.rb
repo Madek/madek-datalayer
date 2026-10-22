@@ -1,7 +1,6 @@
 require 'cgi'
 require 'fileutils'
 require 'pathname'
-require 'zlib'
 
 # Writes one fMP4 HLS package next to a media file's thumbnails and keeps the
 # single `hls` preview row in sync with master.m3u8.
@@ -224,19 +223,10 @@ class HlsPackage
   end
 
   def write_stored(out, name, file)
-    size = File.size(file)
-    crc = 0
-    File.open(file, 'rb') do |io|
-      while (chunk = io.read(1 << 20))
-        crc = Zlib.crc32(chunk, crc)
-      end
-    end
+    # rubyzip 1.3 overwrites an entry's method with DEFLATED unless the
+    # method is passed in. Stored entries keep fMP4 byte ranges intact.
     entry = Zip::Entry.new('', name)
-    entry.compression_method = Zip::Entry::STORED
-    entry.size = size
-    entry.compressed_size = size
-    entry.crc = crc
-    out.put_next_entry(entry)
+    out.put_next_entry(entry, nil, nil, Zip::Entry::STORED)
     File.open(file, 'rb') { |io| IO.copy_stream(io, out) }
   end
 end
