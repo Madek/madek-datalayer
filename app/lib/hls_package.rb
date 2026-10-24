@@ -223,10 +223,9 @@ class HlsPackage
   end
 
   def write_stored(out, name, file)
-    # rubyzip 1.3 overwrites an entry's method with DEFLATED unless the
-    # method is passed in. Stored entries keep fMP4 byte ranges intact.
-    entry = Zip::Entry.new('', name)
-    out.put_next_entry(entry, nil, nil, Zip::Entry::STORED)
+    # Stored entries keep fMP4 byte ranges intact. Pass the method with a
+    # plain name: a prebuilt Zip::Entry keeps its own default (DEFLATED).
+    out.put_next_entry(name, '', Zip::ExtraField.new, Zip::Entry::STORED)
     File.open(file, 'rb') { |io| IO.copy_stream(io, out) }
   end
 end
