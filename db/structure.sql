@@ -2124,7 +2124,10 @@ CREATE TABLE public.io_mappings (
     key_map_type character varying,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
-    id uuid DEFAULT gen_random_uuid() NOT NULL
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    xmp_property_id uuid,
+    "position" integer DEFAULT 0 NOT NULL,
+    CONSTRAINT io_mappings_key_map_or_xmp_property CHECK (((key_map IS NULL) OR (xmp_property_id IS NULL)))
 );
 
 
@@ -2532,8 +2535,8 @@ CREATE TABLE public.smtp_settings (
     port integer DEFAULT 25 NOT NULL,
     sender_address text,
     username text,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
     CONSTRAINT oneandonly CHECK ((id = 0))
 );
 
@@ -2740,6 +2743,43 @@ UNION
     collections.updated_at,
     'Collection'::text AS type
    FROM public.collections;
+
+
+--
+-- Name: xmp_namespaces; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.xmp_namespaces (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    prefix character varying NOT NULL,
+    uri character varying NOT NULL,
+    is_managed boolean DEFAULT true NOT NULL,
+    labels public.hstore DEFAULT ''::public.hstore NOT NULL,
+    descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT xmp_namespaces_prefix_format CHECK (((prefix)::text ~ '^[A-Za-z_][A-Za-z0-9_-]*$'::text)),
+    CONSTRAINT xmp_namespaces_uri_format CHECK (((uri)::text ~ '[/#]$'::text))
+);
+
+
+--
+-- Name: xmp_properties; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.xmp_properties (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    xmp_namespace_id uuid NOT NULL,
+    name character varying NOT NULL,
+    value_type character varying DEFAULT 'Text'::character varying NOT NULL,
+    "position" integer DEFAULT 0 NOT NULL,
+    labels public.hstore DEFAULT ''::public.hstore NOT NULL,
+    descriptions public.hstore DEFAULT ''::public.hstore NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT xmp_properties_name_format CHECK (((name)::text ~ '^[A-Za-z_][A-Za-z0-9._-]*$'::text)),
+    CONSTRAINT xmp_properties_value_type CHECK (((value_type)::text = ANY ((ARRAY['Text'::character varying, 'Integer'::character varying, 'Boolean'::character varying, 'Date'::character varying, 'URI'::character varying, 'Lang Alt'::character varying, 'bag Text'::character varying, 'seq Text'::character varying])::text[])))
+);
 
 
 --
@@ -3325,6 +3365,22 @@ ALTER TABLE ONLY public.vocabulary_user_permissions
 
 
 --
+-- Name: xmp_namespaces xmp_namespaces_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.xmp_namespaces
+    ADD CONSTRAINT xmp_namespaces_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: xmp_properties xmp_properties_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.xmp_properties
+    ADD CONSTRAINT xmp_properties_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: xmp_sidecars xmp_sidecars_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3674,6 +3730,13 @@ CREATE UNIQUE INDEX idx_vocabulary_group ON public.vocabulary_group_permissions 
 --
 
 CREATE UNIQUE INDEX idx_vocabulary_user ON public.vocabulary_user_permissions USING btree (user_id, vocabulary_id);
+
+
+--
+-- Name: idx_xmp_properties_namespace_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_xmp_properties_namespace_name ON public.xmp_properties USING btree (xmp_namespace_id, lower((name)::text));
 
 
 --
@@ -4108,6 +4171,13 @@ CREATE INDEX index_groups_users_on_group_id_and_user_id ON public.groups_users U
 --
 
 CREATE UNIQUE INDEX index_groups_users_on_user_id_and_group_id ON public.groups_users USING btree (user_id, group_id);
+
+
+--
+-- Name: index_io_mappings_on_xmp_property_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_io_mappings_on_xmp_property_id ON public.io_mappings USING btree (xmp_property_id);
 
 
 --
@@ -4626,6 +4696,20 @@ CREATE INDEX index_users_on_last_name ON public.users USING btree (last_name);
 --
 
 CREATE INDEX index_vocabularies_on_position ON public.vocabularies USING btree ("position");
+
+
+--
+-- Name: index_xmp_namespaces_on_prefix; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_xmp_namespaces_on_prefix ON public.xmp_namespaces USING btree (prefix);
+
+
+--
+-- Name: index_xmp_namespaces_on_uri; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_xmp_namespaces_on_uri ON public.xmp_namespaces USING btree (uri);
 
 
 --
@@ -5735,13 +5819,6 @@ CREATE TRIGGER update_updated_at_column_of_roles_lists BEFORE UPDATE ON public.r
 
 
 --
--- Name: smtp_settings update_updated_at_column_of_smtp_settings; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_updated_at_column_of_smtp_settings BEFORE UPDATE ON public.smtp_settings FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
-
-
---
 -- Name: usage_terms update_updated_at_column_of_usage_terms; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -5774,6 +5851,20 @@ CREATE TRIGGER update_updated_at_column_of_vocabulary_group_permissions BEFORE U
 --
 
 CREATE TRIGGER update_updated_at_column_of_vocabulary_user_permissions BEFORE UPDATE ON public.vocabulary_user_permissions FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: xmp_namespaces update_updated_at_column_of_xmp_namespaces; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_xmp_namespaces BEFORE UPDATE ON public.xmp_namespaces FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: xmp_properties update_updated_at_column_of_xmp_properties; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_updated_at_column_of_xmp_properties BEFORE UPDATE ON public.xmp_properties FOR EACH ROW WHEN ((old.* IS DISTINCT FROM new.*)) EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
@@ -5837,6 +5928,20 @@ CREATE TRIGGER vocabulary_group_permissions_audit_change AFTER INSERT OR DELETE 
 --
 
 CREATE TRIGGER vocabulary_user_permissions_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.vocabulary_user_permissions FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: xmp_namespaces xmp_namespaces_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER xmp_namespaces_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.xmp_namespaces FOR EACH ROW EXECUTE FUNCTION public.audit_change();
+
+
+--
+-- Name: xmp_properties xmp_properties_audit_change; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER xmp_properties_audit_change AFTER INSERT OR DELETE OR UPDATE ON public.xmp_properties FOR EACH ROW EXECUTE FUNCTION public.audit_change();
 
 
 --
@@ -6115,6 +6220,22 @@ ALTER TABLE ONLY public.context_api_client_permissions
 
 ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT fk_rails_1d306a97df FOREIGN KEY (via_delegation_id) REFERENCES public.delegations(id);
+
+
+--
+-- Name: io_mappings fk_rails_22e93ec01d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.io_mappings
+    ADD CONSTRAINT fk_rails_22e93ec01d FOREIGN KEY (xmp_property_id) REFERENCES public.xmp_properties(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: xmp_properties fk_rails_2695b37d1f; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.xmp_properties
+    ADD CONSTRAINT fk_rails_2695b37d1f FOREIGN KEY (xmp_namespace_id) REFERENCES public.xmp_namespaces(id) ON DELETE CASCADE;
 
 
 --
@@ -6748,6 +6869,7 @@ ALTER TABLE ONLY public.zencoder_jobs
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('81'),
 ('80'),
 ('8'),
 ('79'),

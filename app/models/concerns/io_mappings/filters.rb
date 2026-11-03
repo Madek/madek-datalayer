@@ -4,8 +4,9 @@ module IoMappings
 
     included do
       scope :filter_by, lambda { |term|
-        where(
-          'io_mappings.meta_key_id ILIKE :t OR io_mappings.key_map ILIKE :t',
+        left_joins(xmp_property: :xmp_namespace).where(
+          'io_mappings.meta_key_id ILIKE :t OR io_mappings.key_map ILIKE :t ' \
+          "OR xmp_namespaces.prefix || ':' || xmp_properties.name ILIKE :t",
           t: "%#{term}%"
         )
       }
