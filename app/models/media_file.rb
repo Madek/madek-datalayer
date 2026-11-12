@@ -74,7 +74,15 @@ class MediaFile < ApplicationRecord
     store_location = alternative_store_location || original_store_location
     raise "Input file doesn't exist!" unless File.exist?(store_location)
 
-    thumbnail_profiles.each do |thumb_size, dimensions|
+    # Size of the file to scale down, e.g. a video thumbnail instead of the original
+    source_width, source_height =
+      if alternative_store_location
+        get_dimensions(store_location)&.values_at(:width, :height)&.map(&:to_i)
+      else
+        [width, height]
+      end
+
+    thumbnail_profiles.each do |thumb_size, target_box|
       next if thumb_size == :large && video?
 
       store_location_new_file =
@@ -83,13 +91,14 @@ class MediaFile < ApplicationRecord
         else
           "#{thumbnail_store_location}_#{thumb_size}.jpg"
         end
-      w = dimensions.try(:fetch, :width)
-      h = dimensions.try(:fetch, :height)
+      w = target_box.try(:fetch, :width)
+      h = target_box.try(:fetch, :height)
 
-      # Create preview unless target size is larger than original
-      # - w.nil? means target size is `maximum` = original size -> always create
-      # - width.nil? means original size is unknown or dynamic, e.g. for PDF -> always create
-      if w.nil? || width.nil? || w < width
+      # Create preview unless target box is at least as large as source in both dimensions
+      # - w.nil? means target size is `maximum` = source size -> always create
+      # - source_width.nil? means source size is unknown or dynamic, e.g. for PDF -> always create
+      if w.nil? || source_width.nil? || source_height.nil? ||
+         w < source_width || h < source_height
 
         FileConversion.convert(store_location, store_location_new_file, w, h)
 

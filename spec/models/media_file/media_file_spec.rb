@@ -53,6 +53,73 @@ describe MediaFile do
         .to match_array(Madek::Constants::THUMBNAILS.keys.map(&:to_s))
     end
 
+    it 'skips sizes larger than the original' do
+      media_file = FactoryBot.create(:media_file, height: 700, width: 1100)
+      stub_preview_conversion(media_file)
+
+      media_file.create_previews!
+
+      expect(media_file.previews.pluck(:thumbnail))
+        .to match_array(%w[maximum x_large large medium])
+    end
+
+    it 'generates sizes that downscale portrait images' do
+      media_file = FactoryBot.create(:media_file, height: 1500, width: 1000)
+      stub_preview_conversion(media_file)
+
+      media_file.create_previews!
+
+      expect(media_file.previews.pluck(:thumbnail))
+        .to match_array(%w[maximum grand x_large large medium])
+    end
+
+    it 'skips sizes equal to the original' do
+      media_file = FactoryBot.create(:media_file, height: 1024, width: 1024)
+      stub_preview_conversion(media_file)
+
+      media_file.create_previews!
+
+      expect(media_file.previews.pluck(:thumbnail))
+        .to match_array(%w[maximum large medium])
+    end
+
+    context 'with a video thumbnail' do
+      let(:video_media_file) do
+        FactoryBot.create(:media_file, height: nil, width: nil,
+                                       content_type: 'video/mp4')
+      end
+      let(:video_thumbnail) { '/tmp/video_thumbnail_0000.jpg' }
+
+      before do
+        stub_preview_conversion(video_media_file)
+        allow(File).to receive(:exist?).with(video_thumbnail).and_return(true)
+      end
+
+      it 'skips sizes not smaller than the thumbnail' do
+        allow(video_media_file)
+          .to receive(:get_dimensions)
+          .with(video_thumbnail)
+          .and_return(width: '1280', height: '720')
+
+        video_media_file.create_previews!(video_thumbnail)
+
+        expect(video_media_file.previews.pluck(:thumbnail))
+          .to match_array(%w[maximum x_large medium])
+      end
+
+      it 'generates all sizes except large if thumbnail size is unknown' do
+        allow(video_media_file)
+          .to receive(:get_dimensions)
+          .with(video_thumbnail)
+          .and_return(nil)
+
+        video_media_file.create_previews!(video_thumbnail)
+
+        expect(video_media_file.previews.pluck(:thumbnail))
+          .to match_array(%w[maximum x_grand grand x_large medium])
+      end
+    end
+
     it 'generates the requested thumbnail sizes' do
       thumbnail_profiles =
         Madek::Constants::THUMBNAILS.slice(:x_large, :large, :medium)
