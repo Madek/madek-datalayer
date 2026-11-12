@@ -1,6 +1,16 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 8.1.3.1'
+gem 'rails', '~> 8.1.4.1'
+# security floors (Dependabot / OSV 2026-11)
+# Note: do not pin rack here — consumers need either 2.2.25+ or 3.2.8+ (sinatra);
+# Bundler forbids declaring rack again after eval_gemfile.
+gem 'nokogiri', '>= 1.19.5'
+gem 'crass', '>= 1.0.8'
+# json 3 breaks sprockets 3 / execjs 2.10.1 / faraday_middleware 0.14 (create_additions / arity)
+# lower bound kept from webapp's previous security floor
+gem 'json', '>= 2.15.2.1', '< 3'
+# multi_json 1.15 breaks zencoder under json 2/3 option APIs; keep a recent multi_json
+gem 'multi_json', '>= 1.16'
 gem 'pg'
 gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks', branch: 'rails8'
 
