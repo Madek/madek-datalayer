@@ -11,6 +11,7 @@ gem 'crass', '>= 1.0.8'
 gem 'json', '>= 2.15.2.1', '< 3'
 # multi_json 1.15 breaks zencoder under json 2/3 option APIs; keep a recent multi_json
 gem 'multi_json', '>= 1.16'
+gem 'addressable', '>= 2.9.1'
 gem 'pg'
 gem 'pg_tasks', git: 'https://github.com/leihs/rails_pg-tasks', branch: 'rails8'
 
