@@ -280,7 +280,6 @@ DEPENDENCIES
   chronic_duration
   factory_bot
   faker
-  json (< 3)
   liquid
   listen
   mimemagic
