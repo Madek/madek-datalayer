@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 8.1', '>= 8.1.4.1'
+gem 'rails', '~> 8.1.4', '>= 8.1.4.1'
 # Update of rails to 8.1.4.1 wants json 3, which would break sprockets 3 / execjs
-# 2.10.1 (admin-webapp, webapp: create_additions) and faraday_middleware 0.14
+# 2.10.1 (admin-webapp; webapp still locks execjs 2.7.0) and faraday_middleware 0.14
 # (api: JSON.parse arity). Cap below 3 until those consumers are upgraded.
 gem 'json', '< 3'
 gem 'pg'

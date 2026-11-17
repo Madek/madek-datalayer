@@ -290,7 +290,7 @@ DEPENDENCIES
   pry-nav
   pry-rails
   psych (< 4)
-  rails (~> 8.1, >= 8.1.4.1)
+  rails (~> 8.1.4, >= 8.1.4.1)
   rspec-rails (~> 7)
   strong_password
   textacular (~> 5.0)
